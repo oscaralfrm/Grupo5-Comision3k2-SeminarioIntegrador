@@ -4,11 +4,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 
 @Entity
 public class Anotacion {
@@ -21,16 +23,5 @@ public class Anotacion {
     private String anotacion;
     private boolean esImportante;
 
-    // Constructores
-
-
-    public Anotacion() {
-    }
-
-    public Anotacion(Long idAnotacion, String anotacion, boolean esImportante) {
-        this.idAnotacion = idAnotacion;
-        this.anotacion = anotacion;
-        this.esImportante = esImportante;
-    }
 
 }
