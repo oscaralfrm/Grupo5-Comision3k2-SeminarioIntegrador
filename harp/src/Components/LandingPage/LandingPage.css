@@ -1,0 +1,63 @@
+.header-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 3rem; /* Tamaño grande */
+    font-weight: 700; /* Negrita */
+    text-align: center; /* Centrado en la página */
+    color: white; /* Letra blanca */
+    margin-top: 30px; /* Espacio superior */
+    letter-spacing: 2px; /* Espaciado entre letras */
+    text-transform: uppercase; /* Texto en mayúsculas */
+    background: linear-gradient(135deg, #1E1B4B, #4F46E5); /* Degradado diagonal (esquina superior izquierda a inferior derecha) */
+    padding: 20px; /* Añadimos padding para un mejor margen interno */
+    border-radius: 10px; /* Esquinas redondeadas */
+   
+}
+.body{
+    background: white;
+}
+.h1 {
+    color: #1E1B4B;
+    text-align: center; /* Si quieres que esté centrado */
+    font-family: 'Roboto', sans-serif; /* O cualquier fuente que prefieras */
+    font-size: 3rem; /* Ajusta el tamaño como desees */
+    font-weight: bold; /* Si quieres el texto en negrita */
+     /* Ajusta los márgenes si es necesario */
+}
+
+/* Espaciado entre las tarjetas */
+.custom-card {
+    background: linear-gradient(135deg, #1E1B4B, #4F46E5); /* Degradado oscuro a color */
+    color: white; /* Letra blanca */
+    border: none;
+    margin: 15px; /* Para separar las tarjetas */
+    padding: 20px; /* Espacio interno */
+    border-radius: 10px; /* Esquinas redondeadas */
+    min-height: 280px;
+}
+
+/* Estilo para el título de la tarjeta */
+.custom-card .card-title {
+    color: #A5B4FC;
+}
+
+/* Estilo para el texto */
+.custom-card .card-text {
+    color: #A5B4FC;
+}
+
+/* Estilo para el botón */
+.custom-btn {
+    background-color: #4F46E5;
+    border: none;
+    color: white;
+}
+
+.custom-btn:hover {
+    background-color: #A5B4FC;
+    color: #1E1B4B;
+}
+
+/* Para las esquinas redondeadas */
+.rounded {
+    border-radius: 10px;
+}
