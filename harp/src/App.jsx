@@ -5,20 +5,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // Imports...
 import Navbar from "./Components/Navbar/Navbar";
 import LandingPage from "./Components/LandingPage/LandingPage";
+import SeleccionarDeCategorias from "./Components/Servicios/SeleccionDeCategorias";
 
 function App() {
 
   return (
     <>
-
       <Router>
         <div className="container">
           <Navbar/>
         </div>
-       <div className="containter">
-       <LandingPage/>
-       </div> 
-        
+        <div className="container">
+          <SeleccionarDeCategorias/>
+          </div>        
 
       </Router>
 
