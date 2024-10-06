@@ -25,12 +25,12 @@ function Navbar() {
           </ul>
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link className="btn btn-outline-light me-2" to="/login">Login</Link>
+              <Link className="btn btn-outline-light me-2" to="/login">Iniciar Sesion</Link>
             </li>
           </ul>
           <ul className="navbar-nav ">
             <li className="nav-item">
-              <Link className="btn btn-inline-ligth me-2" to="/servicios" style={{color:'white'}}>Sign up</Link>
+              <Link className="btn btn-inline-ligth me-2" to="/registro" style={{color:'white'}}>Registrarse</Link>
             </li>
           </ul>
         </div>
