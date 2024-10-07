@@ -15,3 +15,47 @@
 .navbar .btn:hover {
     background-color: #A5B4FC; /* Color del botón al pasar el mouse */
 }
+
+.custom-toggler-icon {
+    background-color: white !important; /* Change the background color to white */
+  }
+  
+  .navbar-toggler {
+    border-color: transparent; /* Remove border color */
+  }
+  
+  .custom-toggler-icon {
+    background-color: white !important; /* Keep the background color white */
+    border-radius: 5px; /* Add rounded edges */
+    width: 30px; /* Set a specific width */
+    height: 3px; /* Set a specific height */
+    position: relative; /* For positioning child elements */
+  }
+  
+  .custom-toggler-icon::before,
+  .custom-toggler-icon::after {
+    content: ''; /* Necessary for pseudo-elements */
+    background-color: white; /* Make them white */
+    border-radius: 5px; /* Add rounded edges */
+    width: 30px; /* Same width as the icon */
+    height: 3px; /* Same height as the icon */
+    position: absolute; /* Position them relative to the parent */
+    left: 0; /* Align to the left */
+    transition: all 0.3s ease; /* Smooth transition */
+  }
+  
+  .custom-toggler-icon::before {
+    top: -8px; /* Position the top line */
+  }
+  
+  .custom-toggler-icon::after {
+    top: 8px; /* Position the bottom line */
+  }
+  
+  .navbar-toggler {
+    border: none; /* Remove border */
+    outline: none; /* Remove outline on focus */
+    border-radius: 5px; /* Add rounded edges to the button */
+    padding: 5px; /* Add some padding */
+  }
+  

@@ -1,0 +1,6 @@
+@media (max-width: 800px) {
+    .card {
+        width: 90%;  /* Ajusta el ancho de la tarjeta al 90% de su contenedor */
+        margin: auto; /* Centra la tarjeta horizontalmente */
+    }
+}

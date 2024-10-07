@@ -38,7 +38,7 @@ export default function SeleccionarDeCategorias() {
 </div>
 
 
-      <div className="row g-2">
+      <div className="row g-2 mb-5">
         {" "}
         {/* Espaciado entre columnas */}
         {[
