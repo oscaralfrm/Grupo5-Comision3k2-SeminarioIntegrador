@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -11,6 +11,7 @@ import { Footer } from "./Components/Footer/Footer";
 import { RegisterFormStudent } from "./Components/RegisterChooser/RegisterFormStudent/RegisterFormStudent";
 import { LoginForm } from "./Components/LoginForm/LoginForm";
 import { RegisterFormInstructor } from "./Components/RegisterChooser/RegisterFormInstructor/RegisterFormInstructor";
+import InstructorPrincipal from "./Components/InstructorPrincipal/InstructorPrincipal";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/registrarse/alumno" element={<RegisterFormStudent />} />
             <Route path="/registrarse/instructor" element={<RegisterFormInstructor />} />
             <Route path="/login" element={<LoginForm />} />
+            <Route path="/instructor/:idInstructor/*" element={<InstructorPrincipal />} /> 
           </Routes>
         </div>
       </BrowserRouter>
@@ -34,4 +36,3 @@ function App() {
 }
 
 export default App;
-
