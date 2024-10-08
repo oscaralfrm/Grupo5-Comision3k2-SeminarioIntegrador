@@ -25,7 +25,7 @@ function Navbar() {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
-                <Link className="nav-link ms-3" to="/servicios" style={{ color: 'white', fontSize: "1.5rem" }}>
+                <Link className="nav-link ms-3" to="/instructor/1" style={{ color: 'white', fontSize: "1.5rem" }}>
                   <strong>Servicios</strong>
                 </Link>
               </li>

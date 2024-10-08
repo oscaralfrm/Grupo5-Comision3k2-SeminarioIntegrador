@@ -37,7 +37,7 @@ const Sidebar = ({ onOpcionChange, selectedService, setSelectedService }) => {
   };
 
   const handleAddServicio = () => {
-    navigate("/")
+    navigate("/servicios")
   };
 
   return (
