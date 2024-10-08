@@ -63,7 +63,7 @@ export const Footer = () => {
                 <hr className="bg-secondary"/> 
                 <div className="row d-flex justify-content-between align-items-center text-center">
                     <div className="col-md-5"> 
-                        <p>© 2024 UTN-FRC - Seminario Integrador - Proyecto Grupo 5</p> 
+                        <p>© 2024 UTN-FRC</p> 
                     </div> 
                     <div className="col-md-7"> 
                         <ul className="list-inline footer-links"> 

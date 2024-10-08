@@ -37,15 +37,15 @@ export const LoginForm = () => {
 
     const loginForm = () => (
         <div className="container-fluid">
-            <div className="row vh-100">
+            <div className="row" >
                 {/* Sección de Imagen */}
                 <div className="col-lg-6 d-flex justify-content-center align-items-center" style={{ backgroundColor: '#A5B4FC' }}>
                     <img src={PanaTeacher} alt="Login Illustration" style={{ width: '80%', maxHeight: '90%', objectFit: 'contain' }} />
                 </div>
 
                 {/* Sección de Formulario */}
-                <div className="col-lg-6 d-flex justify-content-center align-items-center">
-                    <div className="col-md-8 col-sm-10">
+                <div className="col-lg-6 d-flex justify-content-center align-items-center" >
+                    <div className="col-md-8 col-sm-10" style={{ height: '100%', marginTop: '15em', marginBottom: '2em'}}>
                         <h1 className="text-center">Iniciar Sesión</h1>
                         <Link to="/registrarse" className="d-block text-center mb-3">
                             Si no tienes un usuario, regístrate aquí

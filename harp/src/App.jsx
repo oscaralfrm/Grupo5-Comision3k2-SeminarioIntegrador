@@ -10,6 +10,7 @@ import { RegisterFormChooser } from "./Components/RegisterChooser/RegisterChoose
 import { Footer } from "./Components/Footer/Footer";
 import { RegisterFormStudent } from "./Components/RegisterChooser/RegisterFormStudent/RegisterFormStudent";
 import { LoginForm } from "./Components/LoginForm/LoginForm";
+import { RegisterFormInstructor } from "./Components/RegisterChooser/RegisterFormInstructor/RegisterFormInstructor";
 
 function App() {
   return (
@@ -21,7 +22,8 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/registrarse" element={<RegisterFormChooser />} />
             <Route path="/servicios" element={<SeleccionarDeCategorias />} />
-            <Route path="/registrarse/estudiantes" element={<RegisterFormStudent />} />
+            <Route path="/registrarse/alumno" element={<RegisterFormStudent />} />
+            <Route path="/registrarse/instructor" element={<RegisterFormInstructor />} />
             <Route path="/login" element={<LoginForm />} />
           </Routes>
         </div>

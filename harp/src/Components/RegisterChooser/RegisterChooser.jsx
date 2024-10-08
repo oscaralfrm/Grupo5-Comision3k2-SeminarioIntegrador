@@ -7,11 +7,11 @@ export const RegisterFormChooser = () => {
     const navigate = useNavigate();
 
     const handleInstructorClick = () => {
-        navigate('/register/instructor');
+        navigate('/registrarse/instructor');
     };
 
     const handleStudentClick = () => {
-        navigate('/register/student');
+        navigate('/registrarse/alumno');
     };
 
     return (
