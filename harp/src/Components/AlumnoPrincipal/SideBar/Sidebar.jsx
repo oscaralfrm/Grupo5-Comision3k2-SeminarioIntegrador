@@ -2,28 +2,19 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ onOpcionChange, selectedCourse, setSelectedCourse }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);  // Controla si está colapsado o no
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);  // Controla si el dropdown de cursos está abierto
-
+  const [isCollapsed, setIsCollapsed] = useState(false); // Controla si está colapsado o no
   const navigate = useNavigate(); // Usar el hook useNavigate
 
   // Alternar el estado del sidebar (expandido/colapsado)
   const toggleSidebar = () => {
-    if (!isCollapsed && isDropdownOpen) {
-      setIsDropdownOpen(false);
-    }
     setIsCollapsed(!isCollapsed);
   };
 
   // Cambiar el curso seleccionado y navegar a los detalles del curso
   const handleCourseChange = (course) => {
-    setSelectedCourse(course);  // Cambia el curso seleccionado
+    setSelectedCourse(course); // Cambia el curso seleccionado
     onOpcionChange(course); // Cambia la opción en la barra lateral
     navigate(`/alumno/mis-cursos/${course}`); // Navega a la ruta del curso seleccionado
-  };
-
-  const handleAddCurso = () => {
-    navigate("/crear-curso"); // Navega a la página para crear un nuevo curso
   };
 
   // Manejar la navegación a "Mis Cursos"
@@ -36,21 +27,22 @@ const Sidebar = ({ onOpcionChange, selectedCourse, setSelectedCourse }) => {
     <nav 
       className={`d-md-block bg-light sidebar ${isCollapsed ? 'collapsed' : ''}`} 
       style={{
-        width: isCollapsed ? '80px' : '20vw',
+        width: isCollapsed ? '0vw' : '11vw',
         height: '100vh',
         top: '0', 
         left: '0', 
         transition: 'width 0.3s', 
         zIndex: '1000'
       }}>
-      <div className="sidebar-sticky pt-3" style={{ height: '100%' }}>
+      <div className="sidebar-sticky pt-3" style={{ height: '50%' }}>
 
         {/* Botón de menú hamburguesa */}
         <button 
-          className="btn btn-light" 
+          className={`btn d-flex align-items-center justify-content-start  ${isCollapsed ? 'text-dark' : ''}`} 
           onClick={toggleSidebar} 
-          style={{ width: '100%', marginBottom: '10px' }}>
-          <i className="bi bi-list" style={{ fontSize: '1.5rem' }}></i>
+          style={{ width: '100%', marginBottom: '1vw', backgroundColor: 'transparent', border: 'none' }}>
+          <i className="bi bi-list" style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}></i>
+          {!isCollapsed && <span style={{ lineHeight: '1.2rem' }}>Menu</span>} {/* Alineación de la palabra "Menu" */}
         </button>
 
         {/* Links del Sidebar */}
@@ -92,5 +84,3 @@ const Sidebar = ({ onOpcionChange, selectedCourse, setSelectedCourse }) => {
 };
 
 export default Sidebar;
-
-

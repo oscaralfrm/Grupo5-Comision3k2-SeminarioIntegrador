@@ -36,16 +36,16 @@ const MisCursos = () => {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4" style={ {width :" 1vw"}}>
       <h2>Mis Cursos</h2>
-      <ul className="list-group mt-3">
+      <ul className="list-group mt-4" >
         {cursosInscritos.length > 0 ? (
           cursosInscritos.map((curso) => (
             <li 
               key={curso.id} 
               className="list-group-item d-flex justify-content-between align-items-center" 
               onClick={() => handleCursoClick(curso.id)} 
-              style={{ cursor: 'pointer' }}>
+              style={{ cursor: 'pointer'}}>
               <div>
                 <h5>{curso.nombre}</h5>
                 <p><strong>Instructor:</strong> {curso.instructor}</p>
