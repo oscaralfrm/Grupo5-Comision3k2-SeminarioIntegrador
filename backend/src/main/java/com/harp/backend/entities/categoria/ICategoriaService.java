@@ -9,6 +9,6 @@ public interface ICategoriaService {
     public void saveCategoria(Categoria categoria);
     public void deleteCategoria(Long idCategoria);
     public Categoria findCategoria(Long idCategoria);
-    public void editCategoria(Long idCategoria, Categoria categoria);
+    public void editCategoria(Categoria categoria);
 
 }

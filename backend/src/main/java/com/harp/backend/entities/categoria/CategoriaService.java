@@ -34,7 +34,7 @@ public class CategoriaService implements ICategoriaService {
     };
 
     @Override
-    public void editCategoria(Long idCategoria, Categoria categoria) {
+    public void editCategoria(Categoria categoria) {
         this.saveCategoria(categoria);
     };
 
