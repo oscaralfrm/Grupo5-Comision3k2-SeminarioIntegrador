@@ -1,9 +1,12 @@
 import { useForm } from 'react-hook-form';
 import PanaRegister from '../../../assets/PanaAlumnaInscripcion.png'; // Asegúrate de importar tu imagen
+// import { useNavigate } from 'react-router-dom';
 
 export const RegisterFormStudent = () => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm();
     const password = watch('password'); // Para comparar la contraseña y su confirmación
+
+    // const navigate = useNavigate();
 
     const onSubmit = async (data) => {
         const newUser = {
@@ -17,6 +20,7 @@ export const RegisterFormStudent = () => {
 
         try {
             alert('Registro exitoso');
+            // navigate('/alumno/:idAlumno');
         } catch (error) {
             alert('Error al registrar: ' + error.message);
         }

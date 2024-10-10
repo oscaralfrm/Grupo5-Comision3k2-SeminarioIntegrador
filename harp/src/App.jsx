@@ -12,6 +12,7 @@ import { RegisterFormStudent } from "./Components/RegisterChooser/RegisterFormSt
 import { LoginForm } from "./Components/LoginForm/LoginForm";
 import { RegisterFormInstructor } from "./Components/RegisterChooser/RegisterFormInstructor/RegisterFormInstructor";
 import InstructorPrincipal from "./Components/InstructorPrincipal/InstructorPrincipal";
+import AlumnoPrincipal from "./Components/AlumnoPrincipal/AlumnoPrincipal";
 
 function App() {
   return (
@@ -26,7 +27,8 @@ function App() {
             <Route path="/registrarse/alumno" element={<RegisterFormStudent />} />
             <Route path="/registrarse/instructor" element={<RegisterFormInstructor />} />
             <Route path="/login" element={<LoginForm />} />
-            <Route path="/instructor/:idInstructor/*" element={<InstructorPrincipal />} /> 
+            <Route path="/instructor/:idInstructor/*" element={<InstructorPrincipal />} />
+            <Route path="/alumno/:idAlumno/*" element={<AlumnoPrincipal />} /> 
           </Routes>
         </div>
       </BrowserRouter>
