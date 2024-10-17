@@ -13,7 +13,7 @@ const Cuotas = ({ service }) => {
     };
 
     return (
-        <div className="container-fluid mt-4">
+        <div className="container-fluid" style={{marginTop: '-7vw'}} >
             <h1 className="text-center mb-4">Cuotas de {service}</h1>
             <div className="table-responsive">
                 <table className="table table-striped table-bordered table-hover">

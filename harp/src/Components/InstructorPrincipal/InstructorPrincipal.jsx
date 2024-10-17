@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import Sidebar from './SideBar/SideBar';
 import General from './DashBoard/General';
-import Alumnos from './DashBoard/Alumnos';
-import Cuotas from './DashBoard/Cuotas';
-import Asistencias from './DashBoard/Asistencias';
-import Configuracion from './DashBoard/Configuracion';
+import Alumnos from './DashBoard/Alumnos/Alumnos';
+import Cuotas from './DashBoard/Cuotas/Cuotas';
+import Asistencias from './DashBoard/Asistencias/Asistencias';
+import Configuracion from './DashBoard/Configuracion/Configuracion';
 import Estadisticas from './DashBoard/Estadisticas';
-import DetalleCuota from './DashBoard/DetalleCuota';
+import DetalleCuota from './DashBoard/Cuotas/DetalleCuota';
 // import CrearServicio from '../CrearServicio/CrearServicio';
 
 const InstructorPrincipal = () => {
@@ -37,7 +37,7 @@ const InstructorPrincipal = () => {
         />
 
         {/* Contenedor del contenido principal */}
-        <div className="flex-grow-1" style={{ flex: 1, padding: '100px', overflowY: 'auto' }}>
+        <div className="flex-grow-1" style={{ flex: 1, padding: '10vw', overflowY: 'auto' }}>
           <Routes>
             <Route path=":selectedService/general" element={<General service={selectedService} />} />
             <Route path=":selectedService/alumnos" element={<Alumnos service={selectedService} />} />

@@ -20,7 +20,7 @@ const General = ({ service }) => {
 
         <div className="d-flex justify-content-center">
           {/* Recuadro de Plata Ingresada */}
-          <div className="card me-2" style={{ backgroundColor: '#5a189a', color: '#fff', width: '150px', height: '100px' }}>
+          <div className="card me-2" style={{ backgroundColor: '#5a189a', color: '#fff', width: '11vw', height: '7vw' }}>
             <div className="card-body text-center">
               <h6 className="card-title">Recibidos</h6>
               <p className="card-text fs-5">${income}</p>
@@ -28,7 +28,7 @@ const General = ({ service }) => {
           </div>
 
           {/* Recuadro de Pendientes */}
-          <div className="card me-2" style={{ backgroundColor: '#3c096c', color: '#fff', width: '150px', height: '100px' }}>
+          <div className="card me-2" style={{ backgroundColor: '#3c096c', color: '#fff', width: '11vw', height: '7vw' }}>
             <div className="card-body text-center">
               <h6 className="card-title">Pendientes</h6>
               <p className="card-text fs-5">${pending}</p>
@@ -36,7 +36,7 @@ const General = ({ service }) => {
           </div>
 
           {/* Recuadro de Esperados */}
-          <div className="card" style={{ backgroundColor: '#240046', color: '#fff', width: '150px', height: '100px' }}>
+          <div className="card" style={{ backgroundColor: '#240046', color: '#fff', width: '11vw', height: '7vw' }}>
             <div className="card-body text-center">
               <h6 className="card-title">Esperados</h6>
               <p className="card-text fs-5">${expected}</p>
