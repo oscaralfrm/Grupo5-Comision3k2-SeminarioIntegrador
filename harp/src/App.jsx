@@ -1,6 +1,6 @@
 // import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 // Imports...
 import Navbar from "./Components/Navbar/Navbar";
@@ -18,21 +18,35 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Navbar />
-        <div> {/* Ajusta este valor según la altura de tu navbar */}
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/registrarse" element={<RegisterFormChooser />} />
-            <Route path="/servicios" element={<SeleccionarDeCategorias />} />
-            <Route path="/registrarse/alumno" element={<RegisterFormStudent />} />
-            <Route path="/registrarse/instructor" element={<RegisterFormInstructor />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/instructor/:idInstructor/*" element={<InstructorPrincipal />} />
-            <Route path="/alumno/:idAlumno/*" element={<AlumnoPrincipal />} /> 
-          </Routes>
-        </div>
+        <Routes>
+          <Route
+            path="*"
+            element={
+              <>
+                <Navbar />
+                <div> </div>
+              </>
+            }
+          />
+        </Routes>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/registrarse" element={<RegisterFormChooser />} />
+          <Route path="/servicios" element={<SeleccionarDeCategorias />} />
+          <Route path="/registrarse/alumno" element={<RegisterFormStudent />} />
+          <Route
+            path="/registrarse/instructor"
+            element={<RegisterFormInstructor />}
+          />
+          <Route path="/login" element={<LoginForm />} />
+          <Route
+            path="/instructor/:idInstructor/*"
+            element={<InstructorPrincipal />}
+          />
+          <Route path="/alumno/:idAlumno/*" element={<AlumnoPrincipal />} />
+        </Routes>
       </BrowserRouter>
-      <Footer/>
+      <Footer />
     </>
   );
 }

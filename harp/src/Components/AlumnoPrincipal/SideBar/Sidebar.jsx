@@ -31,7 +31,7 @@ const Sidebar = ({ onOpcionChange, selectedCourse, setSelectedCourse }) => {
         height: '100vh',
         top: '0', 
         left: '0', 
-        transition: 'width 0.3s', 
+        transition: 'width 0s', 
         zIndex: '1000'
       }}>
       <div className="sidebar-sticky pt-3" style={{ height: '50%' }}>
