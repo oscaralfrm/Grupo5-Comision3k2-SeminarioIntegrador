@@ -18,7 +18,7 @@ public class Suspension {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "fecha_fin")
     private Date fechaFin;

@@ -16,7 +16,7 @@ public class Alumno {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @OneToOne
     @JoinColumn(name = "usuario_id")
