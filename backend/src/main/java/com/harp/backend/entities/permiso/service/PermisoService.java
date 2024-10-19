@@ -20,8 +20,9 @@ public class PermisoService implements IPermisoService {
     }
 
     @Override
-    public void savePermiso(Permiso permiso) {
+    public Permiso savePermiso(Permiso permiso) {
         permisoRepository.save(permiso);
+        return permiso;
     }
 
     @Override

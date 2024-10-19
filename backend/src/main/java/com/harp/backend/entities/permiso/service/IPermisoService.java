@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface IPermisoService {
     List<Permiso> getAllPermisos();
-    void savePermiso(Permiso permiso);
+    Permiso savePermiso(Permiso permiso);
     void deletePermiso(Long idPermiso);
     Optional<Permiso> findPermiso(Long idPermiso);
     Permiso editPermiso(Permiso permiso);
