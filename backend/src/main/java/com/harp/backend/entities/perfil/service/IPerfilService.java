@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface IPerfilService {
 
     List<Perfil> getAllPerfiles();
-    void savePerfil(Perfil perfil);
+    Perfil savePerfil(Perfil perfil);
     void deletePerfil(Long idPerfil);
     Optional<Perfil> findPerfil(Long idPerfil);
     Perfil editPerfil(Perfil perfil);
