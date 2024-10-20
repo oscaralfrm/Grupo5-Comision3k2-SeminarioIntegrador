@@ -17,8 +17,6 @@ public class PermisoController {
 
     @Autowired
     private IPermisoService permisosService;
-    @Autowired
-    private PermisoService permisoService;
 
     @GetMapping
     public ResponseEntity<List> getAllPermisos() {
@@ -33,8 +31,8 @@ public class PermisoController {
     }
 
     @PostMapping
-    public ResponseEntity createPermission(@RequestBody Permiso permiso) {
-            Permiso nuevoPermiso = permisoService.savePermiso(permiso);
+    public ResponseEntity savePermiso(@RequestBody Permiso permiso) {
+            Permiso nuevoPermiso = permisosService.savePermiso(permiso);
             return ResponseEntity.ok(nuevoPermiso);
     }
 

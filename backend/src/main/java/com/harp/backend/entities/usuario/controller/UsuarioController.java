@@ -55,7 +55,7 @@ public class UsuarioController {
         if (!listaPerfiles.isEmpty()) {
             usuario.setPerfiles(listaPerfiles);
 
-            UsuarioService nuevoUsuario = usuarioService.saveUsuario(usuario);
+            Usuario nuevoUsuario = usuarioService.saveUsuario(usuario);
             return ResponseEntity.ok(nuevoUsuario);
         }
         return null;
