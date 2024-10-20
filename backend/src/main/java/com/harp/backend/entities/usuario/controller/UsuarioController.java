@@ -3,9 +3,9 @@ package com.harp.backend.entities.usuario.controller;
 
 import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.perfil.service.IPerfilService;
+import com.harp.backend.entities.suspension.service.ISuspensionService;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.service.IUsuarioService;
-import com.harp.backend.entities.usuario.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +24,9 @@ public class UsuarioController {
 
     @Autowired
     private IPerfilService perfilService;
+
+    @Autowired
+    private ISuspensionService suspensionService;
 
     @GetMapping
     public ResponseEntity<List> getAllUsers() {
@@ -54,6 +57,7 @@ public class UsuarioController {
 
         if (!listaPerfiles.isEmpty()) {
             usuario.setPerfiles(listaPerfiles);
+            usuario.setSuspensiones(new HashSet<>());
 
             Usuario nuevoUsuario = usuarioService.saveUsuario(usuario);
             return ResponseEntity.ok(nuevoUsuario);

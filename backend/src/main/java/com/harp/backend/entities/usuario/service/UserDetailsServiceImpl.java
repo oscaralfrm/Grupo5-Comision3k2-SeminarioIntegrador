@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // Conseguimos al usuario de la base de datos...
 
-        Usuario usuario = usuarioRepository.findUsuarioByEntityUsername(username).orElseThrow(() -> new
+        Usuario usuario = usuarioRepository.findUsuarioByNombreUsuario(username).orElseThrow(() -> new
                 UsernameNotFoundException("El usuario: " + username + " no se pudo encontrar"));
 
         // Conseguimos la lista de permisos...
