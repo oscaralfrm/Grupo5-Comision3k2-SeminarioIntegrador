@@ -7,6 +7,7 @@ import com.harp.backend.entities.suspension.service.ISuspensionService;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,9 @@ public class UsuarioController {
 
         Set<Perfil> listaPerfiles = new HashSet<>();
         Perfil perfilLeido;
+
+        // Encriptamos la contraseña...
+        usuario.setContrasena(usuarioService.encriptPassword(usuario.getContrasena()));
 
         // Recuperar la Permission/s por su ID
         for (Perfil perfil : usuario.getPerfiles()){

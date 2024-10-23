@@ -1,5 +1,7 @@
 package com.harp.backend.entities.usuario.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.suspension.model.Suspension;
 import jakarta.persistence.*;
@@ -55,6 +57,7 @@ public class Usuario {
 
     // Relación con las Suspensiones... 1 a N
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<Suspension> suspensiones;
 
     // Relación con los Perfiles... N a N

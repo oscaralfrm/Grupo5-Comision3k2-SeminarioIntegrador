@@ -11,4 +11,5 @@ public interface IUsuarioService {
     void deleteUsuario(Long idUsuario);
     Optional<Usuario> findUsuario(Long idUsuario);
     Usuario editUsuario(Usuario usuario);
+    public String encriptPassword(String password);
 }

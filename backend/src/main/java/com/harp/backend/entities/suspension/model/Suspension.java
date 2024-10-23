@@ -1,5 +1,6 @@
 package com.harp.backend.entities.suspension.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.harp.backend.entities.usuario.model.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,5 +30,6 @@ public class Suspension {
     // Relación con Usuario... N a 1
     @ManyToOne
     @JoinColumn(name = "usuario_id") // Clave foránea a Usuario
+    @JsonBackReference
     private Usuario usuario;
 }
