@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface IServicioRepository extends JpaRepository<Servicio, Long> {
-    public List<Servicio> findByInstructorId(Long idServicio);
+    //public List<Servicio> findByInstructorId(Long idServicio);
 }

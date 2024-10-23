@@ -28,9 +28,9 @@ public class Servicio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "instructor_id", referencedColumnName = "id")
-    private Instructor instructor;
+//    @ManyToOne
+//    @JoinColumn(name = "instructor_id", referencedColumnName = "id", nullable = false)
+//    private Instructor instructor;
 
     private String nombre;
     private String descripcion;
@@ -69,7 +69,7 @@ public class Servicio {
     @Column(name = "dia_limite_pago")
     private int diaLimitePago;
 
-    //private List<TipoFrecuenciaPago> tipoFrecuenciaPago;
+    //private List<FrecuenciaPago> FrecuenciaPago;
     //private List<Grupo> grupos;
     //private boolean claseDePrueba;
 

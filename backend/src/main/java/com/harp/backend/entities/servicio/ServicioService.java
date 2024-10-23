@@ -20,22 +20,17 @@ public class ServicioService implements IServicioService {
     @Autowired
     private CategoriaService categoriaService;
 
+    @Autowired
+    private ServicioConverter servicioConverter;
+
     @Override
     public Servicio saveServicio(Servicio servicio) {
         return servicioRepository.save(servicio);
     };
 
-    public Servicio createServicio(ServicioDTO servicio) {
-        Servicio nuevoServicio = parseServicioDTO(servicio);
+    public Servicio createServicio(ServicioDTO servicioDTO) {
+        Servicio nuevoServicio = servicioConverter.dtoToEntity(servicioDTO);
         return this.saveServicio(nuevoServicio);
-    }
-
-    public Servicio parseServicioDTO(ServicioDTO servicioDTO) {
-        Servicio nuevoServicio = new Servicio();
-        // HACERLO POR CADA ATRIBUTO
-        nuevoServicio.setNombre(servicioDTO.getNombre());
-        nuevoServicio.setCategoria(categoriaService.findCategoriaByNombre(servicioDTO.getNombreCategoria()));
-        return nuevoServicio;
     }
 
     @Override
@@ -52,36 +47,29 @@ public class ServicioService implements IServicioService {
     };
 
     @Override
-    public Servicio editServicio(Long idServicio, Servicio servicio) {
+    public Servicio editServicio(Long idServicio, ServicioDTO servicioDTO) {
         Servicio servicioExistente = servicioRepository.findById(idServicio)
                 .orElseThrow(() -> new NoSuchElementFoundException("Servicio no encontrado"));
 
-        // Revisar que no todo se puede modificar, implementar DTOS
-        servicioExistente = servicio;
-        /*
-        servicioExistente.setNombre(servicio.getNombre());
-        servicioExistente.setDescripcion(servicio.getDescripcion());
-        servicioExistente.setLogoURL(servicio.getLogoURL());
-        servicioExistente.setCategoria(servicio.getCategoria());
-        servicioExistente.setCantDiasCiclo(servicio.getCantDiasCiclo());
-        servicioExistente.setCantMaxGrupos(servicio.getCantMaxGrupos());
-        servicioExistente.setCantMaxAlumnos(servicio.getCantMaxAlumnos());
-        servicioExistente.setDiaLimitePago(servicio.getDiaLimitePago());
-        servicioExistente.setDuracionTotalMeses(servicio.getDuracionTotalMeses());
-
-         */
+        servicioExistente = servicioConverter.dtoToEntity(servicioDTO);
+        servicioExistente.setId(idServicio);
 
         return this.saveServicio(servicioExistente);
     };
 
-    public List<Servicio> getAllServiciosDeInstructor(Long idInstructor) {
-        return servicioRepository.findByInstructorId(idInstructor);
-    }
+//    public List<Servicio> getAllServiciosDeInstructor(Long idInstructor) {
+//        return servicioRepository.findByInstructorId(idInstructor);
+//    }
 
-    // PAGINAR
+    // PAGINADO
     public Page<Servicio> getAllServicios(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Servicio> listServicios = servicioRepository.findAll(pageable);
         return listServicios;
     }
+
+    public boolean existeServicio(Long idServicio) {
+        return (servicioRepository.findById(idServicio).isPresent());
+    }
+
 }

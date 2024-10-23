@@ -2,27 +2,23 @@ package com.harp.backend.entities.servicio;
 
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/servicios")
+@Validated
 public class ServicioController {
 
     @Autowired
     private IServicioService servicioService;
-
-    // POST
-    @PostMapping
-    public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicio) {
-        Servicio nuevoServicio = servicioService.createServicio(servicio);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio); // 201 CREATED
-    }
 
     // GET DE TODOS
     @GetMapping
@@ -33,19 +29,27 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     };
 
+    // GET DE UNO EN PARTICULAR
+    @GetMapping("/{idServicio}")
+    public ResponseEntity<Servicio> traerUnServicio(@PathVariable @Min(1) Long idServicio) {
+        Servicio servicio = servicioService.findServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(servicio);
+    };
+
 //    // GET DE TODOS DE UN INSTRUCTOR
-//    @GetMapping("instructor/{idInstructor}")
+//    @GetMapping("/instructor/{idInstructor}")
 //    public ResponseEntity<List<Servicio>> traerServiciosDeInstructor(@PathVariable Long idInstructor) {
 //        List<Servicio> servicios = servicioService.getAllServiciosDeInstructor(idInstructor);
 //        return ResponseEntity.status(HttpStatus.OK).body(servicios);
 //    };
 
-    // GET DE UNO EN PARTICULAR
-    @GetMapping("/{idServicio}")
-    public ResponseEntity<Servicio> traerUnaCategoria(@PathVariable Long idServicio) {
-        Servicio servicio = servicioService.findServicio(idServicio);
-        return ResponseEntity.status(HttpStatus.OK).body(servicio);
-    };
+    // POST
+    @PostMapping
+    public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicioDTO) {
+        System.out.println(servicioDTO);
+        Servicio nuevoServicio = servicioService.createServicio(servicioDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio); // 201 CREATED
+    }
 
     // ELIMINAR
     @DeleteMapping("/{idServicio}")
@@ -57,9 +61,9 @@ public class ServicioController {
 
     // EDITAR
     @PutMapping("/{idServicio}")
-    public Servicio editarServicio(@PathVariable Long idServicio, @RequestBody Servicio servicio) {
-        Servicio servicioEditado = servicioService.editServicio(idServicio, servicio);
-        return servicioEditado;
+    public ResponseEntity<Servicio> editarServicio(@PathVariable @Min(1) Long idServicio, @RequestBody ServicioDTO servicioDTO) {
+        Servicio servicioEditado = servicioService.editServicio(idServicio, servicioDTO);
+        return  ResponseEntity.status(HttpStatus.OK).body(servicioEditado);
     }
 
 //    // EJ. /filtros?nombre=Deportes (sin " ")

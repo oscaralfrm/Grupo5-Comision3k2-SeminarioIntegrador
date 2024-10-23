@@ -46,8 +46,7 @@ public class CategoriaService implements ICategoriaService {
 
     @Override
     public Categoria editCategoria(Long idCategoria, Categoria categoria) {
-        Categoria categoriaExistente = categoriaRepository.findById(idCategoria)
-                .orElseThrow(() -> new NoSuchElementFoundException("Categoría no encontrada"));
+        Categoria categoriaExistente = this.findCategoria(idCategoria);
         categoriaExistente.setNombre(categoria.getNombre());
         return this.saveCategoria(categoriaExistente);
     };
