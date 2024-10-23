@@ -1,4 +1,3 @@
-// Pagos.js
 import React from 'react';
 
 const Pagos = () => {
@@ -10,25 +9,30 @@ const Pagos = () => {
 
   return (
     <div className="container mt-4">
-      <h2>Pagos</h2>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Curso</th>
-            <th>Fecha</th>
-            <th>Monto</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pagos.map(pago => (
-            <tr key={pago.id}>
-              <td>{pago.curso}</td>
-              <td>{pago.fecha}</td>
-              <td>{pago.monto}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2 className="text-center">Pagos</h2>
+      <div className="row mt-4">
+        {pagos.length > 0 ? (
+          pagos.map((pago) => (
+            <div className="col-md-6 mb-4" key={pago.id}>
+              <div 
+                className="card h-100" 
+              >
+                <div className="card-body">
+                  <h5 className="card-title">{pago.curso}</h5>
+                  <p className="card-text"><strong>Fecha de Pago:</strong> {pago.fecha}</p>
+                  <p className="card-text"><strong>Monto:</strong> {pago.monto}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="col-12 text-center">
+            <div className="alert alert-warning" role="alert">
+              No hay pagos registrados.
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

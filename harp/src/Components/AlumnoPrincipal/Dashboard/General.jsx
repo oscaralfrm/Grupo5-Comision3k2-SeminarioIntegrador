@@ -1,10 +1,9 @@
-// GeneralStudent.js
 import React, { useState, useEffect } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
-const GeneralStudent = ({ service , size}) => {
+const General = () => {
   // Simulación de datos
   const [paid, setPaid] = useState(20000); // Pagos realizados
   const [pending, setPending] = useState(5000); // Pagos pendientes
@@ -49,13 +48,14 @@ const GeneralStudent = ({ service , size}) => {
         </div>
       </div>
 
+      {/* Mis Cursos y Pagos */}
       <div className="row">
         {/* Sección de Carrusel de Cursos */}
         <div className="col-lg-8 mb-4">
           <h5 className="mb-3" style={{ color: "#240046" }}>
             Mis Cursos
           </h5>
-          <Carousel style={{ width: '${size}vw' }}>
+          <Carousel>
             {courses.map((course, index) => (
               <Carousel.Item key={index}>
                 <div
@@ -85,16 +85,13 @@ const GeneralStudent = ({ service , size}) => {
             Estado de Pagos
           </h5>
           <div className="d-flex flex-wrap justify-content-between" style={{ height: "10vw" }}>
-            {/* Recuadro de Pagos Realizados */}
             <div
               className="card me-2 mb-2"
               style={{
                 backgroundColor: "#5a189a",
                 color: "#fff",
-                flex: "1 1 30%", // Asegura que cada card ocupe el 30% del ancho
-                height: "100%", // Asegura que las cards tengan la misma altura
-                zIndex: 1, // Asegura que este card esté delante
-                position: "relative", // Posicionamiento relativo para el z-index
+                flex: "1 1 30%",
+                height: "100%",
               }}
             >
               <div className="card-body text-center d-flex flex-column justify-content-between">
@@ -103,16 +100,13 @@ const GeneralStudent = ({ service , size}) => {
               </div>
             </div>
 
-            {/* Recuadro de Pendientes */}
             <div
               className="card me-2 mb-2"
               style={{
                 backgroundColor: "#3c096c",
                 color: "#fff",
-                flex: "1 1 30%", // Asegura que cada card ocupe el 30% del ancho
-                height: "100%", // Asegura que las cards tengan la misma altura
-                zIndex: 1, // Asegura que este card esté delante
-                position: "relative", // Posicionamiento relativo para el z-index
+                flex: "1 1 30%",
+                height: "100%",
               }}
             >
               <div className="card-body text-center d-flex flex-column justify-content-between">
@@ -121,16 +115,13 @@ const GeneralStudent = ({ service , size}) => {
               </div>
             </div>
 
-            {/* Recuadro de Total Esperado */}
             <div
               className="card"
               style={{
                 backgroundColor: "#240046",
                 color: "#fff",
-                flex: "1 1 30%", // Asegura que cada card ocupe el 30% del ancho
-                height: "100%", // Asegura que las cards tengan la misma altura
-                zIndex: 1, // Asegura que este card esté delante
-                position: "relative", // Posicionamiento relativo para el z-index
+                flex: "1 1 30%",
+                height: "100%",
               }}
             >
               <div className="card-body text-center d-flex flex-column justify-content-between">
@@ -142,8 +133,8 @@ const GeneralStudent = ({ service , size}) => {
         </div>
       </div>
 
-      {/* Sección de Calendario */}
-      <div className="row mb-4"> {/* Nueva fila para el calendario */}
+      {/* Calendario, Reseñas y Cursos Populares */}
+      <div className="row mb-4">
         <div className="col-lg-4 mb-4">
           <h5 className="mb-3" style={{ color: "#240046" }}>
             Calendario de Pagos
@@ -151,17 +142,12 @@ const GeneralStudent = ({ service , size}) => {
           <Calendar onChange={setDate} value={date} />
         </div>
 
-        {/* Sección de Reseñas */}
         <div className="col-lg-4 mb-4">
           <h5 className="mb-3" style={{ color: "#240046" }}>
             Reseñas de Instructores
           </h5>
           {reviews.map((review, index) => (
-            <div
-              key={index}
-              className="card mb-2"
-              style={{ backgroundColor: "#e0aaff" }}
-            >
+            <div key={index} className="card mb-2" style={{ backgroundColor: "#e0aaff" }}>
               <div className="card-body">
                 <h6>{review.instructor}</h6>
                 <p>{review.review}</p>
@@ -170,17 +156,12 @@ const GeneralStudent = ({ service , size}) => {
           ))}
         </div>
 
-        {/* Sección de Cursos Populares */}
         <div className="col-lg-4 mb-4">
           <h5 className="mb-3" style={{ color: "#240046" }}>
             Cursos Populares
           </h5>
           {popularCourses.map((course, index) => (
-            <div
-              key={index}
-              className="card mb-2"
-              style={{ backgroundColor: "#c77dff" }}
-            >
+            <div key={index} className="card mb-2" style={{ backgroundColor: "#c77dff" }}>
               <div className="card-body">
                 <h6>{course.title}</h6>
                 <p>Calificación: {course.rating}</p>
@@ -193,4 +174,4 @@ const GeneralStudent = ({ service , size}) => {
   );
 };
 
-export default GeneralStudent;
+export default General;

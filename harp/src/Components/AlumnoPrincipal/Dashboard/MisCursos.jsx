@@ -36,31 +36,45 @@ const MisCursos = () => {
   };
 
   return (
-    <div className="container mt-4" style={ {width :" 1vw"}}>
-      <h2>Mis Cursos</h2>
-      <ul className="list-group mt-4" >
+    <div className="container mt-4">
+      <h2 className="text-center">Mis Cursos</h2>
+      <div className="row mt-4">
         {cursosInscritos.length > 0 ? (
           cursosInscritos.map((curso) => (
-            <li 
-              key={curso.id} 
-              className="list-group-item d-flex justify-content-between align-items-center" 
-              onClick={() => handleCursoClick(curso.id)} 
-              style={{ cursor: 'pointer'}}>
-              <div>
-                <h5>{curso.nombre}</h5>
-                <p><strong>Instructor:</strong> {curso.instructor}</p>
-                <p><strong>Progreso:</strong> {curso.progreso}</p>
-                <p>{curso.descripcion}</p>
+            <div className="col-md-4 mb-4" key={curso.id}>
+              <div 
+                className="card h-100" 
+                onClick={() => handleCursoClick(curso.id)}
+              >
+                <div className="card-body">
+                  <h5 className="card-title">{curso.nombre}</h5>
+                  <h6 className="card-subtitle mb-2 text-muted">Instructor: {curso.instructor}</h6>
+                  <p className="card-text"><strong>Progreso:</strong> {curso.progreso}</p>
+                  <p className="card-text">{curso.descripcion}</p>
+                </div>
+                <div className="card-footer text-center"> {/* Centrar el botón */}
+                  <button 
+                    className="btn btn-primary"
+                    onClick={() => handleCursoClick(curso.id)}
+                  >
+                    Ir
+                  </button>
+                </div>
               </div>
-              <span className="badge bg-primary rounded-pill">Ir</span>
-            </li>
+            </div>
           ))
         ) : (
-          <li className="list-group-item">No estás inscrita en ningún curso.</li>
+          <div className="col-12 text-center">
+            <div className="alert alert-warning" role="alert">
+              No estás inscrita en ningún curso.
+            </div>
+          </div>
         )}
-      </ul>
+      </div>
     </div>
   );
 };
 
 export default MisCursos;
+
+

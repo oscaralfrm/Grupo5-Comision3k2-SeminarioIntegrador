@@ -1,4 +1,3 @@
-// Reseñas.js
 import React from 'react';
 
 const Reseñas = () => {
@@ -11,15 +10,27 @@ const Reseñas = () => {
 
   return (
     <div className="container mt-4">
-      <h2>Reseñas</h2>
-      <div className="list-group">
-        {reseñas.map(reseña => (
-          <div className="list-group-item" key={reseña.id}>
-            <h5>{reseña.curso}</h5>
-            <p>{reseña.comentario}</p>
-            <small>Calificación: {reseña.calificacion} estrellas</small>
+      <h2 className="text-center">Reseñas</h2>
+      <div className="row mt-4">
+        {reseñas.length > 0 ? (
+          reseñas.map((reseña) => (
+            <div className="col-md-4 mb-4" key={reseña.id}>
+              <div className="card h-100">
+                <div className="card-body">
+                  <h5 className="card-title">{reseña.curso}</h5>
+                  <p className="card-text">{reseña.comentario}</p>
+                  <small>Calificación: {reseña.calificacion} estrellas</small>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="col-12 text-center">
+            <div className="alert alert-warning" role="alert">
+              No hay reseñas registradas.
+            </div>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
