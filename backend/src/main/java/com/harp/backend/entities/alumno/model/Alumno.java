@@ -18,7 +18,7 @@ public class Alumno {
     @Column(name = "id")
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
