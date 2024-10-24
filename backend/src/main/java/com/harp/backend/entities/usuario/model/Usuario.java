@@ -69,10 +69,10 @@ public class Usuario {
     )
     private Set<Perfil> perfiles = new HashSet<>();
 
-    // Atributos no persistentes de configuración...
+    // Atributos persistentes de configuración...
     private boolean enabled;
     private boolean accountNotExpired;
-    private boolean notLocked;
+    private boolean notLocked = true;
     private boolean credentialNotExpired;
 
 }
