@@ -33,11 +33,20 @@ public class SecurityConfig {
     private JwtUtils jwtUtils;
 
     @Bean
-    public SecurityFilterChain filterChain (HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity.csrf(csrf -> csrf.disable())
-                .httpBasic(Customizer.withDefaults())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/oauth2/**").permitAll() // Allow login page and OAuth2 endpoints
+                        .anyRequest().authenticated() // Require authentication for all other routes
+                )
+                .formLogin(Customizer.withDefaults()) // Enable form-based login (default Spring login page)
+                .oauth2Login(Customizer.withDefaults()) // Enable OAuth2 login
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless sessions (important for JWT)
+                )
+                .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class) // Add JWT validation filter
+                .httpBasic(Customizer.withDefaults()) // Support basic HTTP authentication
                 .build();
     }
 
