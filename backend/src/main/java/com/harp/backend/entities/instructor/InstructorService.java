@@ -20,19 +20,13 @@ public class InstructorService implements IInstructorService {
 
     @Override
     public List<Instructor> getAllInstructores() {
-
         return instructorRepository.findAll();
     }
 
-    @Override
-    public Instructor saveInstructor(Instructor instructor) {
-
-        return instructorRepository.save(instructor);
-    }
 
     public Instructor createInstructor(InstructorDTO instructorDTO) {
         Instructor nuevoInstructor = instructorConverter.dtoToEntity(instructorDTO);
-        return this.saveInstructor(nuevoInstructor);
+        return instructorRepository.save(nuevoInstructor);
     }
 
     @Override
@@ -54,6 +48,12 @@ public class InstructorService implements IInstructorService {
         instructorExistente.setId(idInstructor);
 
         return instructorRepository.save(instructorExistente);
+    }
+
+    public void agregarServicioAInstructor(Servicio servicio, Long idInstructor) {
+        Instructor instructor = findInstructor(idInstructor);
+        instructor.agregarServicio(servicio);
+        instructorRepository.save(instructor);
     }
 
 }

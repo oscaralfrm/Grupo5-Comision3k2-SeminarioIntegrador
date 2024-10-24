@@ -14,9 +14,6 @@ import java.util.stream.Collectors;
 @Component
 public class InstructorConverter {
 
-    @Autowired
-    ServicioService servicioService;
-
 //    @Autowired
 //    ModelMapper modelMapper;
 
@@ -25,8 +22,13 @@ public class InstructorConverter {
         Instructor instructor = new Instructor();
 
         instructor.setDescripcion(dto.getDescripcion());
+        //Dependiendo de si hacemos herencia entre instructor y usuario
+        //instructor.setNombre(dto.getNombre());
+        //instructor.setEmail(dto.getEmail());
+        //instructor.setTelefono(dto.getTelefono());
+        //instructor.setDireccion(dto.getdDireccion());
+
         //Definir manualmente los atributos que son otros objetos
-        this.agregarServiciosAInstructor(instructor, dto.getServiciosId());
         //instructor.setUsuario(usuarioServise.findById(dto.getUsuarioId()));
         return instructor;
     }
@@ -35,20 +37,12 @@ public class InstructorConverter {
         //InstructorDTO instructorDTO = modelMapper.map(instructor, InstructorDTO.class);
         InstructorDTO instructorDTO = new InstructorDTO();
         instructorDTO.setDescripcion(instructor.getDescripcion());
+        //instructorDTO.setNombre(instructor.getNombre());
+        //instructorDTO.setEmail(instructor.getEmail());
+        //instructorDTO.setTelefono(instructor.getTelefono());
+        //instructorDTO.setDireccion(instructor.getdDireccion());
         // Definimos manualmente los atributos que son otros objetos
-        instructorDTO.setServiciosId( instructor.getServicios()
-                .stream()
-                .map(Servicio::getId)
-                .collect(Collectors.toSet()));
         return instructorDTO;
     }
 
-    public void agregarServiciosAInstructor(Instructor instructorExistente, Set<Long> serviciosId) {
-        //Se eliminar un servicio de un instructor cuando se elimina el servicio
-        //FALTA VERIFICAR QUE EL SERVICIO SOLO ESTE ASOCIADO A UN INSTRUCTOR
-        for (Long id : serviciosId) {
-            Servicio servicio = servicioService.findServicio(id);
-            instructorExistente.agregarServicio(servicio);
-        }
-    };
-}
+};

@@ -14,7 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InstructorDTO {
-    private Set<Long> serviciosId = new HashSet<>();
+    //No va porque solo modificamos los servicios de un intructor cuando se crea un servicio
+    //private Set<Long> serviciosId = new HashSet<>();
 
 //    private Long usuarioId;
 

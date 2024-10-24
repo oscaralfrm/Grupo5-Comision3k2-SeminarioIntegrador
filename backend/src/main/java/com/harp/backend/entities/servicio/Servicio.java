@@ -3,6 +3,7 @@ package com.harp.backend.entities.servicio;
 //import com.harp.backend.entities.grupo.Grupo;
 //import com.harp.backend.entities.historialMontoCuota.HistorialMonto;
 import com.harp.backend.entities.categoria.Categoria;
+import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.instructor.Instructor;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -70,7 +74,13 @@ public class Servicio {
     private int diaLimitePago;
 
     //private List<FrecuenciaPago> FrecuenciaPago;
-    //private List<Grupo> grupos;
+
+
+    @OneToMany
+    @JoinColumn(name = "grupo_id")
+    private Set<Grupo> grupos = new HashSet<>();
+
+
     //private boolean claseDePrueba;
 
     public void desactivar() {
@@ -80,6 +90,11 @@ public class Servicio {
     public void hacerPrivado() {
         this.setPublico(false);
     }
-}
 
-//que deberia registrar antes de timpo: monto,
+
+    public void agregarGrupo(Grupo grupo) {
+        System.out.println("grupo" + grupo);
+        this.grupos.add(grupo);
+    }
+
+}

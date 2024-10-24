@@ -6,8 +6,7 @@ import java.util.List;
 
 public interface IServicioService {
     //public List<Servicio> getAllServiciosDeInstructor(Long idServicio);
-    public Servicio saveServicio(Servicio servicio);
-    public Servicio createServicio(ServicioDTO servicioDTO);
+    public Servicio createServicio(ServicioDTO servicioDTO, Long idInstructorLoggeado);
     public void deleteServicio(Long idServicio);
     public Servicio findServicio(Long idServicio);
     public Servicio editServicio(Long idServicio, ServicioDTO servicioDTO);

@@ -2,6 +2,8 @@ package com.harp.backend.entities.servicio;
 
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.categoria.CategoriaService;
+import com.harp.backend.entities.grupo.Grupo;
+import com.harp.backend.entities.instructor.InstructorService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import com.harp.backend.exception.SolicitudInvalidaException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +25,26 @@ public class ServicioService implements IServicioService {
     @Autowired
     private ServicioConverter servicioConverter;
 
-    @Override
-    public Servicio saveServicio(Servicio servicio) {
-        return servicioRepository.save(servicio);
-    };
+    @Autowired
+    private InstructorService instructorService;
 
-    public Servicio createServicio(ServicioDTO servicioDTO) {
+    // PAGINADO
+    public Page<Servicio> getAllServicios(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Servicio> listServicios = servicioRepository.findAll(pageable);
+        return listServicios;
+    }
+
+    public boolean existeServicio(Long idServicio) {
+        return (servicioRepository.findById(idServicio).isPresent());
+    }
+
+    public Servicio createServicio(ServicioDTO servicioDTO, Long idInstructorLoggeado) {
         Servicio nuevoServicio = servicioConverter.dtoToEntity(servicioDTO);
-        return this.saveServicio(nuevoServicio);
+        // Se pide al servicio de instructores que asocie el servicio al instructor
+        Servicio servicioCreado = servicioRepository.save(nuevoServicio);
+        instructorService.agregarServicioAInstructor(servicioCreado, idInstructorLoggeado);
+        return servicioCreado;
     }
 
     @Override
@@ -38,6 +52,7 @@ public class ServicioService implements IServicioService {
         servicioRepository.findById(idServicio)
                 .orElseThrow(() -> new NoSuchElementFoundException("Servicio no encontrado"));
         servicioRepository.deleteById(idServicio);
+        // revisar si hace falta eliminarlo donde está referenciado
     };
 
     @Override
@@ -54,22 +69,17 @@ public class ServicioService implements IServicioService {
         servicioExistente = servicioConverter.dtoToEntity(servicioDTO);
         servicioExistente.setId(idServicio);
 
-        return this.saveServicio(servicioExistente);
+        return servicioRepository.save(servicioExistente);
     };
 
 //    public List<Servicio> getAllServiciosDeInstructor(Long idInstructor) {
 //        return servicioRepository.findByInstructorId(idInstructor);
 //    }
 
-    // PAGINADO
-    public Page<Servicio> getAllServicios(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Servicio> listServicios = servicioRepository.findAll(pageable);
-        return listServicios;
-    }
-
-    public boolean existeServicio(Long idServicio) {
-        return (servicioRepository.findById(idServicio).isPresent());
+    public void agregarGrupoAServicio(Grupo grupo, Long idServicio) {
+        Servicio servicioExistente = this.findServicio(idServicio);
+        servicioExistente.agregarGrupo(grupo);
+        servicioRepository.save(servicioExistente);
     }
 
 }

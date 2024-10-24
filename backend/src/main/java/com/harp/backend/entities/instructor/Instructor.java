@@ -25,7 +25,7 @@ public class Instructor {
     @Column(name = "id")
     private Long id;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "instructor_id")
     private Set<Servicio> servicios = new HashSet<>();
 
