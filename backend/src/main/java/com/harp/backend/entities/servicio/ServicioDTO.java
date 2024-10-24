@@ -24,13 +24,10 @@ public class ServicioDTO {
 
     private String logoURL;
 
-    @Size(min = 0)
     private int cantMaxAlumnos;
 
-    @Size(min = 0)
     private int cantMaxGrupos;
 
-    @Size(min = 0)
     private int duracionTotalMeses;
 
     private LocalDate fechaFin;
@@ -44,6 +41,6 @@ public class ServicioDTO {
     private int cantDiasCiclo;
     private int diaLimitePago;
 
-    //private Long tipoFrecuenciaPagoId;
+    //private Long FrecuenciaPagoId;
     //private boolean claseDePrueba;
 }

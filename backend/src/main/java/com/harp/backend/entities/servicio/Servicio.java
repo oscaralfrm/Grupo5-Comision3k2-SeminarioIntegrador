@@ -3,6 +3,7 @@ package com.harp.backend.entities.servicio;
 //import com.harp.backend.entities.grupo.Grupo;
 //import com.harp.backend.entities.historialMontoCuota.HistorialMonto;
 import com.harp.backend.entities.categoria.Categoria;
+import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.instructor.Instructor;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -28,9 +32,9 @@ public class Servicio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "instructor_id", referencedColumnName = "id")
-    private Instructor instructor;
+//    @ManyToOne
+//    @JoinColumn(name = "instructor_id", referencedColumnName = "id", nullable = false)
+//    private Instructor instructor;
 
     private String nombre;
     private String descripcion;
@@ -69,8 +73,14 @@ public class Servicio {
     @Column(name = "dia_limite_pago")
     private int diaLimitePago;
 
-    //private List<TipoFrecuenciaPago> tipoFrecuenciaPago;
-    //private List<Grupo> grupos;
+    //private List<FrecuenciaPago> FrecuenciaPago;
+
+
+    @OneToMany
+    @JoinColumn(name = "grupo_id")
+    private Set<Grupo> grupos = new HashSet<>();
+
+
     //private boolean claseDePrueba;
 
     public void desactivar() {
@@ -80,6 +90,11 @@ public class Servicio {
     public void hacerPrivado() {
         this.setPublico(false);
     }
-}
 
-//que deberia registrar antes de timpo: monto,
+
+    public void agregarGrupo(Grupo grupo) {
+        System.out.println("grupo" + grupo);
+        this.grupos.add(grupo);
+    }
+
+}

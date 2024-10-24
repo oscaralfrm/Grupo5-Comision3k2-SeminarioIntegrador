@@ -30,7 +30,7 @@ public class AlumnoController {
 
     @PostMapping
     public ResponseEntity saveAlumno(@RequestBody Alumno alumno) {
-        Alumno nuevoAlumno = alumnoService.saveAlumno(alumno);
+        Alumno nuevoAlumno = alumnoService.createAlumno(alumno);
         return ResponseEntity.ok(nuevoAlumno);
     }
 

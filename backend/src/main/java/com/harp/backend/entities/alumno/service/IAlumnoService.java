@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface IAlumnoService {
 
     List<Alumno> getAllAlumnos();
-    Alumno saveAlumno(Alumno alumno);
+    Alumno createAlumno(Alumno alumno);
     void deleteAlumno(Long idAlumno);
     Optional<Alumno> findAlumno(Long idAlumno);
     Alumno editAlumno(Alumno alumno);

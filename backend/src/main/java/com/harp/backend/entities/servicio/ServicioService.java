@@ -2,6 +2,8 @@ package com.harp.backend.entities.servicio;
 
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.categoria.CategoriaService;
+import com.harp.backend.entities.grupo.Grupo;
+import com.harp.backend.entities.instructor.InstructorService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import com.harp.backend.exception.SolicitudInvalidaException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,22 +22,29 @@ public class ServicioService implements IServicioService {
     @Autowired
     private CategoriaService categoriaService;
 
-    @Override
-    public Servicio saveServicio(Servicio servicio) {
-        return servicioRepository.save(servicio);
-    };
+    @Autowired
+    private ServicioConverter servicioConverter;
 
-    public Servicio createServicio(ServicioDTO servicio) {
-        Servicio nuevoServicio = parseServicioDTO(servicio);
-        return this.saveServicio(nuevoServicio);
+    @Autowired
+    private InstructorService instructorService;
+
+    // PAGINADO
+    public Page<Servicio> getAllServicios(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Servicio> listServicios = servicioRepository.findAll(pageable);
+        return listServicios;
     }
 
-    public Servicio parseServicioDTO(ServicioDTO servicioDTO) {
-        Servicio nuevoServicio = new Servicio();
-        // HACERLO POR CADA ATRIBUTO
-        nuevoServicio.setNombre(servicioDTO.getNombre());
-        nuevoServicio.setCategoria(categoriaService.findCategoriaByNombre(servicioDTO.getNombreCategoria()));
-        return nuevoServicio;
+    public boolean existeServicio(Long idServicio) {
+        return (servicioRepository.findById(idServicio).isPresent());
+    }
+
+    public Servicio createServicio(ServicioDTO servicioDTO, Long idInstructorLoggeado) {
+        Servicio nuevoServicio = servicioConverter.dtoToEntity(servicioDTO);
+        // Se pide al servicio de instructores que asocie el servicio al instructor
+        Servicio servicioCreado = servicioRepository.save(nuevoServicio);
+        instructorService.agregarServicioAInstructor(servicioCreado, idInstructorLoggeado);
+        return servicioCreado;
     }
 
     @Override
@@ -43,6 +52,7 @@ public class ServicioService implements IServicioService {
         servicioRepository.findById(idServicio)
                 .orElseThrow(() -> new NoSuchElementFoundException("Servicio no encontrado"));
         servicioRepository.deleteById(idServicio);
+        // revisar si hace falta eliminarlo donde está referenciado
     };
 
     @Override
@@ -52,36 +62,24 @@ public class ServicioService implements IServicioService {
     };
 
     @Override
-    public Servicio editServicio(Long idServicio, Servicio servicio) {
+    public Servicio editServicio(Long idServicio, ServicioDTO servicioDTO) {
         Servicio servicioExistente = servicioRepository.findById(idServicio)
                 .orElseThrow(() -> new NoSuchElementFoundException("Servicio no encontrado"));
 
-        // Revisar que no todo se puede modificar, implementar DTOS
-        servicioExistente = servicio;
-        /*
-        servicioExistente.setNombre(servicio.getNombre());
-        servicioExistente.setDescripcion(servicio.getDescripcion());
-        servicioExistente.setLogoURL(servicio.getLogoURL());
-        servicioExistente.setCategoria(servicio.getCategoria());
-        servicioExistente.setCantDiasCiclo(servicio.getCantDiasCiclo());
-        servicioExistente.setCantMaxGrupos(servicio.getCantMaxGrupos());
-        servicioExistente.setCantMaxAlumnos(servicio.getCantMaxAlumnos());
-        servicioExistente.setDiaLimitePago(servicio.getDiaLimitePago());
-        servicioExistente.setDuracionTotalMeses(servicio.getDuracionTotalMeses());
+        servicioExistente = servicioConverter.dtoToEntity(servicioDTO);
+        servicioExistente.setId(idServicio);
 
-         */
-
-        return this.saveServicio(servicioExistente);
+        return servicioRepository.save(servicioExistente);
     };
 
-    public List<Servicio> getAllServiciosDeInstructor(Long idInstructor) {
-        return servicioRepository.findByInstructorId(idInstructor);
+//    public List<Servicio> getAllServiciosDeInstructor(Long idInstructor) {
+//        return servicioRepository.findByInstructorId(idInstructor);
+//    }
+
+    public void agregarGrupoAServicio(Grupo grupo, Long idServicio) {
+        Servicio servicioExistente = this.findServicio(idServicio);
+        servicioExistente.agregarGrupo(grupo);
+        servicioRepository.save(servicioExistente);
     }
 
-    // PAGINAR
-    public Page<Servicio> getAllServicios(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Servicio> listServicios = servicioRepository.findAll(pageable);
-        return listServicios;
-    }
 }

@@ -15,13 +15,15 @@ public class AlumnoService implements IAlumnoService {
     private IAlumnoRepository alumnoRepository;
 
 
+
     @Override
     public List<Alumno> getAllAlumnos() {
         return alumnoRepository.findAll();
     }
 
     @Override
-    public Alumno saveAlumno(Alumno alumno) {
+    public Alumno createAlumno(Alumno alumno) {
+
         return alumnoRepository.save(alumno);
     }
 
