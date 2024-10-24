@@ -1,14 +1,23 @@
 package com.harp.backend.entities.usuario.service;
 
+import com.harp.backend.entities.usuario.dto.AuthLoginRequestDTO;
+import com.harp.backend.entities.usuario.dto.AuthResponseDTO;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.repository.IUsuarioRepository;
+import com.harp.backend.utils.JwtUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +28,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private IUsuarioRepository usuarioRepository;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -43,5 +58,35 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         return new User(usuario.getNombreUsuario(), usuario.getContrasena(), usuario.isEnabled(), usuario.isAccountNotExpired(),
                 usuario.isCredentialNotExpired(), usuario.isNotLocked(), authorityList);
+    }
+
+    public AuthResponseDTO loginUser(@Valid AuthLoginRequestDTO userRequest) {
+
+        // Recuperar el nombre de usuario y contraseña...
+
+        String username = userRequest.username();
+        String password = userRequest.password();
+
+        Authentication authentication = this.authenticate(username, password);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String accessToken = jwtUtils.createToken(authentication);
+        AuthResponseDTO authResponseDTO = new AuthResponseDTO(username, "¡Bienvenido al Sistema!", accessToken, true);
+        return authResponseDTO;
+    }
+
+    private Authentication authenticate(String username, String password) {
+        UserDetails userDetails = this.loadUserByUsername(username);
+
+        if (userDetails == null) {
+            throw new BadCredentialsException("Nombre de usuario o contraseña equivocados...");
+        }
+
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+            throw new BadCredentialsException("Contraseña equivocada...");
+        }
+
+        return new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());
+
     }
 }
