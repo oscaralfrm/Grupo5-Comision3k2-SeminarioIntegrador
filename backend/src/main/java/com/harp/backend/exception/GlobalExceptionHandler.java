@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handlerMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest webRequest) {
-        ErrorResponse errorResponse = new ErrorResponse("El cuerpo no puede esta vacío", webRequest.getDescription(false));
+        ErrorResponse errorResponse = new ErrorResponse("El cuerpo no puede esta vacío o tiene valores incorrectos", webRequest.getDescription(false));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

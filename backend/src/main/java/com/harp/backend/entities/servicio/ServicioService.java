@@ -3,6 +3,7 @@ package com.harp.backend.entities.servicio;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.categoria.CategoriaService;
 import com.harp.backend.entities.grupo.Grupo;
+import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.instructor.InstructorService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import com.harp.backend.exception.SolicitudInvalidaException;
@@ -79,6 +80,12 @@ public class ServicioService implements IServicioService {
     public void agregarGrupoAServicio(Grupo grupo, Long idServicio) {
         Servicio servicioExistente = this.findServicio(idServicio);
         servicioExistente.agregarGrupo(grupo);
+        servicioRepository.save(servicioExistente);
+    }
+
+    public void agregarMontoAServicio(MontoServicio montoServicio, Long idServicio) {
+        Servicio servicioExistente = this.findServicio(idServicio);
+        servicioExistente.agregarMontoAHistorial(montoServicio);
         servicioRepository.save(servicioExistente);
     }
 

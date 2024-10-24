@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/servicios/grupos/horarios")
+@RequestMapping("/api/servicios/grupos")
 public class HorarioController {
     @Autowired
     private IHorarioService horarioService;
 
     // No tiene mucho sentido, solo pedimos horarios de un grupo
-    @GetMapping
+    @GetMapping("/horarios")
     public ResponseEntity<List<Horario>> getAllHorarios() {
         List<Horario> horarios = horarioService.getAllHorarios();
         return ResponseEntity.ok(horarios);
@@ -25,35 +25,35 @@ public class HorarioController {
 
 //    // GET TODOS DE UN GRUPO DE UN SERVICIO
     //implementar con querys
-//    @GetMapping("/{idGrupo}")
+//    @GetMapping("/{idGrupo}/horarios")
 //    public ResponseEntity<List<Horario>> getHorarioDeGrupo(@PathVariable Long idGrupo) {
 //        List<Horario> horarios = horarioService.getHorariosDeGrupo(idGrupo);
 //        return ResponseEntity.ok(horarios);
 //    }
 
     // GET DE UNO EN PARTICULAR
-    @GetMapping("/{idHorario}")
+    @GetMapping("/horarios/{idHorario}")
     public ResponseEntity<Horario> traerUnHorario(@PathVariable @Min(1) Long idHorario) {
         Horario horario = horarioService.findHorario(idHorario);
         return ResponseEntity.status(HttpStatus.OK).body(horario);
     };
 
     // POST
-    @PostMapping("/grupo/{idGrupo}")
+    @PostMapping("/{idGrupo}/horarios")
     public ResponseEntity<Horario> crearHorario(@RequestBody HorarioDTO horarioDTO, @PathVariable Long idGrupo) {
         Horario nuevoHorario = horarioService.createHorario(horarioDTO, idGrupo);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoHorario); // 201 CREATED
     }
 
     // ELIMINAR
-    @DeleteMapping("/{idHorario}")
+    @DeleteMapping("/horarios/{idHorario}")
     public ResponseEntity<Void> eliminarUnHorario(@PathVariable Long idHorario) {
         horarioService.deleteHorario(idHorario);
         return ResponseEntity.noContent().build();
     };
 
     // EDITAR
-    @PutMapping("/{idHorario}")
+    @PutMapping("/horarios/{idHorario}")
     public ResponseEntity<Horario> editarGrupo(@PathVariable @Min(1) Long idHorario, @RequestBody HorarioDTO horarioDTO) {
         Horario horarioEditado = horarioService.editHorario(idHorario, horarioDTO);
         return  ResponseEntity.status(HttpStatus.OK).body(horarioEditado);

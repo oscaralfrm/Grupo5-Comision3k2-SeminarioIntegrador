@@ -14,20 +14,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/servicios/grupos")
+@RequestMapping("/api/servicios")
 public class GrupoController {
     @Autowired
     private IGrupoService grupoService;
 
     // No tiene mucho sentido, siempre buscamos los grupos o de un servicio o de un instructor
-    @GetMapping
+    @GetMapping("/grupos")
     public ResponseEntity<List<Grupo>> getAllGrupos() {
         List<Grupo> grupos = grupoService.getAllGrupos();
         return ResponseEntity.ok(grupos);
     }
 
     // GET DE UNO EN PARTICULAR
-    @GetMapping("/{idGrupo}")
+    @GetMapping("/grupos/{idGrupo}")
     public ResponseEntity<Grupo> traerUnGrupo(@PathVariable @Min(1) Long idGrupo) {
         Grupo grupo = grupoService.findGrupo(idGrupo);
         return ResponseEntity.status(HttpStatus.OK).body(grupo);
@@ -35,14 +35,14 @@ public class GrupoController {
 
     // GET DE UNO POR ID_SERVICIO Y NUM DE GRUPO
     // IMPLEMENTAR LUEGO
-//    @GetMapping("/{idServicio}/{numGrupo}")
+//    @GetMapping("/{idServicio}/grupos/{numGrupo}")
 //    public ResponseEntity<Grupo> traerEsteGrupoDeServicio(@PathVariable @Min(1) Long idGrupo, @PathVariable @Min(1) Integer numGrupo) {
 //        Grupo grupo = grupoService.findEsteGrupoDeServicio(idServicio, idGrupo);
 //        return ResponseEntity.status(HttpStatus.OK).body(grupo);
 //    };
 
     // POST
-    @PostMapping("/servicio/{idServicio}")
+    @PostMapping("/{idServicio}/grupos")
     public ResponseEntity<Grupo> crearGrupo(@PathVariable Long idServicio, @RequestBody @Valid GrupoDTO grupoDTO) {
         // REVISAR: Obtener el id del servicio de manera correcta
         Grupo nuevoGrupo = grupoService.createGrupo(grupoDTO, idServicio);
@@ -51,14 +51,14 @@ public class GrupoController {
     }
 
     // ELIMINAR
-    @DeleteMapping("/{idGrupo}")
+    @DeleteMapping("/grupos/{idGrupo}")
     public ResponseEntity<Void> eliminarUnGrupo(@PathVariable Long idGrupo) {
         grupoService.deleteGrupo(idGrupo);
         return ResponseEntity.noContent().build();
     };
 
     // EDITAR
-    @PutMapping("/{idGrupo}")
+    @PutMapping("/grupos/{idGrupo}")
     public ResponseEntity<Grupo> editarGrupo(@PathVariable @Min(1) Long idGrupo, @RequestBody GrupoDTO grupoDTO) {
         Grupo grupoEditado = grupoService.editGrupo(idGrupo, grupoDTO);
         return  ResponseEntity.status(HttpStatus.OK).body(grupoEditado);

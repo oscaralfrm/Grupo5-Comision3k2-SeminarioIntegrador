@@ -15,7 +15,7 @@ public class CategoriaController {
     private ICategoriaService categoriaService;
 
     // POST
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Categoria> crearCategoria(@RequestBody Categoria categoria) {
         Categoria nuevaCategoria = categoriaService.saveCategoria(categoria);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaCategoria); // 201 CREATED

@@ -4,7 +4,8 @@ package com.harp.backend.entities.servicio;
 //import com.harp.backend.entities.historialMontoCuota.HistorialMonto;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.grupo.Grupo;
-import com.harp.backend.entities.instructor.Instructor;
+import com.harp.backend.entities.historialMontoCuota.MontoServicio;
+import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +13,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -73,6 +73,10 @@ public class Servicio {
     @Column(name = "dia_limite_pago")
     private int diaLimitePago;
 
+    @OneToMany
+    @JoinColumn(name = "servicio_id")
+    private Set<MontoServicio> historialMontos = new HashSet<>();
+
     //private List<FrecuenciaPago> FrecuenciaPago;
 
 
@@ -93,8 +97,21 @@ public class Servicio {
 
 
     public void agregarGrupo(Grupo grupo) {
-        System.out.println("grupo" + grupo);
         this.grupos.add(grupo);
     }
+
+    public void agregarMontoAHistorial(MontoServicio monto) {
+        this.historialMontos.add(monto);
+    }
+
+    public MontoServicio buscarMontoActual() {
+        for (MontoServicio monto : historialMontos) {
+            if (monto.esMontoActual()) {
+                return monto;
+            }
+        }
+        throw new NoSuchElementFoundException("Monto actual no encontrado");
+     }
+
 
 }

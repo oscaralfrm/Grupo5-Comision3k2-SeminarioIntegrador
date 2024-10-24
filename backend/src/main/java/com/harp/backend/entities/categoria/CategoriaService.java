@@ -50,7 +50,4 @@ public class CategoriaService implements ICategoriaService {
         categoriaExistente.setNombre(categoria.getNombre());
         return this.saveCategoria(categoriaExistente);
     };
-
-
-
 }
