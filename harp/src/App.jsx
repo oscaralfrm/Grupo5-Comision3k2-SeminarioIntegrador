@@ -13,6 +13,9 @@ import { LoginForm } from "./Components/LoginForm/LoginForm";
 import { RegisterFormInstructor } from "./Components/RegisterChooser/RegisterFormInstructor/RegisterFormInstructor";
 import InstructorPrincipal from "./Components/InstructorPrincipal/InstructorPrincipal";
 import AlumnoPrincipal from "./Components/AlumnoPrincipal/AlumnoPrincipal";
+import CursosDisponibles from "./Components/AlumnoPrincipal/Cursos/Cursos";
+import DetalleCurso from "./Components/AlumnoPrincipal/Cursos/DetalleCurso";
+
 
 function App() {
   return (
@@ -44,6 +47,8 @@ function App() {
             element={<InstructorPrincipal />}
           />
           <Route path="/alumno/:idAlumno/*" element={<AlumnoPrincipal />} />
+          <Route path="/alumno/:idAlumno/cursos-disponibles" element={<CursosDisponibles />} />
+          <Route path="/alumno/:idAlumno/cursos/:idCurso" element={<DetalleCurso />} /> 
         </Routes>
       </BrowserRouter>
       <Footer />
