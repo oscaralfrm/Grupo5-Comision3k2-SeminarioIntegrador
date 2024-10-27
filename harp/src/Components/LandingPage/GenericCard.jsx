@@ -5,7 +5,7 @@ export default function GenericCard({ title, description, route }) {
     <div className="col-lg-4 col-md-8 col-sm-12 card-spacing ">
       <div
         className="card custom-card rounded  d-flex flex-column justify-content-center"
-        style={{ width: "23em"}} // Ajuste de ancho
+        style={{ width: "20em"}} // Ajuste de ancho
       >
         <div className="card-body d-flex flex-column">
           <h5 className="card-title" style={{ color: "white" }}>

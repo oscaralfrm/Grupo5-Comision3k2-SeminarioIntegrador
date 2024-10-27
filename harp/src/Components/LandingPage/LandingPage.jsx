@@ -1,12 +1,14 @@
 import React from "react";
-import CardService from "./CardService"; // Asegúrate de que la importación sea correcta
+import Navbar from "./NavbarLandingPage/NavbarLandingPage";
 import "./LandingPage.css";
 import CardInfo from "./CardInfo";
+
 const LandingPage = () => {
   return (
-    <body>
-      <CardInfo />
-    </body> 
+    <div>
+      <Navbar />
+      <div><CardInfo /></div>
+    </div> 
   );
 };
 

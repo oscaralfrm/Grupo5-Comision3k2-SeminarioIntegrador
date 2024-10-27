@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
-import LogoHarp from '../../assets/LogoHarp.png';
+import LogoHarp from '../../../assets/LogoHarp.png';
 
 function Navbar() {
   return (
     <>
-      <nav className="navbar navbar-expand-lg" style={{ width: '100vw' }}>
+      <nav className="navbar navbar-expand-lg fixed-top" style={{ width: '100vw' }}>
         <div className="container-fluid ms-4">
           <Link className="navbar-brand" to="/" style={{ color: 'white' }}>
             <img src={LogoHarp} alt="Logo" />
@@ -25,7 +25,7 @@ function Navbar() {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
-                <Link className="nav-link ms-3" to="/instructor/1" style={{ color: 'white', fontSize: "1.5rem" }}>
+                <Link className="nav-link ms-3" to="/instructor/1/general" style={{ color: 'white', fontSize: "1.5rem" }}>
                   <strong>Servicios</strong>
                 </Link>
               </li>

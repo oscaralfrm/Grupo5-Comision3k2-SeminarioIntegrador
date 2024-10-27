@@ -1,9 +1,7 @@
-// import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 // Imports...
-import Navbar from "./Components/Navbar/Navbar";
 import LandingPage from "./Components/LandingPage/LandingPage";
 import SeleccionarDeCategorias from "./Components/Servicios/SeleccionDeCategorias";
 import { RegisterFormChooser } from "./Components/RegisterChooser/RegisterChooser";
@@ -15,40 +13,25 @@ import InstructorPrincipal from "./Components/InstructorPrincipal/InstructorPrin
 import AlumnoPrincipal from "./Components/AlumnoPrincipal/AlumnoPrincipal";
 
 function App() {
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="*"
-            element={
-              <>
-                <Navbar />
-                <div> </div>
-              </>
-            }
-          />
-        </Routes>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/registrarse" element={<RegisterFormChooser />} />
-          <Route path="/servicios" element={<SeleccionarDeCategorias />} />
-          <Route path="/registrarse/alumno" element={<RegisterFormStudent />} />
-          <Route
-            path="/registrarse/instructor"
-            element={<RegisterFormInstructor />}
-          />
-          <Route path="/login" element={<LoginForm />} />
-          <Route
-            path="/instructor/:idInstructor/*"
-            element={<InstructorPrincipal />}
-          />
-          <Route path="/alumno/:idAlumno/*" element={<AlumnoPrincipal />} />
-        </Routes>
-      </BrowserRouter>
-      <Footer />
-    </>
-  );
+    return (
+        <div style={{ display: 's-flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <BrowserRouter>
+                <div style={{ flex: 1}}> {/* Ajusta este padding según sea necesario */}
+                    <Routes>
+                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/registrarse" element={<RegisterFormChooser />} />
+                        <Route path="/servicios" element={<SeleccionarDeCategorias />} />
+                        <Route path="/registrarse/alumno" element={<RegisterFormStudent />} />
+                        <Route path="/registrarse/instructor" element={<RegisterFormInstructor />} />
+                        <Route path="/login" element={<LoginForm />} />
+                        <Route path="/instructor/:idInstructor/*" element={<InstructorPrincipal />} />
+                        <Route path="/alumno/:idAlumno/*" element={<AlumnoPrincipal />} />
+                    </Routes>
+                </div>
+                <Footer />
+            </BrowserRouter>
+        </div>
+    );
 }
 
 export default App;
