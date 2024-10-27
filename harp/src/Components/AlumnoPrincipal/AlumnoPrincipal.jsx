@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import Sidebar from './SideBar/Sidebar';
-import GeneralStudent from './Dashboard/General'; 
+import GeneralStudent from './Dashboard/General';
 import Pagos from './Dashboard/Pagos';
 import Asistencias from './Dashboard/Asistencias';
 import Reseñas from './Dashboard/Reseñas';
 import MisCursos from './Dashboard/MisCursos';
+import DetalleCurso from './Cursos/DetalleCurso'; // Asegúrate de que esto esté presente
 
 const AlumnoPrincipal = () => {
     const { idAlumno } = useParams(); 
@@ -13,13 +14,15 @@ const AlumnoPrincipal = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Cambiar la ruta predeterminada a "general" cuando se carga el componente
-        if (!selectedService) {
-            navigate(`/alumno/${idAlumno}/general`);
+        if (!idAlumno) {
+            navigate('/error'); // Redirige si no hay idAlumno
+        } else {
+            if (!selectedService) {
+                navigate(`/alumno/${idAlumno}/general`);
+            }
         }
     }, [selectedService, idAlumno, navigate]);
 
-    // Método para cambiar la sección y navegar
     const handleOpcionChange = (opcion) => {
         setSelectedService(opcion); 
         navigate(`/alumno/${idAlumno}/${opcion.toLowerCase()}`);
@@ -38,6 +41,7 @@ const AlumnoPrincipal = () => {
                     <Route path="asistencias" element={<Asistencias />} />
                     <Route path="reseñas" element={<Reseñas />} />
                     <Route path="mis-cursos" element={<MisCursos />} />
+                    <Route path="mis-cursos/:idCurso" element={<DetalleCurso />} /> {/* Ruta para el detalle del curso */}
                 </Routes>
             </div>
         </div>
@@ -45,3 +49,4 @@ const AlumnoPrincipal = () => {
 };
 
 export default AlumnoPrincipal;
+
