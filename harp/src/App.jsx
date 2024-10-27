@@ -16,7 +16,7 @@ import DetalleCurso from "./Components/AlumnoPrincipal/Cursos/DetalleCurso";
 
 
 function App() {
-<<<<<<< HEAD
+
     return (
         <div style={{ display: 's-flex', flexDirection: 'column', minHeight: '100vh' }}>
             <BrowserRouter>
@@ -36,44 +36,6 @@ function App() {
             </BrowserRouter>
         </div>
     );
-=======
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="*"
-            element={
-              <>
-                <Navbar />
-                <div> </div>
-              </>
-            }
-          />
-        </Routes>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/registrarse" element={<RegisterFormChooser />} />
-          <Route path="/servicios" element={<SeleccionarDeCategorias />} />
-          <Route path="/registrarse/alumno" element={<RegisterFormStudent />} />
-          <Route
-            path="/registrarse/instructor"
-            element={<RegisterFormInstructor />}
-          />
-          <Route path="/login" element={<LoginForm />} />
-          <Route
-            path="/instructor/:idInstructor/*"
-            element={<InstructorPrincipal />}
-          />
-          <Route path="/alumno/:idAlumno/*" element={<AlumnoPrincipal />} />
-          <Route path="/alumno/:idAlumno/cursos-disponibles" element={<CursosDisponibles />} />
-          <Route path="/alumno/:idAlumno/cursos/:idCurso" element={<DetalleCurso />} /> 
-        </Routes>
-      </BrowserRouter>
-      <Footer />
-    </>
-  );
->>>>>>> refs/remotes/origin/ActualizacionFrontOscar-6-10-2024
 }
 
 export default App;
