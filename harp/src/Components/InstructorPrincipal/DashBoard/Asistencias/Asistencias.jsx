@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import GroupCard from "./CardGroup"; // Asegúrate de importar el componente GroupCard
 import Sidebar from "../../SideBar/SideBar";
 
-const Asistencias = ({ service, isSidebarVisible }) => {
+const Asistencias = ({ service }) => {
   const [groups, setGroups] = useState([
     {
       id: 1,
@@ -89,22 +89,6 @@ const Asistencias = ({ service, isSidebarVisible }) => {
   );
 
   return (
-    <div className="d-flex" style={{ height: '100%'}}>
-      {isSidebarVisible && (
-        <div
-          style={{
-            width: "15vw",
-            height: "100vh",
-            backgroundColor: "#f8f9fa",
-            position: "absolute",
-            zIndex: 2,
-            marginLeft: "0.8vw",
-            marginTop: "2vw",
-          }}
-        >
-          <Sidebar />
-        </div>
-      )}
       <div
         className="flex-grow-1 d-flex flex-column align-items-center"
         // Ajuste del padding para espacio superior e inferior
@@ -202,7 +186,6 @@ const Asistencias = ({ service, isSidebarVisible }) => {
           )}
         </div>
       </div>
-    </div>
   );
 };
 

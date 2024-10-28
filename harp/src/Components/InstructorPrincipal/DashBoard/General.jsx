@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Sidebar from '../SideBar/SideBar'; 
+import React, { useState, useEffect } from 'react'; 
 
-const General = ({ isSidebarVisible }) => {
+const General = () => {
   const [income, setIncome] = useState(100000);
   const [pending, setPending] = useState(50000);
   const [expected, setExpected] = useState(0);
@@ -11,25 +10,6 @@ const General = ({ isSidebarVisible }) => {
   }, [income, pending]);
 
   return (
-    <div className="d-flex" style={{ height: '100vh', position: 'relative' }}>
-      {/* Sidebar */}
-      {isSidebarVisible && (
-        <div
-          style={{
-            width: '15vw',
-            height: '100vh',
-            backgroundColor: '#f8f9fa',
-            position: 'absolute', // Sidebar sobre el contenido, no lo mueve
-            zIndex: 2, // Asegura que el sidebar quede sobre el contenido
-            marginLeft:'0.8vw',
-            marginTop: '2vw'
-          }}
-        >
-          <Sidebar />
-        </div>
-      )}
-
-      {/* Contenido principal */}
       <div
         className="flex-grow-1"
         style={{
@@ -71,7 +51,6 @@ const General = ({ isSidebarVisible }) => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

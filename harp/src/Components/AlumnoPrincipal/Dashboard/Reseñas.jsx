@@ -9,7 +9,7 @@ const Reseñas = () => {
   ];
 
   return (
-    <div className="container mt-4">
+    <div className="container" style={{marginTop:'8vw'}}>
       <h2 className="text-center">Reseñas</h2>
       <div className="row mt-4">
         {reseñas.length > 0 ? (

@@ -10,7 +10,7 @@ const Asistencias = () => {
   ];
 
   return (
-    <div className="container mt-4">
+    <div className="container"style={{marginTop:'8vw'}}>
       <h2 className="text-center">Asistencias</h2>
       <div className="row mt-4">
         {asistencias.map((asistencia, index) => (

@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button";
 
 const General = () => {
   const navigate = useNavigate();
-  
+
   // Simulación de datos
   const [paid, setPaid] = useState(20000);
   const [pending, setPending] = useState(5000);
@@ -32,7 +32,7 @@ const General = () => {
   }, [paid, pending]);
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid" style={{ marginTop: '8vw', overflowX: 'hidden' }}>
       {/* Barra de Búsqueda y Botón Descubrir Cursos */}
       <div className="row mb-4">
         <div className="col-10">
@@ -59,7 +59,7 @@ const General = () => {
           <h5 className="mb-3" style={{ color: "#240046" }}>
             Mis Cursos
           </h5>
-          <Carousel>
+          <Carousel controls={false} indicators={false}>
             {courses.map((course, index) => (
               <Carousel.Item key={index}>
                 <div

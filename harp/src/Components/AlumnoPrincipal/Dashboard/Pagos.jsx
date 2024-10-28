@@ -8,8 +8,8 @@ const Pagos = () => {
   ];
 
   return (
-    <div className="container mt-4">
-      <h2 className="text-center">Pagos</h2>
+    <div className="container" style={{marginTop:'8vw', width: '100%'}}>
+      <div><h1 className="text-center">Pagos</h1></div>
       <div className="row mt-4">
         {pagos.length > 0 ? (
           pagos.map((pago) => (

@@ -32,22 +32,6 @@ const Alumnos = ({ service, isSidebarVisible }) => {
   };
 
   return (
-    <div className="d-flex">
-      {/* Sidebar */}
-      {isSidebarVisible && (
-        <div
-          style={{
-            width: "15vw",
-            height: "100vh",
-            position: "absolute", // Sidebar sobre el contenido, no lo mueve
-            zIndex: 2, // Asegura que el sidebar quede sobre el contenido
-            marginLeft: "0.8vw",
-            marginTop: "2vw",
-          }}
-        >
-          <Sidebar />
-        </div>
-      )}
       <div
         className="container align-items-center"
         style={{
@@ -92,7 +76,6 @@ const Alumnos = ({ service, isSidebarVisible }) => {
           ))}
         </div>
       </div>
-    </div>
   );
 };
 

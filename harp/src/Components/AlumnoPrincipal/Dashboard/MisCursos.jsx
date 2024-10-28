@@ -1,11 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Este componente mostrará la lista de cursos en los que está inscrita la estudiante
 const MisCursos = () => {
   const navigate = useNavigate();
 
-  // Lista de cursos en los que está inscrita (esto debería venir del backend idealmente)
+  // Lista de cursos en los que está inscrita la estudiante
   const cursosInscritos = [
     {
       id: 1,
@@ -36,45 +35,41 @@ const MisCursos = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="text-center">Mis Cursos</h2>
-      <div className="row mt-4">
-        {cursosInscritos.length > 0 ? (
-          cursosInscritos.map((curso) => (
-            <div className="col-md-4 mb-4" key={curso.id}>
-              <div 
-                className="card h-100" 
-                onClick={() => handleCursoClick(curso.id)}
-              >
-                <div className="card-body">
-                  <h5 className="card-title">{curso.nombre}</h5>
-                  <h6 className="card-subtitle mb-2 text-muted">Instructor: {curso.instructor}</h6>
-                  <p className="card-text"><strong>Progreso:</strong> {curso.progreso}</p>
-                  <p className="card-text">{curso.descripcion}</p>
+    <div className="container-fluid" style={{marginTop:'8vw'}}>
+      <div className="row">
+        <div className="col-md-12">
+          <h2 className="text-center">Mis Cursos</h2>
+          <div className="row mt-4">
+            {cursosInscritos.length > 0 ? (
+              cursosInscritos.map((curso) => (
+                <div className="col-md-4 mb-4" key={curso.id}>
+                  <div className="card h-100" onClick={() => handleCursoClick(curso.id)}>
+                    <div className="card-body">
+                      <h5 className="card-title">{curso.nombre}</h5>
+                      <h6 className="card-subtitle mb-2 text-muted">Instructor: {curso.instructor}</h6>
+                      <p className="card-text"><strong>Progreso:</strong> {curso.progreso}</p>
+                      <p className="card-text">{curso.descripcion}</p>
+                    </div>
+                    <div className="card-footer text-center">
+                      <button className="btn btn-primary" onClick={() => handleCursoClick(curso.id)}>
+                        Ir
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="card-footer text-center"> {/* Centrar el botón */}
-                  <button 
-                    className="btn btn-primary"
-                    onClick={() => handleCursoClick(curso.id)}
-                  >
-                    Ir
-                  </button>
+              ))
+            ) : (
+              <div className="col-12 text-center">
+                <div className="alert alert-warning" role="alert">
+                  No estás inscrita en ningún curso.
                 </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <div className="col-12 text-center">
-            <div className="alert alert-warning" role="alert">
-              No estás inscrita en ningún curso.
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default MisCursos;
-
-
