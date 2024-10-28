@@ -8,6 +8,9 @@ import Button from "react-bootstrap/Button";
 const General = () => {
   const navigate = useNavigate();
 
+  // Simulación de ID de alumno
+  const idAlumno = 1; // Aquí defines el ID del alumno
+
   // Simulación de datos
   const [paid, setPaid] = useState(20000);
   const [pending, setPending] = useState(5000);
@@ -45,7 +48,7 @@ const General = () => {
         <div className="col-2 d-flex justify-content-end">
           <Button 
             variant="primary" 
-            onClick={() => navigate(`/alumno/1/cursos-disponibles`)}
+            onClick={() => navigate(`/alumno/${idAlumno}/cursos`)}
           >
             Descubrir Cursos
           </Button>

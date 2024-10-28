@@ -13,6 +13,7 @@ import InstructorPrincipal from "./Components/InstructorPrincipal/InstructorPrin
 import AlumnoPrincipal from "./Components/AlumnoPrincipal/AlumnoPrincipal";
 import CursosDisponibles from "./Components/AlumnoPrincipal/Cursos/Cursos";
 import DetalleCurso from "./Components/AlumnoPrincipal/Cursos/DetalleCurso";
+import CursoEspecifico from "./Components/AlumnoPrincipal/Cursos/CursoEspecifico";
 
 
 function App() {
@@ -30,6 +31,9 @@ function App() {
                         <Route path="/login" element={<LoginForm />} />
                         <Route path="/instructor/:idInstructor/*" element={<InstructorPrincipal />} />
                         <Route path="/alumno/:idAlumno/*" element={<AlumnoPrincipal />} />
+                        <Route path="/alumno/:idAlumno/cursos" element={<CursosDisponibles />} />
+                        <Route path="/alumno/:idAlumno/mis-cursos/:IdCurso" element={<CursoEspecifico />} />
+                        <Route path="/alumno/:idAlumno/cursos/:IdCurso" element={<DetalleCurso />} />
                     </Routes>
                 </div>
                 <Footer />

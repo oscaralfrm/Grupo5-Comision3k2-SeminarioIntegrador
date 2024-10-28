@@ -6,11 +6,12 @@ import Pagos from './Dashboard/Pagos';
 import Asistencias from './Dashboard/Asistencias';
 import Reseñas from './Dashboard/Reseñas';
 import MisCursos from './Dashboard/MisCursos';
-import DetalleCurso from './Cursos/DetalleCurso'; // Asegúrate de que esto esté presente
+import DetalleCurso from './Cursos/DetalleCurso';
 import NavbarAlumno from './NavbarAlumno/Navbar';
 
 const AlumnoPrincipal = () => {
-    const { idAlumno } = useParams(); 
+    const { idAlumno: paramIdAlumno } = useParams(); 
+    const idAlumno = paramIdAlumno || '1'; 
     const [selectedService, setSelectedService] = useState('general'); 
     const [isSidebarVisible, setIsSidebarVisible] = useState(true);
     const navigate = useNavigate();
@@ -24,9 +25,10 @@ const AlumnoPrincipal = () => {
             }
         }
     }, [selectedService, idAlumno, navigate]);
+
     const toggleSidebar = () => {
         setIsSidebarVisible((prevState) => !prevState);
-      };
+    };
 
     const handleOpcionChange = (opcion) => {
         setSelectedService(opcion); 
@@ -37,24 +39,25 @@ const AlumnoPrincipal = () => {
         <div className="d-flex" style={{ overflow: 'hidden' }}>
             <div><NavbarAlumno toggleSidebar={toggleSidebar}/></div>
             <div className="d-flex" style={{ height: '100vh', position: 'relative' }}>
-      {/* Sidebar */}
-      {isSidebarVisible && (
-        <div
-          style={{
-            width: '15vw',
-            height: '100vh',
-            backgroundColor: !isSidebarVisible? '#f8f9fa':'transparent',
-            position: 'absolute', // Sidebar sobre el contenido, no lo mueve
-            zIndex: 2, // Asegura que el sidebar quede sobre el contenido
-            marginLeft:'0.8vw',
-            marginTop: '2vw'
-          }}
-        >
-          <Sidebar 
-            selectedService={selectedService}
-            isSidebarVisible ={isSidebarVisible}/>
-        </div>
-      )}</div>
+                {isSidebarVisible && (
+                    <div
+                        style={{
+                            width: '15vw',
+                            height: '100vh',
+                            backgroundColor: !isSidebarVisible ? '#f8f9fa' : 'transparent',
+                            marginLeft: '0.8vw',
+                            marginTop: '2vw'
+                        }}
+                    >
+                        <Sidebar 
+                            onOpcionChange={handleOpcionChange} 
+                            idAlumno={idAlumno}
+                            selectedService={selectedService}
+                            isSidebarVisible={isSidebarVisible}
+                        />
+                    </div>
+                )}
+            </div>
             <div className="flex-grow-1" style={{ padding: '1vw', marginLeft: "2vw", overflowY: 'auto' }}>
                 <Routes>
                     <Route path="general" element={<GeneralStudent />} />
@@ -62,7 +65,7 @@ const AlumnoPrincipal = () => {
                     <Route path="asistencias" element={<Asistencias />} />
                     <Route path="reseñas" element={<Reseñas />} />
                     <Route path="mis-cursos" element={<MisCursos />} />
-                    <Route path="mis-cursos/:idCurso" element={<DetalleCurso />} /> {/* Ruta para el detalle del curso */}
+                    <Route path="mis-cursos/:idCurso" element={<DetalleCurso />} />
                 </Routes>
             </div>
         </div>
@@ -70,4 +73,5 @@ const AlumnoPrincipal = () => {
 };
 
 export default AlumnoPrincipal;
+
 
