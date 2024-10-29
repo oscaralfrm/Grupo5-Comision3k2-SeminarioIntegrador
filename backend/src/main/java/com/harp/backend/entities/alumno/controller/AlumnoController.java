@@ -2,7 +2,9 @@ package com.harp.backend.entities.alumno.controller;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.IAlumnoService;
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,19 +19,28 @@ public class AlumnoController {
     private IAlumnoService alumnoService;
 
     @GetMapping
-    public ResponseEntity<List> getAllAlumnos() {
-        List alumnos = alumnoService.getAllAlumnos();
+    public ResponseEntity<List<Alumno>> getAllAlumnos() {
+        List<Alumno> alumnos = alumnoService.getAllAlumnos();
         return ResponseEntity.ok(alumnos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getAlumnoById(@PathVariable Long id) {
-        Optional alumno = alumnoService.findAlumno(id);
-        return (ResponseEntity) alumno.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Alumno> getAlumnoById(@PathVariable Long id) {
+        Alumno alumno = alumnoService.findAlumno(id);
+        return ResponseEntity.status(HttpStatus.OK).body(alumno);
     }
 
+    // GET TODAS LAS INSCRIPCIONES
+    //implementar filtros por estado
+    @GetMapping("{idAlumno}/inscripciones")
+    public ResponseEntity<List<Inscripcion>> findInscripcionesDeAlumno(@PathVariable Long idAlumno) {
+        List<Inscripcion> inscripciones = alumnoService.findInscripcionesDeAlumno(idAlumno);
+        return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
+    }
+
+
     @PostMapping
-    public ResponseEntity saveAlumno(@RequestBody Alumno alumno) {
+    public ResponseEntity<Alumno> saveAlumno(@RequestBody Alumno alumno) {
         Alumno nuevoAlumno = alumnoService.createAlumno(alumno);
         return ResponseEntity.ok(nuevoAlumno);
     }

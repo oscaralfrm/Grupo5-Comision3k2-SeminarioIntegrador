@@ -1,6 +1,7 @@
 package com.harp.backend.entities.instructor;
 
 import com.harp.backend.entities.categoria.Categoria;
+import com.harp.backend.entities.servicio.Servicio;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,14 @@ public class InstructorController {
         Instructor instructor = instructorService.findInstructor(id);
         return ResponseEntity.ok(instructor);
     }
+
+    // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
+    @GetMapping("/{idInstructor}/servicios")
+    public ResponseEntity<List<Servicio>> traerServiciosDeInstructor(@PathVariable Long idInstructor) {
+        List<Servicio> servicios = instructorService.findServiciosDeInstructor(idInstructor);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
 
     @PostMapping
     public ResponseEntity<Instructor> saveInstructor(@RequestBody InstructorDTO instructorDTO) {

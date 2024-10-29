@@ -44,11 +44,26 @@ public class Grupo {
     )
     private Set<Alumno> alumnos = new HashSet<>();
 
+    // private Set<Clase> clases;
+
     public void agregarAlumno(Alumno alumno) {
         alumnos.add(alumno);
     }
 
+    public void eliminarAlumno(Alumno alumno) {
+        alumnos.remove(alumno);
+    }
+
     public void agregarHorario(Horario horario) {
         horarios.add(horario);
+    }
+
+    public boolean tieneAEsteAlumno(Alumno alumno) {
+        return alumnos.contains(alumno);
+    }
+
+    public boolean tieneEsteNumero(Integer numero) {
+        //Revisar si es == o equals
+        return (this.numero == numero);
     }
 }

@@ -24,7 +24,7 @@ public class MontoServicioController {
     };
     */
 
-    // GET DE TODOS
+    // GET DE TODOS (no tiene mucho sentido, siempre buscamos por servicio)
     @GetMapping("/historialesMontos")
     public ResponseEntity<List<MontoServicio>> traerTodosHistorialesMontos() {
         List<MontoServicio> historialMontos = montoServicioService.getAllHistorialesMontos();

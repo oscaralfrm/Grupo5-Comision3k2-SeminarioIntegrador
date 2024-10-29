@@ -1,9 +1,7 @@
 package com.harp.backend.entities.historialMontoCuota;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -19,16 +17,15 @@ public class MontoServicio {
      @GeneratedValue(strategy = GenerationType.IDENTITY)
      private Long id;
 
-//     @ManyToOne
-//     @JoinColumn(name = "servicio_id", referencedColumnName = "id")
-//     private Servicio servicio;
-
+     @Setter(AccessLevel.NONE)
      private double monto;
 
      @Column(name = "fecha_inicio")
+     @Setter(AccessLevel.NONE)
      private LocalDate fechaInicio;
 
      @Column(name = "fecha_fin")
+     @Setter(AccessLevel.NONE)
      private LocalDate fechaFin;
 
      public boolean esMontoActual() {
@@ -59,6 +56,5 @@ public class MontoServicio {
                throw new UnsupportedOperationException("El monto ya no puede ser modificado");
           }
           this.monto = monto;
-
      }
 }

@@ -40,6 +40,8 @@ public class HorarioService implements IHorarioService {
 
     @Override
     public void deleteHorario(Long idHorario){
+        //Se valida que exista
+        this.findHorario(idHorario);
         horarioRepository.deleteById(idHorario);
     };
 

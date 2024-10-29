@@ -1,6 +1,7 @@
 package com.harp.backend.entities.servicio;
 
 
+import com.harp.backend.entities.grupo.Grupo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
@@ -36,12 +37,12 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(servicio);
     };
 
-//    // GET DE TODOS DE UN INSTRUCTOR
-//    @GetMapping("/instructor/{idInstructor}")
-//    public ResponseEntity<List<Servicio>> traerServiciosDeInstructor(@PathVariable Long idInstructor) {
-//        List<Servicio> servicios = servicioService.getAllServiciosDeInstructor(idInstructor);
-//        return ResponseEntity.status(HttpStatus.OK).body(servicios);
-//    };
+    // GET TODOS LOS GRUPOS DE UN SERVICIO
+    @GetMapping("/{idServicio}/grupos")
+    public ResponseEntity<List<Grupo>> traerGruposDeServicio(@PathVariable @Min(1) Long idServicio) {
+        List<Grupo> grupos = servicioService.findGruposDeServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(grupos);
+    };
 
     // POST
     @PostMapping
@@ -67,6 +68,13 @@ public class ServicioController {
         Servicio servicioEditado = servicioService.editServicio(idServicio, servicioDTO);
         return  ResponseEntity.status(HttpStatus.OK).body(servicioEditado);
     }
+
+    @PutMapping("/{idServicio}/generar-codigo-inscripcion")
+    public ResponseEntity<String> generarCodigoInscripcion(@PathVariable @Min(1) Long idServicio) {
+        String codigoInscripcion = servicioService.generarCodigoInscripcion(idServicio);
+        return  ResponseEntity.status(HttpStatus.OK).body(codigoInscripcion);
+    }
+
 
 //    // EJ. /filtros?nombre=Deportes (sin " ")
 //    @GetMapping("/{idServicio}/filter")

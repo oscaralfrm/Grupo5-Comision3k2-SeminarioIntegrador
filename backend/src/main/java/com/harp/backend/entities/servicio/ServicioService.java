@@ -1,8 +1,11 @@
 package com.harp.backend.entities.servicio;
 
+import com.harp.backend.entities.alumno.model.Alumno;
+import com.harp.backend.entities.alumno.service.AlumnoService;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.categoria.CategoriaService;
 import com.harp.backend.entities.grupo.Grupo;
+import com.harp.backend.entities.grupo.GrupoService;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.instructor.InstructorService;
 import com.harp.backend.exception.NoSuchElementFoundException;
@@ -14,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ServicioService implements IServicioService {
@@ -28,6 +33,9 @@ public class ServicioService implements IServicioService {
 
     @Autowired
     private InstructorService instructorService;
+
+    @Autowired
+    private AlumnoService alumnoService;
 
     // PAGINADO
     public Page<Servicio> getAllServicios(Integer page, Integer size) {
@@ -62,16 +70,35 @@ public class ServicioService implements IServicioService {
                 .orElseThrow(() -> new NoSuchElementFoundException("Servicio no encontrado"));
     };
 
+
+    public List<Grupo> findGruposDeServicio(Long idServicio) {
+        Servicio servicioExistente = this.findServicio(idServicio);
+        return servicioExistente.getGrupos().stream().toList();
+    }
+
+    public Grupo findGrupoDeServicioByNum(Long idServicio, Integer numGrupo) {
+        return this.findGruposDeServicio(idServicio)
+                .stream()
+                .filter(g -> g.tieneEsteNumero(numGrupo))
+                .findFirst().orElseThrow(() -> new NoSuchElementFoundException("Grupo no encontrado"));
+    }
+
     @Override
     public Servicio editServicio(Long idServicio, ServicioDTO servicioDTO) {
-        Servicio servicioExistente = servicioRepository.findById(idServicio)
-                .orElseThrow(() -> new NoSuchElementFoundException("Servicio no encontrado"));
+        Servicio servicioExistente = findServicio(idServicio);
 
         servicioExistente = servicioConverter.dtoToEntity(servicioDTO);
         servicioExistente.setId(idServicio);
 
         return servicioRepository.save(servicioExistente);
     };
+
+    public String generarCodigoInscripcion(Long idServicio) {
+        Servicio servicioExistente = findServicio(idServicio);
+        String codigoInscripcion = servicioExistente.generarCodigoInscripcion();
+        servicioRepository.save(servicioExistente);
+        return codigoInscripcion;
+    }
 
 //    public List<Servicio> getAllServiciosDeInstructor(Long idInstructor) {
 //        return servicioRepository.findByInstructorId(idInstructor);

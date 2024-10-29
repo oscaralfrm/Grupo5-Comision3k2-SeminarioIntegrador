@@ -1,6 +1,7 @@
 package com.harp.backend.entities.grupo;
 
 
+import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioDTO;
@@ -33,13 +34,27 @@ public class GrupoController {
         return ResponseEntity.status(HttpStatus.OK).body(grupo);
     };
 
+    // GET GRUPOS DE UN ALUMNO
+    @GetMapping("/alumnos/{idAlumno}/grupos")
+    public ResponseEntity<List<Grupo>> findGruposDeAlumno(@PathVariable @Min(1) Long idAlumno) {
+        List<Grupo> grupos = grupoService.findGruposDeAlumno(idAlumno);
+        return ResponseEntity.status(HttpStatus.OK).body(grupos);
+    };
+
     // GET DE UNO POR ID_SERVICIO Y NUM DE GRUPO
     // IMPLEMENTAR LUEGO
 //    @GetMapping("/{idServicio}/grupos/{numGrupo}")
-//    public ResponseEntity<Grupo> traerEsteGrupoDeServicio(@PathVariable @Min(1) Long idGrupo, @PathVariable @Min(1) Integer numGrupo) {
-//        Grupo grupo = grupoService.findEsteGrupoDeServicio(idServicio, idGrupo);
+//    public ResponseEntity<Grupo> traerEsteGrupoDeServicio(@PathVariable @Min(1) Long idServicio, @PathVariable @Min(1) Integer numGrupo) {
+//        Grupo grupo = grupoService.findEsteGrupoDeServicio(idServicio, numGrupo);
 //        return ResponseEntity.status(HttpStatus.OK).body(grupo);
 //    };
+
+    // GET HORARIOS DE UN GRUPO
+    @GetMapping("/{idGrupo}/horarios")
+    public ResponseEntity<List<Horario>> findHorariosDeGrupo(@PathVariable Long idGrupo) {
+        List<Horario> horarios = grupoService.findHorariosDeGrupo(idGrupo);
+        return ResponseEntity.ok(horarios);
+    }
 
     // POST
     @PostMapping("/{idServicio}/grupos")
@@ -62,6 +77,21 @@ public class GrupoController {
     public ResponseEntity<Grupo> editarGrupo(@PathVariable @Min(1) Long idGrupo, @RequestBody GrupoDTO grupoDTO) {
         Grupo grupoEditado = grupoService.editGrupo(idGrupo, grupoDTO);
         return  ResponseEntity.status(HttpStatus.OK).body(grupoEditado);
+    }
+
+    // AGREGAR UN ALUMNO A UN GRUPO DE UN SERVICIO
+    @PutMapping("/{idServicio}/grupos/{idGrupo}/agregar-alumno/{idAlumno}")
+    public ResponseEntity<String> agregarAlumnoAGrupo(@PathVariable Long idServicio, @PathVariable @Min(1) Integer numGrupo, @PathVariable Long idAlumno) {
+        //Revisar si es correcto pasar el idAlumno como PathVariable
+        grupoService.agregarAlumnoAGrupo(idServicio, numGrupo, idAlumno);
+        return  ResponseEntity.ok("El alumno se asignó correctamente al grupo");
+    }
+
+    // ELIMINAR UN ALUMNO DE GRUPO
+    @PutMapping("/grupos/{idGrupo}/eliminar-alumno/{idAlumno}")
+    public ResponseEntity<String> eliminarAlumnoAGrupo(@PathVariable Long idServicio, @PathVariable @Min(1) Integer numGrupo, @PathVariable Long idAlumno) {
+        grupoService.eliminarAlumnoDeGrupo(idServicio, numGrupo, idAlumno);
+        return  ResponseEntity.ok("Se eliminó al alumno correctamente del grupo");
     }
 
 }

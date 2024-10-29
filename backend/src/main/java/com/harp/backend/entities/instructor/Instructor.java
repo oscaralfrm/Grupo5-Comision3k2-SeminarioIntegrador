@@ -1,7 +1,7 @@
 package com.harp.backend.entities.instructor;
 
 import com.harp.backend.entities.servicio.Servicio;
-import com.harp.backend.entities.usuario.model.Usuario;
+//import com.harp.backend.entities.usuario.model.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

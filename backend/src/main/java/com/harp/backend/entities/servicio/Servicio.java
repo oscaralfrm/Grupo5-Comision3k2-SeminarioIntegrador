@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -79,13 +80,14 @@ public class Servicio {
 
     //private List<FrecuenciaPago> FrecuenciaPago;
 
-
     @OneToMany
     @JoinColumn(name = "grupo_id")
     private Set<Grupo> grupos = new HashSet<>();
 
+    @Column(name = "clase_prueba")
+    private boolean claseDePrueba;
 
-    //private boolean claseDePrueba;
+    private String codigoInscripcion;
 
     public void desactivar() {
         this.setActivo(false);
@@ -94,7 +96,6 @@ public class Servicio {
     public void hacerPrivado() {
         this.setPublico(false);
     }
-
 
     public void agregarGrupo(Grupo grupo) {
         this.grupos.add(grupo);
@@ -111,7 +112,16 @@ public class Servicio {
             }
         }
         throw new NoSuchElementFoundException("Monto actual no encontrado");
-     }
+    }
 
+    public String generarCodigoInscripcion() {
+        return this.codigoInscripcion = UUID.randomUUID().toString();
+    }
+
+    public boolean validarCodigoInscripcion(String codigoIngresado) {
+        System.out.println(codigoIngresado);
+        System.out.println(this.codigoInscripcion);
+        return (codigoIngresado.equals(this.codigoInscripcion));
+    }
 
 }
