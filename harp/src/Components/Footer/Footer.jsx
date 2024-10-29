@@ -67,14 +67,6 @@ export const Footer = () => {
                     </div> 
                     <div className="col-md-7"> 
                         <ul className="list-inline footer-links"> 
-                            <li className="list-inline-item">
-                                <button 
-                                    id="boton-administrar-peliculas" 
-                                    className="btn fs-5"  
-                                    style={{ backgroundImage: "linear-gradient(135deg, #1E1B4B, #4F46E5)", color:'white' }}>
-                                    Gestionar Servicios
-                                </button>
-                            </li>
                             <li className="list-inline-item" style={{padding:'1em'}}> 
                                 <a href="#" className="text-white fs-5"> 
                                     Políticas de Privacidad 

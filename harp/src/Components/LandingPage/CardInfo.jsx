@@ -30,7 +30,7 @@ export default function CardInfo() {
           <GenericCard
             title="Cobros Automatizados"
             description="Tus alumnos podrán abonar las cuotas por la aplicación de manera que queden registrados automáticamente."
-            route="#"
+           
             icon={<FaMoneyBillWave style={{ fontSize: '50px' }} />}
             color="#4F46E5"
           />
@@ -39,7 +39,7 @@ export default function CardInfo() {
           <GenericCard
             title="Seguimiento de alumnos"
             description="Podrás registrar las asistencias de los alumnos en cada clase. También anotaciones y avances claves."
-            route="#"
+            
             icon={<FaUserGraduate style={{ fontSize: '50px' }} />}
             color="#4F46E5"
           />
@@ -48,7 +48,6 @@ export default function CardInfo() {
           <GenericCard
             title="Publicidad del servicio"
             description="Se les dará a conocer a personas interesadas tu servicio toda la información necesaria para que decidan inscribirse."
-            route="#"
             icon={<FaBullhorn style={{ fontSize: '50px' }} />}
             color="#4F46E5"
           />

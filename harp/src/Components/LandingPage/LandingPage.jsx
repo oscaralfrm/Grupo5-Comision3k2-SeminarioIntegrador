@@ -27,17 +27,17 @@ const LandingPage = () => {
   }, []);
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <Navbar />
       <div
         style={{
-          position: "fixed",
-          top: "12vh",
-          right: "2vw",
+          position: "absolute", // Mantén 'absolute' para posicionar en la parte superior derecha
+          top: "-5vw", // Ajusta la distancia desde la parte superior
+          right: "2vw", // Ajusta la distancia desde la derecha
           zIndex: 1000,
           display: "flex",
           alignItems: "center",
-          animation: "float 3s ease-in-out infinite", // Aumenta la duración de la animación
+          animation: "float 5s ease-in-out infinite", // Mantén la animación
           willChange: "transform", // Mejora la nitidez durante la animación
         }}
       >
@@ -62,7 +62,7 @@ const LandingPage = () => {
           style={{
             width: "8vw",
             height: "auto",
-            animation: "float 5s ease-in-out infinite", // Aumenta la duración de la animación
+            animation: "float 5s ease-in-out infinite", // Mantén la animación
             willChange: "transform", // Mejora la nitidez durante la animación
           }}
         />
