@@ -8,6 +8,7 @@ import Reseñas from './Dashboard/Reseñas';
 import MisCursos from './Dashboard/MisCursos';
 import DetalleCurso from './Cursos/DetalleCurso';
 import NavbarAlumno from './NavbarAlumno/Navbar';
+import CursosDisponibles from './Cursos/Cursos';
 
 const AlumnoPrincipal = () => {
     const { idAlumno: paramIdAlumno } = useParams(); 
@@ -60,6 +61,8 @@ const AlumnoPrincipal = () => {
             </div>
             <div className="flex-grow-1" style={{ padding: '1vw', marginLeft: "2vw", overflowY: 'auto' }}>
                 <Routes>
+                    <Route path="/alumno/:idAlumno/cursos" element={<CursosDisponibles />} />
+                    <Route path="" element={<GeneralStudent />} />
                     <Route path="general" element={<GeneralStudent />} />
                     <Route path="pagos" element={<Pagos />} />
                     <Route path="asistencias" element={<Asistencias />} />

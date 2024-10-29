@@ -7,57 +7,88 @@
     margin-top: 30px; /* Espacio superior */
     letter-spacing: 2px; /* Espaciado entre letras */
     text-transform: uppercase; /* Texto en mayúsculas */
-    background: linear-gradient(135deg, #1E1B4B, #4F46E5); /* Degradado diagonal (esquina superior izquierda a inferior derecha) */
-    padding: 20px; /* Añadimos padding para un mejor margen interno */
+    background: linear-gradient(135deg, #1E1B4B, #4F46E5); /* Degradado diagonal */
+    padding: 20px; /* Margen interno */
     border-radius: 10px; /* Esquinas redondeadas */
-   
 }
-.body{
+
+.body {
     background: white;
 }
+
 .h1 {
     color: #1E1B4B;
-    text-align: center; /* Si quieres que esté centrado */
-    font-family: 'Roboto', sans-serif; /* O cualquier fuente que prefieras */
-    font-size: 3rem; /* Ajusta el tamaño como desees */
-    font-weight: bold; /* Si quieres el texto en negrita */
-     /* Ajusta los márgenes si es necesario */
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 3rem;
+    font-weight: bold;
 }
 
-/* Espaciado entre las tarjetas */
 .custom-card {
-    background: linear-gradient(135deg, #1E1B4B, #4F46E5); /* Degradado oscuro a color */
-    color: white; /* Letra blanca */
+    background: linear-gradient(135deg, #1E1B4B, #4F46E5); /* Degradado oscuro */
+    color: white;
     border: none;
-    margin: 15px; /* Para separar las tarjetas */
-    padding: 20px; /* Espacio interno */
-    border-radius: 10px; /* Esquinas redondeadas */
-    min-height: 280px;
+    margin: 1vw; /* Espaciado entre tarjetas */
+    padding: 2vw; /* Aumenta el espacio interno */
+    min-height: 45vh; /* Altura mínima relativa a la pantalla */
+    width: 100vw; /* Asegura que ocupe el ancho completo del contenedor */
+    max-width: 60vw; /* Ancho máximo relativo a la pantalla */
+    border-radius: 1vw; /* Bordes redondeados */
+    transition: transform 0.3s ease; /* Transición para hover */
+    display: flex; /* Permite flexbox para alinear contenido */
+    flex-direction: column; /* Alinea el contenido en columna */
+    justify-content: space-between; /* Asegura que el botón esté al final */
 }
 
-/* Estilo para el título de la tarjeta */
 .custom-card .card-title {
     color: #A5B4FC;
 }
 
-/* Estilo para el texto */
 .custom-card .card-text {
     color: #A5B4FC;
 }
 
-/* Estilo para el botón */
 .custom-btn {
-    background-color: #4F46E5;
+    background-color: #4F46E5; /* Color del botón */
     border: none;
     color: white;
 }
 
 .custom-btn:hover {
-    background-color: #A5B4FC;
-    color: #1E1B4B;
+    background-color: #A5B4FC; /* Color del botón al pasar el mouse */
+    color: #1E1B4B; /* Color del texto al pasar el mouse */
 }
 
-/* Para las esquinas redondeadas */
 .rounded {
     border-radius: 10px;
+}
+
+/* --- Nuevas animaciones y estilos adicionales --- */
+
+/* Efecto de hover en la tarjeta */
+.custom-card:hover {
+    transform: scale(1.05); /* Escalado al pasar el mouse */
+}
+
+/* Animación de entrada para las tarjetas */
+.fade-appear, .fade-enter {
+    opacity: 0;
+}
+
+.fade-appear-active, .fade-enter-active {
+    opacity: 1;
+    transition: opacity 0.5s ease-in; /* Transición suave */
+}
+
+/* Estilo para el robot de bienvenida */
+.welcome-sticker {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    animation: float 3s ease-in-out infinite; /* Animación de flotación */
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); } /* Movimiento de flotación */
 }

@@ -7,9 +7,13 @@ const LandingPage = () => {
   return (
     <div>
       <Navbar />
+      <div className="welcome-sticker">
+        <img src="ruta-del-robot.png" alt="Bienvenido a Harp" />
+      </div>
       <div><CardInfo /></div>
     </div> 
   );
 };
 
 export default LandingPage;
+

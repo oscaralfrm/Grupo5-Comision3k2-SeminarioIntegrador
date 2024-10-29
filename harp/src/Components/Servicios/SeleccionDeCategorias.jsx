@@ -3,16 +3,16 @@ import CardCategoria from "./CardCategiria"; // Asegúrate de que la ruta sea co
 import "./Servicios.css";
 
 // Importa las imágenes directamente
-import imageArte from "../../../public/image/Arte.jpg";
-import imageDanza from "../../../public/image/Danza.jpg";
-import imageEducacion from "../../../public/image/Educacion.jpg";
-import imageFitnes from "../../../public/image/Fitnes.jpg";
-import imageFotografia from "../../../public/image/Fotografia.jpg";
-import imageGastronomia from "../../../public/image/Gastronomia.jpg";
-import imageIdiomas from "../../../public/image/Idiomas.jpg";
-import imageMarketing from "../../../public/image/Marketing.jpg";
-import imageMusica from "../../../public/image/Musica.jpg";
-import imageYoga from "../../../public/image/Yoga.jpg";
+import imageArte from "../../../src/image/Arte.jpg";
+import imageDanza from "../../../src/image/Danza.jpg";
+import imageEducacion from "../../../src/image/Educacion.jpg";
+import imageFitnes from "../../../src/image/Fitnes.jpg";
+import imageFotografia from "../../../src/image/Fotografia.jpg";
+import imageGastronomia from "../../../src/image/Gastronomia.jpg";
+import imageIdiomas from "../../../src/image/Idiomas.jpg";
+import imageMarketing from "../../../src/image/Marketing.jpg";
+import imageMusica from "../../../src/image/Musica.jpg";
+import imageYoga from "../../../src/image/Yoga.jpg";
 
 export default function SeleccionarDeCategorias() {
   return (

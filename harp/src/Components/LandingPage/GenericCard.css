@@ -1,0 +1,25 @@
+.generic-card {
+  padding: 2rem; /* Espaciado interno con unidades relativas */
+  border-radius: 0.625rem; /* Radio de borde en rem */
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1); /* Sombra de caja */
+  transition: transform 0.3s;
+  text-align: center;
+  color: white;
+  max-width: 30vw; /* Ancho máximo de la tarjeta en porcentaje del ancho de la ventana */
+  flex: 1; /* Permite que la tarjeta crezca en tamaño dentro de su contenedor */
+  margin: 1rem; /* Margen para espaciar las tarjetas entre sí */
+}
+
+.generic-card:hover {
+  transform: scale(1.05); /* Aumentar el tamaño en hover */
+}
+
+.icon-container {
+  font-size: 3rem; /* Tamaño del icono */
+  margin-bottom: 1rem;
+}
+
+.btn {
+  margin-top: 0.625rem; /* Espaciado superior del botón en rem */
+}
+
