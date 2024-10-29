@@ -1,25 +1,49 @@
-.generic-card {
-  padding: 2rem; /* Espaciado interno con unidades relativas */
-  border-radius: 0.625rem; /* Radio de borde en rem */
-  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1); /* Sombra de caja */
-  transition: transform 0.3s;
-  text-align: center;
+/* Estilos para tarjetas personalizadas */
+.custom-card {
+  background: linear-gradient(135deg, #1E1B4B, #4F46E5); /* Degradado oscuro */
   color: white;
-  max-width: 30vw; /* Ancho máximo de la tarjeta en porcentaje del ancho de la ventana */
-  flex: 1; /* Permite que la tarjeta crezca en tamaño dentro de su contenedor */
-  margin: 1rem; /* Margen para espaciar las tarjetas entre sí */
+  border: none;
+  margin: 1vw; /* Espaciado entre tarjetas */
+  padding: 2vw; /* Aumenta el espacio interno */
+  min-height: 28vw; /* Altura mínima relativa a la pantalla */
+  width: 100%; /* Permitir que ocupe todo el espacio disponible */
+  min-width: 21vw ; /* Ancho máximo en píxeles */
+  border-radius: 1vw; /* Bordes redondeados */
+  transition: transform 0.3s ease; /* Transición para hover */
+  display: flex; /* Permite flexbox para alinear contenido */
+  flex-direction: column; /* Alinea el contenido en columna */
+  justify-content: space-between; /* Asegura que el botón esté al final */
 }
 
-.generic-card:hover {
-  transform: scale(1.05); /* Aumentar el tamaño en hover */
+/* Colores de texto para los elementos dentro de la tarjeta */
+.custom-card .card-title,
+.custom-card .card-text {
+  color: #A5B4FC;
 }
 
-.icon-container {
-  font-size: 3rem; /* Tamaño del icono */
-  margin-bottom: 1rem;
+/* Estilos para el botón en las tarjetas */
+.custom-btn {
+  background-color: #4F46E5; /* Color del botón */
+  border: none;
+  color: white;
 }
 
-.btn {
-  margin-top: 0.625rem; /* Espaciado superior del botón en rem */
+.custom-btn:hover {
+  background-color: #A5B4FC; /* Color del botón al pasar el mouse */
+  color: #1E1B4B; /* Color del texto al pasar el mouse */
 }
 
+/* Efecto de hover en la tarjeta */
+.custom-card:hover {
+  transform: scale(1.05); /* Escalado al pasar el mouse */
+}
+
+/* Animación de entrada para las tarjetas */
+.fade-appear, .fade-enter {
+  opacity: 0;
+}
+
+.fade-appear-active, .fade-enter-active {
+  opacity: 1;
+  transition: opacity 0.5s ease-in; /* Transición suave */
+}

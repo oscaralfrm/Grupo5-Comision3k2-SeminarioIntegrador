@@ -24,62 +24,6 @@
     font-weight: bold;
 }
 
-.custom-card {
-    background: linear-gradient(135deg, #1E1B4B, #4F46E5); /* Degradado oscuro */
-    color: white;
-    border: none;
-    margin: 1vw; /* Espaciado entre tarjetas */
-    padding: 2vw; /* Aumenta el espacio interno */
-    min-height: 45vh; /* Altura mínima relativa a la pantalla */
-    width: 100vw; /* Asegura que ocupe el ancho completo del contenedor */
-    max-width: 60vw; /* Ancho máximo relativo a la pantalla */
-    border-radius: 1vw; /* Bordes redondeados */
-    transition: transform 0.3s ease; /* Transición para hover */
-    display: flex; /* Permite flexbox para alinear contenido */
-    flex-direction: column; /* Alinea el contenido en columna */
-    justify-content: space-between; /* Asegura que el botón esté al final */
-}
-
-.custom-card .card-title {
-    color: #A5B4FC;
-}
-
-.custom-card .card-text {
-    color: #A5B4FC;
-}
-
-.custom-btn {
-    background-color: #4F46E5; /* Color del botón */
-    border: none;
-    color: white;
-}
-
-.custom-btn:hover {
-    background-color: #A5B4FC; /* Color del botón al pasar el mouse */
-    color: #1E1B4B; /* Color del texto al pasar el mouse */
-}
-
-.rounded {
-    border-radius: 10px;
-}
-
-/* --- Nuevas animaciones y estilos adicionales --- */
-
-/* Efecto de hover en la tarjeta */
-.custom-card:hover {
-    transform: scale(1.05); /* Escalado al pasar el mouse */
-}
-
-/* Animación de entrada para las tarjetas */
-.fade-appear, .fade-enter {
-    opacity: 0;
-}
-
-.fade-appear-active, .fade-enter-active {
-    opacity: 1;
-    transition: opacity 0.5s ease-in; /* Transición suave */
-}
-
 /* Estilo para el robot de bienvenida */
 .welcome-sticker {
     position: fixed;
