@@ -9,6 +9,9 @@ import Estadisticas from "./DashBoard/Estadisticas.jsx";
 import DetalleCuota from "./DashBoard/Cuotas/DetalleCuota.jsx";
 import NavbarInstructor from "./NavbarInstructorPrincipal/NavbarInstructorPrincipal.jsx";
 import Sidebar from "./SideBar/SideBar.jsx";
+import Servicio from "./Servicios/MisServicios.jsx";
+import SeleccionarDeCategorias from "./Servicios/SeleccionDeCategorias.jsx";
+import CrearServicio from "./Servicios/CrearServicio/CrearServicio.jsx";
 
 const InstructorPrincipal = () => {
   const { idInstructor } = useParams();
@@ -20,40 +23,40 @@ const InstructorPrincipal = () => {
   };
 
   return (
-    <div className="d-flex" style={{ position: "relative", overflow: "hidden", height: "100vh" }}>
-      <div className="flex-grow-1">
-        <NavbarInstructor toggleSidebar={toggleSidebar} />
-        <div className="d-flex" style={{ height: "100vh", position: "relative" }}>
-          {/* Sidebar */}
-          {isSidebarVisible && (
-            <div
-              style={{
-                width: "15vw",
-                height: "100vh",
-                backgroundColor: "#f8f9fa", // Cambiado a un color fijo
-                position: "absolute",
-                zIndex: 2,
-                marginLeft: "0.8vw",
-                marginTop: "1vw",
-              }}
-            >
-              <Sidebar
-                selectedService={selectedService}
-                isSidebarVisible={isSidebarVisible}
-              />
-            </div>
-          )}
-          <div style={{ marginLeft: '0', width: '100%' }}>
-            <Routes>
-              <Route path="general" element={<General />} />
-              <Route path="alumnos" element={<Alumnos service={selectedService} />} />
-              <Route path="cuotas" element={<Cuotas service={selectedService} idInstructor={undefined}/>} />
-              <Route path="cuotas/detalle-cuota/:cuotaId" element={<DetalleCuota />} />
-              <Route path="asistencias" element={<Asistencias service={selectedService} />} />
-              <Route path="configuracion" element={<Configuracion service={selectedService} />} />
-              <Route path="estadisticas" element={<Estadisticas service={selectedService} />} />
-            </Routes>
+    <div className="d-flex flex-column flex-md-row" style={{ height: "100vh" }}>
+      {/* Navbar */}
+      <NavbarInstructor toggleSidebar={toggleSidebar} />
+
+      <div className="d-flex flex-grow-1">
+        {/* Sidebar */}
+        {isSidebarVisible && (
+          <div
+            className="d-none d-md-block" // Ocultar en pantallas pequeñas
+            style={{
+              width: "15vw",
+              backgroundColor: "#f8f9fa",
+              position: "relative",
+              zIndex: 2,
+              padding: "1rem", // Espaciado interno
+            }}
+          >
+            <Sidebar selectedService={selectedService} isSidebarVisible={isSidebarVisible} />
           </div>
+        )}
+
+        <div className="flex-grow-1" style={{ overflowY: "auto" }}>
+          <Routes>
+            <Route path="servicio/crear-servicio/formulario" element={<CrearServicio />} />
+            <Route path="servicio/crear-servicio" element={<SeleccionarDeCategorias />} />
+            <Route path="general" element={<General />} />
+            <Route path="servicio" element={<Servicio />} />
+            <Route path="alumnos" element={<Alumnos service={selectedService} />} />
+            <Route path="cuotas" element={<Cuotas service={selectedService} idInstructor={undefined} />} />
+            <Route path="cuotas/detalle-cuota/:cuotaId" element={<DetalleCuota />} />
+            <Route path="asistencias" element={<Asistencias service={selectedService} />} />
+            <Route path="configuracion" element={<Configuracion service={selectedService} />} />
+            <Route path="estadisticas" element={<Estadisticas service={selectedService} />} />
+          </Routes>
         </div>
       </div>
     </div>

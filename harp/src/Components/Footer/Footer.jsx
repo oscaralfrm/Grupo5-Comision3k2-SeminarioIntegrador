@@ -3,7 +3,7 @@ import logoFooter from "../../assets/LogoHarpFooter.png";
 
 export const Footer = () => {
     return (
-        <footer className="footer" style={{width:'100vw', color:'white'}}>
+        <footer className="footer" style={{ width: '100%', color: 'white' }}>
             <div className="container-fluid bg-dark py-5"> 
                 <div className="row text-center d-flex justify-content-center align-items-center"> 
                     <div className="col-md-3 mb-3"> 
@@ -36,17 +36,17 @@ export const Footer = () => {
                         <ul className="list-inline footer-links"> 
                             <li className="list-inline-item"> 
                                 <a href="#"> 
-                                <i class="bi bi-facebook" style={{fontSize:'2em', color:'white'}}></i>
+                                    <i className="bi bi-facebook" style={{ fontSize: '2em', color: 'white' }}></i>
                                 </a> 
                             </li> 
                             <li className="list-inline-item"> 
                                 <a href="#"> 
-                                    <i className="bi bi-instagram footer-icon" style={{fontSize:'2em', color:'white'}}></i>
+                                    <i className="bi bi-instagram footer-icon" style={{ fontSize: '2em', color: 'white' }}></i>
                                 </a> 
                             </li> 
                             <li className="list-inline-item"> 
                                 <a href="#"> 
-                                    <i className="bi bi-tiktok footer-icon" style={{fontSize:'2em', color:'white'}}></i>
+                                    <i className="bi bi-tiktok footer-icon" style={{ fontSize: '2em', color: 'white' }}></i>
                                 </a> 
                             </li> 
                             <li className="list-inline-item"> 
@@ -54,7 +54,7 @@ export const Footer = () => {
                                     href="https://github.com/oscaralfrm/Grupo5-Comision3k2-SeminarioIntegrador" 
                                     target="_blank" 
                                     rel="noopener noreferrer"> 
-                                    <i className="bi bi-github footer-icon" style={{fontSize:'2em', color:'white'}}></i>
+                                    <i className="bi bi-github footer-icon" style={{ fontSize: '2em', color: 'white' }}></i>
                                 </a> 
                             </li> 
                         </ul> 
@@ -67,7 +67,7 @@ export const Footer = () => {
                     </div> 
                     <div className="col-md-7"> 
                         <ul className="list-inline footer-links"> 
-                            <li className="list-inline-item" style={{padding:'1em'}}> 
+                            <li className="list-inline-item" style={{ padding: '1em' }}> 
                                 <a href="#" className="text-white fs-5"> 
                                     Políticas de Privacidad 
                                 </a> 

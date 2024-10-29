@@ -24,6 +24,7 @@ const Sidebar = ({ setSelectedService, idInstructor, isSidebarVisible }) => {
         height: '100vh',
         top: '0',
         left: '0',
+        marginLeft:'-.5vw',
         transition: 'width 0.3s', // Transición suave al cambiar el ancho
         zIndex: '1000',
         paddingLeft: isSidebarVisible ? '.5vw' : '0',
@@ -45,6 +46,11 @@ const Sidebar = ({ setSelectedService, idInstructor, isSidebarVisible }) => {
           <li className="nav-item">
             <Link className="nav-link active" to={`/instructor/${idInstructor}/general`}>
               <i className="bi bi-house"></i> {isSidebarVisible && "General"}
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link active" to={`/instructor/${idInstructor}/servicio`}>
+              <i className="bi bi-book"></i> {isSidebarVisible && "Mis Servicios"}
             </Link>
           </li>
           <li className="nav-item">

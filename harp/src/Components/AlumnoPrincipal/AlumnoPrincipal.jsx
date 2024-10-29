@@ -46,7 +46,6 @@ const AlumnoPrincipal = () => {
                             width: '15vw',
                             height: '100vh',
                             backgroundColor: !isSidebarVisible ? '#f8f9fa' : 'transparent',
-                            marginLeft: '0.8vw',
                             marginTop: '2vw'
                         }}
                     >
