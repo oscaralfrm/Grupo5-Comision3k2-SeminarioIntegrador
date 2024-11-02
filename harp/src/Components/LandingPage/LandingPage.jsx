@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Navbar from "./NavbarLandingPage/NavbarLandingPage";
 import CardInfo from "./CardInfo";
 import maiaImage from "../../Image/maia.png";
+import { Footer } from "../Footer/Footer";
 
 const LandingPage = () => {
   useEffect(() => {
@@ -70,6 +71,7 @@ const LandingPage = () => {
       <div>
         <CardInfo />
       </div>
+      <Footer/>
     </div>
   );
 };

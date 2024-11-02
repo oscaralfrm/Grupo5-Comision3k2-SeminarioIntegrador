@@ -35,7 +35,6 @@ function App() {
                         <Route path="/alumno/:idAlumno/cursos/:IdCurso" element={<DetalleCurso />} />
                     </Routes>
                 </div>
-                <Footer />
             </BrowserRouter>
         </div>
     );
