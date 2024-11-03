@@ -52,7 +52,7 @@ export const RegisterFormChooser = () => {
                             minWidth: '15vw' 
                         }} 
                     >
-                        Registrarse como Instructor
+                        Regístrate como Instructor
                     </button>
                 </div>
 
@@ -87,7 +87,7 @@ export const RegisterFormChooser = () => {
                             minWidth: '15vw' 
                         }} 
                     >
-                        Registrarse como Alumno
+                        Regístrate como Alumno
                     </button>
                 </div>
             </div>

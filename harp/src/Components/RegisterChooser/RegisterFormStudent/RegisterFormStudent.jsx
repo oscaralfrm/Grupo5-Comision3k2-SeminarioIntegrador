@@ -45,7 +45,7 @@ export const RegisterFormStudent = () => {
           >
             <h1
               className="mb-3"
-              style={{ marginTop: "1.5em", marginBottom: "1.5em" }}
+              style={{ marginTop: "1.5em", marginBottom: "1.5em",fontSize: '2.5em' }}
             >
               Regístrate como Alumno
             </h1>
