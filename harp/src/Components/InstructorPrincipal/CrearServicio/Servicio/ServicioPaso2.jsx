@@ -27,7 +27,8 @@ const ServiceCreationStep2 = () => {
             justifyContent: 'center',
             minHeight: '100vh',
             width: '100vw',
-            padding: '20px'
+            padding: '20px',
+            fontFamily: 'Roboto, sans-serif'
         }}>
             <div className="p-4" style={{
                 width: '100%',
@@ -41,7 +42,7 @@ const ServiceCreationStep2 = () => {
                 <ProgressBar now={50} variant="info" animated className="mb-4" />
 
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="mode">
+                    <Form.Group controlId="mode" className="mb-2">
                         <Form.Label>Modalidad del Servicio</Form.Label>
                         <Form.Control
                             as="select"
@@ -59,7 +60,7 @@ const ServiceCreationStep2 = () => {
                     </Form.Group>
 
                     {mode === 'fija' && (
-                        <Form.Group controlId="maxStudentsPerGroup" style={{ marginBottom: '20px' }}>
+                        <Form.Group controlId="maxStudentsPerGroup" className="mb-2">
                             <Form.Label>Cantidad Máxima de Alumnos por Grupo</Form.Label>
                             <Form.Control
                                 type="number"
@@ -75,7 +76,7 @@ const ServiceCreationStep2 = () => {
                     )}
 
                     {(mode === 'fija' || mode === 'pase') && (
-                        <Form.Group controlId="maxStudents" style={{ marginBottom: '20px' }}>
+                        <Form.Group controlId="maxStudents" className="mb-2">
                             <Form.Label>Cantidad Máxima de Alumnos Totales</Form.Label>
                             <Form.Control
                                 type="number"
@@ -90,7 +91,7 @@ const ServiceCreationStep2 = () => {
                         </Form.Group>
                     )}
 
-                    <Form.Group controlId="duration" style={{ marginBottom: '20px' }}>
+                    <Form.Group controlId="duration" className="mb-2">
                         <Form.Label>Duración del Servicio</Form.Label>
                         <Form.Control
                             as="select"
@@ -109,7 +110,7 @@ const ServiceCreationStep2 = () => {
 
                     {duration === 'fechas' && (
                         <>
-                            <Form.Group controlId="startDate" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                            <Form.Group controlId="startDate" className="mb-2" style={{ display: 'flex', alignItems: 'center' }}>
                                 <Form.Label style={{ marginRight: '10px' }}>Fecha de Inicio</Form.Label>
                                 <Form.Control
                                     type={startDateInputType}
@@ -126,7 +127,7 @@ const ServiceCreationStep2 = () => {
                                 </Button>
                             </Form.Group>
 
-                            <Form.Group controlId="endDate" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                            <Form.Group controlId="endDate" className="mb-2" style={{ display: 'flex', alignItems: 'center' }}>
                                 <Form.Label style={{ marginRight: '10px' }}>Fecha de Fin</Form.Label>
                                 <Form.Control
                                     type={endDateInputType}
@@ -170,4 +171,3 @@ const ServiceCreationStep2 = () => {
 };
 
 export default ServiceCreationStep2;
-

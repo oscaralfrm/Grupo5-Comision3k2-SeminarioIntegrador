@@ -235,19 +235,6 @@ export const RegisterFormInstructor = () => {
                     )}
                   </div>
 
-                  <div className="form-group form-check mb-3">
-                    <input
-                      type="checkbox"
-                      name="notifyMe"
-                      id="notifyMe"
-                      className="form-check-input"
-                      {...register("notifyMe")}
-                    />
-                    <label className="form-check-label" htmlFor="notifyMe">
-                      Quiero recibir novedades
-                    </label>
-                  </div>
-
                   {/* Botón Registrarme */}
                   <div className="d-flex justify-content-center mt-4">
                     <button

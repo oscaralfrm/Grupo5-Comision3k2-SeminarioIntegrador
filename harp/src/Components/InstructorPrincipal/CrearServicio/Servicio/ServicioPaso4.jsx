@@ -10,11 +10,6 @@ const ServiceCreationStep4 = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // Lógica de registro del formulario
-        // Aquí puedes agregar la lógica de envío de datos del formulario al backend o la función de registro
-
-        // Navegar a la siguiente ruta
         navigate('/instructor/1/crear-grupo');
     };
 
@@ -25,7 +20,8 @@ const ServiceCreationStep4 = () => {
             justifyContent: 'center',
             minHeight: '100vh',
             width: '100vw',
-            padding: '20px'
+            padding: '20px',
+            fontFamily: 'Roboto'
         }}>
             <div className="p-4" style={{
                 width: '100%',
@@ -39,7 +35,7 @@ const ServiceCreationStep4 = () => {
                 <ProgressBar now={100} variant="info" animated className="mb-4" />
 
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="attendanceTracking">
+                    <Form.Group controlId="attendanceTracking" className="mb-2">
                         <Form.Label>¿Deseas tomar asistencia de los alumnos?</Form.Label>
                         <Form.Control
                             as="select"
@@ -47,8 +43,8 @@ const ServiceCreationStep4 = () => {
                             onChange={(e) => setAttendanceTracking(e.target.value)}
                             required
                             style={{ transition: '0.3s', borderColor: '#1e3a8a' }}
-                            onFocus={(e) => e.target.style.borderColor = '#3b82f6' }
-                            onBlur={(e) => e.target.style.borderColor = '#1e3a8a' }
+                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                            onBlur={(e) => e.target.style.borderColor = '#1e3a8a'}
                         >
                             <option value="">Selecciona una opción</option>
                             <option value="si">Sí</option>
@@ -56,7 +52,7 @@ const ServiceCreationStep4 = () => {
                         </Form.Control>
                     </Form.Group>
 
-                    <Form.Group controlId="trialOffer" style={{ marginTop: '20px' }}>
+                    <Form.Group controlId="trialOffer" className="mb-2">
                         <Form.Label>¿Ofrecerás una clase o curso de prueba?</Form.Label>
                         <Form.Control
                             as="select"
@@ -64,8 +60,8 @@ const ServiceCreationStep4 = () => {
                             onChange={(e) => setTrialOffer(e.target.value)}
                             required
                             style={{ transition: '0.3s', borderColor: '#1e3a8a' }}
-                            onFocus={(e) => e.target.style.borderColor = '#3b82f6' }
-                            onBlur={(e) => e.target.style.borderColor = '#1e3a8a' }
+                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                            onBlur={(e) => e.target.style.borderColor = '#1e3a8a'}
                         >
                             <option value="">Selecciona una opción</option>
                             <option value="si">Sí</option>
@@ -73,7 +69,7 @@ const ServiceCreationStep4 = () => {
                         </Form.Control>
                     </Form.Group>
 
-                    <Form.Group controlId="publicVisibility" style={{ marginTop: '20px', marginBottom: '20px' }}>
+                    <Form.Group controlId="publicVisibility" className="mb-2">
                         <Form.Label>¿Deseas hacer el servicio público en la app?</Form.Label>
                         <Form.Control
                             as="select"
@@ -81,8 +77,8 @@ const ServiceCreationStep4 = () => {
                             onChange={(e) => setPublicVisibility(e.target.value)}
                             required
                             style={{ transition: '0.3s', borderColor: '#1e3a8a' }}
-                            onFocus={(e) => e.target.style.borderColor = '#3b82f6' }
-                            onBlur={(e) => e.target.style.borderColor = '#1e3a8a' }
+                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                            onBlur={(e) => e.target.style.borderColor = '#1e3a8a'}
                         >
                             <option value="">Selecciona una opción</option>
                             <option value="si">Sí</option>
@@ -115,4 +111,3 @@ const ServiceCreationStep4 = () => {
 };
 
 export default ServiceCreationStep4;
-
