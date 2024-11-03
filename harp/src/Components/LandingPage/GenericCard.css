@@ -3,22 +3,43 @@
   background: linear-gradient(135deg, #1E1B4B, #4F46E5); /* Degradado oscuro */
   color: white;
   border: none;
+  font-family: Roboto, sans-serif;
   margin: 1vw; /* Espaciado entre tarjetas */
   padding: 2vw; /* Aumenta el espacio interno */
   min-height: 28vw; /* Altura mínima relativa a la pantalla */
   width: 100%; /* Permitir que ocupe todo el espacio disponible */
-  min-width: 21vw ; /* Ancho máximo en píxeles */
+  min-width: 21vw;
+  max-width: 21vw; /* Ancho máximo en píxeles */
   border-radius: 1vw; /* Bordes redondeados */
   transition: transform 0.3s ease; /* Transición para hover */
-  display: flex; /* Permite flexbox para alinear contenido */
+  display: flex; /* Flexbox para alinear contenido */
   flex-direction: column; /* Alinea el contenido en columna */
-  justify-content: space-between; /* Asegura que el botón esté al final */
+  align-items: center; /* Centra el contenido horizontalmente */
+  justify-content: space-between; /* Asegura que el contenido esté bien distribuido */
 }
 
-/* Colores de texto para los elementos dentro de la tarjeta */
-.custom-card .card-title,
-.custom-card .card-text {
+/* Contenedor del ícono para asegurar alineación uniforme */
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 5vw; /* Altura fija relativa para uniformidad */
+  margin-bottom: 1vw; /* Separación del título */
+}
+
+/* Estilos para el título y descripción */
+.custom-card h2 {
+  font-size: 1.3em;
+  color: white;
+  margin: 0.5vw 0;
+  min-height: 3vw; /* Asegura alineación uniforme en todas las tarjetas */
+}
+
+.custom-card p {
+  font-size: 1em;
   color: #A5B4FC;
+  margin: 0;
+  min-height: 5vw; /* Asegura alineación uniforme en todas las tarjetas */
 }
 
 /* Estilos para el botón en las tarjetas */
@@ -26,6 +47,8 @@
   background-color: #4F46E5; /* Color del botón */
   border: none;
   color: white;
+  padding: 0.5vw 1vw;
+  border-radius: 0.5vw;
 }
 
 .custom-btn:hover {
@@ -39,11 +62,13 @@
 }
 
 /* Animación de entrada para las tarjetas */
-.fade-appear, .fade-enter {
+.fade-appear,
+.fade-enter {
   opacity: 0;
 }
 
-.fade-appear-active, .fade-enter-active {
+.fade-appear-active,
+.fade-enter-active {
   opacity: 1;
   transition: opacity 0.5s ease-in; /* Transición suave */
 }

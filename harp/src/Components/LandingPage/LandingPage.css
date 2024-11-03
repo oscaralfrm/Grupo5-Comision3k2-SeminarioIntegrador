@@ -4,12 +4,12 @@
     font-weight: 700; /* Negrita */
     text-align: center; /* Centrado en la página */
     color: white; /* Letra blanca */
-    margin-top: 30px; /* Espacio superior */
-    letter-spacing: 2px; /* Espaciado entre letras */
+    margin-top: 3vh; /* Espacio superior relativo a la altura de la pantalla */
+    letter-spacing: 0.1em; /* Espaciado entre letras */
     text-transform: uppercase; /* Texto en mayúsculas */
     background: linear-gradient(135deg, #1E1B4B, #4F46E5); /* Degradado diagonal */
-    padding: 20px; /* Margen interno */
-    border-radius: 10px; /* Esquinas redondeadas */
+    padding: 2vh 5vw; /* Margen interno relativo */
+    border-radius: 1em; /* Esquinas redondeadas */
 }
 
 .body {
@@ -20,19 +20,19 @@
     color: #1E1B4B;
     text-align: center;
     font-family: 'Roboto', sans-serif;
-    font-size: 3rem;
+    font-size: 3rem; /* Tamaño grande */
     font-weight: bold;
 }
 
 /* Estilo para el robot de bienvenida */
 .welcome-sticker {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 2vh;
+    right: 2vw;
     animation: float 3s ease-in-out infinite; /* Animación de flotación */
 }
 
 @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); } /* Movimiento de flotación */
+    50% { transform: translateY(-1vh); } /* Movimiento de flotación */
 }

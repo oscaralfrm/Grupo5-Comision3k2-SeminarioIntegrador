@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* Fuente Roboto para todo el navbar */
+.navbar, .navbar * {
+  font-family: 'Roboto', sans-serif;
+}
+
 .navbar {
   background-color: #1E1B4B; /* Color de fondo para el navbar */
   color: white; /* Color del texto en el navbar */
