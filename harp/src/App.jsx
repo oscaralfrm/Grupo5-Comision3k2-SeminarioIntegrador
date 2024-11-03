@@ -14,6 +14,11 @@ import AlumnoPrincipal from "./Components/AlumnoPrincipal/AlumnoPrincipal";
 import CursosDisponibles from "./Components/AlumnoPrincipal/Cursos/Cursos";
 import DetalleCurso from "./Components/AlumnoPrincipal/Cursos/DetalleCurso";
 import CursoEspecifico from "./Components/AlumnoPrincipal/Cursos/CursoEspecifico";
+import ServiceCreationStep1 from "./Components/InstructorPrincipal/CrearServicio/Servicio/ServicioPaso1";
+import ServiceCreationStep2 from "./Components/InstructorPrincipal/CrearServicio/Servicio/ServicioPaso2";
+import ServiceCreationStep3 from "./Components/InstructorPrincipal/CrearServicio/Servicio/ServicioPaso3";
+import ServiceCreationStep4 from "./Components/InstructorPrincipal/CrearServicio/Servicio/ServicioPaso4";
+import CreateGroups from "./Components/InstructorPrincipal/CrearGrupo/CrearGrupo";
 
 
 function App() {
@@ -33,6 +38,12 @@ function App() {
                         <Route path="/alumno/:idAlumno/cursos" element={<CursosDisponibles />} />
                         <Route path="/alumno/:idAlumno/mis-cursos/:IdCurso" element={<CursoEspecifico />} />
                         <Route path="/alumno/:idAlumno/cursos/:IdCurso" element={<DetalleCurso />} />
+                        <Route path="/instructor/:idInstructor/crear-servicio" element={<ServiceCreationStep1/>}/>
+                        <Route path="/instructor/:idInstructor/crear-servicio/paso2" element={<ServiceCreationStep2/>}/>
+                        <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3" element={<ServiceCreationStep3/>}/>
+                        <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3/paso4" element={<ServiceCreationStep4/>}/>
+                        <Route path="/instructor/:idInstructor/crear-grupo" element={<CreateGroups/>}/>
+
                     </Routes>
                 </div>
             </BrowserRouter>
