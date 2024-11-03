@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, ProgressBar } from 'react-bootstrap';
+import img from '../../../../assets/Logo.png';
 
 const ServiceCreationStep4 = () => {
     const [attendanceTracking, setAttendanceTracking] = useState('');
@@ -28,8 +29,33 @@ const ServiceCreationStep4 = () => {
                 maxWidth: '600px',
                 backgroundColor: '#f0f4fa',
                 borderRadius: '10px',
-                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.3)'
             }}>
+                                 <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '20px'
+                }}>
+                     <img
+                        src={img}
+                        alt="Logo Harp"
+                        style={{
+                            width: '60px', // Ajusta el tamaño según lo necesites
+                            height: '60px',
+                            objectFit: 'contain',
+                            marginTop:'-1vw'
+                        }}
+                    />
+                    <h1 style={{
+                        fontSize: '2rem',
+                        fontWeight: 'bold',
+                        color: '#333',
+                        marginRight: '10px', // Espacio entre el título y el logo
+                        fontFamily: 'Roboto'
+                    }}>Harp</h1>
+
+                </div>
                 <h2 className="text-center mb-4" style={{ color: '#000000' }}>Configuraciones Adicionales</h2>
 
                 <ProgressBar now={100} variant="info" animated className="mb-4" />

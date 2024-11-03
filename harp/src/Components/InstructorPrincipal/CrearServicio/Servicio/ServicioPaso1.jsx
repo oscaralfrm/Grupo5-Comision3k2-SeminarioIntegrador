@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Form, ProgressBar } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import img from '../../../../assets/Logo.png';
 
 const ServiceCreationStep1 = ({ onNext }) => {
     const [serviceName, setServiceName] = useState('');
@@ -38,21 +39,47 @@ const ServiceCreationStep1 = ({ onNext }) => {
             minHeight: '100vh',
             width: '100vw',
             padding: '20px',
-            fontFamily: 'Roboto' // Aplicación de Roboto a todo el contenido
+            fontFamily: 'Roboto',
         }}>
             <div className="p-4" style={{
                 width: '100%',
                 maxWidth: '600px',
-                backgroundColor: '#f0f4fa',
+                backgroundColor: '#E6E6FA',
                 borderRadius: '10px',
-                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.3)'
             }}>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '20px'
+                }}>
+                     <img
+                        src={img}
+                        alt="Logo Harp"
+                        style={{
+                            width: '60px', // Ajusta el tamaño según lo necesites
+                            height: '60px',
+                            objectFit: 'contain',
+                            marginTop:'-1vw'
+                        }}
+                    />
+                    <h1 style={{
+                        fontSize: '2rem',
+                        fontWeight: 'bold',
+                        color: '#333',
+                        marginRight: '10px', // Espacio entre el título y el logo
+                        fontFamily: 'Roboto'
+                    }}>Harp</h1>
+
+                </div>
+                
                 <h2 className="text-center mb-4" style={{ color: '#000000', fontFamily: 'Roboto' }}>Registra tu servicio</h2>
 
                 <ProgressBar now={25} variant="info" animated className="mb-4" />
 
                 <Form onSubmit={handleNext}>
-                    <Form.Group className="mb-2"controlId="serviceName">
+                    <Form.Group className="mb-2" controlId="serviceName">
                         <Form.Label style={{ fontFamily: 'Roboto' }}>Nombre del Servicio</Form.Label>
                         <Form.Control
                             type="text"
@@ -66,7 +93,7 @@ const ServiceCreationStep1 = ({ onNext }) => {
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-2"controlId="category">
+                    <Form.Group className="mb-2" controlId="category">
                         <Form.Label style={{ fontFamily: 'Roboto' }}>Categoría</Form.Label>
                         <Form.Control
                             as="select"
@@ -85,7 +112,7 @@ const ServiceCreationStep1 = ({ onNext }) => {
                         </Form.Control>
                     </Form.Group>
 
-                    <Form.Group className="mb-2"controlId="description">
+                    <Form.Group className="mb-2" controlId="description">
                         <Form.Label style={{ fontFamily: 'Roboto' }}>Descripción</Form.Label>
                         <Form.Control
                             as="textarea"
@@ -100,7 +127,7 @@ const ServiceCreationStep1 = ({ onNext }) => {
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-2"controlId="logo">
+                    <Form.Group className="mb-2" controlId="logo">
                         <Form.Label style={{ fontFamily: 'Roboto' }}>Logo del Servicio</Form.Label>
                         <Form.Control
                             type="file"

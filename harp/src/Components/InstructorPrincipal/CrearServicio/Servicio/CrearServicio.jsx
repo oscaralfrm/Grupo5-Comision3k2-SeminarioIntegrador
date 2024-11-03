@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ServiceCreationStep1 from './ServiceCreationStep1';
+import SimpleNavbar from '../SimpleNavbar';
 // Asegúrate de importar otros pasos de servicio también
 
 const ServiceCreation = () => {
@@ -17,6 +18,7 @@ const ServiceCreation = () => {
 
     return (
         <div>
+            <SimpleNavbar/>
             <ServiceCreationStep1 formData={formData} setFormData={setFormData} onNext={handleNext} />
             {/* Aquí puedes añadir otros pasos según sea necesario */}
         </div>

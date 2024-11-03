@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, ProgressBar } from 'react-bootstrap';
 import { Calendar } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
+import img from '../../../../assets/Logo.png';
 
 const ServiceCreationStep2 = () => {
     const navigate = useNavigate();
@@ -33,10 +34,35 @@ const ServiceCreationStep2 = () => {
             <div className="p-4" style={{
                 width: '100%',
                 maxWidth: '600px',
-                backgroundColor: '#f0f4fa',
+                backgroundColor: '#E6E6FA',
                 borderRadius: '10px',
-                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.3)'
             }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '20px'
+                }}>
+                     <img
+                        src={img}
+                        alt="Logo Harp"
+                        style={{
+                            width: '60px', // Ajusta el tamaño según lo necesites
+                            height: '60px',
+                            objectFit: 'contain',
+                            marginTop:'-1vw'
+                        }}
+                    />
+                    <h1 style={{
+                        fontSize: '2rem',
+                        fontWeight: 'bold',
+                        color: '#333',
+                        marginRight: '10px', // Espacio entre el título y el logo
+                        fontFamily: 'Roboto'
+                    }}>Harp</h1>
+
+                </div>
                 <h2 className="text-center mb-4" style={{ color: '#000000' }}>Modalidad del Servicio</h2>
 
                 <ProgressBar now={50} variant="info" animated className="mb-4" />
