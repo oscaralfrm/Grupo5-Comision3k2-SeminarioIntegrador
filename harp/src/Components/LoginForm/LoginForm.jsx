@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import './LoginForm.css'; // Importa el archivo CSS
-import PanaTeacher from '../../assets/PanaLogin.png'; // Asegúrate de importar tu imagen
-// import { signInWithGoogle } from '../../services/authService'; // Asegúrate de implementar esta función
+import PanaTeacher from '../../assets/PanaLogin.png';
 
 export const LoginForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -18,7 +16,6 @@ export const LoginForm = () => {
     }, []);
 
     const onSubmit = async (data) => {
-        // Lógica de inicio de sesión
         console.log(data);
     };
 
@@ -36,16 +33,24 @@ export const LoginForm = () => {
     };
 
     const loginForm = () => (
-        <div className="container-fluid">
-            <div className="row" >
-                {/* Sección de Imagen */}
-                <div className="col-lg-6 d-flex justify-content-center align-items-center" style={{ backgroundColor: '#A5B4FC' }}>
+        <div 
+            className="container-fluid"
+            style={{
+                overflow: 'hidden', 
+                marginTop: '0vh', 
+                fontFamily: 'Roboto, sans-serif'
+            }}
+        >
+            <div className="row">
+                <div className="col-lg-6 d-flex justify-content-center align-items-center position-relative" style={{ backgroundColor: '#A5B4FC' }}>
+                    <Link to="#" onClick={() => window.history.back()} style={{ position: 'absolute', top: '1em', left: '1em', zIndex: 10 }}>
+                        <i className="bi bi-arrow-left" style={{ fontSize: '1.5em', color: '#1E1B4B' }}></i>
+                    </Link>
                     <img src={PanaTeacher} alt="Login Illustration" style={{ width: '80%', maxHeight: '90%', objectFit: 'contain' }} />
                 </div>
 
-                {/* Sección de Formulario */}
-                <div className="col-lg-6 d-flex justify-content-center align-items-center" >
-                    <div className="col-md-8 col-sm-10" style={{ height: '100%', marginTop: '15em', marginBottom: '2em'}}>
+                <div className="col-lg-6 d-flex justify-content-center align-items-center">
+                    <div className="col-md-8 col-sm-10" style={{ height: '100%', marginTop: '4em', marginBottom: '2em', overflow: 'hidden' }}>
                         <h1 className="text-center">Iniciar Sesión</h1>
                         <Link to="/registrarse" className="d-block text-center mb-3">
                             Si no tienes un usuario, regístrate aquí
@@ -104,7 +109,6 @@ export const LoginForm = () => {
                                         )}
                                     </div>
 
-                                    {/* Checkbox para recordar datos */}
                                     <div className="form-check mb-3">
                                         <input
                                             type="checkbox"
@@ -119,11 +123,11 @@ export const LoginForm = () => {
                                     <div className="d-flex justify-content-center">
                                         <button 
                                             type="submit" 
-                                            className="btn fs-4" 
+                                            className="btn fs-5" 
                                             style={{ 
                                                 backgroundImage: "linear-gradient(135deg, #1E1B4B, #4F46E5)", 
                                                 color: 'white',
-                                                padding: '20px' 
+                                                padding: '6px 17px' 
                                             }}
                                         >
                                             Iniciar Sesión
@@ -136,11 +140,11 @@ export const LoginForm = () => {
                                     <p>O, si deseas, inicia sesión con:</p>
                                     <button 
                                         onClick={handleGoogleLogin} 
-                                        className="btn fs-4" 
+                                        className="btn fs-6" 
                                         style={{ 
                                             backgroundColor: 'red',
                                             color: 'white',
-                                            padding: '15px' 
+                                            padding: '6px 17px' 
                                         }}
                                     >
                                         <i className="bi bi-google"></i> Google 
@@ -155,7 +159,7 @@ export const LoginForm = () => {
     );
 
     const userDashboard = () => (
-        <main className="container mt-3">
+        <main className="container mt-3" style={{ fontFamily: 'Roboto, sans-serif' }}>
             <h2>Bienvenido, {user.userName}</h2>
             <hr />
         </main>

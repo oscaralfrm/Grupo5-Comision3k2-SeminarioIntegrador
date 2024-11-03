@@ -26,12 +26,11 @@ export default function CardInfo() {
       </div>
 
       <div className="row justify-content-center" style={{ marginLeft: '1vw', display: 'flex' }}>
-        <div className="col-md-3 col-sm-12 mb-4" style={{ padding: '0 1vw' }}>
+      <div className="col-md-3 col-sm-12 mb-4" style={{ padding: '0 1vw' }}>
           <GenericCard
-            title="Cobros Automatizados"
-            description="Tus alumnos podrán abonar las cuotas por la aplicación de manera que queden registrados automáticamente."
-           
-            icon={<FaMoneyBillWave style={{ fontSize: '50px' }} />}
+            title="Publicidad del servicio"
+            description="Se les dará a conocer a personas interesadas tu servicio toda la información necesaria para que decidan inscribirse."
+            icon={<FaBullhorn style={{ fontSize: '50px' }} />}
             color="#4F46E5"
           />
         </div>
@@ -44,14 +43,18 @@ export default function CardInfo() {
             color="#4F46E5"
           />
         </div>
-        <div className="col-md-4 col-sm-12 mb-4" style={{ padding: '0 1vw' }}>
+        <div className="col-md-3 col-sm-12 mb-4" style={{ padding: '0 1vw' }}>
+          
           <GenericCard
-            title="Publicidad del servicio"
-            description="Se les dará a conocer a personas interesadas tu servicio toda la información necesaria para que decidan inscribirse."
-            icon={<FaBullhorn style={{ fontSize: '50px' }} />}
+            title="Cobros Automatizados"
+            description="Tus alumnos podrán abonar las cuotas por la aplicación de manera que queden registrados automáticamente."
+           
+            icon={<FaMoneyBillWave style={{ fontSize: '50px' }} />}
             color="#4F46E5"
           />
         </div>
+
+
       </div>
     </div>
   );

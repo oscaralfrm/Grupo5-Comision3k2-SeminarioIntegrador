@@ -34,21 +34,21 @@ export default function SeleccionarDeCategorias() {
   };
 
   return (
-    <div style={{ padding: '50px', textAlign: 'center', marginTop:'6vh' }}>
+    <div style={{ padding: '5vh', textAlign: 'center', marginTop: '6vh' }}>
       <h1 style={{
         fontFamily: 'Roboto, sans-serif',
-        fontSize: '3rem',
+        fontSize: '3vw', // Ajusta el tamaño de fuente en relación al ancho de la ventana
         fontWeight: '700',
         color: '#1E1B4B',
-        letterSpacing: '2px',
+        letterSpacing: '0.1em',
         textTransform: 'uppercase',
-        padding: '20px',
-        borderRadius: '10px',
+        padding: '1vh 2vw', // Margen interno relativo
+        borderRadius: '1em', // Bordes redondeados relativos
       }}>
         Selecciona la categoría de tu servicio
       </h1>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2vw', marginTop: '3vh' }}>
         {categories.map((card, index) => (
           <div 
             key={index}
@@ -56,9 +56,9 @@ export default function SeleccionarDeCategorias() {
             style={{
               background: 'linear-gradient(135deg, #1E1B4B, #4F46E5)',
               color: 'white',
-              width: '200px',
-              height: '250px',
-              borderRadius: '10px',
+              width: '20vw', // Ajusta el ancho en relación al ancho de la ventana
+              height: '30vh', // Ajusta la altura en relación a la altura de la ventana
+              borderRadius: '1em',
               overflow: 'hidden',
               cursor: 'pointer',
               display: 'flex',
@@ -76,11 +76,11 @@ export default function SeleccionarDeCategorias() {
                   objectFit: 'cover', 
                   height: '100%', 
                   width: '100%', 
-                  borderRadius: '10px',
+                  borderRadius: '1em',
                 }}
               />
             </div>
-            <h5 style={{ color: '#A5B4FC', marginBottom: '10px' }}>{card.name}</h5>
+            <h5 style={{ color: '#A5B4FC', marginBottom: '1vh' }}>{card.name}</h5>
           </div>
         ))}
 

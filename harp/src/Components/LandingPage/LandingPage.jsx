@@ -49,6 +49,7 @@ const LandingPage = () => {
             backgroundColor: "#fff",
             borderRadius: "1vw",
             boxShadow: "0 0.4vw 0.8vw rgba(0, 0, 0, 0.2)",
+            fontFamily:'Roboto',
             fontSize: "1vw",
             fontWeight: "bold",
             color: "#333",
