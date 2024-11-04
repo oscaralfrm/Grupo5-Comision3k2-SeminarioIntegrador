@@ -1,104 +1,77 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import NavbarInstructor from "../NavbarInstructorPrincipal/NavbarInstructorPrincipal";
 
-const Servicio = () => {
+const MiServicio = () => {
   const navigate = useNavigate();
-  const idInstructor = 1
-  const handleCrearServicio = () => {
-    navigate(`/instructor/${idInstructor}/servicio/crear-servicio`);
-  };
 
+  // Servicios simulados
   const servicios = [
-    {
-      id: 1,
-      nombre: "Servicio A",
-      descripcion: "Descripción del Servicio A",
-      capacidadMaxima: 30,
-      categoria: "Categoría 1",
-    },
-    {
-      id: 2,
-      nombre: "Servicio B",
-      descripcion: "Descripción del Servicio B",
-      capacidadMaxima: 20,
-      categoria: "Categoría 2",
-    },
+    { id: 1, title: "Grupo 1", description: "Descripción del servicio 1" },
+    { id: 2, title: "Grupo 2", description: "Descripción del servicio 2" },
+    { id: 3, title: "Grupo 3", description: "Descripción del servicio 3" },
+    { id: "add", title: "+", description: "Agregar" }, // Card para agregar
   ];
 
+  const handleCardClick = (id) => {
+    if (id === "add") {
+      navigate(`/crear-servicio`); // Ruta para agregar un nuevo servicio
+    } else {
+      navigate(`/servicio/${id}`);
+    }
+  };
+
   return (
-    <div style={{ padding: "2vw", marginTop: "6vw" }}>
-      <div style={{ display: "flex", gap: "2vw", flexWrap: "wrap" }}>
-        {/* Card para crear un nuevo servicio */}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-around",
+        flexWrap: "wrap",
+        marginTop: "1rem",
+        padding: "2rem",
+        fontFamily: "Roboto",
+      }}
+    >
+      <NavbarInstructor/>
+      
+      {servicios.map((servicio) => (
         <div
-          onClick={handleCrearServicio}
+          key={servicio.id}
+          onClick={() => handleCardClick(servicio.id)}
           style={{
-            border: "1px solid #ccc",
-            borderRadius: "1vw",
-            padding: "2vw",
-            width: "20vw",
+            width: "20vw", // Ancho ajustado
+            height: "25vh", // Altura fija
             display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            flexDirection: "column",
+            justifyContent: "center", // Centra verticalmente
+            alignItems: "center", // Centra horizontalmente
+            margin: ".5vw",
+            boxShadow: "0 0.2vw 0.4vw rgba(0, 0, 0, 0.4)", // Sombra
             cursor: "pointer",
-            boxShadow: "0 0.2vw 0.4vw rgba(0, 0, 0, 0.1)",
-            transition: "box-shadow 0.3s ease",
-            fontSize: "3vw",
-            color: "#007bff",
-            fontWeight: "bold",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = "0 0.5vw 1vw rgba(0, 0, 0, 0.2)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = "0 0.2vw 0.4vw rgba(0, 0, 0, 0.1)";
+            backgroundColor: "white", // Color de fondo
+            borderRadius: "0.5rem", // Bordes redondeados
+            marginTop:'15vh'
           }}
         >
-          +
-        </div>
-
-        {/* Cards de servicios existentes */}
-        {servicios.map((servicio) => (
-          <div
-            key={servicio.id}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "1vw",
-              padding: "1vw",
-              width: "20vw",
-              boxShadow: "0 0.2vw 0.4vw rgba(0, 0, 0, 0.1)",
-              transition: "box-shadow 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = "0 0.5vw 1vw rgba(0, 0, 0, 0.2)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = "0 0.2vw 0.4vw rgba(0, 0, 0, 0.1)";
-            }}
-          >
-            <h3 style={{ fontSize: "1.2vw" }}>{servicio.nombre}</h3>
-            <p style={{ fontSize: "1vw" }}>{servicio.descripcion}</p>
-            <p style={{ fontSize: "1vw" }}>Capacidad máxima: {servicio.capacidadMaxima} alumnos</p>
-            <p style={{ fontSize: "1vw" }}>Categoría: {servicio.categoria}</p>
-            <button
-              onClick={() => navigate(`/servicio/${servicio.id}`)}
+          <div className="card-body" style={{ padding: "1rem", marginTop:'7vh' }}>
+            <p
+              className="card-title text-center"
               style={{
-                marginTop: "1rem",
-                padding: "0.5vw 1vw",
-                backgroundColor: "#28a745",
-                color: "#fff",
-                border: "none",
-                borderRadius: "0.5vw",
-                cursor: "pointer",
-                fontSize: "1vw",
+                margin: 0,
+                fontSize: "3rem", // Aumentar el tamaño del texto
+                lineHeight: 1, // Ajustar la altura de línea para centrar mejor
               }}
             >
-              Ir a Servicio
-            </button>
+              {servicio.title}
+            </p>
+            <p className="card-text text-center" style={{ margin: 0 }}>
+              {servicio.description}
+            </p>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   );
 };
 
-export default Servicio;
+export default MiServicio;

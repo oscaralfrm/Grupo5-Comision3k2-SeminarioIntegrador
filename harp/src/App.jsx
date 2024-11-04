@@ -19,6 +19,8 @@ import ServiceCreationStep2 from "./Components/InstructorPrincipal/CrearServicio
 import ServiceCreationStep3 from "./Components/InstructorPrincipal/CrearServicio/Servicio/ServicioPaso3";
 import ServiceCreationStep4 from "./Components/InstructorPrincipal/CrearServicio/Servicio/ServicioPaso4";
 import CreateGroups from "./Components/InstructorPrincipal/CrearGrupo/CrearGrupo";
+import MisCursos from "./Components/AlumnoPrincipal/Dashboard/MisCursos";
+import MiServicio from "./Components/InstructorPrincipal/Servicios/MisServicios";
 
 
 function App() {
@@ -43,7 +45,8 @@ function App() {
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3" element={<ServiceCreationStep3/>}/>
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3/paso4" element={<ServiceCreationStep4/>}/>
                         <Route path="/instructor/:idInstructor/crear-grupo" element={<CreateGroups/>}/>
-
+                        <Route path="/instructor/:idInstructor/servicio/:idServicio" element={<MiServicio/>}/>
+                        
                     </Routes>
                 </div>
             </BrowserRouter>
