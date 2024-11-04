@@ -1,11 +1,14 @@
 package com.harp.backend.entities.inscripcion;
 
 import com.harp.backend.entities.alumno.model.Alumno;
+import com.harp.backend.entities.grupo.Grupo;
+import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.servicio.Servicio;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -37,13 +40,26 @@ public class Inscripcion {
 
     private EstadoInscripcion estado = EstadoInscripcion.PendienteAceptacion; //PendienteAceptacion Aceptada Rechazada Finalizada
 
-    //HAcerlo LAZY
-    @ManyToOne
-    @JoinColumn(name = "servicio_id")
-    private Servicio servicio;
+    private Integer cantVecesSemanales;
 
-    public Inscripcion(Servicio servicio) {
-        this.servicio = servicio;
+    @ManyToOne
+    @JoinColumn(name = "grupo_id")
+    private Grupo grupo;
+
+    //HACERLO EN LA BASE DE DATOS CON TABLA INTERMEDIA
+    //HAcerlo LAZY
+    @ManyToMany
+    @JoinTable(
+            name = "horariosxinscripcion", // Nombre de la tabla intermedia
+            joinColumns = @JoinColumn(name = "inscripcion_id"), // FK hacia la tabla Inscripcion
+            inverseJoinColumns = @JoinColumn(name = "horario_id") // FK hacia la tabla Horario
+    )
+    private List<Horario> horarios;
+
+    public Inscripcion(Grupo grupo, List<Horario> horarios) {
+        this.grupo = grupo;
+        this.horarios = horarios;
+        this.cantVecesSemanales = horarios.size();
     }
 
     public void aceptar() {
@@ -51,6 +67,13 @@ public class Inscripcion {
             throw new UnsupportedOperationException("La inscripción ya fue previamente aceptada");
         }
         this.fechaInscripcion = LocalDate.now();
+
+        //Revisar: si es modalidad duracion inicio-fin se debe settear la fechafin a servicio.getFechaFin()
+        //pero si la modalidad es duracion desde fecha de inscripcion se debe settear la fecha fin = fechaInscricion + servicio.getDuracion()
+        //pero si es modalidad duracion indefinida la fecha inscripcion no se settea, queda en null
+
+        //Acá se le debe delegar a la modalidad de duracion el aceptar();
+
         //cambiar el estado a Aceptada
         this.estado = EstadoInscripcion.Aceptada;
     }
@@ -63,9 +86,17 @@ public class Inscripcion {
         this.estado = EstadoInscripcion.Rechazada;
     }
 
+    public boolean esFinalizada() {
+        return (this.estado == EstadoInscripcion.Finalizada);
+    }
+
+    // Implementar según tipo de duración del servicio
     public void finalizar() {
-        if (fechaFinInscripcion != null) {
-            throw new UnsupportedOperationException("La inscripción ya fue previamente aceptada");
+        if (! this.estaVigente()) {
+            throw new UnsupportedOperationException("La inscripcion puede finalizarce");
+        }
+        if (fechaFinInscripcion != null && fechaFinInscripcion.isAfter(LocalDate.now())) {
+            throw new UnsupportedOperationException("La inscripción fue programada previamente para finalizarce en una fecha futura.");
         }
         this.fechaFinInscripcion = LocalDate.now();
         //cambiar el estado a Finalizada
@@ -73,8 +104,12 @@ public class Inscripcion {
     }
 
     public boolean esDeEsteServicio(Servicio servicio) {
-        return (this.servicio == servicio);
+        return (servicio.tieneEsteGrupo(this.grupo));
     }
+
+//    public boolean esDeEsteGrupo(Grupo grupo) {
+//        return (this.grupo == grupo);
+//    }
 
     public boolean estaVigente() {
         return (this.estado == EstadoInscripcion.Aceptada);

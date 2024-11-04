@@ -5,6 +5,7 @@ import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -15,14 +16,13 @@ public class MontoServicioService implements IMontoServicioService {
     @Autowired
     private MontoServicioConverter montoServicioConverter;
 
-    @Autowired
-    private ServicioService servicioService;
-
     @Override
-    public MontoServicio createMontoServicio(MontoServicioDTO montoServicioDTO, Long idServicio) {
+    public MontoServicio createMontoServicio(MontoServicioDTO montoServicioDTO) {
+        // Se quiere crear un nuevo monto para el servicio
+        // Creamos el nuevo monto
         MontoServicio nuevoMontoServicio = montoServicioConverter.dtoToEntity(montoServicioDTO);
         MontoServicio montoCreado = montoServicioRepository.save(nuevoMontoServicio);
-        servicioService.agregarMontoAServicio(montoCreado, idServicio);
+
         return montoCreado;
     };
 
@@ -43,13 +43,22 @@ public class MontoServicioService implements IMontoServicioService {
 
         MontoServicio montoServicioEditar = montoServicioConverter.dtoToEntity(montoDTO);
 
-        //Deberia haber un método solo para terminar el historial monto
+        // Solo lo podemos editar si es un montoProgramadoFuturo
+        // es decir si su fechaInicio > fechaActual
 
         montoServicioExistente = montoServicioEditar;
         montoServicioExistente.setId(idMonto);
 
         return montoServicioRepository.save(montoServicioExistente);
     };
+
+    public void cambiarFechaFinMontoServicio(MontoServicio montoActual, LocalDate fechaInicioProximoMonto) {
+        // Solo le permitimos crear nuevos montos del servicio con fechaInicioProximoMonto > fechaActual
+        // Por eso si programan un monto por ej. para mañana, la fecha fin del monto actual será hoy.
+        montoActual.setFechaFin(fechaInicioProximoMonto.minusDays(1));
+        montoServicioRepository.save(montoActual);
+    }
+
 
 //    public List<MontoServicio> getHistorialMontosDeServicio(Long idServicio) {
 //        return montoServicioRepository.findByServicioId(idServicio);

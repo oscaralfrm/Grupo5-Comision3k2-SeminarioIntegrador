@@ -23,14 +23,6 @@ public class HorarioController {
         return ResponseEntity.ok(horarios);
     }
 
-//    // GET TODOS DE UN GRUPO DE UN SERVICIO
-    //implementar con querys
-//    @GetMapping("/{idGrupo}/horarios")
-//    public ResponseEntity<List<Horario>> getHorarioDeGrupo(@PathVariable Long idGrupo) {
-//        List<Horario> horarios = horarioService.getHorariosDeGrupo(idGrupo);
-//        return ResponseEntity.ok(horarios);
-//    }
-
     // GET DE UNO EN PARTICULAR
     @GetMapping("/horarios/{idHorario}")
     public ResponseEntity<Horario> traerUnHorario(@PathVariable @Min(1) Long idHorario) {
@@ -58,5 +50,4 @@ public class HorarioController {
         Horario horarioEditado = horarioService.editHorario(idHorario, horarioDTO);
         return  ResponseEntity.status(HttpStatus.OK).body(horarioEditado);
     }
-
 }

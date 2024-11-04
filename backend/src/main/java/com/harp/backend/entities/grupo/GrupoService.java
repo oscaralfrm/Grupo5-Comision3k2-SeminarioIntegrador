@@ -2,6 +2,7 @@ package com.harp.backend.entities.grupo;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.AlumnoService;
+import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioService;
@@ -27,6 +28,7 @@ public class GrupoService implements IGrupoService {
     @Autowired
     private AlumnoService alumnoService;
 
+    //Lo usamos en la generacion de clases automaticas
     @Override
     public List<Grupo> getAllGrupos() {
         return grupoRepository.findAll();
@@ -65,11 +67,21 @@ public class GrupoService implements IGrupoService {
         return grupoExistente.getHorarios().stream().toList();
     }
 
-    public List<Grupo> findGruposDeAlumno(Long idAlumno) {
-        // Revisar como hacer validaciones aqui
-        // Validar que el alumno exista, que este en algun grupo?
-        return grupoRepository.findByAlumnosId(idAlumno);
+    public List<Clase> findAllClasesDeGrupo(Long idGrupo) {
+        Grupo grupoExistente = this.findGrupo(idGrupo);
+        return grupoExistente.getClases().stream().toList();
     }
+
+    public List<Clase> findClasesFuturasDeGrupo(Long idGrupo) {
+        Grupo grupoExistente = this.findGrupo(idGrupo);
+        return grupoExistente.getClases().stream().filter(Clase::esFutura).toList();
+    }
+
+//    public List<Grupo> findGruposDeAlumno(Long idAlumno) {
+//        // Revisar como hacer validaciones aqui
+//        // Validar que el alumno exista, que este en algun grupo?
+//        return grupoRepository.findByAlumnosId(idAlumno);
+//    }
 
 
     @Override
@@ -101,24 +113,28 @@ public class GrupoService implements IGrupoService {
         grupoRepository.save(grupoExistente);
     }
 
-
+/*
+    // REdefinir: servicioService deberia buscar el servicio y pasarselo por parametros?
     public void agregarAlumnoAGrupo(Long idServicio, Integer numGrupo, Long idAlumno) {
         // Tengo que saber de que servicio es este grupo
         Servicio servicio = servicioService.findServicio(idServicio);
 
         // Buscamos el alumno y el grupo
+        Grupo grupoExistente = servicio.obtenerGrupoConEsteNum(numGrupo);
         Alumno alumnoExistente = alumnoService.findAlumno(idAlumno);
-        //Implementar
-        Grupo grupoExistente = servicioService.findGrupoDeServicioByNum(idServicio, numGrupo);
 
+
+        // REVISAR si tambien puede estar esperando la aceptacion de una inscripcion
         // Validar que el alumno este inscripto ACTUALMENTE en el servicio de ese grupo
         if (! alumnoExistente.estaInscriptoAEsteServicio(servicio)) {
             throw new UnsupportedOperationException("El alumno no está inscripto en este servicio.");
         }
 
         // Validar que el alumno no esté previamente en ese grupo? Se resuelve con set?
-        grupoExistente.agregarAlumno(alumnoExistente);
+        grupoExistente.agregarAlumno(alumnoExistente); // Aqui se valida que el grupo tenga cupos
         grupoRepository.save(grupoExistente);
+
+        // SI SE CAMBIA UN ALUMNO DE GRUPO SE DEBE VALIDAR QUE SE AGREGUE A LAS CLASES FUTURAS DE ESE GRUPO
     }
 
     public void eliminarAlumnoDeGrupo(Long idServicio, Integer numGrupo, Long idAlumno) {
@@ -142,5 +158,9 @@ public class GrupoService implements IGrupoService {
 
         grupoExistente.eliminarAlumno(alumnoExistente);
         grupoRepository.save(grupoExistente);
+
+        //REVISAR QUE NO DEBERIA QUEDAR SIN GRUPO SINO QUE SE DEBERIA CAMBIAR DE GRUPO
+        // SI SE CAMBIA UN ALUMNO DE GRUPO SE DEBE VALIDAR QUE SE AGREGUE A LAS CLASES FUTURAS DE ESE GRUPO
     }
+*/
 }

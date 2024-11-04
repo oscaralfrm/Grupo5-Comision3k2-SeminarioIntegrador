@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface IGrupoRepository extends JpaRepository<Grupo, Long> {
-    public List<Grupo> findByAlumnosId(Long idAlumno);
+    //public List<Grupo> findByAlumnosId(Long idAlumno);
 }

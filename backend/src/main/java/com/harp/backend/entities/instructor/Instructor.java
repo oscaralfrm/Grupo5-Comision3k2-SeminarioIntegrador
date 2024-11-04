@@ -1,5 +1,6 @@
 package com.harp.backend.entities.instructor;
 
+import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.servicio.Servicio;
 //import com.harp.backend.entities.usuario.model.Usuario;
 import jakarta.persistence.*;
@@ -38,6 +39,19 @@ public class Instructor {
 
     public void agregarServicio(Servicio servicio) {
         servicios.add(servicio);
+    }
+
+    public boolean tieneEsteServicio(Servicio servicio) {
+        return servicios.contains(servicio);
+    }
+
+    public boolean tieneEsteGrupo(Grupo grupo) {
+        for (Servicio servicio : servicios) {
+            if (servicio.tieneEsteGrupo(grupo)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

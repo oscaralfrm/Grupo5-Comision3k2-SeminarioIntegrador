@@ -2,6 +2,8 @@ package com.harp.backend.entities.servicio;
 
 
 import com.harp.backend.entities.grupo.Grupo;
+import com.harp.backend.entities.historialMontoCuota.MontoServicio;
+import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
@@ -69,11 +71,22 @@ public class ServicioController {
         return  ResponseEntity.status(HttpStatus.OK).body(servicioEditado);
     }
 
-    @PutMapping("/{idServicio}/generar-codigo-inscripcion")
-    public ResponseEntity<String> generarCodigoInscripcion(@PathVariable @Min(1) Long idServicio) {
-        String codigoInscripcion = servicioService.generarCodigoInscripcion(idServicio);
-        return  ResponseEntity.status(HttpStatus.OK).body(codigoInscripcion);
+    @PostMapping("/{idServicio}/monto")
+    public ResponseEntity<MontoServicio> crearNuevoMonto(
+            @PathVariable Long idServicio,
+            @RequestBody MontoServicioDTO montoServicioDTO) {
+
+        // Llama a servicioService para gestionar la actualización y creación del nuevo monto
+        MontoServicio nuevoMontoServicio = servicioService.actualizarYCrearNuevoMonto(montoServicioDTO, idServicio);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoMontoServicio);
     }
+
+//    @PutMapping("/{idServicio}/generar-codigo-inscripcion")
+//    public ResponseEntity<String> generarCodigoInscripcion(@PathVariable @Min(1) Long idServicio) {
+//        String codigoInscripcion = servicioService.generarCodigoInscripcion(idServicio);
+//        return  ResponseEntity.status(HttpStatus.OK).body(codigoInscripcion);
+//    }
 
 
 //    // EJ. /filtros?nombre=Deportes (sin " ")

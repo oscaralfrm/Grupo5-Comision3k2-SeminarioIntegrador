@@ -9,9 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class GrupoConverter {
 
-    //@Autowired
-    //HorariosService horariosService;
-
     @Autowired
     ModelMapper modelMapper;
 

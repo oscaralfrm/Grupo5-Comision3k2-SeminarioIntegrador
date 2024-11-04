@@ -39,12 +39,13 @@ public class MontoServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(montoServicio);
     };
 
-    // POST
-    @PostMapping("{idServicio}/historialMontos")
-    public ResponseEntity<MontoServicio> crearMontoServicio(@RequestBody MontoServicioDTO montoServicioDTO, @PathVariable Long idServicio) {
-        MontoServicio nuevoMontoServicio = montoServicioService.createMontoServicio(montoServicioDTO, idServicio);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoMontoServicio); // 201 CREATED
-    }
+    // Lo pasamos a ServicioController
+//    // POST
+//    @PostMapping("{idServicio}/historialMontos")
+//    public ResponseEntity<MontoServicio> crearMontoServicio(@RequestBody MontoServicioDTO montoServicioDTO, @PathVariable Long idServicio) {
+//        MontoServicio nuevoMontoServicio = montoServicioService.createMontoServicio(montoServicioDTO, idServicio);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoMontoServicio); // 201 CREATED
+//    }
 
     // ELIMINAR
     @DeleteMapping("/historialesMontos/{idMonto}")
@@ -53,7 +54,7 @@ public class MontoServicioController {
         return ResponseEntity.noContent().build();
     };
 
-    // EDITAR: no se deberia poder editar tan facil, si lo editas creas uno nuevo
+    // EDITAR: se puede editar solo si es programado a futuro
     @PutMapping("/historialesMontos/{idMonto}")
     public MontoServicio editarMontoServicio(@PathVariable Long idHistorialMonto, @RequestBody MontoServicioDTO montoServicioDTO) {
         MontoServicio montoEditado = montoServicioService.editMontoServicio(idHistorialMonto, montoServicioDTO);

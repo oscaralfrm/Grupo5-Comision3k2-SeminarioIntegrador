@@ -1,6 +1,7 @@
 package com.harp.backend.entities.grupo;
 
 
+import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.servicio.Servicio;
@@ -34,12 +35,12 @@ public class GrupoController {
         return ResponseEntity.status(HttpStatus.OK).body(grupo);
     };
 
-    // GET GRUPOS DE UN ALUMNO
-    @GetMapping("/alumnos/{idAlumno}/grupos")
-    public ResponseEntity<List<Grupo>> findGruposDeAlumno(@PathVariable @Min(1) Long idAlumno) {
-        List<Grupo> grupos = grupoService.findGruposDeAlumno(idAlumno);
-        return ResponseEntity.status(HttpStatus.OK).body(grupos);
-    };
+//    // GET GRUPOS DE UN ALUMNO
+//    @GetMapping("/alumnos/{idAlumno}/grupos")
+//    public ResponseEntity<List<Grupo>> findGruposDeAlumno(@PathVariable @Min(1) Long idAlumno) {
+//        List<Grupo> grupos = grupoService.findGruposDeAlumno(idAlumno);
+//        return ResponseEntity.status(HttpStatus.OK).body(grupos);
+//    };
 
     // GET DE UNO POR ID_SERVICIO Y NUM DE GRUPO
     // IMPLEMENTAR LUEGO
@@ -54,6 +55,20 @@ public class GrupoController {
     public ResponseEntity<List<Horario>> findHorariosDeGrupo(@PathVariable Long idGrupo) {
         List<Horario> horarios = grupoService.findHorariosDeGrupo(idGrupo);
         return ResponseEntity.ok(horarios);
+    }
+
+    // GET ALL CLASES DE UN GRUPO
+    @GetMapping("/{idGrupo}/clases")
+    public ResponseEntity<List<Clase>> findAllClasesDeGrupo(@PathVariable Long idGrupo) {
+        List<Clase> clases = grupoService.findAllClasesDeGrupo(idGrupo);
+        return ResponseEntity.ok(clases);
+    }
+
+    // GET CLASES FUTURAS DE UN GRUPO
+    @GetMapping("/{idGrupo}/clases-futuras")
+    public ResponseEntity<List<Clase>> findClasesFuturasDeGrupo(@PathVariable Long idGrupo) {
+        List<Clase> clases = grupoService.findClasesFuturasDeGrupo(idGrupo);
+        return ResponseEntity.ok(clases);
     }
 
     // POST
@@ -78,7 +93,7 @@ public class GrupoController {
         Grupo grupoEditado = grupoService.editGrupo(idGrupo, grupoDTO);
         return  ResponseEntity.status(HttpStatus.OK).body(grupoEditado);
     }
-
+/*
     // AGREGAR UN ALUMNO A UN GRUPO DE UN SERVICIO
     @PutMapping("/{idServicio}/grupos/{idGrupo}/agregar-alumno/{idAlumno}")
     public ResponseEntity<String> agregarAlumnoAGrupo(@PathVariable Long idServicio, @PathVariable @Min(1) Integer numGrupo, @PathVariable Long idAlumno) {
@@ -93,5 +108,5 @@ public class GrupoController {
         grupoService.eliminarAlumnoDeGrupo(idServicio, numGrupo, idAlumno);
         return  ResponseEntity.ok("Se eliminó al alumno correctamente del grupo");
     }
-
+*/
 }

@@ -25,13 +25,13 @@ public class InscripcionController {
         return ResponseEntity.ok(inscripciones);
     }
 
-    //implementar una inscrip por de idServicio
-    // GET INSCRIPCIONES DE UN SERVICIO
-    @GetMapping("{idServicio}/inscripciones")
-    public ResponseEntity<List<Inscripcion>> findInscripcionesDeServicio(@PathVariable @Min(1) Long idServicio) {
-        List<Inscripcion> inscripciones = inscripcionService.findInscripcionesDeServicio(idServicio);
-        return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
-    };
+//    //implementar una inscrip por de idServicio
+//    // GET INSCRIPCIONES DE UN SERVICIO
+//    @GetMapping("{idServicio}/inscripciones")
+//    public ResponseEntity<List<Inscripcion>> findInscripcionesDeServicio(@PathVariable @Min(1) Long idServicio) {
+//        List<Inscripcion> inscripciones = inscripcionService.findInscripcionesDeServicio(idServicio);
+//        return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
+//    };
 
     // GET DE UNO EN PARTICULAR
     @GetMapping("/inscripciones/{idInscripcion}")
@@ -43,12 +43,11 @@ public class InscripcionController {
     // GET DE UNO POR ID_SERVICIO
 
     // POST
-    @PostMapping("/{idServicio}/inscribir")
-    public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio, @RequestBody InscripcionDTO inscripcionDTO) {
+    @PostMapping("/{idServicio}/grupos/{numGrupo}/inscribir")
+    public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio, @PathVariable Integer numGrupo, @RequestBody List<Long> idsHorarios) {
         // REVISAR: Obtener el id del servicio de headers
         Long idAlumno = Long.valueOf(1);
-        String codigoIngresado = inscripcionDTO.getCodigoIngresado();
-        Inscripcion nuevaInscripcion = inscripcionService.createInscripcion(idAlumno, idServicio, codigoIngresado);
+        Inscripcion nuevaInscripcion = inscripcionService.createInscripcion(idAlumno, idServicio, numGrupo, idsHorarios);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaInscripcion); // 201 CREATED
     }
 
@@ -60,9 +59,11 @@ public class InscripcionController {
     };
 
     // EDITAR
-    @PutMapping("/inscripciones/{idInscripcion}/aceptar")
+    @PutMapping("/inscripciones/{idInscripcion}/aceptar/{idGrupo}")
     public ResponseEntity<String> aceptarInscripcion(@PathVariable Long idInscripcion) {
-        inscripcionService.aceptarInscripcion(idInscripcion);
+        // REVISAR: Obtener el id del usuario de headers
+        Long idInstructor = Long.valueOf(1);
+        inscripcionService.aceptarInscripcion(idInscripcion, idInstructor);
         return ResponseEntity.ok("Se aceptó la inscripción correctamente.");
     };
 

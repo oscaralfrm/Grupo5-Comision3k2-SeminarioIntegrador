@@ -8,12 +8,12 @@ import java.util.List;
 public interface IInscripcionService {
     public List<Inscripcion> getAllInscripciones();
     //public List<Inscripcion> findInscripcionesDeServicio(Long idServicio);
-    public Inscripcion createInscripcion(Long idAlumno, Long idServicio, String codigoIngresado);
+    public Inscripcion createInscripcion(Long idAlumno, Long idServicio, Integer numGrupo, List<Long> idsHorarios);
     public void deleteInscripcion(Long idInscripcion);
     public Inscripcion findInscripcion(Long idInscripcion);
     public Inscripcion editInscripcion(Long idInscripcion, InscripcionDTO inscripcionDTO);
-    public void aceptarInscripcion(Long idInscripcion);
+    public void aceptarInscripcion(Long idInscripcion, Long idInstructor);
     public void rechazarInscripcion(Long idInscripcion);
     public void finalizarInscripcion(Long idInscripcion);
-    List<Inscripcion> findInscripcionesDeServicio(Long idServicio);
+    //List<Inscripcion> findInscripcionesDeServicio(Long idServicio);
 }

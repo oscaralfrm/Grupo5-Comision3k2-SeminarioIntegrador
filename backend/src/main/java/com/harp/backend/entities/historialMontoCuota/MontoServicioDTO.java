@@ -14,5 +14,9 @@ import java.time.LocalDate;
 public class MontoServicioDTO {
     private double monto;
     private LocalDate fechaInicio;
-    private LocalDate fechaFin;
+
+    //No podemos definir fecha fin del monto, siempre comienza en null
+    //private LocalDate fechaFin;
+
+    private Integer cantVecesSemanales;
 }

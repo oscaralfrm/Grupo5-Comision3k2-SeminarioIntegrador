@@ -29,7 +29,7 @@ public class DiaSemanaController {
 
     // POST
     @PostMapping
-    public ResponseEntity<DiaSemana> crearGrupo(@RequestBody DiaSemana diaSemana) {
+    public ResponseEntity<DiaSemana> crearDiaSemana(@RequestBody DiaSemana diaSemana) {
         DiaSemana nuevoDiaSemana = diaSemanaService.createDiaSemana(diaSemana);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoDiaSemana); // 201 CREATED
     }
@@ -43,7 +43,7 @@ public class DiaSemanaController {
 
     // EDITAR
     @PutMapping("/{idDiaSemana}")
-    public ResponseEntity<DiaSemana> editarGrupo(@PathVariable @Min(1) Long idDiaSemana, @RequestBody DiaSemana diaSemana) {
+    public ResponseEntity<DiaSemana> editarDiaSemana(@PathVariable @Min(1) Long idDiaSemana, @RequestBody DiaSemana diaSemana) {
         DiaSemana diaSemanaEditado = diaSemanaService.editDiaSemana(idDiaSemana, diaSemana);
         return  ResponseEntity.status(HttpStatus.OK).body(diaSemanaEditado);
     }

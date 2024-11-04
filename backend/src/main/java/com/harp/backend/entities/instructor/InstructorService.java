@@ -41,10 +41,16 @@ public class InstructorService implements IInstructorService {
         return instructorRepository.findById(idInstructor).orElseThrow(() -> new NoSuchElementFoundException("Instructor no encontrado"));
     }
 
+//    public Instructor findInstructorByIdUsuario(Long idUsuario) {
+//        //Implementar
+//    }
+
+
     public List<Servicio> findServiciosDeInstructor(Long idInstructor) {
         Instructor instructorExistente = this.findInstructor(idInstructor);
         return instructorExistente.getServicios().stream().toList();
     }
+
 
     @Override
     public Instructor editInstructor(Long idInstructor, InstructorDTO instructorDTO) {

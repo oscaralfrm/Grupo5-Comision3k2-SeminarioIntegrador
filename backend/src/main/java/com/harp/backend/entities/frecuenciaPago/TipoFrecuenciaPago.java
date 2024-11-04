@@ -2,7 +2,13 @@ package com.harp.backend.entities.frecuenciaPago;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 
 @Entity
 @Table(name = "tiposfrecuenciapago")
