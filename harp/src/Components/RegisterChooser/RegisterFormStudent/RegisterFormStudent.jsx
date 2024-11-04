@@ -17,6 +17,7 @@ export const RegisterFormStudent = () => {
     const newUser = {
       nombre: data.nombre,
       apellido: data.apellido,
+      username: data.username, // Agregado el campo username
       mail: data.mail,
       telefono: data.telefono,
       password: data.password,
@@ -45,16 +46,16 @@ export const RegisterFormStudent = () => {
           >
             <h1
               className="mb-3"
-              style={{ marginTop: "1.5em", marginBottom: "1.5em",fontSize: '2.5em' }}
+              style={{ marginTop: "1.5em", marginBottom: "1.5em", fontSize: '2.5em' }}
             >
               Regístrate como Alumno
             </h1>
-            <p className="mb-4"style={{ fontSize: '0.8em' }}>
+            <p className="mb-4" style={{ fontSize: '0.8em' }}>
               ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
             </p>
             <div
               className="card shadow-lg"
-              style={{ borderRadius: "20px", padding: "2em",backgroundColor: '#E6E6FA' }}
+              style={{ borderRadius: "20px", padding: "2em", backgroundColor: '#E6E6FA' }}
             >
               <div className="card-body">
                 <form
@@ -63,6 +64,7 @@ export const RegisterFormStudent = () => {
                   id="register"
                 >
                   {/* Campos del formulario */}
+
                   <div className="form-group mb-3">
                     <label htmlFor="nombre">Nombre</label>
                     <input
@@ -104,15 +106,15 @@ export const RegisterFormStudent = () => {
                   <div className="form-group mb-3">
                     <label htmlFor="dni">DNI</label>
                     <input
-                      type="text" // Cambié el tipo a "text" para que sea más flexible y capture correctamente el valor ingresado
-                      name="DNI"
+                      type="text"
+                      name="dni"
                       id="dni"
                       className={`form-control ${errors.dni ? "is-invalid" : ""}`}
                       placeholder="DNI"
                       {...register("dni", {
                         required: "El DNI es obligatorio",
                         pattern: {
-                          value: /^[0-9]{7,8}$/, // Acepta entre 7 y 8 dígitos
+                          value: /^[0-9]{7,8}$/,
                           message: "El DNI debe tener entre 7 y 8 dígitos",
                         },
                       })}
@@ -166,6 +168,29 @@ export const RegisterFormStudent = () => {
                     {errors.telefono && (
                       <div className="invalid-feedback">
                         {errors.telefono.message}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="form-group mb-3">
+                    <label htmlFor="username">Nombre de Usuario</label>
+                    <input
+                      type="text"
+                      name="username"
+                      id="username"
+                      className={`form-control ${errors.username ? "is-invalid" : ""}`}
+                      placeholder="Nombre de Usuario"
+                      {...register("username", {
+                        required: "El nombre de usuario es obligatorio",
+                        minLength: {
+                          value: 4,
+                          message: "El nombre de usuario debe tener al menos 4 caracteres",
+                        },
+                      })}
+                    />
+                    {errors.username && (
+                      <div className="invalid-feedback">
+                        {errors.username.message}
                       </div>
                     )}
                   </div>
@@ -256,7 +281,7 @@ export const RegisterFormStudent = () => {
                         padding: "6px 17px",
                       }}
                     >
-                      <i className="bi bi-google"></i> Google
+                      Registrarse con Google
                     </button>
                   </div>
                 </form>
@@ -266,11 +291,15 @@ export const RegisterFormStudent = () => {
         </div>
 
         {/* Sección de Imagen */}
-        <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center"style={{ backgroundColor: "#A5B4FC" }}>
+        <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center">
           <img
             src={PanaRegister}
-            alt="Registro de Alumno"
-            style={{ maxWidth: "100%", height: "auto" }}
+            alt="Imagen de Registro"
+            style={{
+              maxWidth: "90%",
+              height: "auto",
+              marginBottom: "2em",
+            }}
           />
         </div>
       </div>

@@ -23,6 +23,7 @@ export const RegisterFormInstructor = () => {
 
     try {
       alert("Registro exitoso para el instructor");
+      // Aquí podrías enviar `newInstructor` a tu API
     } catch (error) {
       alert("Error al registrar: " + error.message);
     }
@@ -36,30 +37,16 @@ export const RegisterFormInstructor = () => {
           <div className='col-12 text-start' style={{ position: 'absolute', top: '10px', left: '10px' }}>
             <i className="bi bi-arrow-left" onClick={() => window.history.back()} style={{ fontSize: '1.5em', color: 'black', cursor: 'pointer' }}></i>
           </div>
-          <div
-            className="col-md-10 col-sm-12"
-            style={{ height: "100%", margin: "2em" }}
-          >
-            <h1
-              className="mb-3 text-center"
-              style={{ marginTop: "2em", marginBottom: "1.5em", fontSize: '2.5em' }}
-            >
+          <div className="col-md-10 col-sm-12" style={{ height: "100%", margin: "2em" }}>
+            <h1 className="mb-3 text-center" style={{ marginTop: "2em", marginBottom: "1.5em", fontSize: '2.5em' }}>
               Regístrate como Instructor
             </h1>
             <p className="mb-4 text-center" style={{ fontSize: '0.8em' }}>
-              ¿Ya eres instructor? <a href="/login">Inicia sesión aquí</a>
+              ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
             </p>
-            <div
-              className="card shadow-lg"
-              style={{ borderRadius: "20px", padding: "2em", backgroundColor: '#E6E6FA' }}
-            >
+            <div className="card shadow-lg" style={{ borderRadius: "20px", padding: "2em", backgroundColor: '#E6E6FA' }}>
               <div className="card-body">
-                <form
-                  className="mt-3"
-                  onSubmit={handleSubmit(onSubmit)}
-                  id="register-instructor"
-                  backgroundColor
-                >
+                <form className="mt-3" onSubmit={handleSubmit(onSubmit)} id="register-instructor">
                   {/* Campos del formulario */}
                   <div className="form-group mb-3">
                     <label htmlFor="nombre">Nombre</label>
@@ -69,15 +56,9 @@ export const RegisterFormInstructor = () => {
                       id="nombre"
                       className={`form-control ${errors.nombre ? "is-invalid" : ""}`}
                       placeholder="Nombre"
-                      {...register("nombre", {
-                        required: "El nombre es obligatorio",
-                      })}
+                      {...register("nombre", { required: "El nombre es obligatorio" })}
                     />
-                    {errors.nombre && (
-                      <div className="invalid-feedback">
-                        {errors.nombre.message}
-                      </div>
-                    )}
+                    {errors.nombre && <div className="invalid-feedback">{errors.nombre.message}</div>}
                   </div>
 
                   <div className="form-group mb-3">
@@ -88,22 +69,16 @@ export const RegisterFormInstructor = () => {
                       id="apellido"
                       className={`form-control ${errors.apellido ? "is-invalid" : ""}`}
                       placeholder="Apellido"
-                      {...register("apellido", {
-                        required: "El apellido es obligatorio",
-                      })}
+                      {...register("apellido", { required: "El apellido es obligatorio" })}
                     />
-                    {errors.apellido && (
-                      <div className="invalid-feedback">
-                        {errors.apellido.message}
-                      </div>
-                    )}
+                    {errors.apellido && <div className="invalid-feedback">{errors.apellido.message}</div>}
                   </div>
 
                   <div className="form-group mb-3">
                     <label htmlFor="dni">DNI</label>
                     <input
                       type="text"
-                      name="DNI"
+                      name="dni"
                       id="dni"
                       className={`form-control ${errors.dni ? "is-invalid" : ""}`}
                       placeholder="DNI"
@@ -115,11 +90,7 @@ export const RegisterFormInstructor = () => {
                         },
                       })}
                     />
-                    {errors.dni && (
-                      <div className="invalid-feedback">
-                        {errors.dni.message}
-                      </div>
-                    )}
+                    {errors.dni && <div className="invalid-feedback">{errors.dni.message}</div>}
                   </div>
 
                   <div className="form-group mb-3">
@@ -138,11 +109,7 @@ export const RegisterFormInstructor = () => {
                         },
                       })}
                     />
-                    {errors.mail && (
-                      <div className="invalid-feedback">
-                        {errors.mail.message}
-                      </div>
-                    )}
+                    {errors.mail && <div className="invalid-feedback">{errors.mail.message}</div>}
                   </div>
 
                   <div className="form-group mb-3">
@@ -161,12 +128,9 @@ export const RegisterFormInstructor = () => {
                         },
                       })}
                     />
-                    {errors.telefono && (
-                      <div className="invalid-feedback">
-                        {errors.telefono.message}
-                      </div>
-                    )}
+                    {errors.telefono && <div className="invalid-feedback">{errors.telefono.message}</div>}
                   </div>
+
                   {/* Campo adicional para Especialidad del Instructor */}
                   <div className="form-group mb-3">
                     <label htmlFor="especialidad">Especialidad</label>
@@ -176,13 +140,30 @@ export const RegisterFormInstructor = () => {
                       id="especialidad"
                       className={`form-control ${errors.especialidad ? "is-invalid" : ""}`}
                       placeholder="Especialidad"
-                      {...register("especialidad", {
-                        required: "La especialidad es obligatoria",
+                      {...register("especialidad", { required: "La especialidad es obligatoria" })}
+                    />
+                    {errors.especialidad && <div className="invalid-feedback">{errors.especialidad.message}</div>}
+                  </div>
+
+                  <div className="form-group mb-3">
+                    <label htmlFor="username">Nombre de Usuario</label>
+                    <input
+                      type="text"
+                      name="username"
+                      id="username"
+                      className={`form-control ${errors.username ? "is-invalid" : ""}`}
+                      placeholder="Nombre de Usuario"
+                      {...register("username", {
+                        required: "El nombre de usuario es obligatorio",
+                        minLength: {
+                          value: 4,
+                          message: "El nombre de usuario debe tener al menos 4 caracteres",
+                        },
                       })}
                     />
-                    {errors.especialidad && (
+                    {errors.username && (
                       <div className="invalid-feedback">
-                        {errors.especialidad.message}
+                        {errors.username.message}
                       </div>
                     )}
                   </div>
@@ -207,11 +188,7 @@ export const RegisterFormInstructor = () => {
                         },
                       })}
                     />
-                    {errors.password && (
-                      <div className="invalid-feedback">
-                        {errors.password.message}
-                      </div>
-                    )}
+                    {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
                   </div>
 
                   <div className="form-group mb-3">
@@ -224,15 +201,10 @@ export const RegisterFormInstructor = () => {
                       placeholder="Repite la contraseña"
                       {...register("confirmPassword", {
                         required: "Debes confirmar la contraseña",
-                        validate: (value) =>
-                          value === password || "Las contraseñas no coinciden",
+                        validate: (value) => value === password || "Las contraseñas no coinciden",
                       })}
                     />
-                    {errors.confirmPassword && (
-                      <div className="invalid-feedback">
-                        {errors.confirmPassword.message}
-                      </div>
-                    )}
+                    {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword.message}</div>}
                   </div>
 
                   {/* Botón Registrarme */}
@@ -253,19 +225,35 @@ export const RegisterFormInstructor = () => {
                   <hr />
 
                   {/* Centrar el texto */}
-                  <div className="d-flex justify-content-center">
-                    <p className="mt-4" style={{ fontSize: '0.9em' }}>
-                      ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
-                    </p>
+                  <div className="text-center">
+                    <span>O sino, regístrate usando:</span>
                   </div>
+
+
+                  {/* Botón Registrarse con Google */}
+                  <div className="d-flex justify-content-center mt-3">
+                    <button
+                      type="button"
+                      className="btn fs-6"
+                      style={{
+                        backgroundColor: "red",
+                        color: "white",
+                        padding: "6px 17px",
+                      }}
+                    >
+                      <i className="bi bi-google"></i> Google
+                    </button>
+                  </div>
+
                 </form>
               </div>
             </div>
           </div>
         </div>
-        {/* Sección de Imagen */}
-        <div className="col-lg-6 d-flex justify-content-center align-items-center" style={{ backgroundColor: "#A5B4FC" }}>
-          <img src={InstructorImage} alt="Instructor" className="img-fluid" />
+
+        {/* Sección de imagen */}
+        <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center" >
+          <img src={InstructorImage} alt="Imagen ilustrativa" style={{ width: '75%', height: 'auto', borderRadius: '20px', backgroundColor: "#A5B4FC"  }} />
         </div>
       </div>
     </div>

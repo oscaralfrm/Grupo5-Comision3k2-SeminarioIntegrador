@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import './LoginForm.css'; // Importa el archivo CSS
-import PanaTeacher from '../../assets/PanaLogin.png'; // Asegúrate de importar tu imagen
-// import { signInWithGoogle } from '../../services/authService'; // Asegúrate de implementar esta función
+import PanaTeacher from '../../assets/PanaLogin.png';
 
 export const LoginForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -18,7 +17,6 @@ export const LoginForm = () => {
     }, []);
 
     const onSubmit = async (data) => {
-        // Lógica de inicio de sesión
         console.log(data);
     };
 
@@ -36,26 +34,26 @@ export const LoginForm = () => {
     };
 
     const loginForm = () => (
-        <div className="container-fluid"style={{overflow:'hidden', marginTop:'0vh'}}>
-            <div className="row" >  
+        <div className="container-fluid vh-100 d-flex align-items-center justify-content-center p-0" style={{ overflow: 'hidden' }}>
+            <div className="row w-100 h-100 m-0">
 
-            {/* Sección de Imagen */}
-            <div className="col-lg-6 d-flex justify-content-center align-items-center position-relative" style={{ backgroundColor: '#A5B4FC' }}>
-                <Link to="#" onClick={() => window.history.back()} style={{ position: 'absolute', top: '1em', left: '1em', zIndex: 10 }}>
-                    <i className="bi bi-arrow-left" style={{ fontSize: '1.5em', color: '#1E1B4B' }}></i>
-                </Link>
-                <img src={PanaTeacher} alt="Login Illustration" style={{ width: '80%', maxHeight: '90%', objectFit: 'contain' }} />
-            </div>
+                {/* Sección de Imagen */}
+                <div className="col-lg-6 d-flex justify-content-center align-items-center position-relative p-0" style={{ backgroundColor: '#A5B4FC' }}>
+                    <Link to="#" onClick={() => window.history.back()} style={{ position: 'absolute', top: '1em', left: '1em', zIndex: 10 }}>
+                        <i className="bi bi-arrow-left" style={{ fontSize: '1.5em', color: '#1E1B4B' }}></i>
+                    </Link>
+                    <img src={PanaTeacher} alt="Login Illustration" style={{ width: '80%', maxHeight: '90%', objectFit: 'contain' }} />
+                </div>
 
                 {/* Sección de Formulario */}
-                <div className="col-lg-6 d-flex justify-content-center align-items-center" >
-                    <div className="col-md-8 col-sm-10" style={{ height: '100%', marginTop: '4em', marginBottom: '2em', overflow:'hidden'}}>
-                        <h1 className="text-center">Iniciar Sesión</h1>
+                <div className="col-lg-6 d-flex justify-content-center align-items-center p-0">
+                    <div className="col-md-8 col-sm-10 mx-5">
+                        <h1 className="text-center mb-4">Iniciar Sesión</h1>
                         <Link to="/registrarse" className="d-block text-center mb-3">
                             Si no tienes un usuario, regístrate aquí
                         </Link>
 
-                        <div className="card shadow-sm mt-4">
+                        <div className="card shadow-sm">
                             <div className="card-header text-left">
                                 <i className="bi bi-person"></i> Por favor, ingresa tus datos de inicio de sesión
                             </div>
@@ -68,19 +66,19 @@ export const LoginForm = () => {
                                 )}
                                 <form className="mt-3" onSubmit={handleSubmit(onSubmit)} id="login">
                                     <div className="form-group mb-3">
-                                        <label htmlFor="email">Correo Electrónico</label>
+                                        <label htmlFor="username">Nombre de Usuario</label>
                                         <input 
-                                            type="email" 
-                                            name="email" 
-                                            id="email" 
-                                            className={`form-control ${errors.email ? 'is-invalid' : ''}`} 
-                                            placeholder="Correo Electrónico" 
-                                            autoComplete="email" 
-                                            {...register("email", { required: true })} 
+                                            type="text" 
+                                            name="username" 
+                                            id="username" 
+                                            className={`form-control ${errors.username ? 'is-invalid' : ''}`} 
+                                            placeholder="Nombre de Usuario" 
+                                            autoComplete="username" 
+                                            {...register("username", { required: true })} 
                                         />
-                                        {errors.email && (
+                                        {errors.username && (
                                             <div className="invalid-feedback">
-                                                Por favor, ingrese un correo electrónico
+                                                Por favor, ingrese un nombre de usuario
                                             </div>
                                         )}
                                     </div>
@@ -108,7 +106,6 @@ export const LoginForm = () => {
                                         )}
                                     </div>
 
-                                    {/* Checkbox para recordar datos */}
                                     <div className="form-check mb-3">
                                         <input
                                             type="checkbox"
