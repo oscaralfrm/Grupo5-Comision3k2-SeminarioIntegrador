@@ -4,16 +4,15 @@ import com.harp.backend.entities.usuario.dto.AuthLoginRequestDTO;
 import com.harp.backend.entities.usuario.dto.AuthResponseDTO;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.repository.IUsuarioRepository;
+import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.utils.JwtUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -35,58 +36,84 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // Conseguimos al usuario de la base de datos
+        Usuario usuario = usuarioRepository.findUsuarioByNombreUsuario(username)
+                .orElseThrow(() -> new UsernameNotFoundException("El usuario: " + username + " no se pudo encontrar"));
 
-        // Conseguimos al usuario de la base de datos...
-
-        Usuario usuario = usuarioRepository.findUsuarioByNombreUsuario(username).orElseThrow(() -> new
-                UsernameNotFoundException("El usuario: " + username + " no se pudo encontrar"));
-
-        // Conseguimos la lista de permisos...
-
+        // Construimos la lista de permisos y roles
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        // Primero, con funcional se recorre la lista de los roles/perfiles del usuario (1 Usuario N roles...)
-        // Luego, por funcional, ahora recorremos la lista de permisos asociados a cada uno de los roles/perfiles...
-        // Lo que haremos será parsear los permisos y volverlos como objetos SimpleGrantedAuthority, y los guardamos en una lista.
-        usuario.getPerfiles().stream().flatMap((perfil) -> perfil.getPermisos().stream()).forEach((permiso) -> authorityList.add(new SimpleGrantedAuthority(permiso.getNombre())));
+        usuario.getPerfiles().forEach(perfil -> {
+            perfil.getPermisos().forEach(permiso -> authorityList.add(new SimpleGrantedAuthority(permiso.getNombre())));
+            authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(perfil.getNombre())));
+        });
 
-
-        // Traemos la lista de los roles/permisos...
-        usuario.getPerfiles().stream().forEach((perfil) -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(perfil.getNombre()))));
-
-        return new User(usuario.getNombreUsuario(), usuario.getContrasena(), usuario.isEnabled(), usuario.isAccountNotExpired(),
-                usuario.isCredentialNotExpired(), usuario.isNotLocked(), authorityList);
+        return new org.springframework.security.core.userdetails.User(usuario.getNombreUsuario(), usuario.getContrasena(), usuario.isEnabled(),
+                usuario.isAccountNotExpired(), usuario.isCredentialNotExpired(), usuario.isNotLocked(), authorityList);
     }
 
     public AuthResponseDTO loginUser(@Valid AuthLoginRequestDTO userRequest) {
-
-        // Recuperar el nombre de usuario y contraseña...
-
         String username = userRequest.username();
         String password = userRequest.password();
 
-        Authentication authentication = this.authenticate(username, password);
-
+        Authentication authentication = authenticate(username, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         String accessToken = jwtUtils.createToken(authentication);
-        AuthResponseDTO authResponseDTO = new AuthResponseDTO(username, "¡Bienvenido al Sistema!", accessToken, true);
-        return authResponseDTO;
+        return new AuthResponseDTO(username, "¡Bienvenido al Sistema!", accessToken, true);
     }
 
     private Authentication authenticate(String username, String password) {
-        UserDetails userDetails = this.loadUserByUsername(username);
-
-        if (userDetails == null) {
-            throw new BadCredentialsException("Nombre de usuario o contraseña equivocados...");
-        }
+        UserDetails userDetails = loadUserByUsername(username);
 
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new BadCredentialsException("Contraseña equivocada...");
         }
 
-        return new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    }
 
+    // Método para registrar un nuevo usuario
+    public Usuario registerUser(Usuario user) {
+        // Verifica si el usuario ya existe
+        if (usuarioRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("El usuario ya existe");
+        }
+
+        // Crea el rol de Instructor si no existe
+        Perfil rolInstructor = new Perfil();
+        rolInstructor.setId(52L); // ID del rol Instructor (asegúrate de que este ID exista en la base de datos)
+        rolInstructor.setNombre("Instructor"); // Asegúrate de que el nombre del rol sea correcto
+
+        // Añade el rol al usuario
+        Set<Perfil> perfiles = new HashSet<>();
+        perfiles.add(rolInstructor);
+        user.setPerfiles(perfiles);
+
+        return usuarioRepository.save(user);
+    }
+
+    // Lógica para manejar el login de Google
+    public Usuario loginWithGoogle(String email, String name) {
+        // Verifica si el usuario existe, si no, lo crea
+        Usuario user = usuarioRepository.findByEmail(email);
+        if (user == null) {
+            user = new Usuario();
+            user.setEmail(email);
+            user.setNombre(name);
+
+            // Crea el rol de Instructor si no existe
+            Perfil rolInstructor = new Perfil();
+            rolInstructor.setId(52L); // ID del rol Instructor
+            rolInstructor.setNombre("Instructor"); // Asegúrate de que el nombre del rol sea correcto
+
+            // Añade el rol al usuario
+            Set<Perfil> perfiles = new HashSet<>();
+            perfiles.add(rolInstructor);
+            user.setPerfiles(perfiles);
+            return usuarioRepository.save(user);
+        }
+        return user; // Usuario ya existe, devuelve el existente
     }
 }
