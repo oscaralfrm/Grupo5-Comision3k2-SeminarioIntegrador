@@ -11,7 +11,7 @@ const ServiceCreationStep4 = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        navigate('/instructor/1/crear-grupo');
+        navigate('/instructor/1/servicio/1');
     };
 
     return (

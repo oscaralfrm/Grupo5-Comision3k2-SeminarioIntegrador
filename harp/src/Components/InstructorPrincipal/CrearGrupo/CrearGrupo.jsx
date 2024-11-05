@@ -6,7 +6,6 @@ const CreateGroups = () => {
     const [schedule, setSchedule] = useState({});
     const [maxStudentsPerGroup, setMaxStudentsPerGroup] = useState('');
     const [sameMaxStudentsForAll, setSameMaxStudentsForAll] = useState(true);
-    const [individualMaxStudents, setIndividualMaxStudents] = useState({});
 
     const weekDays = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
     const fullWeek = ["Domingo", ...weekDays, "Sábado"];
@@ -28,11 +27,17 @@ const CreateGroups = () => {
         );
     };
 
-    const handleAddTimeSlot = (day) => {
-        setSchedule((prev) => ({
-            ...prev,
-            [day]: [...(prev[day] || []), { start: "", end: "", maxStudents: "" }]
-        }));
+    const handleAddTimeSlot = () => {
+        setSchedule((prev) => {
+            const newSchedule = { ...prev };
+            selectedDays.forEach((day) => {
+                if (!newSchedule[day]) {
+                    newSchedule[day] = [];
+                }
+                newSchedule[day].push({ start: "", end: "", maxStudents: "" });
+            });
+            return newSchedule;
+        });
     };
 
     const handleRemoveTimeSlot = (day, index) => {
@@ -63,10 +68,10 @@ const CreateGroups = () => {
     };
 
     return (
-        <div style={{ padding: "20px", maxWidth: "800px", margin: "auto", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <div className="container-fluid" style={{ width: '100vw', height: '100vh', padding: '0', overflow: 'hidden', fontFamily: 'Roboto' }}>
             <h2 className="text-center mb-4" style={{ color: "#000000" }}>Ahora creemos tus grupos</h2>
 
-            <Form onSubmit={handleFormSubmit} style={{ width: '100%' }}>
+            <Form   onSubmit={handleFormSubmit} style={{ marginleft:"2vw",maxWidth: "800px", width: "100%" }}>
                 {/* Selección de días */}
                 <Form.Group controlId="daySelection" className="mb-4">
                     <Form.Label>¿Qué días se dictará el servicio?</Form.Label>
@@ -97,8 +102,8 @@ const CreateGroups = () => {
                                 </Col>
                             ))}
                         </Row>
-                        <div className="text-center">
-                            <Button variant="primary" onClick={() => setSchedule({})}>
+                        <div className="text-center mt-3">
+                            <Button variant="primary" onClick={handleAddTimeSlot}>
                                 Agregar Horarios
                             </Button>
                         </div>
@@ -171,7 +176,7 @@ const CreateGroups = () => {
                                 </Col>
                             </Row>
                         ))}
-                        <Button variant="secondary" onClick={() => handleAddTimeSlot(day)}>
+                        <Button variant="secondary" onClick={() => handleAddTimeSlot()}>
                             Agregar horario para {day}
                         </Button>
                     </div>
@@ -188,5 +193,6 @@ const CreateGroups = () => {
 };
 
 export default CreateGroups;
+
 
 

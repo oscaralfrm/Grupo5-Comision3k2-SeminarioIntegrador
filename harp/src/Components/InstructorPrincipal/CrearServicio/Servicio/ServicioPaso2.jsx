@@ -103,7 +103,7 @@ const ServiceCreationStep2 = () => {
 
                     {(mode === 'fija' || mode === 'pase') && (
                         <Form.Group controlId="maxStudents" className="mb-2">
-                            <Form.Label>Cantidad Máxima de Alumnos Totales</Form.Label>
+                            <Form.Label>Cantidad de clases por semana</Form.Label>
                             <Form.Control
                                 type="number"
                                 placeholder="Ingresa la cantidad máxima de alumnos totales"

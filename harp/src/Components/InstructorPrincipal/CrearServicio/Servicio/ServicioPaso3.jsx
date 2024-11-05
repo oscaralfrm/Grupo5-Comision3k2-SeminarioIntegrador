@@ -6,6 +6,7 @@ import img from '../../../../assets/Logo.png';
 const ServiceCreationStep3 = () => {
     const [paymentFrequency, setPaymentFrequency] = useState('');
     const [amount, setAmount] = useState('');
+    const [endDate, setEndDate] = useState(''); // Estado para la fecha límite
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
@@ -30,17 +31,17 @@ const ServiceCreationStep3 = () => {
                 borderRadius: '10px',
                 boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.3)'
             }}>
-                  <div style={{
+                <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: '20px'
                 }}>
-                     <img
+                    <img
                         src={img}
                         alt="Logo Harp"
                         style={{
-                            width: '60px', // Ajusta el tamaño según lo necesites
+                            width: '60px',
                             height: '60px',
                             objectFit: 'contain',
                             marginTop:'-1vw'
@@ -50,13 +51,12 @@ const ServiceCreationStep3 = () => {
                         fontSize: '2rem',
                         fontWeight: 'bold',
                         color: '#333',
-                        marginRight: '10px', // Espacio entre el título y el logo
+                        marginRight: '10px',
                         fontFamily: 'Roboto'
                     }}>Harp</h1>
-
                 </div>
+                
                 <h2 className="text-center mb-4" style={{ color: '#000000' }}>Modalidad de Cobro del Servicio</h2>
-
                 <ProgressBar now={75} variant="info" animated className="mb-4" />
 
                 <Form onSubmit={handleSubmit}>
@@ -72,12 +72,26 @@ const ServiceCreationStep3 = () => {
                             onBlur={(e) => e.target.style.borderColor = '#1e3a8a'}
                         >
                             <option value="">Selecciona la modalidad de cobro</option>
-                            <option value="mensual">Mensual</option>
-                            <option value="anual">Anual</option>
+                            <option value="fechaCalendario">A mes calendario</option>
+                            <option value="fechaCalendarioConLimite">A mes calendario con fecha limite</option>
+                            <option value="30dias">Cada 30 dias segun fecha de inscripcion del alumno</option>
                         </Form.Control>
                     </Form.Group>
 
-                    <Form.Group controlId="amount" className="mb-2">
+                    {/* Campo para ingresar la fecha límite, visible solo si se selecciona la opción */}
+                    {paymentFrequency === "fechaCalendarioConLimite" && (
+                        <Form.Group controlId="endDate" className="mb-3">
+                            <Form.Label>Fecha límite</Form.Label>
+                            <Form.Control
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
+                    )}
+
+                    {/* <Form.Group controlId="amount" className="mb-2">
                         <Form.Label>Monto en Pesos Argentinos</Form.Label>
                         <Form.Control
                             type="number"
@@ -90,9 +104,9 @@ const ServiceCreationStep3 = () => {
                             onBlur={(e) => e.target.style.borderColor = '#1e3a8a'}
                         />
                         <Form.Text className="text-muted">
-                            El monto será {paymentFrequency === 'mensual' ? 'mensual' : paymentFrequency === 'anual' ? 'anual' : 'de acuerdo a la modalidad seleccionada'}.
+                            El monto será {paymentFrequency === 'fechaCalendario' ? 'fechaCalendario' : paymentFrequency === 'fechaCalendarioConLimite' ? 'fechaCalendarioConLimite' :paymentFrequency === '30dias' ? '30dias': 'de acuerdo a la modalidad seleccionada'}.
                         </Form.Text>
-                    </Form.Group>
+                    </Form.Group> */}
 
                     <div className="text-center mt-4">
                         <Button
@@ -120,3 +134,4 @@ const ServiceCreationStep3 = () => {
 };
 
 export default ServiceCreationStep3;
+

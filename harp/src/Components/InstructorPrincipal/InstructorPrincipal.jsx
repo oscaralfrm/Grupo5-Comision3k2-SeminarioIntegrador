@@ -78,7 +78,7 @@ const InstructorPrincipal = () => {
             marginBottom: "20px",
             opacity: isHarpVisible ? 1 : 0,
             transition: "opacity 0.5s ease-in-out",
-            filter: 'drop-shadow(1px 1px 1px #000000)'
+            // filter: 'drop-shadow(1px 1px 1px #000000)'
           }}
         >
           <img
@@ -112,7 +112,7 @@ const InstructorPrincipal = () => {
             position: "relative",
           }}
         >
-          <h2 style={{ color: "Black",fontFamily:"Roboto", margin: 0,filter: 'drop-shadow(0px 1px 2px #000000)' }}>Tus Servicios</h2>
+          <h2 style={{ color: "Black",fontFamily:"Roboto", margin: 0 }}>Tus Servicios</h2>
         </div>
 
         <div
