@@ -49,7 +49,7 @@ export const LoginForm = () => {
 
                 {/* Sección de Formulario */}
                 <div className="col-lg-6 d-flex justify-content-center align-items-center" >
-                    <div className="col-md-8 col-sm-10" style={{ height: '100%', marginTop: '4em', marginBottom: '2em', overflow:'hidden'}}>
+                    <div className="col-md-8 col-sm-10" style={{ height: '100vh', marginTop: '4em', marginBottom: '2em', overflow:'hidden'}}>
                         <h1 className="text-center">Iniciar Sesión</h1>
                         <Link to="/registrarse" className="d-block text-center mb-3">
                             Si no tienes un usuario, regístrate aquí
