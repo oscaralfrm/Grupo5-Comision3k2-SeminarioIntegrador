@@ -20,9 +20,16 @@ const ServiceCreationStep3 = () => {
 
     return (
         <div className="d-flex align-items-center justify-content-center vh-100 vw-100 p-4">
-            <div className="p-4 w-100 max-w-600 bg-light rounded shadow">
+            <div className="p-4 w-100" style={{ maxWidth: '400px', backgroundColor: '#f8f9fa', borderRadius: '0.5rem' ,boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)' }}>
                 <div className="d-flex align-items-center justify-content-center mb-4">
                     <img src={img} alt="Logo Harp" className="logo" />
+                </div>
+                <div className="position-absolute top-0 start-0 m-3">
+                    <i
+                        className="bi bi-arrow-left fs-4 text-dark"
+                        onClick={() => window.history.back()}
+                        role="button"
+                    ></i>
                 </div>
                 <h2 className="text-center mb-4">Modalidad de Cobro del Servicio</h2>
                 <ProgressBar now={75} variant="info" animated className="mb-4" />

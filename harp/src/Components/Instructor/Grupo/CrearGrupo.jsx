@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, Col, Row, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
-const CreateGroups = (idServicio, idInstructor) => {
+const CreateGroups = ({ idServicio, idInstructor }) => {
     const [groups, setGroups] = useState([]);
     const [maxStudentsPerGroup, setMaxStudentsPerGroup] = useState('');
     const [sameMaxStudentsForAll, setSameMaxStudentsForAll] = useState(true);
@@ -12,75 +12,62 @@ const CreateGroups = (idServicio, idInstructor) => {
 
     const addGroup = () => {
         const newGroup = {
+            name: `Grupo ${groups.length + 1}`,
             groupNumber: groups.length + 1,
-            schedules: []
+            schedules: [],
         };
         setGroups([...groups, newGroup]);
+    };
+
+    const updateGroupName = (groupIndex, name) => {
+        const updatedGroups = groups.map((group, gIdx) =>
+            gIdx === groupIndex ? { ...group, name } : group
+        );
+        setGroups(updatedGroups);
     };
 
     const addSchedule = (groupIndex) => {
         const updatedGroups = [...groups];
         if (updatedGroups[groupIndex].schedules.length < maxAttendancePerWeek) {
-            updatedGroups[groupIndex].schedules.push({ day: "", start: "", end: "" });
+            updatedGroups[groupIndex].schedules.push({ day: '', start: '', end: '' });
             setGroups(updatedGroups);
         } else {
             alert(`No se pueden agregar más horarios. El máximo de asistencias por semana es ${maxAttendancePerWeek}.`);
         }
     };
 
-    // Verificar si un horario es único en el mismo grupo y entre otros grupos
     const isScheduleUnique = (day, start, end, groupIndex, scheduleIndex) => {
         const startTime = new Date(`1970-01-01T${start}:00`).getTime();
         const endTime = new Date(`1970-01-01T${end}:00`).getTime();
 
-        // Verificar dentro del mismo grupo
-        const group = groups[groupIndex];
-        for (let i = 0; i < group.schedules.length; i++) {
-            if (i !== scheduleIndex && group.schedules[i].day === day) {
-                const existingStart = new Date(`1970-01-01T${group.schedules[i].start}:00`).getTime();
-                const existingEnd = new Date(`1970-01-01T${group.schedules[i].end}:00`).getTime();
-
-                // Comprobar si los horarios se solapan
-                if ((startTime < existingEnd && endTime > existingStart)) {
-                    return false;
-                }
-            }
-        }
-
-        // Verificar entre diferentes grupos
         for (let i = 0; i < groups.length; i++) {
-            if (i !== groupIndex) { // No verificar el grupo actual
-                for (const schedule of groups[i].schedules) {
-                    if (schedule.day === day) {
-                        const existingStart = new Date(`1970-01-01T${schedule.start}:00`).getTime();
-                        const existingEnd = new Date(`1970-01-01T${schedule.end}:00`).getTime();
-
-                        // Comprobar si los horarios se solapan
-                        if ((startTime < existingEnd && endTime > existingStart)) {
-                            return false;
-                        }
-                    }
+            for (let j = 0; j < groups[i].schedules.length; j++) {
+                if (
+                    !(i === groupIndex && j === scheduleIndex) &&
+                    groups[i].schedules[j].day === day
+                ) {
+                    const existingStart = new Date(`1970-01-01T${groups[i].schedules[j].start}:00`).getTime();
+                    const existingEnd = new Date(`1970-01-01T${groups[i].schedules[j].end}:00`).getTime();
+                    if ((startTime < existingEnd && endTime > existingStart)) return false;
                 }
             }
         }
-
-        return true; // El horario es único y no se solapa
+        return true;
     };
 
     const handleTimeChange = (groupIndex, scheduleIndex, field, value) => {
-        const updatedGroups = groups.map((group, gIdx) => 
+        const updatedGroups = groups.map((group, gIdx) =>
             gIdx === groupIndex
                 ? {
                       ...group,
                       schedules: group.schedules.map((schedule, sIdx) =>
                           sIdx === scheduleIndex ? { ...schedule, [field]: value } : schedule
-                      )
+                      ),
                   }
                 : group
         );
         setGroups(updatedGroups);
 
-        // Validación después de actualizar el horario
         const { day, start, end } = updatedGroups[groupIndex].schedules[scheduleIndex];
         if (day && start && end) {
             const isUnique = isScheduleUnique(day, start, end, groupIndex, scheduleIndex);
@@ -97,8 +84,7 @@ const CreateGroups = (idServicio, idInstructor) => {
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        
-        // Verificar si hay errores y si hay al menos un grupo creado
+
         if (Object.keys(errors).length === 0 && groups.length > 0) {
             console.log("Datos de grupos:", groups);
             navigate(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`);
@@ -110,7 +96,6 @@ const CreateGroups = (idServicio, idInstructor) => {
             <h2 className="text-center mb-4">Ahora creemos tus grupos</h2>
 
             <Form onSubmit={handleFormSubmit}>
-                {/* Configuración de asistencia máxima por semana */}
                 <Form.Group controlId="maxAttendancePerWeek" className="mb-4">
                     <Form.Label>Máximo de asistencias por semana por alumno</Form.Label>
                     <Form.Control
@@ -121,7 +106,6 @@ const CreateGroups = (idServicio, idInstructor) => {
                     />
                 </Form.Group>
 
-                {/* Configuración global para máximo de estudiantes */}
                 <Form.Group controlId="sameMaxStudentsForAll" className="mb-4">
                     <Form.Check
                         type="checkbox"
@@ -143,10 +127,19 @@ const CreateGroups = (idServicio, idInstructor) => {
                     </Form.Group>
                 )}
 
-                {/* Mostrar y agregar grupos */}
                 {groups.map((group, groupIndex) => (
                     <div key={group.groupNumber} className="mb-4 p-3 border">
-                        <h5>Grupo {group.groupNumber}</h5>
+                        <Row className="align-items-center mb-2">
+                            <Col xs={9}>
+                                <Form.Control
+                                    type="text"
+                                    placeholder={`Nombre del grupo (Ej: ${group.name})`}
+                                    value={group.name}
+                                    onChange={(e) => updateGroupName(groupIndex, e.target.value)}
+                                    required
+                                />
+                            </Col>
+                        </Row>
                         {group.schedules.map((schedule, scheduleIndex) => (
                             <Row key={scheduleIndex} className="align-items-center mb-2">
                                 <Col xs={3}>
@@ -220,14 +213,12 @@ const CreateGroups = (idServicio, idInstructor) => {
                     </div>
                 ))}
 
-                {/* Botón para agregar grupos */}
                 <div className="text-center mb-4">
                     <Button variant="secondary" onClick={addGroup}>
                         Agregar Grupo
                     </Button>
                 </div>
 
-                {/* Botón de guardar */}
                 <div className="text-center">
                     <Button variant="primary" type="submit">
                         Guardar Grupos

@@ -19,8 +19,15 @@ const ServiceCreationStep4 = () => {
     };
 
     return (
-        <div className="d-flex align-items-center justify-content-center vh-100 vw-100 p-4">
-            <div className="p-4 w-100 max-w-600 bg-light rounded shadow">
+        <div className="d-flex align-items-center justify-content-center min-vh-100 p-3">
+            <div className="bg-light rounded shadow p-4 w-100" style={{ maxWidth: '360px' }}>
+                <div className="position-absolute top-0 start-0 m-3">
+                    <i
+                        className="bi bi-arrow-left fs-4 text-dark"
+                        onClick={() => window.history.back()}
+                        role="button"
+                    ></i>
+                </div>
                 <div className="d-flex align-items-center justify-content-center mb-4">
                     <img src={img} alt="Logo Harp" className="logo" />
                 </div>

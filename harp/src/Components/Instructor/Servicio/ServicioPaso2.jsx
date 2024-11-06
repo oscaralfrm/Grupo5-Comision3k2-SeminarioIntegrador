@@ -30,6 +30,13 @@ const ServiceCreationStep2 = () => {
                 <div className="d-flex align-items-center justify-content-center mb-4">
                     <img src={img} alt="Logo Harp" className="logo" />
                 </div>
+                <div className="position-absolute top-0 start-0 m-3">
+            <i
+              className="bi bi-arrow-left fs-4 text-dark"
+              onClick={() => window.history.back()}
+              role="button"
+            ></i>
+          </div>
                 <h2 className="text-center mb-4">Modalidad del Servicio</h2>
                 <ProgressBar now={50} variant="info" animated className="mb-4" />
                 
