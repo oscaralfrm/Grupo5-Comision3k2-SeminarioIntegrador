@@ -13,6 +13,10 @@ import ServiceCreationStep4 from "./Components/Instructor/Servicio/ServicioPaso4
 import CreateGroups from "./Components/Instructor/Grupo/CrearGrupo";
 import MiServicio from "./Components/Instructor/MiServicio/MiServicio";
 import PaginaDeInicio from "./Components/PaginaDeInicio/PaginaDeInicio";
+import General from "./Components/Instructor/MiServicio/MenuOpciones/General";
+import Cobros from "./Components/Instructor/MiServicio/MenuOpciones/Cobros";
+import Alumnos from "./Components/Instructor/MiServicio/MenuOpciones/Alumnos";
+import Servicio from "./Components/Instructor/MiServicio/MenuOpciones/Servicio";
 
 function App() {
     return (
@@ -31,7 +35,11 @@ function App() {
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3" element={<ServiceCreationStep3/>}/>
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3/paso4" element={<ServiceCreationStep4/>}/>
                         <Route path="/instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<CreateGroups/>}/>
-                        <Route path="/instructor/:idInstructor/Servicio/:idServicio" element={<MiServicio/>}/>
+                        <Route path="/instructor/:idInstructor/servicio/:idServicio" element={<MiServicio/>}/>
+                        <Route path="/instructor/:idInstructor/general/:idServicio" element={<General/>}/>
+                        <Route path="/instructor/:idInstructor/cobros/:idServicio" element={<Cobros/>}/>
+                        <Route path="/instructor/:idInstructor/alumnos/:idServicio" element={<Alumnos/>}/>
+                        <Route path="/instructor/:idInstructor/Miservicio/:idServicio" element={<Servicio/>}/>
                     </Routes>
                 </div>
             </BrowserRouter>

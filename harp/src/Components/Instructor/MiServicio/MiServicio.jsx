@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import NavbarInstructor from './NavbarInstructor/NavbarInstructor.jsx';
-import Sidebar from './SidebarInstructor/SidebarInstructor.jsx';
+import NavbarInstructor from './NavbarInstructor/NavbarInstructor';
+import Sidebar from './SidebarInstructor/SidebarInstructor';
 
 export default function MiServicio() {
-  const [isSidebarVisible, toggleSidebar] = useState(true);
+  const [isSidebarVisible, setSidebarVisible] = useState(false); // Estado para manejar la visibilidad del sidebar
+
+  const toggleSidebar = () => {
+    setSidebarVisible(!isSidebarVisible);
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'row' }}>
       {/* Navbar */}
-      <NavbarInstructor toggleSidebar={() => toggleSidebar(prev => !prev)} />
+      <NavbarInstructor toggleSidebar={toggleSidebar} />
 
       {/* Sidebar: Se muestra solo si isSidebarVisible es true */}
       {isSidebarVisible && (
