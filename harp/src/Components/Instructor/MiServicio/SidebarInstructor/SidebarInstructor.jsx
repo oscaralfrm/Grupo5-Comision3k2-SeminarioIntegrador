@@ -1,84 +1,38 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React from 'react';
+import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
+import { FaHome, FaChalkboardTeacher, FaUserGraduate, FaMoneyBillWave } from 'react-icons/fa'; // Íconos de react-icons
+import { Link } from 'react-router-dom'; // Para las rutas de React Router
 
-const Sidebar = ({ setSelectedService, idInstructor }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const services = ["Yoga Adultos", "Entrenamiento Funcional", "Yoga Jóvenes"];
-
-  const handleServiceChange = (service) => {
-    setSelectedService(service);
-  };
-
-  const toggleDropdown = () => setIsDropdownOpen(prev => !prev);
-
+const CustomSidebar = ({idServicio,idInstructor}) => {
   return (
-    <nav
-      className="sidebar bg-dark text-light"
+    <Sidebar
       style={{
-        position: "fixed",
-        top: "0",
-        left: "0",
-        width: "250px", // Ancho del sidebar
-        height: "100vh", // Ocupa toda la altura
-        zIndex: "1000", // Asegura que se muestre por encima
-        boxShadow: "2px 0px 10px rgba(0, 0, 0, 0.1)", // Sombra sutil
-        padding: "20px",
+        position: 'fixed',
+        top: '13vh',  // Ajustado para estar debajo de la navbar
+        left: '0',    // Fijado a la izquierda
+        width: '250px',  // Ancho fijo del sidebar
+        height: '87vh',  // Alto adaptado al tamaño de la pantalla
+        backgroundColor: '#f8f9fa',  // Fondo claro para el sidebar
+        fontFamily: 'Roboto, sans-serif', // Usar fuente Roboto
+        zIndex: '1050'  // Asegurar que el sidebar esté por encima del contenido
       }}
     >
-      <div className="sidebar-content">
-        {/* Logo */}
-        <div className="mb-4">
-          <h2 className="text-white" style={{ fontSize: "2rem" }}>Harp</h2>
-        </div>
-
-        {/* Menu de navegación */}
-        <ul className="nav flex-column">
-          <li className="nav-item">
-            <Link className="nav-link text-white" to={`/instructor/${idInstructor}/general`}>
-              <i className="bi bi-house-door"></i> General
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link text-white" to={`/instructor/${idInstructor}/servicio`}>
-              <i className="bi bi-book"></i> Mi Servicio
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link text-white" to={`/instructor/${idInstructor}/cobros`}>
-              <i className="bi bi-graph-up"></i> Cobros
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link text-white" to={`/instructor/${idInstructor}/alumnos`}>
-              <i className="bi bi-person"></i> Alumnos
-            </Link>
-          </li>
-        </ul>
-
-        {/* Selector de Servicios */}
-        <div className="mt-5">
-          <button className="btn btn-secondary w-100" onClick={toggleDropdown}>
-            Seleccionar Servicio
-          </button>
-          {isDropdownOpen && (
-            <ul className="list-unstyled p-0">
-              {services.map((service, index) => (
-                <li key={index} className="mt-2">
-                  <button
-                    className="btn btn-link text-white w-100"
-                    onClick={() => handleServiceChange(service)}
-                  >
-                    {service}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-    </nav>
+      <Menu>
+        <MenuItem icon={<FaHome />} style={{ fontSize: '1rem' }}>
+          <Link to={`/intructor/${idInstructor}/servicio/${idServicio}/general`} style={{ textDecoration: 'none', color: 'black' }}>General</Link>
+        </MenuItem>
+        <MenuItem icon={<FaChalkboardTeacher />} style={{ fontSize: '1rem' }}>
+          <Link to={`/intructor/${idInstructor}/servicio/${idServicio}`} style={{ textDecoration: 'none', color: 'black' }}>Mi Servicio</Link>
+        </MenuItem>
+        <MenuItem icon={<FaUserGraduate />} style={{ fontSize: '1rem' }}>
+          <Link to={`/intructor/${idInstructor}/servicio/${idServicio}/alumnos`} style={{ textDecoration: 'none', color: 'black' }}>Alumnos</Link>
+        </MenuItem>
+        <MenuItem icon={<FaMoneyBillWave />} style={{ fontSize: '1rem' }}>
+          <Link to={`/intructor/${idInstructor}/servicio/${idServicio}/cobros`} style={{ textDecoration: 'none', color: 'black' }}>Cobros</Link>
+        </MenuItem>
+      </Menu>
+    </Sidebar>
   );
 };
 
-export default Sidebar;
+export default CustomSidebar;

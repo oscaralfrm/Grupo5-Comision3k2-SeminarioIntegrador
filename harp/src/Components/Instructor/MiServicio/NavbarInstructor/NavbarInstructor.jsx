@@ -2,56 +2,54 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function NavbarInstructor( toggleSidebar ) {
-  const [isMenuVisible, setIsMenuVisible] = useState(true);
-  const [showDropdown, setShowDropdown] = useState(false);
+function NavbarInstructor({ toggleSidebar }) {
+  const [showGroupSelector, setShowGroupSelector] = useState(false);
   const navigate = useNavigate();
 
   const handleToggleMenu = () => {
-    setIsMenuVisible((prev) => !prev);
-    toggleSidebar();
+    toggleSidebar(); // Llamamos a la función para alternar el sidebar
   };
 
-  const handleProfileSelect = (option) => {
-    if (option === 'profile') navigate('/mi-cuenta');
-    else if (option === 'settings') navigate('/configuracion');
-    else if (option === 'logout') navigate('/logout');
-    setShowDropdown(false);
+  const handleGroupSelect = (group) => {
+    console.log('Grupo seleccionado:', group);
+    setShowGroupSelector(false);
   };
-
-  const toggleDropdown = (e) => {
-    e.stopPropagation();
-    setShowDropdown((prev) => !prev);
-  };
-
-  React.useEffect(() => {
-    const handleClickOutside = () => setShowDropdown(false);
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
 
   return (
-    <nav className="navbar navbar-expand-lg fixed-top navbar-dark" style={{ backgroundColor: '#1E1B4B' }}>
-      <div className="container-fluid">
-        <button
-          className="btn d-flex align-items-center"
-          onClick={handleToggleMenu}
+    <nav className="navbar navbar-expand-lg navbar-light" style={{ backgroundColor: '#f8f9fa', width: '100%' }}>
+      <div className="container-fluid d-flex justify-content-between">
+        {/* Botón de menú */}
+        <button 
+          className="navbar-toggler" 
+          type="button" 
+          onClick={handleToggleMenu} 
+          aria-controls="navbarSupportedContent" 
+          aria-expanded="false" 
+          aria-label="Toggle navigation"
         >
-          <i className="bi bi-list" style={{ fontSize: '1.5rem' }}></i>
-          {!isMenuVisible && <span className="ms-2">Menú</span>}
+          <span className="navbar-toggler-icon"></span>
         </button>
 
-        <h1 className="navbar-brand mx-auto" style={{ fontSize: '3vw' }}>
-          Harp
-        </h1>
+        {/* Nombre "Harp" centrado */}
+        <div className="d-flex align-items-center" style={{ flex: 1, justifyContent: 'center' }}>
+          <a className="navbar-brand" href="#" style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+            Harp
+          </a>
+        </div>
 
-        <select className="form-select" style={{ width: '120px' }}>
-          <option value="service1">Serv. 1</option>
-          <option value="service2">Serv. 2</option>
-          <option value="service3">Serv. 3</option>
-        </select>
+        {/* Selector de grupo */}
+        <div className="d-flex align-items-center">
+          <a className="nav-link" href="#" onClick={() => setShowGroupSelector(!showGroupSelector)}>
+            Seleccionar Grupo
+          </a>
+          {showGroupSelector && (
+            <ul className="dropdown-menu show" style={{ display: 'block' }}>
+              <li><a className="dropdown-item" href="#" onClick={() => handleGroupSelect('Grupo 1')}>Grupo 1</a></li>
+              <li><a className="dropdown-item" href="#" onClick={() => handleGroupSelect('Grupo 2')}>Grupo 2</a></li>
+              <li><a className="dropdown-item" href="#" onClick={() => handleGroupSelect('Grupo 3')}>Grupo 3</a></li>
+            </ul>
+          )}
+        </div>
       </div>
     </nav>
   );
