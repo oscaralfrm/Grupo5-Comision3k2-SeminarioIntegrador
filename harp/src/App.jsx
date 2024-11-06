@@ -36,10 +36,10 @@ function App() {
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3/paso4" element={<ServiceCreationStep4/>}/>
                         <Route path="/instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<CreateGroups/>}/>
                         <Route path="/instructor/:idInstructor/servicio/:idServicio" element={<MiServicio/>}/>
-                        <Route path="/instructor/:idInstructor/general/:idServicio" element={<General/>}/>
-                        <Route path="/instructor/:idInstructor/cobros/:idServicio" element={<Cobros/>}/>
-                        <Route path="/instructor/:idInstructor/alumnos/:idServicio" element={<Alumnos/>}/>
-                        <Route path="/instructor/:idInstructor/Miservicio/:idServicio" element={<Servicio/>}/>
+                        <Route path="/instructor/:idInstructor/servicio/:idServicio/general" element={<General/>}/>
+                        <Route path="/instructor/:idInstructor/servicio/:idServicio/cobro" element={<Cobros/>}/>
+                        <Route path="/instructor/:idInstructor/servicio/:idServicio/alumnos" element={<Alumnos/>}/>
+                        <Route path="/instructor/:idInstructor/servicio/:idServicio/mi-Servicio" element={<Servicio/>}/>
                     </Routes>
                 </div>
             </BrowserRouter>

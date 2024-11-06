@@ -3,7 +3,7 @@ import NavbarInstructor from './NavbarInstructor/NavbarInstructor';
 import Sidebar from './SidebarInstructor/SidebarInstructor';
 
 export default function MiServicio() {
-  const [isSidebarVisible, setSidebarVisible] = useState(false); // Estado para manejar la visibilidad del sidebar
+  const [isSidebarVisible, setSidebarVisible] = useState(true); // Estado para manejar la visibilidad del sidebar
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -17,7 +17,7 @@ export default function MiServicio() {
       {/* Sidebar: Se muestra solo si isSidebarVisible es true */}
       {isSidebarVisible && (
         
-          <Sidebar />
+          <Sidebar idInstructor={1} idServicio={1} />
         
       )}
 
