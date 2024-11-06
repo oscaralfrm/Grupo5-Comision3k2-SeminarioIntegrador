@@ -7,6 +7,10 @@ import { LoginForm } from "./Components/InicioSesion/InicioSesion";
 import { RegisterFormChooser } from "./Components/RegistroSesion/RegisterChooser";
 import {RegisterFormInstructor} from "./Components/RegistroSesion/RegisterInstructor/RegisterFormInstructor";
 import {RegisterFormStudent} from "./Components/RegistroSesion/RegisterStudent/RegisterFormStudent";
+import ServiceCreationStep1 from "./Components/Instructor/Servicio/ServicioPaso1";
+import ServiceCreationStep2 from "./Components/Instructor/Servicio/ServicioPaso2";
+import ServiceCreationStep3 from "./Components/Instructor/Servicio/ServicioPaso3";
+import ServiceCreationStep4 from "./Components/Instructor/Servicio/ServicioPaso4";
 
 function App() {
     return (
@@ -19,6 +23,11 @@ function App() {
                         <Route path="/registro" element={<RegisterFormChooser />} />
                         <Route path="/registro/instructor" element={<RegisterFormInstructor />} />
                         <Route path="/registro/alumno" element={<RegisterFormStudent />} />
+                        <Route path="/registro" element={<RegisterFormChooser/>}/>
+                        <Route path="/instructor/:idInstructor/crear-servicio" element={<ServiceCreationStep1/>}/>
+                        <Route path="/instructor/:idInstructor/crear-servicio/paso2" element={<ServiceCreationStep2/>}/>
+                        <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3" element={<ServiceCreationStep3/>}/>
+                        <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3/paso4" element={<ServiceCreationStep4/>}/>
                     </Routes>
                 </div>
             </BrowserRouter>
