@@ -2,55 +2,49 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function NavbarInstructor( toggleSidebar ) {
-  const [isMenuVisible, setIsMenuVisible] = useState(true);
-  const [showDropdown, setShowDropdown] = useState(false);
+function NavbarInstructor({ toggleSidebar }) {
+  const [selectedService, setSelectedService] = useState('Yoga Adultos');
   const navigate = useNavigate();
 
-  const handleToggleMenu = () => {
-    setIsMenuVisible((prev) => !prev);
-    toggleSidebar();
+  const handleServiceChange = (service) => {
+    setSelectedService(service);
+    // Lógica para redirigir al seleccionar un servicio
+    if (service === 'Yoga Adultos') {
+      navigate('/instructor/servicio/yoga-adultos');
+    } else if (service === 'Entrenamiento Funcional') {
+      navigate('/instructor/servicio/entrenamiento-funcional');
+    } else if (service === 'Yoga Jóvenes') {
+      navigate('/instructor/servicio/yoga-jovenes');
+    }
   };
-
-  const handleProfileSelect = (option) => {
-    if (option === 'profile') navigate('/mi-cuenta');
-    else if (option === 'settings') navigate('/configuracion');
-    else if (option === 'logout') navigate('/logout');
-    setShowDropdown(false);
-  };
-
-  const toggleDropdown = (e) => {
-    e.stopPropagation();
-    setShowDropdown((prev) => !prev);
-  };
-
-  React.useEffect(() => {
-    const handleClickOutside = () => setShowDropdown(false);
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
 
   return (
-    <nav className="navbar navbar-expand-lg fixed-top navbar-dark" style={{ backgroundColor: '#1E1B4B' }}>
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div className="container-fluid">
+        {/* Botón de menú visible en pantallas grandes y pequeñas */}
         <button
-          className="btn d-flex align-items-center"
-          onClick={handleToggleMenu}
+          className="navbar-toggler d-flex align-items-center"
+          type="button"
+          onClick={toggleSidebar} // Esto debe cambiar el estado de la visibilidad del sidebar
+          aria-controls="sidebar"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
         >
-          <i className="bi bi-list" style={{ fontSize: '1.5rem' }}></i>
-          {!isMenuVisible && <span className="ms-2">Menú</span>}
+          <span className="navbar-toggler-icon"></span>
         </button>
 
-        <h1 className="navbar-brand mx-auto" style={{ fontSize: '3vw' }}>
-          Harp
-        </h1>
+        {/* Logo */}
+        <h1 className="navbar-brand mx-auto">Harp</h1>
 
-        <select className="form-select" style={{ width: '120px' }}>
-          <option value="service1">Serv. 1</option>
-          <option value="service2">Serv. 2</option>
-          <option value="service3">Serv. 3</option>
+        {/* Selector de servicio en el navbar */}
+        <select
+          className="form-select w-auto"
+          value={selectedService}
+          onChange={(e) => handleServiceChange(e.target.value)}
+        >
+          <option value="Yoga Adultos">Yoga Adultos</option>
+          <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
+          <option value="Yoga Jóvenes">Yoga Jóvenes</option>
         </select>
       </div>
     </nav>
