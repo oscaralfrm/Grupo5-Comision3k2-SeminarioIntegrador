@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button, Form, ProgressBar } from 'react-bootstrap';
-import { Calendar } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import img from '../../../assets/Logo.png';
 import { setServiceData } from './ServiceData';
@@ -27,7 +26,7 @@ const ServiceCreationStep2 = () => {
 
     return (
         <div className="d-flex align-items-center justify-content-center vh-100 vw-100 p-4">
-            <div className="p-4 w-100 max-w-600 bg-light rounded shadow">
+            <div className="p-4 w-100" style={{ maxWidth: '450px', backgroundColor: '#f8f9fa', borderRadius: '0.5rem', boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)' }}>
                 <div className="d-flex align-items-center justify-content-center mb-4">
                     <img src={img} alt="Logo Harp" className="logo" />
                 </div>
@@ -64,10 +63,10 @@ const ServiceCreationStep2 = () => {
 
                     {(mode === 'fija' || mode === 'pase') && (
                         <Form.Group controlId="maxStudents" className="mb-2">
-                            <Form.Label>Cantidad Máxima de Alumnos Totales</Form.Label>
+                            <Form.Label>Cantidad de Horarios por Grupo</Form.Label>
                             <Form.Control
                                 type="number"
-                                placeholder="Ingresa la cantidad máxima de alumnos totales"
+                                placeholder="Ingresa la cantidad máxima de horarios por grupo"
                                 value={maxStudents}
                                 onChange={(e) => setMaxStudents(e.target.value)}
                                 required
