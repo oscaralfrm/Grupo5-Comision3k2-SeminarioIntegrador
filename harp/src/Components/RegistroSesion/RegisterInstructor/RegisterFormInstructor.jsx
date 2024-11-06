@@ -1,5 +1,7 @@
 import { useForm } from "react-hook-form";
 import InstructorImage from "../../../assets/PanaInstructor.png"; // Asegúrate de importar tu imagen
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export const RegisterFormInstructor = () => {
   const {
@@ -9,6 +11,9 @@ export const RegisterFormInstructor = () => {
     watch,
   } = useForm();
   const password = watch("password"); // Para comparar la contraseña y su confirmación
+  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Estado para controlar la visibilidad de la confirmación de la contraseña
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     const newInstructor = {
@@ -22,8 +27,8 @@ export const RegisterFormInstructor = () => {
     };
 
     try {
-      alert("Registro exitoso para el instructor");
       // Aquí podrías enviar newInstructor a tu API
+      //alert("Registro exitoso para el instructor");
     } catch (error) {
       alert("Error al registrar: " + error.message);
     }
@@ -32,7 +37,6 @@ export const RegisterFormInstructor = () => {
   return (
     <div className="container-fluid h-100 d-flex align-items-center justify-content-center">
       <div className="row w-100">
-        
         {/* Sección de Formulario */}
         <div className="col-lg-6 d-flex justify-content-center align-items-center">
           <div className="position-absolute top-0 start-0 p-3">
@@ -46,7 +50,6 @@ export const RegisterFormInstructor = () => {
             <div className="card shadow-lg rounded-3 bg-light">
               <div className="card-body p-4">
                 <form onSubmit={handleSubmit(onSubmit)} id="register-instructor">
-                  
                   {/* Campos del formulario */}
                   <div className="form-group mb-3">
                     <label htmlFor="nombre">Nombre</label>
@@ -127,18 +130,6 @@ export const RegisterFormInstructor = () => {
                   </div>
 
                   <div className="form-group mb-3">
-                    <label htmlFor="especialidad">Especialidad</label>
-                    <input
-                      type="text"
-                      id="especialidad"
-                      className={`form-control ${errors.especialidad ? "is-invalid" : ""}`}
-                      placeholder="Especialidad"
-                      {...register("especialidad", { required: "La especialidad es obligatoria" })}
-                    />
-                    {errors.especialidad && <div className="invalid-feedback">{errors.especialidad.message}</div>}
-                  </div>
-
-                  <div className="form-group mb-3">
                     <label htmlFor="username">Nombre de Usuario</label>
                     <input
                       type="text"
@@ -156,10 +147,10 @@ export const RegisterFormInstructor = () => {
                     {errors.username && <div className="invalid-feedback">{errors.username.message}</div>}
                   </div>
 
-                  <div className="form-group mb-3">
+                  <div className="form-group mb-3 position-relative">
                     <label htmlFor="password">Contraseña</label>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       id="password"
                       className={`form-control ${errors.password ? "is-invalid" : ""}`}
                       placeholder="Contraseña"
@@ -176,12 +167,17 @@ export const RegisterFormInstructor = () => {
                       })}
                     />
                     {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
+                    <i
+                      className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"} position-absolute top-50 end-0 translate-middle-y me-3`}
+                      onClick={() => setShowPassword(!showPassword)}
+                      role="button"
+                    ></i>
                   </div>
 
-                  <div className="form-group mb-3">
+                  <div className="form-group mb-3 position-relative">
                     <label htmlFor="confirmPassword">Confirmar Contraseña</label>
                     <input
-                      type="password"
+                      type={showConfirmPassword ? "text" : "password"}
                       id="confirmPassword"
                       className={`form-control ${errors.confirmPassword ? "is-invalid" : ""}`}
                       placeholder="Repite la contraseña"
@@ -191,10 +187,15 @@ export const RegisterFormInstructor = () => {
                       })}
                     />
                     {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword.message}</div>}
+                    <i
+                      className={`bi ${showConfirmPassword ? "bi-eye-slash" : "bi-eye"} position-absolute top-50 end-0 translate-middle-y me-3`}
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      role="button"
+                    ></i>
                   </div>
 
                   <div className="d-flex justify-content-center mt-4">
-                    <button type="submit" className="btn btn-primary fs-6 px-3 py-1">
+                    <button type="submit" onClick={() => navigate("/instructor/1/crear-servicio")} className="btn btn-primary fs-6 px-3 py-1">
                       Registrarte
                     </button>
                   </div>
@@ -218,7 +219,7 @@ export const RegisterFormInstructor = () => {
 
         {/* Sección de imagen */}
         <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center">
-          <img src={InstructorImage} alt="Imagen ilustrativa" className="img-fluid rounded-3 bg-light p-3" />
+          <img src={InstructorImage} alt="Imagen ilustrativa" className="img-fluid" />
         </div>
       </div>
     </div>

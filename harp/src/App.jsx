@@ -1,8 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-// Imports de los componentes
-import LandingPage from "./Components/PaginaDeInicio/PaginaDeInicio";
+// Imports de los componente
 import { LoginForm } from "./Components/InicioSesion/InicioSesion";
 import { RegisterFormChooser } from "./Components/RegistroSesion/RegisterChooser";
 import {RegisterFormInstructor} from "./Components/RegistroSesion/RegisterInstructor/RegisterFormInstructor";
@@ -11,6 +10,9 @@ import ServiceCreationStep1 from "./Components/Instructor/Servicio/ServicioPaso1
 import ServiceCreationStep2 from "./Components/Instructor/Servicio/ServicioPaso2";
 import ServiceCreationStep3 from "./Components/Instructor/Servicio/ServicioPaso3";
 import ServiceCreationStep4 from "./Components/Instructor/Servicio/ServicioPaso4";
+import CreateGroups from "./Components/Instructor/Grupo/CrearGrupo";
+import MiServicio from "./Components/Instructor/MiServicio/MiServicio";
+import PaginaDeInicio from "./Components/PaginaDeInicio/PaginaDeInicio";
 
 function App() {
     return (
@@ -18,7 +20,7 @@ function App() {
             <BrowserRouter>
                 <div className="flex-grow-1">
                     <Routes>
-                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/" element={<PaginaDeInicio />} />
                         <Route path="/login" element={<LoginForm />} />
                         <Route path="/registro" element={<RegisterFormChooser />} />
                         <Route path="/registro/instructor" element={<RegisterFormInstructor />} />
@@ -28,6 +30,8 @@ function App() {
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2" element={<ServiceCreationStep2/>}/>
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3" element={<ServiceCreationStep3/>}/>
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3/paso4" element={<ServiceCreationStep4/>}/>
+                        <Route path="/instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<CreateGroups/>}/>
+                        <Route path="/instructor/:idInstructor/Servicio/:idServicio" element={<MiServicio/>}/>
                     </Routes>
                 </div>
             </BrowserRouter>

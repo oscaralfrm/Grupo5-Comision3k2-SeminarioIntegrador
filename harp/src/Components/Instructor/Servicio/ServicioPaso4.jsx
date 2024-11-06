@@ -15,7 +15,7 @@ const ServiceCreationStep4 = () => {
         setServiceData('attendanceTracking', attendanceTracking);
         setServiceData('trialOffer', trialOffer);
         setServiceData('publicVisibility', publicVisibility);
-        navigate('/instructor/1/crear-grupo');
+        navigate('/instructor/1/servicio/1/crear-grupo');
     };
 
     return (
