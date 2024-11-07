@@ -2,7 +2,7 @@ import React from 'react';
 import img from '../../../assets/LogoHarpFooter.png'
 function Footer() {
   return (
-    <footer className="bg-dark text-light mt-5">
+    <footer className=" text-light mt-5" style={{fontFamily:'Roboto', backgroundColor: '#1E1B4B'}}>
       <div className="container py-4">
         <div className="row">
           {/* Logo */}

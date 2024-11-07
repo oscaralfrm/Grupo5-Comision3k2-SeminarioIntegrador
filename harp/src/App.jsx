@@ -17,12 +17,15 @@ import General from "./Components/Instructor/MiServicio/MenuOpciones/General";
 import Cobros from "./Components/Instructor/MiServicio/MenuOpciones/Cobros";
 import Alumnos from "./Components/Instructor/MiServicio/MenuOpciones/Alumnos";
 import Servicio from "./Components/Instructor/MiServicio/MenuOpciones/Servicio";
-import ServicioForm from './Components/Instructor/Servicio/RegistrarServicio.jsx'
+import ServicioForm from './Components/Instructor/Servicio/RegistrarServicio.jsx';
+import AppNavbar from "./Components/Navbars/AppNavbars.jsx";
+
 function App() {
     return (
         <div className="d-flex flex-column min-vh-100">
             <BrowserRouter>
                 <div className="flex-grow-1">
+                    <AppNavbar/>
                     <Routes>
                         <Route path="/" element={<PaginaDeInicio />} />
                         <Route path="/login" element={<LoginForm />} />

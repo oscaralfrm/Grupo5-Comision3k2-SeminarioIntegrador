@@ -1,30 +1,28 @@
 import React from 'react';
 import { Navbar, Nav, Button } from 'react-bootstrap';
-import img from '../../../assets/LogoHarp.png';
+import img from '../../../assets/Logo.png';
 import { useNavigate } from 'react-router-dom';
 
 export default function NavBar() {
     const navigate = useNavigate();
 
     return (
-        <Navbar bg="dark" expand="lg" className="px-4">
+        <Navbar expand="lg" className="px-4" style={{ fontFamily: 'Roboto', backgroundColor: '#1E1B4B' }}>
             <Navbar.Brand href="#" className="text-white">
                 <img src={img} alt="Harp Logo" width="30" height="30" className="d-inline-block align-top" />
                 Harp
             </Navbar.Brand>
             <Navbar.Toggle 
                 aria-controls="navbar-nav" 
-                className="navbar-toggler" 
                 style={{ 
-                    borderColor: 'white', // Cambia el color del borde del botón
-                    backgroundColor: '#E6E6FA' // Cambia el color del icono
+                    borderColor: 'white',         // Cambia el color del borde al blanco
+                               // Cambia el color del icono a blanco
+                    backgroundColor: '#4F46E5' // Asegura que el fondo sea transparente
                 }} 
+                className="navbar-toggler-outline-light" // Puedes usar una clase personalizada para estilos adicionales si es necesario
             />
-            <Navbar.Collapse id="navbar-nav">
-                <Nav className="me-auto">
-                    <Nav.Link className="text-white">Servicios</Nav.Link>
-                </Nav>
-                <div className="d-flex flex-wrap">
+            <Navbar.Collapse id="navbar-nav" className="justify-content-end">
+                <div className="d-flex ms-auto">
                     <Button
                         variant="outline-light"
                         onClick={() => navigate("/login")}
@@ -33,7 +31,7 @@ export default function NavBar() {
                         Iniciar Sesión
                     </Button>
                     <Button
-                        variant="primary"
+                        style={{ backgroundColor: '#4F46E5', color: 'white' }}
                         onClick={() => navigate("/registro")}
                         className="mb-2 mb-sm-0"
                     >

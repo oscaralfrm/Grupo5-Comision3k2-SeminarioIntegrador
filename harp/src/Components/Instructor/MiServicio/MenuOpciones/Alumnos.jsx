@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Card, Button, Row, Col, Modal, Container } from "react-bootstrap";
 import { Person } from "react-bootstrap-icons";
-import NavbarInstructor from "../NavbarInstructor/NavbarInstructor";
+
 
 import { useParams } from "react-router-dom";
-import CustomSidebar from "../SidebarInstructor/SidebarInstructor";
 
 const Alumnos = () => {
   const [students, setStudents] = useState([
@@ -59,21 +58,9 @@ const Alumnos = () => {
 
   return (
     <Container fluid>
-      {/* NavbarInstructor en la parte superior */}
-      <Row >
-        <NavbarInstructor  toggleSidebar={toggleSidebar} />
-      </Row>
-
       <Row className="mt-4">
-        {/* Sidebar a la izquierda, solo visible si isSidebarVisible es true */}
-        {isSidebarVisible && (
-          <Col xs={12} md={3} lg={2} className="sidebar">
-            <CustomSidebar idInstructor={idInstructor} idServicio={idServicio} />
-          </Col>
-        )}
-
         {/* Contenido principal a la derecha del Sidebar */}
-        <Col xs={12} md={isSidebarVisible ? 9 : 12} lg={isSidebarVisible ? 10 : 12}>
+        <Col xs={12}>
           <h1 className="text-center mb-4">Mis Alumnos</h1>
           <Row xs={1} sm={2} md={3} lg={4} className="g-4">
             {students.map((student) => (

@@ -7,7 +7,7 @@ import Footer from './FooterLandingPage/Footer';
 export default function PaginaDeInicio() {
     return (
         <div>
-            <Navbar />
+
             <WelcomeSticker />
             <CardInfo />
             <Footer/>

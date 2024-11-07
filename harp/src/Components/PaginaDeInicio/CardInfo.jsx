@@ -5,8 +5,8 @@ import { TypeAnimation } from 'react-type-animation';
 
 export default function CardInfo() {
     return (
-        <div className="container mt-5 mb-4 text-center">
-            <h1 className="fw-bold text-primary mb-4">
+        <div className="container mt-5 mb-4 text-center" style={{fontFamily:'Roboto'}}>
+            <h1 className="fw-bold  mb-4"style={{fontFamily:'Roboto',color:'#1E1B4B'}} >
                 <TypeAnimation
                     sequence={['Gestiona tus servicios con Harp', 1000]}
                     speed={40}
