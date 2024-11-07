@@ -34,7 +34,7 @@ export const RegisterFormChooser = () => {
                         className="btn btn-light mt-3 mb-5"
                         onClick={handleInstructorClick}
                     >
-                        Regístrate como Instructor
+                        Regístrate
                     </button>
                 </div>
 
@@ -51,7 +51,7 @@ export const RegisterFormChooser = () => {
                         className="btn btn-dark mt-3 mb-5"
                         onClick={handleStudentClick}
                     >
-                        Regístrate como Alumno
+                        Regístrate
                     </button>
                 </div>
             </div>
