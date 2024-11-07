@@ -17,7 +17,7 @@ import General from "./Components/Instructor/MiServicio/MenuOpciones/General";
 import Cobros from "./Components/Instructor/MiServicio/MenuOpciones/Cobros";
 import Alumnos from "./Components/Instructor/MiServicio/MenuOpciones/Alumnos";
 import Servicio from "./Components/Instructor/MiServicio/MenuOpciones/Servicio";
-
+import ServicioForm from './Components/Instructor/Servicio/RegistrarServicio.jsx'
 function App() {
     return (
         <div className="d-flex flex-column min-vh-100">
@@ -30,7 +30,7 @@ function App() {
                         <Route path="/registro/instructor" element={<RegisterFormInstructor />} />
                         <Route path="/registro/alumno" element={<RegisterFormStudent />} />
                         <Route path="/registro" element={<RegisterFormChooser/>}/>
-                        <Route path="/instructor/:idInstructor/crear-servicio" element={<ServiceCreationStep1/>}/>
+                        <Route path="/instructor/:idInstructor/crear-servicio" element={<ServicioForm/>}/>
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2" element={<ServiceCreationStep2/>}/>
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3" element={<ServiceCreationStep3/>}/>
                         <Route path="/instructor/:idInstructor/crear-servicio/paso2/paso3/paso4" element={<ServiceCreationStep4/>}/>
