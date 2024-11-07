@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Form, ProgressBar } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import img from '../../../assets/Logo.png';
+import img from '../../../assets/LogoHarp420.png';
 import { setServiceData } from './ServiceData';
 
 const ServiceCreationStep2 = () => {

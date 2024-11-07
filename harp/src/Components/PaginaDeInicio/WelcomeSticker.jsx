@@ -4,7 +4,7 @@ import img from '../../Image/maia.png'; // Asegúrate de que la ruta sea correct
 
 export default function WelcomeSticker() {
     return (
-        <div className="d-flex fixed-top align-items-center justify-content-end" style={{ marginTop: '60px' }}>
+        <div className="d-flex fixed-top align-items-center justify-content-end" style={{ marginTop: '60px', position:'absolute' }}>
             {/* Burbuja de texto de bienvenida */}
             <OverlayTrigger
                 placement="left"

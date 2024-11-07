@@ -39,9 +39,6 @@ export const LoginForm = () => {
             <div className="row">
                 {/* Sección de Imagen */}
                 <div className="col-lg-6 d-flex justify-content-center align-items-center bg-light">
-                    <Link to="#" onClick={() => window.history.back()} className="position-absolute top-0 start-0 p-3">
-                        <i className="bi bi-arrow-left fs-4 text-dark"></i>
-                    </Link>
                     <img src={PanaTeacher} alt="Login Illustration" className="img-fluid" />
                 </div>
 

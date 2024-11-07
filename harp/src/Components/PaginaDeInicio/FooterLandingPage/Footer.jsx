@@ -1,5 +1,5 @@
 import React from 'react';
-import img from '../../../assets/LogoHarpFooter.png'
+import img from '../../../assets/LogoHarp420.png';
 function Footer() {
   return (
     <footer className=" text-light mt-5" style={{fontFamily:'Roboto', backgroundColor: '#1E1B4B'}}>
@@ -7,7 +7,7 @@ function Footer() {
         <div className="row">
           {/* Logo */}
           <div className="col-md-3 text-center">
-            <img src={img} alt="Harp Logo" width="100" />
+            <img src={img} alt="Harp Logo" width="100%" height='auto' />
           </div>
 
           {/* Sobre Nosotros */}

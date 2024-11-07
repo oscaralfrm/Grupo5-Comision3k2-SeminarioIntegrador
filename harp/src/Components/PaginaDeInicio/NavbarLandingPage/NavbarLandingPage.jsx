@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navbar, Nav, Button } from 'react-bootstrap';
-import img from '../../../assets/Logo.png';
+import img from '../../../assets/LogoHarp420.png';
 import { useNavigate } from 'react-router-dom';
 
 export default function NavBar() {
@@ -9,8 +9,7 @@ export default function NavBar() {
     return (
         <Navbar expand="lg" className="px-4" style={{ fontFamily: 'Roboto', backgroundColor: '#1E1B4B' }}>
             <Navbar.Brand href="#" className="text-white">
-                <img src={img} alt="Harp Logo" width="30" height="30" className="d-inline-block align-top" />
-                Harp
+                <img src={img} alt="Harp Logo" width="100" height="auto" className="d-inline-block align-top" />
             </Navbar.Brand>
             <Navbar.Toggle 
                 aria-controls="navbar-nav" 
