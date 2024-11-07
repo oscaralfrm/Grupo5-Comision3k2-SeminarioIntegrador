@@ -25,7 +25,7 @@ const ServicioForm = () => {
   };
 
   return (
-    <Row className="m-3" style={{ fontFamily: 'Roboto, sans-serif' }}>
+    <Row className="m-3" style={{ fontFamily: 'Roboto, sans-serif', fontSize:'1.6rem' }}>
       <Col xs={12} md={6}>
         <Card>
           <Card.Header className="fs-3">Registrar Servicio</Card.Header>
@@ -166,19 +166,19 @@ const ServicioForm = () => {
 
       <Col xs={12} md={3}>
         <Card style={{ backgroundColor: '#A5B4fd' }}>
-          <Card.Header className="fs-3 fw-bold">Resumen del Servicio</Card.Header>
+          <Card.Header className="fs-3 fw-bold"style={{fontSize:'1.5rem'}}>Resumen del Servicio</Card.Header>
           <Card.Body className="d-flex flex-column align-items-start">
             <div>
-              <h5 style={{ textDecoration: "underline" }}>Información General</h5>
-              {formData.categoria && <p><strong style={{ textDecoration: "underline" }}>Categoría:</strong> {formData.categoria}</p>}
-              {formData.nombreServicio && <p><strong style={{ textDecoration: "underline" }}>Nombre:</strong> {formData.nombreServicio}</p>}
-              {formData.descripcion && <p><strong style={{ textDecoration: "underline" }}>Descripción:</strong> {formData.descripcion}</p>}
-              {formData.ubicacion && <p><strong style={{ textDecoration: "underline" }}>Ubicación:</strong> {formData.ubicacion}</p>}
+              <h5 style={{ textDecoration: "underline", fontSize:'1.5rem'}}>Información General</h5>
+              {formData.categoria && <p><strong style={{ textDecoration: "underline",fontSize:'1.5rem' }}>Categoría:</strong> {formData.categoria}</p>}
+              {formData.nombreServicio && <p><strong style={{ textDecoration: "underline",fontSize:'1.5rem' }}>Nombre:</strong> {formData.nombreServicio}</p>}
+              {formData.descripcion && <p><strong style={{ textDecoration: "underline",fontSize:'1.5rem' }}>Descripción:</strong> {formData.descripcion}</p>}
+              {formData.ubicacion && <p><strong style={{ textDecoration: "underline",fontSize:'1.5rem' }}>Ubicación:</strong> {formData.ubicacion}</p>}
 
-              <h5 style={{ textDecoration: "underline" }}>Detalles</h5>
-              {formData.duracion && <p><strong style={{ textDecoration: "underline" }}>Duración:</strong> {formData.duracion}</p>}
-              {formData.frecuencia && <p><strong style={{ textDecoration: "underline" }}>Frecuencia:</strong> {formData.frecuencia}</p>}
-              {formData.capacidadMaxima && <p><strong style={{ textDecoration: "underline" }}>Capacidad Máxima:</strong> {formData.capacidadMaxima}</p>}
+              <h5 style={{ textDecoration: "underline",fontSize:'1.5rem' }}>Detalles</h5>
+              {formData.duracion && <p><strong style={{ textDecoration: "underline",fontSize:'1.5rem' }}>Duración:</strong> {formData.duracion}</p>}
+              {formData.frecuencia && <p><strong style={{ textDecoration: "underline",fontSize:'1.5rem' }}>Frecuencia:</strong> {formData.frecuencia}</p>}
+              {formData.capacidadMaxima && <p><strong style={{ textDecoration: "underline",fontSize:'1.5rem' }}>Capacidad Máxima:</strong> {formData.capacidadMaxima}</p>}
 
               <h5 style={{ textDecoration: "underline" }}>Precios</h5>
               {formData.costo && <p><strong style={{ textDecoration: "underline" }}>Costo:</strong> {formData.costo}</p>}
