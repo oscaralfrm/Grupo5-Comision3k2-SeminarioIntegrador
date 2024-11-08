@@ -10,7 +10,7 @@ function Footer() {
         <div className="row">
           {/* Logo */}
           <div className="d-flex col-md-3 align-items-center justify-content-center">
-            <img src={img} alt="Harp Logo" width="100%" height="90%" />
+            <img src={img} alt="Harp Logo" width="100%"  />
           </div>
 
           {/* Sobre Nosotros */}

@@ -30,7 +30,7 @@ export default function CardInfo() {
                     />
                 </div>
                 <div
-                    className="col-12 col-md-3 d-flex mb-5"
+                    className="col-12 col-md-3 d-flex mb-5 "
                     style={{ transition: 'transform 0.3s ease' }}
                     onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
                     onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}

@@ -79,7 +79,7 @@ export const RegisterFormInstructor = () => {
                 >
                   {/* Sección 1: Datos Personales */}
                   <Tab eventKey="datosPersonales" title="Datos Personales">
-                    <div className="form-group ">
+                    <div className="form-group">
                       <label htmlFor="nombre">Nombre</label>
                       <input
                         type="text"
@@ -91,6 +91,10 @@ export const RegisterFormInstructor = () => {
                         placeholder="Nombre"
                         {...register("nombre", {
                           required: "El nombre es obligatorio",
+                          pattern: {
+                            value: /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/, // Expresión regular para solo letras y espacios
+                            message: "Solo se permiten letras y espacios",
+                          },
                           onChange: handleInputChange,
                         })}
                       />
@@ -100,6 +104,7 @@ export const RegisterFormInstructor = () => {
                         </div>
                       )}
                     </div>
+
                     <div className="form-group mb-3">
                       <label htmlFor="apellido">Apellido</label>
                       <input
@@ -113,6 +118,10 @@ export const RegisterFormInstructor = () => {
                         {...register("apellido", {
                           required: "El apellido es obligatorio",
                           onChange: handleInputChange,
+                          pattern: {
+                            value: /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/, // Expresión regular para solo letras y espacios
+                            message: "Solo se permiten letras y espacios",
+                          }
                         })}
                       />
                       {errors.apellido && (
@@ -133,6 +142,14 @@ export const RegisterFormInstructor = () => {
                         placeholder="DNI"
                         {...register("dni", {
                           required: "El DNI es obligatorio",
+                          minLength: {
+                            value: 6,
+                            message: "El DNI debe tener al menos 6 dígitos",
+                          },
+                          maxLength: {
+                            value: 8,
+                            message: "El DNI no puede tener más de 8 dígitos",
+                          },
                           onChange: handleInputChange,
                         })}
                       />
@@ -142,6 +159,7 @@ export const RegisterFormInstructor = () => {
                         </div>
                       )}
                     </div>
+
                     <div className="form-group ">
                       <label htmlFor="username">Nombre de usuario</label>
                       <input
@@ -165,7 +183,7 @@ export const RegisterFormInstructor = () => {
                     </div>
                     <div
                       className="d-flex justify-content-end "
-                      style={{ cursor: "pointer"}}
+                      style={{ cursor: "pointer" }}
                       onClick={goToNextTab} // Avanzar a la siguiente sección
                     >
                       <span className="fs-3">&#8594;</span>
@@ -229,7 +247,8 @@ export const RegisterFormInstructor = () => {
                       {/* Flecha para ir a la sección anterior */}
                       <span
                         className="fs-3 d-flex justify-content-start ms-0"
-                        onClick={goToPreviousTab} // Volver a la sección anterior
+                        onClick={goToPreviousTab}
+                        style={{ cursor: "pointer" }} // Volver a la sección anterior
                       >
                         &#8592;
                       </span>
@@ -237,6 +256,7 @@ export const RegisterFormInstructor = () => {
                       {/* Flecha para avanzar a la siguiente sección */}
                       <span
                         className="fs-3"
+                        style={{ cursor: "pointer" }}
                         onClick={goToNextTab} // Avanzar a la siguiente sección
                       >
                         &#8594;
@@ -329,7 +349,7 @@ export const RegisterFormInstructor = () => {
                         className="btn btn-primary"
                         disabled={!isValid} // Deshabilitar si el formulario no es válido
                       >
-                        Enviar
+                        Registrarme
                       </button>
                     </div>
                   </Tab>

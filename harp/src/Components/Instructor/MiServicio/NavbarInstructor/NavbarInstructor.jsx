@@ -69,11 +69,6 @@ function NavbarInstructor() {
         </ul>
         <ul className="navbar-nav mx-auto">
           <li className="nav-item">
-            <a className="nav-link" href={`/instructor/${idInstructor}/servicio/${idServicio}/general`} style={{ color: 'white' }}>
-              General
-            </a>
-          </li>
-          <li className="nav-item">
             <a className="nav-link" href={`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`} style={{ color: 'white' }}>
               Mi Servicio
             </a>
