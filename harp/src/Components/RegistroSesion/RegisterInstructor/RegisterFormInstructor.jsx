@@ -65,7 +65,7 @@ export const RegisterFormInstructor = () => {
       {/* Card izquierda */}
       <div className="col-lg-6 d-flex justify-content-center align-items-center">
         <div className="col-md-10 col-sm-12 p-4">
-          <h1 className="mb-3 text-center fs-1">Regístrate como Instructor</h1>
+          <h1 className="mb-3 text-center fs-1 mb-1">Regístrate como Instructor</h1>
           <p className="text-center text-muted fs-6">
             ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
           </p>
@@ -79,7 +79,7 @@ export const RegisterFormInstructor = () => {
                 >
                   {/* Sección 1: Datos Personales */}
                   <Tab eventKey="datosPersonales" title="Datos Personales">
-                    <div className="form-group">
+                    <div className="form-group mt-1">
                       <label htmlFor="nombre">Nombre</label>
                       <input
                         type="text"
@@ -105,7 +105,7 @@ export const RegisterFormInstructor = () => {
                       )}
                     </div>
 
-                    <div className="form-group mb-3">
+                    <div className="form-group mb-3 mt-1">
                       <label htmlFor="apellido">Apellido</label>
                       <input
                         type="text"
@@ -182,11 +182,13 @@ export const RegisterFormInstructor = () => {
                       )}
                     </div>
                     <div
-                      className="d-flex justify-content-end "
-                      style={{ cursor: "pointer" }}
+                      className="d-flex justify-content-end align-items-center"
+                      style={{ cursor: "pointer", margin: 0, padding: 0 }}
                       onClick={goToNextTab} // Avanzar a la siguiente sección
                     >
-                      <span className="fs-3">&#8594;</span>
+                      <span className="fs-3" style={{ margin: 0, padding: 0 }}>
+                        &#8594;
+                      </span>
                     </div>
                   </Tab>
                   {/* Sección 2: Contacto */}
