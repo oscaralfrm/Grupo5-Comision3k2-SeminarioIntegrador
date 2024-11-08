@@ -7,9 +7,9 @@ export default function NavBar() {
     const navigate = useNavigate();
 
     return (
-        <Navbar expand="lg" className="px-4" style={{ fontFamily: 'Roboto', backgroundColor: '#1E1B4B' }}>
+        <Navbar expand="lg" className="px-4" style={{ fontFamily: 'Roboto', backgroundColor: '#1E1B4B', height:'13vh'  }}>
             <Navbar.Brand href="#" className="text-white">
-                <img src={img} alt="Harp Logo" width="100" height="auto" className="d-inline-block align-top" />
+                <img src={img} alt="Harp Logo" width="130" height="auto" className="d-inline-block align-top" />
             </Navbar.Brand>
             <Navbar.Toggle 
                 aria-controls="navbar-nav" 
@@ -23,6 +23,7 @@ export default function NavBar() {
             <Navbar.Collapse id="navbar-nav" className="justify-content-end">
                 <div className="d-flex ms-auto">
                     <Button
+                    style={{fontSize:'1.2rem'}}
                         variant="outline-light"
                         onClick={() => navigate("/login")}
                         className="me-2 mb-2 mb-sm-0"

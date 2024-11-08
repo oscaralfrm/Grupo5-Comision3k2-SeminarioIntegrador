@@ -3,7 +3,7 @@ import img from '../../../assets/LogoHarp420.png';
 
 export default function NavbarRegisterChooser() {
   return (
-    <nav className="navbar navbar-expand-lg navbar-light" style={{ backgroundColor: '#1E1B4B' }}>
+    <nav className="navbar navbar-expand-lg navbar-light" style={{ backgroundColor: '#1E1B4B', height:'13vh' }}>
       {/* Flecha de regreso */}
       <button
         className="btn"
@@ -35,7 +35,7 @@ export default function NavbarRegisterChooser() {
 
       {/* Logo centrado */}
       <a className="navbar-brand mx-auto" href="#">
-        <img src={img} alt="App Logo" width="100" height="auto" className="d-inline-block align-top" />
+        <img src={img} alt="App Logo" width="130" height="auto" className="d-inline-block align-top" />
       </a>
     </nav>
   );

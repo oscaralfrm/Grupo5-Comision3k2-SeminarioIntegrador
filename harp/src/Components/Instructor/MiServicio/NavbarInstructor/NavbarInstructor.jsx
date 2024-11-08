@@ -42,7 +42,7 @@ function NavbarInstructor() {
   }, [idServicio, servicios]);
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light" style={{ fontFamily: "Roboto", backgroundColor: '#1E1B4B', color: 'white' }}>
+    <nav className="navbar navbar-expand-lg navbar-light" style={{ fontFamily: "Roboto", backgroundColor: '#1E1B4B', color: 'white', width:'100%', height:'13vh', fontSize:'1.2rem' }}>
       
       {/* Botón de toggler en dispositivos móviles */}
       <button
@@ -61,7 +61,7 @@ function NavbarInstructor() {
       {/* Menú de navegación */}
       <div className={`collapse navbar-collapse ${dropdownOpen ? "show" : ""}`} id="navbarNavDropdown">
         <ul className="nav">
-        <li className="nav-item">
+          <li className="nav-item">
             <a className="nav-link" href={`/instructor/${idInstructor}/servicio/${idServicio}/general`} style={{ color: 'white' }}>
               Harp
             </a>
@@ -107,7 +107,7 @@ function NavbarInstructor() {
                   key={servicio.id}
                   className="dropdown-item"
                   onClick={() => handleSelectService(servicio.id)}
-                  style={{ color: '#1E1B4B' }} // Color de texto del dropdown en blanco si prefieres
+                  style={{ color: '#1E1B4B' }} // Color de texto del dropdown
                 >
                   {servicio.nombre}
                 </button>
