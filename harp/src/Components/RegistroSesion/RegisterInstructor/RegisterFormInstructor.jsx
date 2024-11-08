@@ -7,9 +7,10 @@ export const RegisterFormInstructor = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
-  } = useForm();
+    setValue,
+  } = useForm({ mode: "onChange" });
   const password = watch("password");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -23,6 +24,7 @@ export const RegisterFormInstructor = () => {
     password: "",
     confirmPassword: "",
   });
+  const [activeTab, setActiveTab] = useState("datosPersonales");
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
@@ -39,27 +41,45 @@ export const RegisterFormInstructor = () => {
     }));
   };
 
+  const goToNextTab = () => {
+    if (activeTab === "datosPersonales") {
+      setActiveTab("contacto");
+    } else if (activeTab === "contacto") {
+      setActiveTab("contraseña");
+    }
+  };
+
+  const goToPreviousTab = () => {
+    if (activeTab === "contraseña") {
+      setActiveTab("contacto");
+    } else if (activeTab === "contacto") {
+      setActiveTab("datosPersonales");
+    }
+  };
+
   return (
     <div
       className="container-fluid h-100 d-flex align-items-center justify-content-center"
       style={{ fontFamily: "Roboto" }}
     >
-      <div className="row w-100">
-        {/* Card para el formulario de registro */}
-        <div className="col-lg-6 d-flex justify-content-center align-items-center">
-          <div className="col-md-10 col-sm-12 p-4">
-            <h1 className="mb-3 text-center fs-1">
-              Regístrate como Instructor
-            </h1>
-            <p className="text-center text-muted fs-6">
-              ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
-            </p>
-            <div className="card shadow-lg rounded-3 bg-light">
-              <div className="card-body p-4">
-                <Tabs defaultActiveKey="datosPersonales" id="form-tabs">
+      {/* Card izquierda */}
+      <div className="col-lg-6 d-flex justify-content-center align-items-center">
+        <div className="col-md-10 col-sm-12 p-4">
+          <h1 className="mb-3 text-center fs-1">Regístrate como Instructor</h1>
+          <p className="text-center text-muted fs-6">
+            ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+          </p>
+          <div className="card shadow-lg rounded-3 bg-light">
+            <div className="card-body p-4">
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Tabs
+                  activeKey={activeTab}
+                  onSelect={(key) => setActiveTab(key)}
+                  id="form-tabs"
+                >
                   {/* Sección 1: Datos Personales */}
                   <Tab eventKey="datosPersonales" title="Datos Personales">
-                    <div className="form-group mb-3">
+                    <div className="form-group ">
                       <label htmlFor="nombre">Nombre</label>
                       <input
                         type="text"
@@ -122,7 +142,7 @@ export const RegisterFormInstructor = () => {
                         </div>
                       )}
                     </div>
-                    <div className="form-group mb-3">
+                    <div className="form-group ">
                       <label htmlFor="username">Nombre de usuario</label>
                       <input
                         type="text"
@@ -143,8 +163,14 @@ export const RegisterFormInstructor = () => {
                         </div>
                       )}
                     </div>
+                    <div
+                      className="d-flex justify-content-end "
+                      style={{ cursor: "pointer"}}
+                      onClick={goToNextTab} // Avanzar a la siguiente sección
+                    >
+                      <span className="fs-3">&#8594;</span>
+                    </div>
                   </Tab>
-
                   {/* Sección 2: Contacto */}
                   <Tab eventKey="contacto" title="Contacto">
                     <div className="form-group mb-3">
@@ -197,6 +223,25 @@ export const RegisterFormInstructor = () => {
                         </div>
                       )}
                     </div>
+
+                    {/* Botones para navegar entre las pestañas */}
+                    <div className="d-flex justify-content-between">
+                      {/* Flecha para ir a la sección anterior */}
+                      <span
+                        className="fs-3 d-flex justify-content-start ms-0"
+                        onClick={goToPreviousTab} // Volver a la sección anterior
+                      >
+                        &#8592;
+                      </span>
+
+                      {/* Flecha para avanzar a la siguiente sección */}
+                      <span
+                        className="fs-3"
+                        onClick={goToNextTab} // Avanzar a la siguiente sección
+                      >
+                        &#8594;
+                      </span>
+                    </div>
                   </Tab>
 
                   {/* Sección 3: Contraseña */}
@@ -247,8 +292,7 @@ export const RegisterFormInstructor = () => {
                         }`}
                         placeholder="Confirmar Contraseña"
                         {...register("confirmPassword", {
-                          required:
-                            "La confirmación de la contraseña es obligatoria",
+                          required: "Por favor, confirma tu contraseña",
                           validate: (value) =>
                             value === password ||
                             "Las contraseñas no coinciden",
@@ -270,64 +314,102 @@ export const RegisterFormInstructor = () => {
                         {showConfirmPassword ? "Ocultar" : "Mostrar"}
                       </button>
                     </div>
-                    <div className="form-group mb-3">
+                    <div
+                      className="d-flex justify-content-between"
+                      style={{ cursor: "pointer" }}
+                    >
+                      <span
+                        className="fs-3"
+                        onClick={goToPreviousTab} // Volver a la sección anterior
+                      >
+                        &#8592;
+                      </span>
                       <button
                         type="submit"
                         className="btn btn-primary"
-                        onClick={handleSubmit(onSubmit)}
+                        disabled={!isValid} // Deshabilitar si el formulario no es válido
                       >
-                        Registrarme
+                        Enviar
                       </button>
                     </div>
                   </Tab>
                 </Tabs>
-              </div>
+              </form>
             </div>
           </div>
         </div>
-
-        {/* Card para visualizar la información ingresada */}
-        <div className="col-lg-6 d-flex justify-content-center align-items-center">
-          <div className="col-md-10 col-sm-12 p-4">
-            <div className="card shadow-lg rounded-3 bg-light" >
-              {/* Encabezado de "Información Ingresada" ajustado */}
-              <div className="d-flex justify-content-center align-items-center "
-                style={{
-                  backgroundColor: "#4F46E5",
-                  padding: "0rem",
-                  borderTopLeftRadius: "0.375rem",
-                  borderTopRightRadius: "0.375rem",
-                }}
+      </div>
+      {/* Card para visualizar la información ingresada */}
+      <div className="col-lg-6 d-flex justify-content-center align-items-center">
+        <div className="col-md-10 col-sm-12 p-4">
+          <div
+            className="card shadow-lg rounded-3 bg-light"
+            style={{ transition: "0.3s" }}
+          >
+            {/* Encabezado de "Información Ingresada" ajustado */}
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{
+                backgroundColor: "#A5B4FC",
+                padding: "1rem",
+                borderTopLeftRadius: "0.375rem",
+                borderTopRightRadius: "0.375rem",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <h1
+                className="mb-3 text-center fs-1 text-white"
+                style={{ fontFamily: "Roboto", fontWeight: "250" }}
               >
-                <h1 className="mb-3 text-center fs-1 text-white">
-                  Información Ingresada
-                </h1>
-              </div>
-              <div className="card-body p-4" style={{backgroundColor:"#A5B4FC"}}>
-                <div className="mb-3">
-                  <strong>Nombre: </strong>
+                Información Ingresada
+              </h1>
+            </div>
+            <div
+              className="card-body p-4"
+              style={{
+                backgroundColor: "#FFFFFF", // Fondo blanco sin degradado
+                borderRadius: "10px",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              {/* Información del formulario */}
+              <div className="mb-3">
+                <strong style={{ fontSize: "1.2rem" }}>Nombre: </strong>
+                <span style={{ fontSize: "1.1rem", color: "#333" }}>
                   {formData.nombre}
-                </div>
-                <div className="mb-3">
-                  <strong>Apellido: </strong>
+                </span>
+              </div>
+              <div className="mb-3">
+                <strong style={{ fontSize: "1.2rem" }}>Apellido: </strong>
+                <span style={{ fontSize: "1.1rem", color: "#333" }}>
                   {formData.apellido}
-                </div>
-                <div className="mb-3">
-                  <strong>DNI: </strong>
+                </span>
+              </div>
+              <div className="mb-3">
+                <strong style={{ fontSize: "1.2rem" }}>DNI: </strong>
+                <span style={{ fontSize: "1.1rem", color: "#333" }}>
                   {formData.dni}
-                </div>
-                <div className="mb-3">
-                  <strong>Nombre de usuario: </strong>
+                </span>
+              </div>
+              <div className="mb-3">
+                <strong style={{ fontSize: "1.2rem" }}>
+                  Nombre de usuario:{" "}
+                </strong>
+                <span style={{ fontSize: "1.1rem", color: "#333" }}>
                   {formData.username}
-                </div>
-                <div className="mb-3">
-                  <strong>Email: </strong>
+                </span>
+              </div>
+              <div className="mb-3">
+                <strong style={{ fontSize: "1.2rem" }}>Email: </strong>
+                <span style={{ fontSize: "1.1rem", color: "#333" }}>
                   {formData.mail}
-                </div>
-                <div className="mb-3">
-                  <strong>Teléfono: </strong>
+                </span>
+              </div>
+              <div className="mb-3">
+                <strong style={{ fontSize: "1.2rem" }}>Teléfono: </strong>
+                <span style={{ fontSize: "1.1rem", color: "#333" }}>
                   {formData.telefono}
-                </div>
+                </span>
               </div>
             </div>
           </div>
@@ -336,3 +418,31 @@ export const RegisterFormInstructor = () => {
     </div>
   );
 };
+
+{
+  /* Estilos adicionales */
+}
+<style>
+  {`
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+      background-color: #FFFFFF; /* Fondo blanco sin degradado */
+    }
+
+    .card-body .mb-3 {
+      padding-bottom: 1rem;
+    }
+
+    .card-body strong {
+      font-weight: 600;
+      color: #4F46E5;
+    }
+  `}
+</style>;
