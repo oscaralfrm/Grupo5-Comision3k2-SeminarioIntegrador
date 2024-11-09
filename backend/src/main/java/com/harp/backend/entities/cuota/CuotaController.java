@@ -16,11 +16,11 @@ public class CuotaController {
     @Autowired
     private ICuotaService cuotaService;
 
-    @GetMapping("/cuotas")
-    public ResponseEntity<List<Cuota>> getCuotasDeServicio(@PathVariable @Min(1) Long idServicio) {
-        List<Cuota> cuotas = cuotaService.findCuotasDeServicio(idServicio);
-        return ResponseEntity.ok(cuotas);
-    }
+//    @GetMapping("/cuotas")
+//    public ResponseEntity<List<Cuota>> getCuotasDeServicio(@PathVariable @Min(1) Long idServicio) {
+//        List<Cuota> cuotas = cuotaService.findCuotasDeServicio(idServicio);
+//        return ResponseEntity.ok(cuotas);
+//    }
 
     @GetMapping("/cuotas/{idCuotas}")
     public ResponseEntity<Cuota> getCuotaById(@PathVariable @Min(1) Long idCuota) {

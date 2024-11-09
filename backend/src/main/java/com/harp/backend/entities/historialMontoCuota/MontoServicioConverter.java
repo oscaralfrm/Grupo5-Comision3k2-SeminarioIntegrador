@@ -4,6 +4,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class MontoServicioConverter {
 
@@ -11,7 +13,12 @@ public class MontoServicioConverter {
     ModelMapper modelMapper;
 
     public MontoServicio dtoToEntity(MontoServicioDTO dto) {
-        MontoServicio montoServicio = modelMapper.map(dto, MontoServicio.class);
+        //MontoServicio montoServicio = modelMapper.map(dto, MontoServicio.class);
+        double monto = dto.getMonto();
+        LocalDate fechaInicio = dto.getFechaInicio();
+        Integer vecesSemanales = dto.getCantVecesSemanales();
+
+        MontoServicio montoServicio = new MontoServicio(monto, fechaInicio, vecesSemanales);
         return montoServicio;
     }
 }

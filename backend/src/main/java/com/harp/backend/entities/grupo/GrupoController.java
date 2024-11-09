@@ -51,31 +51,43 @@ public class GrupoController {
 //    };
 
     // GET HORARIOS DE UN GRUPO
-    @GetMapping("/{idGrupo}/horarios")
+    @GetMapping("/grupos/{idGrupo}/horarios")
     public ResponseEntity<List<Horario>> findHorariosDeGrupo(@PathVariable Long idGrupo) {
         List<Horario> horarios = grupoService.findHorariosDeGrupo(idGrupo);
         return ResponseEntity.ok(horarios);
     }
 
     // GET ALL CLASES DE UN GRUPO
-    @GetMapping("/{idGrupo}/clases")
+    @GetMapping("/grupos/{idGrupo}/clases")
     public ResponseEntity<List<Clase>> findAllClasesDeGrupo(@PathVariable Long idGrupo) {
         List<Clase> clases = grupoService.findAllClasesDeGrupo(idGrupo);
         return ResponseEntity.ok(clases);
     }
 
     // GET CLASES FUTURAS DE UN GRUPO
-    @GetMapping("/{idGrupo}/clases-futuras")
+    @GetMapping("/grupos/{idGrupo}/clases-futuras")
     public ResponseEntity<List<Clase>> findClasesFuturasDeGrupo(@PathVariable Long idGrupo) {
         List<Clase> clases = grupoService.findClasesFuturasDeGrupo(idGrupo);
         return ResponseEntity.ok(clases);
     }
 
-    // POST
+//    // POST SIN GRUPOS
+//    @PostMapping("/{idServicio}/grupos")
+//    public ResponseEntity<Grupo> crearGrupo(@PathVariable Long idServicio, @RequestBody @Valid GrupoDTO grupoDTO) {
+//        // REVISAR: Obtener el id del servicio de manera correcta
+//        Grupo nuevoGrupo = grupoService.createGrupo(grupoDTO, idServicio);
+//
+//        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoGrupo); // 201 CREATED
+//    }
+
+    // POST CON HORARIOS DTOS
     @PostMapping("/{idServicio}/grupos")
-    public ResponseEntity<Grupo> crearGrupo(@PathVariable Long idServicio, @RequestBody @Valid GrupoDTO grupoDTO) {
+    public ResponseEntity<Grupo> crearGrupoConHorarios(@PathVariable Long idServicio, @RequestBody @Valid GrupoDTO grupoDTO) {
         // REVISAR: Obtener el id del servicio de manera correcta
-        Grupo nuevoGrupo = grupoService.createGrupo(grupoDTO, idServicio);
+        // validando siempre que el instructor loggeado tenga ese servicio asociado
+        // para eso podriamos hacer un middleware
+        System.out.println("grupodto" + grupoDTO);
+        Grupo nuevoGrupo = grupoService.createGrupoConHorarios(grupoDTO, idServicio);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoGrupo); // 201 CREATED
     }

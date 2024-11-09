@@ -23,13 +23,15 @@ public class Cuota {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "servicio_id")
-    private Servicio servicio;
+//    @ManyToOne
+//    @JoinColumn(name = "servicio_id")
+//    private Servicio servicio;
 
     @ManyToOne
     @JoinColumn(name = "historial_monto_id")
     private MontoServicio montoServicio;
+
+    private double recargo;
 
     @Column(name = "fecha_inicio_ciclo")
     private LocalDate fechaInicioCiclo;
@@ -50,9 +52,10 @@ public class Cuota {
 //    @JoinColumn(name = "estado_cuota_id")
 //    private EstadoCuota estadoActual = EstadoCuota.Pendiente;
 
-    public Cuota(MontoServicio montoServicio,
+    public Cuota(MontoServicio montoServicio, double recargo,
                  LocalDate fechaInicioCiclo, LocalDate fechaFinCiclo, LocalDate fechaLimitePago) {
         this.montoServicio = montoServicio;
+        this.recargo = recargo;
         this.fechaInicioCiclo = fechaInicioCiclo;
         this.fechaFinCiclo = fechaFinCiclo;
         this.fechaLimitePago = fechaLimitePago;
@@ -73,9 +76,13 @@ public class Cuota {
         throw new NoSuchElementFoundException("Estado actual de la cuota no encontrado");
     }
 
-    public boolean esUltimaCuota() {
-        return (this.fechaFinCiclo.isAfter(LocalDate.now()));
-    }
+//    public boolean esUltimaCuota() {
+//        // es ultima cuota si fechaFinCiclo es mas adelante
+//        // si tiene otras cuotas Vencidas de ciclos anteriores estas no son la ultima
+//        // justo antes de crear la proxima cuota, la ultima cuota es la ultima pero su fechaFinCiclo es anterior a la actual
+//        // no va return (this.fechaFinCiclo.isAfter(LocalDate.now()));
+//
+//    }
 
     public boolean esPendiente() {
         return ( this.buscarCambioEstadoActual().esPendiente() );
@@ -84,5 +91,13 @@ public class Cuota {
     public boolean estaProximaAFinalizarCiclo(LocalDate fechaActual, int diasProximos) {
         // Si faltan X "diasProximos" para que finalice el ciclo
         return fechaActual.plusDays(diasProximos).isEqual(this.fechaFinCiclo);
+    }
+
+    public boolean yaVencio(LocalDate fechaActual) {
+        return (fechaLimitePago.isBefore(fechaActual));
+    }
+
+    public boolean yaTerminoSuCiclo(LocalDate fechaActual) {
+        return (fechaFinCiclo.isBefore(fechaActual));
     }
 }

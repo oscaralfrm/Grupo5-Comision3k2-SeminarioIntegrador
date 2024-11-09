@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface ICuotaRepository extends JpaRepository<Cuota, Long> {
-    List<Cuota> findByServicioId(Long idServicio);
+    //List<Cuota> findByServicioId(Long idServicio);
 }

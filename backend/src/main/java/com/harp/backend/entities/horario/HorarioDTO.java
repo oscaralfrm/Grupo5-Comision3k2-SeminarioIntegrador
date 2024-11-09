@@ -4,8 +4,9 @@ import com.harp.backend.entities.diaSemana.DiaSemana;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 
-import java.sql.Time;
+import java.time.LocalTime;
 
 @Builder
 @ToString
@@ -14,7 +15,7 @@ import java.sql.Time;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HorarioDTO {
-    private Time horaInicio;
-    private Time horaFin;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
     private String nombreDiaSemana;
 }

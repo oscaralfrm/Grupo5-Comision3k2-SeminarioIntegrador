@@ -1,5 +1,6 @@
 package com.harp.backend.entities.inscripcion;
 
+import com.harp.backend.entities.alumno.service.IAlumnoService;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.grupo.GrupoDTO;
 import com.harp.backend.entities.grupo.IGrupoService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -17,6 +19,9 @@ import java.util.List;
 public class InscripcionController {
     @Autowired
     private IInscripcionService inscripcionService;
+
+    @Autowired
+    private IAlumnoService alumnoService;
 
     // No tiene mucho sentido, siempre buscamos las inscripciones de un servicio o de un alumno
     @GetMapping("/inscripciones")
@@ -43,11 +48,12 @@ public class InscripcionController {
     // GET DE UNO POR ID_SERVICIO
 
     // POST
-    @PostMapping("/{idServicio}/grupos/{numGrupo}/inscribir")
-    public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio, @PathVariable Integer numGrupo, @RequestBody List<Long> idsHorarios) {
+    @PostMapping("/{idServicio}/grupos/{idGrupo}/inscribir")
+    public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio, @PathVariable Long idGrupo, @RequestBody List<Long> idsHorarios) {
         // REVISAR: Obtener el id del servicio de headers
         Long idAlumno = Long.valueOf(1);
-        Inscripcion nuevaInscripcion = inscripcionService.createInscripcion(idAlumno, idServicio, numGrupo, idsHorarios);
+        Inscripcion nuevaInscripcion = inscripcionService.createInscripcion(idAlumno, idServicio, idGrupo, idsHorarios);
+        //Inscripcion nuevaInscripcion = inscripcionService.createInscripcion(idAlumno, idServicio, idGrupo, idsHorarios);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaInscripcion); // 201 CREATED
     }
 
@@ -59,11 +65,13 @@ public class InscripcionController {
     };
 
     // EDITAR
-    @PutMapping("/inscripciones/{idInscripcion}/aceptar/{idGrupo}")
-    public ResponseEntity<String> aceptarInscripcion(@PathVariable Long idInscripcion) {
+    @PutMapping("{idServicio}/inscripciones/{idInscripcion}/aceptar")
+    public ResponseEntity<String> aceptarInscripcion(@PathVariable Long idInscripcion,
+                                                     @PathVariable Long idServicio,
+                                                     @RequestBody LocalDate fechaInicioActividad) {
         // REVISAR: Obtener el id del usuario de headers
-        Long idInstructor = Long.valueOf(1);
-        inscripcionService.aceptarInscripcion(idInscripcion, idInstructor);
+        Long idInstructor = Long.valueOf(2);
+        inscripcionService.aceptarInscripcion(idInstructor, idServicio, idInscripcion, fechaInicioActividad);
         return ResponseEntity.ok("Se aceptó la inscripción correctamente.");
     };
 

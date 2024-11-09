@@ -13,10 +13,11 @@ public class GrupoConverter {
     ModelMapper modelMapper;
 
     public Grupo dtoToEntity(GrupoDTO dto) {
-        Grupo grupo = modelMapper.map(dto, Grupo.class);
-        //Definir manualmente los atributos que son otros objetos
-        //var nuevosHorarios = dto.getHorariosId().map(h -> horariosService.findById(h.getHorariosId()))
-        //grupo.setHorarios(nuevosHorarios);
+        //Grupo grupo = modelMapper.map(dto, Grupo.class);
+        Grupo grupo = new Grupo();
+        grupo.setNumero(dto.getNumero());
+        grupo.setCantMaxAlumnos(dto.getCantMaxCupos());
+        //grupo.setNombre(dto.getNombre());
         return grupo;
     }
 

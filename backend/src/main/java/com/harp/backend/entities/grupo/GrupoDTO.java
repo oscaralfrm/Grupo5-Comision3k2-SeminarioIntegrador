@@ -1,6 +1,7 @@
 package com.harp.backend.entities.grupo;
 
 import com.harp.backend.entities.alumno.model.Alumno;
+import com.harp.backend.entities.horario.HorarioDTO;
 import lombok.*;
 
 import java.util.List;
@@ -12,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GrupoDTO {
-    private String nombre;
+    //private String nombre;
     private Integer numero;
-    private int cantMaxCupos;
-    //private List<Long> horariosId;
+    private Integer cantMaxCupos;
+    private List<HorarioDTO> horarios;
 }

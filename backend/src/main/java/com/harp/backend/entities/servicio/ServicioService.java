@@ -1,23 +1,20 @@
 package com.harp.backend.entities.servicio;
 
-import com.harp.backend.entities.alumno.model.Alumno;
-import com.harp.backend.entities.alumno.service.AlumnoService;
-import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.categoria.CategoriaService;
 import com.harp.backend.entities.grupo.Grupo;
-import com.harp.backend.entities.grupo.GrupoService;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioService;
+import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.EstrategiaCrearInscripcionFactory;
+import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.IEstrategiaInscripcion;
 import com.harp.backend.entities.instructor.InstructorService;
 import com.harp.backend.exception.NoSuchElementFoundException;
-import com.harp.backend.exception.SolicitudInvalidaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,8 +39,11 @@ public class ServicioService implements IServicioService {
     @Autowired
     private MontoServicioService montoService;
 
-    @Autowired
-    private AlumnoService alumnoService;
+//    @Autowired
+//    private IInscripcionService inscripcionService;
+
+//    @Autowired
+//    private AlumnoService alumnoService;
 
     // PAGINADO
     public Page<Servicio> getAllServicios(Integer page, Integer size) {
@@ -52,12 +52,17 @@ public class ServicioService implements IServicioService {
         return listServicios;
     }
 
+    public List<Servicio> findServiciosAsistenciasActivas() {
+        return servicioRepository.findAll().stream().filter(Servicio::isAsistenciasActivas).toList();
+    }
+
     public boolean existeServicio(Long idServicio) {
         return (servicioRepository.findById(idServicio).isPresent());
     }
 
     public Servicio createServicio(ServicioDTO servicioDTO, Long idInstructorLoggeado) {
         Servicio nuevoServicio = servicioConverter.dtoToEntity(servicioDTO);
+
         // Se pide a instructorService que asocie el servicio al instructor
         Servicio servicioCreado = servicioRepository.save(nuevoServicio);
         instructorService.agregarServicioAInstructor(servicioCreado, idInstructorLoggeado);
@@ -95,24 +100,16 @@ public class ServicioService implements IServicioService {
 
     @Override
     public Servicio editServicio(Long idServicio, ServicioDTO servicioDTO) {
-        Servicio servicioExistente = findServicio(idServicio);
+        // VALIDAR: si cambio frecuencia de pago, u otros campos
 
-        servicioExistente = servicioConverter.dtoToEntity(servicioDTO);
+        Servicio servicioExistente = findServicio(idServicio);
+        Servicio servicioRecibido = servicioConverter.dtoToEntity(servicioDTO);
+        System.out.println("servicio recibido" + servicioRecibido);
+        servicioExistente = servicioRecibido;
         servicioExistente.setId(idServicio);
 
         return servicioRepository.save(servicioExistente);
     };
-
-//    public String generarCodigoInscripcion(Long idServicio) {
-//        Servicio servicioExistente = findServicio(idServicio);
-//        String codigoInscripcion = servicioExistente.generarCodigoInscripcion();
-//        servicioRepository.save(servicioExistente);
-//        return codigoInscripcion;
-//    }
-
-//    public List<Servicio> getAllServiciosDeInstructor(Long idInstructor) {
-//        return servicioRepository.findByInstructorId(idInstructor);
-//    }
 
     public void agregarGrupoAServicio(Grupo grupo, Long idServicio) {
         Servicio servicioExistente = this.findServicio(idServicio);
@@ -120,33 +117,64 @@ public class ServicioService implements IServicioService {
         servicioRepository.save(servicioExistente);
     }
 
-    public void agregarMontoAServicio(MontoServicio montoServicio, Long idServicio) {
-        Servicio servicioExistente = this.findServicio(idServicio);
+    public void agregarMontoAServicio(MontoServicio montoServicio, Servicio servicioExistente) {
         servicioExistente.agregarMontoAHistorial(montoServicio);
         servicioRepository.save(servicioExistente);
     }
 
-    public MontoServicio actualizarYCrearNuevoMonto(MontoServicioDTO montoServicioDTO, Long idServicio) {
-        // Obtener el monto actual del servicio que coincida con la cantidad de veces semanales
-        MontoServicio montoActual = obtenerMontoActual(idServicio, montoServicioDTO.getCantVecesSemanales());
+    // Me llega una cantidad maxima de horarios por grupo
+    // El primer monto que creo de un servicio me llega con la cantidad de veces a la semana
+    // Por defecto me lo envian con la cantidad de horarios por grupo
+    // El primer monto no va a tener un monto previo que actualizar
 
-        // Validamos que la fechaInicio del servicio que se quiere crear es Mayor a la actual
+    public MontoServicio actualizarYCrearNuevoMonto(MontoServicioDTO montoServicioDTO, Long idServicio) {
+        // ESTO ES PARA GRUPOS CON HORARIOS FIJOS DONDE LOS ALUMNOS SE INSCRIBEN A TODOS LOS HORARIOS DE UN GRUPO
+
+        // Solo el dejamos crear/programar UN SOLO monto futuro
+        // Entonces le preguntamos al servicio si tiene un monto programado futuro
+        Servicio servicio = this.findServicio(idServicio);
+        if (servicio.tieneMontoProgramadoFuturo()) {
+            throw new UnsupportedOperationException("El servicio ya tiene un monto programado. Edite este monto.");
+        }
+
+        // Solo le dejamos crear un monto nuevo MINIMO con fecha inicio el dia siguente al actual
+        // Validamos que la fechaInicio del monto del servicio que se quiere crear es Mayor a la actual
         LocalDate fechaActual = LocalDate.now();
         if (montoServicioDTO.getFechaInicio().isEqual(fechaActual) ||
                 montoServicioDTO.getFechaInicio().isBefore(fechaActual)) {
             throw new UnsupportedOperationException("No se puede configurar un monto para una fecha anterior o igual a la actual");
         }
 
+        // VALIDAR Se deberia validar que la cantidad de veces semanales sea igual a
+        // la cantidad de veces semanales definida en el servicio
+
+        // Le pedimos a la estrategia AGrupos, AHorarios, AServicio que es quien sabe cual
+        // frecuencia semanal hay que tener en cuenta de esas tres entidades
+        // si es AServicio entonces nos fijamos si servicio tiene esa frecuencia semanal
+        // Si es a grupos entonces nos fijamos si hay alguno que tenga esa frecuencia semanal
+        // Y si es a horarios??? REVISAR ESTO
+        Integer cantVecesSemanales = montoServicioDTO.getCantVecesSemanales();
+        IEstrategiaInscripcion estrategiaModalidadInscrip = EstrategiaCrearInscripcionFactory
+                                                            .getEstrategia(servicio.getModalidadInscripcion());
+        if (! estrategiaModalidadInscrip.tieneEstasVecesSemanales(servicio, cantVecesSemanales)) {
+            throw new UnsupportedOperationException("El servicio no tiene esa frecuencia de asistencia semanal");
+        }
+
         // Crear el nuevo monto
         MontoServicio nuevoMontoServicio = montoService.createMontoServicio(montoServicioDTO);
 
-        // Actualizar la fecha fin del monto actual, si existe
-        // La fecha fin del monto actual será un dia antes que la nueva
-        // Si se define para mañana la fecha inicio, entonces la fecha fin del monto anterior es de hoy
-        montoService.cambiarFechaFinMontoServicio(montoActual, nuevoMontoServicio.getFechaInicio()); // Persistimos el cambio en la fecha fin
+        // Solo si hay un monto actual le settamos la fecha fin
+        // Si es el primer monto del servicio entonces no tendrá ningun motno actual configurado
+        // VALIDAR Y si tiene un monto actual configurado pero no para esa frecuencia semanal?
+        if (servicio.tieneMontoActualConEstasVecesSemanales(cantVecesSemanales)) {
+            MontoServicio montoActual = obtenerMontoActual(idServicio, cantVecesSemanales);
+            // La fecha fin del monto actual será un dia antes que la nueva
+            // Si se define para mañana la fecha inicio, entonces la fecha fin del monto anterior es de hoy
+            montoService.cambiarFechaFinMontoServicio(montoActual, nuevoMontoServicio.getFechaInicio()); // Persistimos el cambio en la fecha fin
+        }
 
         // Asociar el nuevo monto al servicio
-        agregarMontoAServicio(nuevoMontoServicio, idServicio);
+        this.agregarMontoAServicio(nuevoMontoServicio, servicio);
 
         return nuevoMontoServicio;
     }
@@ -160,5 +188,6 @@ public class ServicioService implements IServicioService {
 //        Servicio servicio = this.findServicio(idServicio);
 //        servicio.agregarAlumnoAGrupo(numGrupo, idAlumno);
 //    }
+
 
 }

@@ -3,14 +3,20 @@ package com.harp.backend.entities.grupo;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.AlumnoService;
 import com.harp.backend.entities.clase.Clase;
+import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.horario.Horario;
+import com.harp.backend.entities.horario.HorarioDTO;
+import com.harp.backend.entities.horario.IHorarioService;
+import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.atomic.LongAccumulator;
 
 @Service
 public class GrupoService implements IGrupoService {
@@ -23,10 +29,16 @@ public class GrupoService implements IGrupoService {
     private GrupoConverter grupoConverter;
 
     @Autowired
-    private ServicioService servicioService;
+    private IServicioService servicioService;
 
     @Autowired
     private AlumnoService alumnoService;
+
+    @Autowired
+    private IHorarioService horarioService;
+
+    @Autowired
+    private IClaseService claseService;
 
     //Lo usamos en la generacion de clases automaticas
     @Override
@@ -44,11 +56,49 @@ public class GrupoService implements IGrupoService {
 
     @Override
     public Grupo createGrupo(GrupoDTO grupoDTO, Long idServicio) {
+        //Aca se deberia busar el ultimo numero y sumarle 1
         Grupo nuevoGrupo = grupoConverter.dtoToEntity(grupoDTO);
         Grupo grupoCreado = grupoRepository.save(nuevoGrupo);
         servicioService.agregarGrupoAServicio(nuevoGrupo, idServicio);
         return grupoCreado;
     };
+
+    @Transactional
+    @Override
+    public Grupo createGrupoConHorarios(GrupoDTO grupoDTO, Long idServicio) {
+        //Grupo grupoCreado = this.createGrupo(grupoDTO, idServicio);
+        Grupo nuevoGrupo = grupoConverter.dtoToEntity(grupoDTO);
+        Grupo grupoCreado = grupoRepository.save(nuevoGrupo);
+        servicioService.agregarGrupoAServicio(nuevoGrupo, idServicio);
+
+        System.out.println("grupo creado" + grupoCreado);
+
+        // Validar aca que no se superpongan los horarios de ls grupos
+        // aca
+
+        // Por cada horario que nos llega
+        List<HorarioDTO> horariosDTO = grupoDTO.getHorarios();
+        for (HorarioDTO horarioDTO : horariosDTO) {
+            // aca asignarle al grupo el numero del último asociado al servicio
+            Horario horarioCreado = horarioService.createHorario(horarioDTO);
+            //this.agregarHorarioAGrupo(horarioCreado, grupoCreado.getId());
+            grupoCreado.agregarHorario(horarioCreado);
+        }
+
+        grupoRepository.save(grupoCreado);
+
+        // aca nos fijamos si el servicio tiene asistencias activas en caso de tenerlas
+        // llamamos a claseService y le generamos las asistencias
+        // seria mejor que todos estos servicios los llamaramos desde servicioService
+        // y que aca solo nos llegue el servicio
+        Servicio servicio = servicioService.findServicio(idServicio);
+        if (servicio.isAsistenciasActivas()) {
+            claseService.crearClasesParaSemanaSiguienteGrupo(grupoCreado);
+        }
+
+        return grupoCreado;
+    }
+
 
     @Override
     public void deleteGrupo(Long idGrupo){
@@ -109,6 +159,10 @@ public class GrupoService implements IGrupoService {
 
     public void agregarHorarioAGrupo(Horario horario, Long idGrupo) {
         Grupo grupoExistente = findGrupo(idGrupo);
+
+        // ACA Validar que el grupo tenga luga disponible
+
+
         grupoExistente.agregarHorario(horario);
         grupoRepository.save(grupoExistente);
     }

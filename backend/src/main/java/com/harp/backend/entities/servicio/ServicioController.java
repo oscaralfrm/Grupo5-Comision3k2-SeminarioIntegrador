@@ -49,6 +49,7 @@ public class ServicioController {
     // POST
     @PostMapping
     public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicioDTO) {
+        //System.out.println(servicioDTO);
         // REVISAR: Obtener el id del Instructor loggeado de la manera correcta
         Long idInstructorLoggeado = Long.valueOf(2);
         Servicio nuevoServicio = servicioService.createServicio(servicioDTO, idInstructorLoggeado);

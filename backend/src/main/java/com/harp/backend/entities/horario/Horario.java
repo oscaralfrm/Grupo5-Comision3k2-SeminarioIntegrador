@@ -1,5 +1,6 @@
 package com.harp.backend.entities.horario;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.diaSemana.DiaSemana;
 import jakarta.persistence.*;
@@ -8,9 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Time;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -25,12 +26,12 @@ public class Horario {
     private Long id;
 
     @Column(name = "hora_inicio")
-    private Time horaInicio;
+    private LocalTime horaInicio;
 
     @Column(name = "hora_fin")
-    private Time horaFin;
+    private LocalTime horaFin;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "dia_semana_id", referencedColumnName = "id")
     private DiaSemana diaSemana;
 
@@ -40,7 +41,8 @@ public class Horario {
             joinColumns = @JoinColumn(name = "horario_id"), // FK hacia la tabla Grupo
             inverseJoinColumns = @JoinColumn(name = "alumno_id") // FK hacia la tabla Alumno
     )
-    private Set<Alumno> alumnos = new HashSet<>();
+    @JsonIgnore
+    private List<Alumno> alumnos = new ArrayList<>();
 
     @Column(name = "cant_max_cupos")
     private Integer cantMaxCupos;
@@ -51,9 +53,9 @@ public class Horario {
 
     public void agregarAlumno(Alumno alumno) {
         // Revisar que el horario tenga cupos
-        if (! this.tieneCuposLibres()) {
-            throw new UnsupportedOperationException("El grupo no tiene cupos libres");
-        }
+//        if (! this.tieneCuposLibres()) {
+//            throw new UnsupportedOperationException("El grupo no tiene cupos libres");
+//        }
         alumnos.add(alumno);
     }
 
@@ -67,6 +69,11 @@ public class Horario {
 
     public int calcularCantAlumnos() {
         return this.alumnos.size();
+    }
+
+    public long calcularDuracionEnHoras() {
+        Duration duracion = Duration.between(horaInicio, horaFin);
+        return duracion.toHours();
     }
 
 }

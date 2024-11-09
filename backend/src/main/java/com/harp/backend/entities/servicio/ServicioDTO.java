@@ -15,7 +15,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 
+// Validar que si me llega tipo de frecuencia "Con fecha limite" tengo que tener si o si un valor en diaLimitePago != null.
+//Validar que si es "FechaInicioFin" entonces que tenga valores fechas != null
+
 public class ServicioDTO {
+    // Generales
     @NotEmpty(message = "El nombre es requerido")
     private String nombre;
 
@@ -24,23 +28,43 @@ public class ServicioDTO {
 
     private String logoURL;
 
-    private int cantMaxAlumnos;
-
-    private int cantMaxGrupos;
-
-    private int duracionTotalMeses;
-
-    private LocalDate fechaFin;
-
-    private boolean activo; //activo que se esta cobrando
-    private boolean publico; //publico que se publicita
+    private String ubicacion;
 
     // Tambien podria ser el id
     private String nombreCategoria;
 
-    private int cantDiasCiclo;
+    // Tipo frecuencia id: segun si es "A mes calendario" "Con fecha limite" "Segun inscripcion" "Cada X dias"
+    private Long frecuenciaPagoId;
+
+    // SI es con fecha limite
     private int diaLimitePago;
 
-    //private Long FrecuenciaPagoId;
-    //private boolean claseDePrueba;
+    //Si es cada X cantidad de dias
+    private int cantDiasCiclo;
+
+    // Cantidades
+    private int cantMaxAlumnosPorGrupo;
+    private int cantHorariosPorGrupo;
+
+    // Modalidad: puede ser indefinido, fechaInicio-fin, segun cuando te inscribas + duracion
+    private String tipoModalidad;
+
+    // SI es Modalidad FechaInicio-Fin
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
+
+    // Si es Modalidad +duracion
+    private int duracionTotalMeses;
+
+    // Personalizables
+    //private boolean activo; //activo que se esta cobrando
+    private boolean publico; //publico que se publicita
+    private boolean claseDePrueba;
+    private boolean asistenciasActivas;
+
 }
+
+
+
+
+

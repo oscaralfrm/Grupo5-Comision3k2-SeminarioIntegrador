@@ -8,5 +8,7 @@ import java.util.List;
 
 public interface IEstrategiaInscripcion {
     // el pase libre ignorará el numGrupo y horarios y lo hará en el grupo unico
-    Inscripcion crearInscripcion(Servicio servicio, Integer numGrupo, List<Long> idsHorarios);
+    Inscripcion crearInscripcion(Servicio servicio, Long idGrupo, List<Long> idsHorarios);
+    boolean tieneCuposLibres(Servicio servicio, Long idGrupo, List<Long> idsHorarios);
+    boolean tieneEstasVecesSemanales(Servicio servicio, int cantVecesSemanales);
 }

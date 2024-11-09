@@ -48,7 +48,7 @@ public class UsuarioController {
         Perfil perfilLeido;
 
         // Encriptamos la contraseña...
-        usuario.setContrasena(usuarioService.encriptPassword(usuario.getContrasena()));
+//        usuario.setContrasena(usuarioService.encriptPassword(usuario.getContrasena()));
 
         // Recuperar la Permission/s por su ID
         for (Perfil perfil : usuario.getPerfiles()){

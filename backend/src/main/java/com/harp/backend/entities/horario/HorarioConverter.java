@@ -18,10 +18,15 @@ public class HorarioConverter {
     ModelMapper modelMapper;
 
     public Horario dtoToEntity(HorarioDTO dto) {
-        Horario horario = modelMapper.map(dto, Horario.class);
+        Horario horario = new Horario();
+        horario.setHoraInicio(dto.getHoraInicio());
+        horario.setHoraFin(dto.getHoraFin());
+        //Horario horario = modelMapper.map(dto, Horario.class);
         //Definir manualmente los atributos que son otros objetos
         DiaSemana diaSemanaExistente = diaSemanaService.findDiaSemanaByNombre(dto.getNombreDiaSemana());
         horario.setDiaSemana(diaSemanaExistente);
+
+        System.out.println("horario creado" + horario);
         return horario;
     }
 }

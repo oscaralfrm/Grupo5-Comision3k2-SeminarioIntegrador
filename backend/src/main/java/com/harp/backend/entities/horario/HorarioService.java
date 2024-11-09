@@ -26,8 +26,8 @@ public class HorarioService implements IHorarioService {
     @Autowired
     private HorarioConverter horarioConverter;
 
-    @Autowired
-    private GrupoService grupoService;
+//    @Autowired
+//    private GrupoService grupoService;
 
     @Autowired
     private ClaseService claseService;
@@ -37,11 +37,20 @@ public class HorarioService implements IHorarioService {
         return horarioRepository.findAll();
     };
 
+    // Ya no hacemos que desde aca se agrega al grupo, ahora se hace en GrupoService
+//    @Override
+//    public Horario createHorario(HorarioDTO horarioDTO, Long idGrupo) {
+//        Horario nuevoHorario = horarioConverter.dtoToEntity(horarioDTO);
+//        Horario horarioCreado = horarioRepository.save(nuevoHorario);
+//        grupoService.agregarHorarioAGrupo(horarioCreado, idGrupo);
+//        return horarioCreado;
+//    };
+
     @Override
-    public Horario createHorario(HorarioDTO horarioDTO, Long idGrupo) {
+    public Horario createHorario(HorarioDTO horarioDTO) {
         Horario nuevoHorario = horarioConverter.dtoToEntity(horarioDTO);
         Horario horarioCreado = horarioRepository.save(nuevoHorario);
-        grupoService.agregarHorarioAGrupo(horarioCreado, idGrupo);
+
         return horarioCreado;
     };
 
@@ -73,7 +82,6 @@ public class HorarioService implements IHorarioService {
         // Agregamos al alumno al horario y persistimos los cambios
         horario.agregarAlumno(alumnoExistente);
         horarioRepository.save(horario);
-
         //Agregar asistencias alumno a las clases futuras ya creadas
         claseService.agregarAsistenciasDeAlumnoNuevoAClasesFuturas(alumnoExistente, horario);
     }

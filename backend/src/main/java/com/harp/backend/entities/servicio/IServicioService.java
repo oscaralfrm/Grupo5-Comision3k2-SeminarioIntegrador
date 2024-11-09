@@ -1,8 +1,10 @@
 package com.harp.backend.entities.servicio;
 
+import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -17,4 +19,6 @@ public interface IServicioService {
     public Page<Servicio> getAllServicios(Integer page, Integer size);
     public List<Grupo> findGruposDeServicio(Long idServicio);
     public MontoServicio actualizarYCrearNuevoMonto(MontoServicioDTO montoServicioDTO, Long idServicio);
+    public List<Servicio> findServiciosAsistenciasActivas();
+    void agregarGrupoAServicio(Grupo grupo, Long idServicio);
 }

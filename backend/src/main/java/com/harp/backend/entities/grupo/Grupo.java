@@ -32,7 +32,7 @@ public class Grupo {
     //private String nombre;
 
     @Column(name = "cant_max_cupos")
-    private int cantMaxCupos;
+    private Integer cantMaxAlumnos;
 
     @OneToMany
     @JoinColumn(name = "grupo_id")
@@ -49,7 +49,7 @@ public class Grupo {
 
     @OneToMany
     @JoinColumn(name = "grupo_id")
-    private Set<Clase> clases;
+    private Set<Clase> clases = new HashSet<>();
 
 /*
     public void agregarAlumno(Alumno alumno) {
@@ -76,7 +76,7 @@ public class Grupo {
 
     public boolean tieneEsteNumero(Integer numero) {
         //Revisar si es == o equals
-        return (this.numero == numero);
+        return (Objects.equals(this.numero, numero));
     }
 
     public boolean tieneEsteId(Long id) {
@@ -102,5 +102,23 @@ public class Grupo {
         // Recorro los horarios existentes y retorno los que tienen ids de la lista pasada por parametros
         return this.horarios.stream()
                 .filter(horario -> idsHorarios.contains( horario.getId() )).toList();
+    }
+
+    public Integer calcularVecesSemanales() {
+        // si hay dos horarios el mismo dia en un grupo lo contamos como otra vez a la semana
+        // aunque es el mismo dia
+        return horarios.size();
+    }
+
+    public boolean tieneEstasVecesSemanales(Integer cantVecesSemanles) {
+        return ( this.calcularVecesSemanales().equals(cantVecesSemanles));
+    }
+
+    public long calcularHorasSemanales() {
+        long horasTotales = 0;
+        for (Horario horario : horarios) {
+            horasTotales += horario.calcularDuracionEnHoras();
+        }
+        return horasTotales;
     }
 }

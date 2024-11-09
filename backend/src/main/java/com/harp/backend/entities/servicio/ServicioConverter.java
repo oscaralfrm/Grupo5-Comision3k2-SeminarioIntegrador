@@ -1,6 +1,8 @@
 package com.harp.backend.entities.servicio;
 
 import com.harp.backend.entities.categoria.CategoriaService;
+import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPagoService;
+import com.harp.backend.entities.modalidad.Modalidad;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,12 +14,34 @@ public class ServicioConverter {
     CategoriaService categoriaService;
 
     @Autowired
+    TipoFrecuenciaPagoService tipoFrecuenciaPagoService;
+
+    @Autowired
     ModelMapper modelMapper;
 
     public Servicio dtoToEntity(ServicioDTO dto) {
-        Servicio servicio = modelMapper.map(dto, Servicio.class);
+        //Servicio servicio = modelMapper.map(dto, Servicio.class);
+        Servicio servicio = new Servicio();
+        servicio.setNombre(dto.getNombre());
+        servicio.setDescripcion(dto.getDescripcion());
+        servicio.setLogoURL(dto.getLogoURL());
+        servicio.setUbicacion(dto.getUbicacion());
+        servicio.setCantMaxAlumnosPorGrupo(dto.getCantMaxAlumnosPorGrupo());
+        //servicio.setCantHorariosPorGrupo(dto.getCantHorariosPorGrupo());
+        servicio.setDuracionTotalMeses(dto.getDuracionTotalMeses());
+        servicio.setFechaInicio(dto.getFechaInicio());
+        servicio.setFechaFin(dto.getFechaFin());
+        servicio.setPublico(dto.isPublico());
+        servicio.setCantDiasCiclo(dto.getCantDiasCiclo());
+        servicio.setDiaLimitePago(dto.getDiaLimitePago());
+        servicio.setClaseDePrueba(dto.isClaseDePrueba());
+        servicio.setAsistenciasActivas(dto.isAsistenciasActivas());
+
+        //System.out.println("servicio desp dto" + servicio);
         //Definir manualmente los atributos que son otros objetos
         servicio.setCategoria(categoriaService.findCategoriaByNombre(dto.getNombreCategoria()));
+        servicio.setTipoFrecuenciaPago(tipoFrecuenciaPagoService.findTipoFrecuenciaPago(dto.getFrecuenciaPagoId()));
+        servicio.setModalidadInscripcion(Modalidad.valueOf(dto.getTipoModalidad()));
         return servicio;
     }
 

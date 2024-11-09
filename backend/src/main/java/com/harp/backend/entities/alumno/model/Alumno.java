@@ -33,19 +33,19 @@ public class Alumno {
 
     @OneToMany
     @JoinColumn(name = "alumno_id")
-    private Set<Inscripcion> inscripciones = new HashSet<>();
+    private List<Inscripcion> inscripciones = new ArrayList<>();
 
-    @OneToMany
-    @JoinColumn(name = "alumno_id")
-    private List<Cuota> cuotas;
+//    @OneToMany
+//    @JoinColumn(name = "alumno_id")
+//    private List<Cuota> cuotas;
 
     public void agregarInscripcion(Inscripcion inscripcion) {
         inscripciones.add(inscripcion);
     }
 
-    public void agregarCuota(Cuota cuota) {
-        cuotas.add(cuota);
-    }
+//    public void agregarCuota(Cuota cuota) {
+//        cuotas.add(cuota);
+//    }
 
     public boolean estaInscriptoAEsteServicio(Servicio servicio) {
         return inscripciones.stream()
@@ -64,11 +64,30 @@ public class Alumno {
     }
 
     public boolean tieneEstaCuota (Cuota cuotaExistente) {
-        return cuotas.contains(cuotaExistente);
+        return inscripciones.stream()
+                .anyMatch(inscripcion -> inscripcion.getCuotas().contains(cuotaExistente));
     }
 
+    // cuando yo quiera mostrarle las cuotas a un alumno le voy a mostrar tanto las vencidas
+    // como las pendientes
+
+    // se me vencio la cuota porque su ciclo finalizo
+    // creo una nueva. de la vencida o de la pendiente o de la abonada? no me interesa traigo cualqueira
+    // lo que me interesa es que sea del ultimo mes
+    // pero si yo voy a crear una cuota cuando se venza la ultima, entonces quiere decir
+    // que estoy ejecutando inscripcion.obtenerUltimaCuota
+    // por lo tanto cuota.esUltimaCuota() justo el dia de la fecha en que su
+    // fechaFinCiclo
+
+    // pero cuando yo quiero crear nuevas cuotas
+    // cuando la ultima haya finalizado su ciclo
+    // se da queuna cuota sea ulimaCuota y yaFinalizoCiclo a la vez
+    // ya finalizo ciclo es que finCiclo.isBefore(fechaActual)
+    // ultimaCuota valida si finCiclo.isAfter()
+
     public List<Cuota> obtenerUltimasCuotas() {
-        return cuotas.stream().filter(Cuota::esUltimaCuota).toList();
+        // obtengo la ultima cuota de cada inscripcion
+        return inscripciones.stream().map(Inscripcion::obtenerUltimaCuota).toList();
     }
 
     public boolean estaInscriptoAServicio() {

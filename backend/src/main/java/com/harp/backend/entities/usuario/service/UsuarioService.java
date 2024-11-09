@@ -3,7 +3,6 @@ package com.harp.backend.entities.usuario.service;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.repository.IUsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,8 +40,8 @@ public class UsuarioService implements IUsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    @Override
-    public String encriptPassword(String password) {
-        return new BCryptPasswordEncoder().encode(password);
-    }
+//    @Override
+//    public String encriptPassword(String password) {
+//        return new BCryptPasswordEncoder().encode(password);
+//    }
 }

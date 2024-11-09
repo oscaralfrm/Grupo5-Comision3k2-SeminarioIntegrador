@@ -4,5 +4,6 @@ public enum EstadoInscripcion {
     PendienteAceptacion,
     Aceptada,
     Rechazada,
+    EnCurso,
     Finalizada
 }

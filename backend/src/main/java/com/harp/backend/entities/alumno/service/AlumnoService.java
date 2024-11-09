@@ -4,6 +4,7 @@ import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.repository.IAlumnoRepository;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,8 +54,7 @@ public class AlumnoService implements IAlumnoService {
         return alumnoRepository.save(alumno);
     }
 
-    public void agregarInscripcionAAlumno(Inscripcion inscripcion, Long idAlumno) {
-        Alumno alumnoExistente = this.findAlumno(idAlumno);
+    public void agregarInscripcionAAlumno(Inscripcion inscripcion, Alumno alumnoExistente) {
         alumnoExistente.agregarInscripcion(inscripcion);
         alumnoRepository.save(alumnoExistente);
     }
@@ -64,7 +64,8 @@ public class AlumnoService implements IAlumnoService {
         return alumnoExistente;
     }
 
-    public void agregarCuotaAAlumno(Alumno alumno, Cuota cuota) {
-        alumno.agregarCuota(cuota);
-    }
+//    public void agregarCuotaAAlumno(Alumno alumno, Cuota cuota) {
+//        alumno.agregarCuota(cuota);
+//    }
+
 }

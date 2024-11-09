@@ -37,6 +37,12 @@ public class MontoServicio {
      @Setter(AccessLevel.NONE)
      private LocalDate fechaFin = null;
 
+     public MontoServicio(double monto, LocalDate fechaInicio, Integer vecesSemanales) {
+          this.monto = monto;
+          this.fechaInicio = fechaInicio;
+          this.cantVecesSemanales = vecesSemanales;
+     }
+
      public boolean esMontoActual() {
           // Es el monto actual si todavia no finalizó y no está programado a futuro
           // La fecha fin se actualiza al crear el proximo monto, si es el primer monto del servicio tendrá valor null
@@ -57,8 +63,9 @@ public class MontoServicio {
      }
 
      public void setFechaInicio(LocalDate fechaInicio) {
+          // Si se esta modificando, no creando (fechaInicio != null)
           // Solo se pueden modificar estos si la fecha actual es menor a la fecha inicio
-          if (! this.esMontoProgramadoFuturo()) {
+          if (fechaInicio != null && ! this.esMontoProgramadoFuturo()) {
                throw new UnsupportedOperationException("La fecha inicio ya no puede ser modificada");
           }
           this.fechaInicio = fechaInicio;

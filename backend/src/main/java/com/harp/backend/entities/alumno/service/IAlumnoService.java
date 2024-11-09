@@ -14,5 +14,4 @@ public interface IAlumnoService {
     Alumno findAlumno(Long idAlumno);
     Alumno editAlumno(Alumno alumno);
     List<Inscripcion> findInscripcionesDeAlumno(Long idAlumno);
-
 }

@@ -2,12 +2,16 @@ package com.harp.backend.entities.servicio;
 
 //import com.harp.backend.entities.grupo.Grupo;
 //import com.harp.backend.entities.historialMontoCuota.HistorialMonto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
+import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.horario.Horario;
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.modalidad.Modalidad;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
@@ -16,72 +20,109 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
 @Table(name = "servicios")
-// id	instructor_id	nombre	descripcion	costo?	frecuencia?
-// capacidad_max_alumnos	capacidad_max_grupos	fecha_inicio
-// fecha_fin	duracion_inscripcion	categoria_id
-// cant_dias_ciclo	dia_limite_pago	tipo_frecuencia_pago_id
-// faltan: activo, public, logo,
 public class Servicio {
+
+    public Servicio(String nombre, String descripcion, String logoURL, String ubicacion,
+                    Integer cantMaxAlumnosPorGrupo, int cantHorariosPorGrupo, int duracionTotalMeses,
+                    LocalDate fechaInicio, LocalDate fechaFin,
+                    boolean publico, int cantDiasCiclo, int diaLimitePago,
+                    boolean claseDePrueba, boolean asistenciasActivas) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.logoURL = logoURL;
+        this.ubicacion = ubicacion;
+        this.cantMaxAlumnosPorGrupo = cantMaxAlumnosPorGrupo;
+        //this.cantHorariosPorGrupo = cantHorariosPorGrupo;
+        this.duracionTotalMeses = duracionTotalMeses;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.publico = publico;
+        this.cantDiasCiclo = cantDiasCiclo;
+        this.diaLimitePago = diaLimitePago;
+        this.claseDePrueba = claseDePrueba;
+        this.asistenciasActivas = asistenciasActivas;
+
+        // Valores predeterminados o inicializados por defecto
+        this.fechaCreacion = LocalDate.now(); // Fecha de creación en la fecha actual
+        this.activo = false;                  // Por defecto, el servicio no está activo
+        this.historialMontos = new HashSet<>(); // Inicializa el historial de montos vacío
+        this.grupos = new HashSet<>();          // Inicializa los grupos vacíos
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "instructor_id", referencedColumnName = "id", nullable = false)
-//    private Instructor instructor;
-
     private String nombre;
     private String descripcion;
     private String logoURL;
+    private String ubicacion;
 
     //Revisar valor por defecto null o cero
-    @Column(name = "capacidad_max_alumnos")
-    private Integer cantMaxAlumnos;
-    @Column(name = "capacidad_max_grupos")
-    private int cantMaxGrupos;
+    @Column(name = "cant_max_alumnos_por_grupo")
+    private Integer cantMaxAlumnosPorGrupo;
 
-    @Column(name = "fecha_inicio")
+    private Integer cantMaxAlumnos;
+    @Column(name = "cant_veces_semanales")
+    private Integer cantVecesSemanales;
+//    private Integer cantHorariosPorGrupo;
+
+
+
+    @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion = LocalDate.now(); //No puede modificarse
 
     // Si un alumno se inscribe el 10/05 y duracion es 5meses, entonces finaliza el 10/10
     // Cuando se cree una inscripcion tendrá fecha fin = fecha actual + servicio.duracionTotalMeses
     @Column(name = "duracion_inscripcion")
-    private int duracionTotalMeses;
+    private Integer duracionTotalMeses;
 
     //Sin importar cuando el alumno se inscriba el servicio termina esta fecha
     // Cuando se cree una inscripcion tendrá esta fecha fin programada
+
+    @Column(name = "fecha_inicio")
+    private LocalDate fechaInicio;
+
     @Column(name = "fecha_fin")
     private LocalDate fechaFin;
 
-    private boolean activo; //activo = que se esta cobrando
+    // Por defecto es false
+    private boolean activo = false; //activo = que se esta cobrando
     private boolean publico; //publico = que se publicita
+    private boolean inscripcionesAbiertas; // cargar en base de datos
 
     @ManyToOne
     @JoinColumn(name = "categoria_id", referencedColumnName = "id")
     private Categoria categoria;
 
+    // es != null si no es cada X cant dias
     @Column(name = "cant_dias_ciclo")
-    private int cantDiasCiclo;
+    private Integer cantDiasCiclo;
 
     //Cuando se creen las cuotas tendrán como fecha limite esta fecha
     @Column(name = "dia_limite_pago")
-    private int diaLimitePago;
+    private Integer diaLimitePago;
 
     @OneToMany
     @JoinColumn(name = "servicio_id")
+    @JsonIgnore
     private Set<MontoServicio> historialMontos = new HashSet<>();
+
+    @OneToMany
+    @JoinColumn(name = "servicio_id")
+    @JsonIgnore
+    private List<Inscripcion> inscripciones;
 
     // Servicio tiene una frecuencia de pago o varias?
     // Se usa al crear las cuotas, si el servicio cambia cada cuanto cobra las cuotas
@@ -92,19 +133,29 @@ public class Servicio {
     @JoinColumn(name = "tipo_frecuencia_pago_id")
     private TipoFrecuenciaPago tipoFrecuenciaPago;
 
-    //Eliminar frecuencia de la BD
-
     @Enumerated(EnumType.STRING)
-    private Modalidad modalidad;
+    private Modalidad modalidadInscripcion;
 
     @OneToMany
-    @JoinColumn(name = "grupo_id")
+    @JoinColumn(name = "servicio_id")
+    @JsonIgnore
     private Set<Grupo> grupos = new HashSet<>();
 
     @Column(name = "clase_prueba")
     private boolean claseDePrueba;
 
-    //private String codigoInscripcion;
+    // hacer default = ?
+    @Column(name = "asistencias_activas")
+    private boolean asistenciasActivas;
+
+    // agregar en base de datos
+    private boolean pagoAnticipadoDeMontoInscripcion;
+    private boolean pagoAnticipadoDePrimeraCuota;
+
+    private Integer diasDeAntelacionPago;
+
+    private double montoInscripcion;
+
 
     public void desactivar() {
         this.setActivo(false);
@@ -145,12 +196,12 @@ public class Servicio {
 //        grupo.agregarAlumno(alumno);
 //    }
 
-    public boolean tieneCuposLibres(int cantInscripcionesDeServicio) {
-        // Si la cantMaxAlumnos es null, quiere decir que no hay un máximo de alumnos, siempre hay cupos
-        // Si cantMaxAlumnos es mayor a la cantidad de inscripciones actual entonces hay cupos
-
-        return (this.cantMaxAlumnos == null || this.cantMaxAlumnos > cantInscripcionesDeServicio);
-    }
+//    public boolean tieneCuposLibres(int cantInscripcionesDeServicio) {
+//        // Si la cantMaxAlumnos es null, quiere decir que no hay un máximo de alumnos, siempre hay cupos
+//        // Si cantMaxAlumnos es mayor a la cantidad de inscripciones actual entonces hay cupos
+//
+//        return (this.cantMaxAlumnos == null || this.cantMaxAlumnos > cantInscripcionesDeServicio);
+//    }
 
     public Grupo obtenerGrupoConEsteNum(Integer numGrupo) {
         return grupos.stream()
@@ -166,12 +217,16 @@ public class Servicio {
                 .orElseThrow(() -> new NoSuchElementFoundException("No se encontró un grupo con el número: " + idGrupo + "para el servicio" + this.getId()));
     }
 
-    public boolean esDeModalidadPaseLibre() {
-        return (modalidad == Modalidad.PaseLibre);
+    public boolean esDeModalidadAGrupo() {
+        return (modalidadInscripcion == Modalidad.AGrupo);
     }
 
-    public boolean esDeModalidadGruposConHorariosFijos() {
-        return (modalidad == Modalidad.GruposConHorariosFijos);
+    public boolean esDeModalidadAServicio() {
+        return (modalidadInscripcion == Modalidad.AServicio);
+    }
+
+    public boolean esDeModalidadAHorarios() {
+        return (modalidadInscripcion == Modalidad.AHorarios);
     }
 
     public boolean tieneEsteGrupo(Grupo grupo) {
@@ -190,6 +245,100 @@ public class Servicio {
         }
         throw new NoSuchElementFoundException("No se encontró un monto actual del servicio para esas veces semanales");
     }
+
+    public boolean tieneMontoActualConfigurado() {
+        return (! this.obtenerMontosActuales().isEmpty());
+    }
+
+    public boolean tieneMontoActualConEstasVecesSemanales(Integer cantVecesSemanales) {
+        if (! tieneMontoActualConfigurado()) {
+            return false;
+        }
+        return historialMontos.stream().anyMatch(m -> m.esDeEstasVecesSemanales(cantVecesSemanales) );
+    }
+
+    public boolean tieneMontoProgramadoFuturo() {
+        return historialMontos.stream().anyMatch(MontoServicio::esMontoProgramadoFuturo);
+    }
+
+//    public boolean tieneEstaCantVecesSemanales(int vecesSemanales) {
+//        // implementar de otra forma si se le permite a los alumnos inscribirse
+//        // a algunos horarios de un grupo en vez de a todos
+//        return this.cantHorariosPorGrupo.equals(vecesSemanales);
+//    }
+
+    public List<Inscripcion> obtenerInscripcionesVigentes() {
+        return inscripciones.stream().filter(Inscripcion::estaVigente).toList();
+    }
+
+    public List<Inscripcion> obtenerInscripcionesVigentes(Grupo grupo){
+        return inscripciones.stream().filter(i -> i.estaVigente() && i.esDeEsteGrupo(grupo) ).toList();
+    }
+
+    public boolean tieneEstaInscripcion(Inscripcion inscripcion) {
+        return (inscripciones.contains(inscripcion));
+    }
+
+    public Inscripcion obtenerInscripcionById(Long idInscripcion) {
+        return inscripciones.stream()
+                .filter(i -> i.getId().equals(idInscripcion))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementFoundException("Inscripción no encontrada en ese servicio"));
+    }
+
+    public boolean yaInicio() {
+        // si hoy es la fecha de inicio entonces me da que no inició todavia
+        return (fechaInicio.isBefore(LocalDate.now()));
+    }
+
+    // sacar de lombook
+    public void setFechaFin(LocalDate fechaFinNueva) {
+        // Validar que sea mayor que la actual
+        LocalDate fechaActual = LocalDate.now();
+        if (fechaFinNueva.isBefore(fechaActual)) {
+            throw new UnsupportedOperationException("La fecha fin del servicio no puede ser anterior a la actual");
+        }
+
+        // Si la fecha fin era null entonces le dejamos configurarla
+        if (this.fechaFin == null) {
+            this.fechaFin = fechaFinNueva;
+            // si hay inscripciones en curso les setteamos la fecha fin
+            inscripciones.stream().forEach(i -> {i.setFechaFin(fechaFinNueva);});
+        } else {
+            // Si el servicio ya inició, hay inscripciones y ya habia una fecha fin definida
+            // Deberiamos validar que la diferencia entre la fecha fin anterior y la nueva
+            // sea de unos dias no mucha diferencia
+            if (this.yaInicio() && ! this.obtenerInscripcionesVigentes().isEmpty()) {
+                // revisar que cantidad de dias sería razonable cambiar la fecha fin
+                // acá tambien implementar que no de pueda cambiar la fecha fin si ya se cambió antes
+                this.esCambioFechaFinRazonable(fechaFinNueva, 15);
+            }
+        }
+    }
+
+    public boolean esCambioFechaFinRazonable(LocalDate fechaFinNueva, long diasAceptados) {
+        long diferenciaEnDiasDeFechasFin = ChronoUnit.DAYS.between(fechaFin, fechaFinNueva);
+        // si la diferencia entre la fecha fin actual y la nueva que se quiere
+        // es muy grande entonces el cambio no es razonable
+        return (diferenciaEnDiasDeFechasFin <= diasAceptados);
+    }
+
+    public boolean tieneMontoInscripcion() {
+        //Revisar si es asi
+        return (montoInscripcion > 0);
+    }
+
+
+    public List<Alumno> obtenerAlumnosActuales() {
+        return inscripciones.stream().filter(Inscripcion::estaEnCurso).map(Inscripcion::getAlumno).toList();
+    }
+
+    public List<Cuota> obtenerUltimasCuotasAlumnosActuales() {
+        return inscripciones.stream()
+                .filter(Inscripcion::estaEnCurso)
+                .map(Inscripcion::obtenerUltimaCuota).toList();
+    }
+
 
 
 }
