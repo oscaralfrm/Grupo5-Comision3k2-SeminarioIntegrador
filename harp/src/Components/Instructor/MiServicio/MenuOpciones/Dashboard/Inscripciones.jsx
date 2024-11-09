@@ -1,0 +1,179 @@
+import React, { useState } from "react";
+import { FaBell } from "react-icons/fa";
+
+const Enrollments = () => {
+  const [showDetail, setShowDetail] = useState(false);
+  const [selectedEnrollment, setSelectedEnrollment] = useState(null);
+  const [acceptedEnrollments, setAcceptedEnrollments] = useState([]);
+  const [rejectedEnrollments, setRejectedEnrollments] = useState([]); // Nueva lista de rechazados
+  const [showAcceptedList, setShowAcceptedList] = useState(false);
+
+  const enrollments = [
+    { id: 1, name: "Juan Pérez", status: "Pendiente" },
+    { id: 2, name: "Ana Gómez", status: "Pendiente" }
+  ];
+
+  const pendingEnrollments = enrollments.filter(
+    (enroll) =>
+      !acceptedEnrollments.some((accepted) => accepted.id === enroll.id) &&
+      !rejectedEnrollments.some((rejected) => rejected.id === enroll.id) // Filtra rechazados
+  );
+
+  const handleDetailClick = (enroll) => {
+    setSelectedEnrollment({
+      ...enroll,
+      dni: "12345678",
+      phone: "+123456789",
+      email: "juan.perez@example.com",
+      seniority: "2 años",
+      courses: 3,
+      paymentsUpToDate: true,
+      age: 28,
+      photoUrl: "https://via.placeholder.com/100"
+    });
+    setShowDetail(true);
+  };
+
+  const handleCloseDetail = () => {
+    setShowDetail(false);
+    setSelectedEnrollment(null);
+  };
+
+  const handleAccept = (enroll) => {
+    setAcceptedEnrollments([...acceptedEnrollments, enroll]);
+    handleCloseDetail();
+  };
+
+  const handleReject = (enroll) => {
+    setRejectedEnrollments([...rejectedEnrollments, enroll]);
+    handleCloseDetail();
+  };
+
+  const handleToggleAcceptedList = () => {
+    setShowAcceptedList(!showAcceptedList);
+  };
+
+  return (
+    <div style={{
+      position: "relative",
+      backgroundColor: "#eef2ff",
+      padding: "20px",
+      borderRadius: "8px",
+      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+      maxWidth: "100%",
+      width: "80%",
+      margin: "0 auto",
+      minHeight: "fit-content", // Ajuste para que ocupe solo lo necesario
+      display: "flex",
+      flexDirection: "column", // Para alinear todo en columna
+      gap: "10px", // Reducir espacio entre las secciones
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h2 style={{ color: "#4a47a3" }}>Inscripciones</h2>
+        <div style={{ position: "relative" }}>
+          <FaBell color="#4a47a3" size="24" />
+          {pendingEnrollments.length > 0 && <span style={{ position: "absolute", top: 0, right: 0, backgroundColor: "red", borderRadius: "50%", width: "10px", height: "10px" }}></span>}
+        </div>
+      </div>
+
+      {pendingEnrollments.length > 0 ? (
+        pendingEnrollments.map((enroll) => (
+          <div key={enroll.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px 0" }}>
+            <span>{enroll.name}</span>
+            <div>
+              <button onClick={() => handleDetailClick(enroll)} style={{ backgroundColor: "#007bff", color: "#fff", border: "none", padding: "4px 8px", marginRight: "4px", borderRadius: "4px" }}>Detalle</button>
+              <button onClick={() => handleAccept(enroll)} style={{ backgroundColor: "#28a745", color: "#fff", border: "none", padding: "4px 8px", marginRight: "4px", borderRadius: "4px" }}>✓</button>
+              <button onClick={() => handleReject(enroll)} style={{ backgroundColor: "#dc3545", color: "#fff", border: "none", padding: "4px 8px", borderRadius: "4px" }}>✗</button>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p>No hay nuevas inscripciones</p>
+      )}
+
+      <div style={{
+        marginTop: "20px",
+        backgroundColor: "#fff",
+        padding: "10px",
+        borderRadius: "8px",
+        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+      }}>
+        <h3 style={{ color: "#4a47a3", cursor: "pointer" }} onClick={handleToggleAcceptedList}>
+          Inscriptos ({acceptedEnrollments.length})
+        </h3>
+        {showAcceptedList && (
+          <div>
+            {acceptedEnrollments.length > 0 ? (
+              acceptedEnrollments.map((enroll) => (
+                <div key={enroll.id} style={{ display: "flex", justifyContent: "space-between", margin: "5px 0" }}>
+                  <span>{enroll.name}</span>
+                  <button onClick={() => handleDetailClick(enroll)} style={{ backgroundColor: "#007bff", color: "#fff", border: "none", padding: "4px 8px", borderRadius: "4px" }}>Detalle</button>
+                </div>
+              ))
+            ) : (
+              <p>No hay inscriptos</p>
+            )}
+          </div>
+        )}
+      </div>
+
+      {showDetail && selectedEnrollment && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1000,
+        }}>
+          <div style={{
+            backgroundColor: "#fff",
+            padding: "20px",
+            borderRadius: "8px",
+            maxWidth: "400px",
+            width: "100%",
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+            position: "relative",
+          }}>
+            <button onClick={handleCloseDetail} style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              backgroundColor: "transparent",
+              border: "none",
+              fontSize: "20px",
+              color: "#dc3545",
+            }}>✗</button>
+            <img src={selectedEnrollment.photoUrl} alt="Student" style={{
+              width: "100px", height: "100px", borderRadius: "50%", display: "block", margin: "0 auto"
+            }} />
+            <h3 style={{ color: "#4a47a3", textAlign: "center", marginTop: "10px" }}>{selectedEnrollment.name}</h3>
+            <p style={{ fontSize: "14px", color: "#666" }}>DNI: {selectedEnrollment.dni}</p>
+            <p style={{ fontSize: "14px", color: "#666" }}>Teléfono: {selectedEnrollment.phone}</p>
+            <p style={{ fontSize: "14px", color: "#666" }}>Email: {selectedEnrollment.email}</p>
+            <p style={{ fontSize: "14px", color: "#666" }}>Antigüedad en la app: {selectedEnrollment.seniority}</p>
+            <p style={{ fontSize: "14px", color: "#666" }}>Cursos inscritos: {selectedEnrollment.courses}</p>
+            <p style={{ fontSize: "14px", color: "#666" }}>Pagos al día: {selectedEnrollment.paymentsUpToDate ? "Sí" : "No"}</p>
+            <p style={{ fontSize: "14px", color: "#666" }}>Edad: {selectedEnrollment.age}</p>
+            {!acceptedEnrollments.some((accepted) => accepted.id === selectedEnrollment.id) && (
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+                <button onClick={() => handleAccept(selectedEnrollment)} style={{
+                  backgroundColor: "#28a745", color: "#fff", border: "none", padding: "8px 12px", borderRadius: "4px", flex: 1, marginRight: "5px"
+                }}>✓ Aceptar</button>
+                <button onClick={() => handleReject(selectedEnrollment)} style={{
+                  backgroundColor: "#dc3545", color: "#fff", border: "none", padding: "8px 12px", borderRadius: "4px", flex: 1
+                }}>✗ Rechazar</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Enrollments;
