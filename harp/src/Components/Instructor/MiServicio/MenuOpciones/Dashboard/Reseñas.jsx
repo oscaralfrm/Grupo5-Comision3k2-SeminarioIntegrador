@@ -21,7 +21,7 @@ const ReviewCarousel = () => {
     alignItems: "center", // Centra los elementos horizontalmente
     textAlign: "center", // Opcional: centra el texto dentro de los elementos
     position: "relative", // Para posicionar las flechas correctamente
-    height: "50vh", // Tamaño fijo del contenedor
+    height: "auto", // Tamaño fijo del contenedor
   };
 
   const renderStars = (rating) => {

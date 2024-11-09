@@ -42,7 +42,7 @@ function App() {
                         <Route path="/instructor/:idInstructor/servicio/:idServicio/general" element={<General/>}/>
                         <Route path="/instructor/:idInstructor/servicio/:idServicio/cobros" element={<Cobros/>}/>
                         <Route path="/instructor/:idInstructor/servicio/:idServicio/alumnos" element={<Alumnos/>}/>
-                        <Route path="/instructor/:idInstructor/servicio/:idServicio/mi-Servicio" element={<Servicio/>}/>
+                        <Route path="/instructor/:idInstructor/servicio/:idServicio/mi-servicio" element={<Servicio/>}/>
                     </Routes>
                 </div>
             </BrowserRouter>

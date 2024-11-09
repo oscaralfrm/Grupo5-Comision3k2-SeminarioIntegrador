@@ -194,7 +194,7 @@ const Enrollments = () => {
         >
           <h3
             className="text-center"
-            style={{ color: "white", backgroundColor:'#A5B4FC',padding:'10px',borderRadius:'8px', cursor: "pointer", fontSize: "1.25em" }}
+            style={{ color: "white", backgroundColor:'#4F46E5',padding:'10px',borderRadius:'8px', cursor: "pointer", fontSize: "1.25em" }}
             onClick={handleToggleAcceptedList}
           >
             Inscriptos ({acceptedEnrollments.length})

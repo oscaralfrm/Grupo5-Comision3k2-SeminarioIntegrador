@@ -81,6 +81,7 @@ const InfoCard = () => {
         >
           {serviceData.name}
         </h2>
+        {showDetails &&
         <p
           style={{
             fontSize: "1em",
@@ -90,7 +91,7 @@ const InfoCard = () => {
           }}
         >
           {serviceData.category}
-        </p>
+        </p>}
       </div>
 
       {showDetails && (

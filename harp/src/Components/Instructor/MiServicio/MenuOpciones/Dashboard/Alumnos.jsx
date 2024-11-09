@@ -99,15 +99,17 @@ const StudentsCard = () => {
         </div>
       ))}
 
-      <button
+      <button className="mt-3"
         onClick={handleExpandToggle}
         style={{
-          backgroundColor: "transparent",
+          backgroundColor: "#4F46E5",
+          color: "white",
+          padding: "5px 10px",
+          borderRadius: "4px",
           border: "none",
-          color: "#007bff",
-          fontSize: "14px",
           cursor: "pointer",
-          marginTop: "10px",
+          display: "flex",
+          alignItems: "center",
         }}
       >
         {expanded ? "Ver menos" : "Ver todos"}

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import img from '../../../../assets/LogoHarp420.png';
 
 function NavbarInstructor() {
   const navigate = useNavigate();
-  const { idInstructor, idServicio } = useParams();
+  //const { idInstructor, idServicio } = useParams();
+  //console.log(idInstructor, idServicio);  // Esto debería mostrar los valores de los parámetros
 
   // Lista de servicios
   const servicios = [
@@ -12,23 +14,29 @@ function NavbarInstructor() {
     { id: 2, nombre: "Servicio 2" },
     { id: 3, nombre: "Servicio 3" },
   ];
+  const idInstructor = 1;
+  const idServicio = 1
+  //const id = parseInt(idServicio, 10);
+  const servicio = servicios.find(a => a.id === idServicio);
+  console.log(servicio);  // Esto debería mostrar el servicio correspondiente
 
   // Estado para manejar el dropdown y el servicio seleccionado
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState(null);
-
-  // Maneja la selección de servicio
-  const handleSelectService = (serviceId) => {
-    if (serviceId) {
-      setSelectedService(servicios.find((servicio) => servicio.id === serviceId));
-      navigate(`/instructor/${idInstructor}/servicio/${serviceId}/general`);
-    }
-    setDropdownOpen(false); // Cierra el dropdown después de seleccionar un servicio
-  };
+  const [selectedService, setSelectedService] = useState(servicio);
 
   // Función para alternar el estado de visibilidad del dropdown
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
+  };
+
+  // Maneja la selección de servicio y redirección
+  const handleSelectService = (serviceId) => {
+    const service = servicios.find((servicio) => servicio.id === serviceId);
+    if (service) {
+      setSelectedService(service);
+      navigate(`/instructor/${idInstructor}/servicio/${serviceId}/general`);
+    }
+    setDropdownOpen(false); // Cierra el dropdown después de seleccionar un servicio
   };
 
   // UseEffect para seleccionar el servicio correcto al cargar la página
@@ -36,14 +44,14 @@ function NavbarInstructor() {
     if (idServicio) {
       const selected = servicios.find((servicio) => servicio.id === parseInt(idServicio));
       if (selected) {
-        setSelectedService(selected);
+        setSelectedService(selected); // Establece el servicio seleccionado
       }
     }
   }, [idServicio, servicios]);
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light" style={{ fontFamily: "Roboto", backgroundColor: '#1E1B4B', color: 'white', width:'100%', height:'13vh', fontSize:'1.2rem' }}>
-      
+    <nav className="navbar navbar-expand-lg navbar-light" style={{ fontFamily: "Roboto", backgroundColor: '#1E1B4B', color: 'white', width: '100%', height: '13vh', fontSize: '1.2rem' }}>
+
       {/* Botón de toggler en dispositivos móviles */}
       <button
         className="navbar-toggler"
@@ -62,11 +70,17 @@ function NavbarInstructor() {
       <div className={`collapse navbar-collapse ${dropdownOpen ? "show" : ""}`} id="navbarNavDropdown">
         <ul className="nav">
           <li className="nav-item">
-            <a className="nav-link" href={`/instructor/${idInstructor}/servicio/${idServicio}/general`} style={{ color: 'white' }}>
-              Harp
+            <a className="nav-link" href={`/instructor/${idInstructor}/servicio/${idServicio}/general`} style={{ paddingLeft: '1vw' }}>
+              <img 
+                src={img} 
+                alt="Harp Logo" 
+                width="130" 
+                height="auto"
+              />
             </a>
           </li>
         </ul>
+
         <ul className="navbar-nav mx-auto">
           <li className="nav-item">
             <a className="nav-link" href={`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`} style={{ color: 'white' }}>
@@ -94,7 +108,7 @@ function NavbarInstructor() {
               onClick={toggleDropdown}
               style={{ color: 'white' }}
             >
-              {selectedService ? selectedService.nombre : "Seleccionar Servicio"}
+              {selectedService && selectedService.nombre}
             </a>
             <div className={`dropdown-menu ${dropdownOpen ? "show" : ""}`} aria-labelledby="navbarDropdownMenuLink">
               {servicios.map((servicio) => (
