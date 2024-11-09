@@ -17,6 +17,7 @@ import com.harp.backend.entities.servicio.ServicioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -52,6 +53,10 @@ public class InscripcionService implements IInscripcionService {
     public List<Inscripcion> getAllInscripciones() {
         return inscripcionRepository.findAll();
     };
+
+    public List<Inscripcion> getInscripcionesVigentes() {
+        return this.getAllInscripciones().stream().filter(Inscripcion::estaVigente).toList();
+    }
 
     @Override
     @Transactional
@@ -161,11 +166,25 @@ public class InscripcionService implements IInscripcionService {
         if (servicio.yaInicio()) {
             // Si la fecha actual mas los dias de antelacion de pago es mayor a
             // la fecha de inicio act seleccionada enonces no dejamos realizar la aceptacion
-            if (fechaActual.plusDays(servicio.getDiasDeAntelacionPago()).isAfter(fechaInicioActividad) ) {
-                throw new UnsupportedOperationException("La fecha de inicio de actividad es muy próxima");
+            if (servicio.isPagoAnticipadoDeMontoInscripcion() || servicio.isPagoAnticipadoDePrimeraCuota()) {
+                if (fechaActual.plusDays(servicio.getDiasDeAntelacionPago()).isAfter(fechaInicioActividad) ) {
+                    throw new UnsupportedOperationException("La fecha de inicio de actividad es muy próxima");
+                }
+                // si hay pago anticipado la fecha inicio no puede ser ni nula ni la actual, debe haber un margen de fechas
+                if (fechaInicioActividad == null) {
+                    throw new UnsupportedOperationException("Se debe ingresar una fecha de inicio de actividad");
+                }
+                fechaInicio = fechaInicioActividad;
+            } else {
+                // si no tiene pago anticipado y ya inició el alumno podria empezar el dia actual si no se pada fecha inicio act
+                if (fechaInicioActividad == null) {
+                    fechaInicio = fechaActual;
+                } else {
+                    fechaInicio = fechaInicioActividad;
+                }
             }
-            fechaInicio = fechaInicioActividad;
         } else {
+            // si el servicio no inició entonces el alumno comienza cuando comience el servicio
             fechaInicio = servicio.getFechaInicio();
         }
 
@@ -238,5 +257,36 @@ public class InscripcionService implements IInscripcionService {
     public void agregarCuotaAInscripcion(Inscripcion inscripcion, Cuota cuotaCreada) {
         inscripcion.agregarCuota(cuotaCreada);
         inscripcionRepository.save(inscripcion);
+    }
+
+    // Revisar si es bueno tener todos los procesos automaticos a la misma hora
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void validarFechasInscripciones() {
+        // Recorro todas las inscripciones
+        // Valido que tengan que la fechaInicio sea la actual entonces las cambio a EnCurso
+        // Valido que tengan la fechaFin igual a la actual entonces las cambio a Finalizada
+
+        // si inicia una inscripcion no hace falta crear la primera cuota porque eso se hace cuandos se acepta
+        // Las inscripciones que vamos a cambiar son las que esten en aceptadas o en en curso
+        List<Inscripcion> inscripciones = this.getInscripcionesVigentes();
+        LocalDate fechaActual = LocalDate.now();
+        for (Inscripcion inscripcion : inscripciones) {
+            // Si hoy es el dia de inicio de la inscripcion la iniciamos
+            if (inscripcion.getFechaInicio().isEqual(fechaActual)) {
+                inscripcion.iniciar();
+            } else {
+                // si la inscripcion ya es finalizada no debemos finalizarla nuevamente
+                // si hoy es el dia de finalizacion no deberiamos finalizarla todavia hasta el final del dia
+                // entonces preguntamos si la fechaFin ya pasó lo finalizamos
+                if (! inscripcion.esFinalizada() && inscripcion.getFechaFin().isBefore(fechaActual)) {
+                    inscripcion.finalizar();
+                }
+            }
+        }
+
+        // En otro lado
+        // en cuotas validar que las cuotas que lleguen a vencidas pero sean las
+        // primeras cuotas de un servicio con pago adelantado
+        // entonces rechazo la inscripcion
     }
 }

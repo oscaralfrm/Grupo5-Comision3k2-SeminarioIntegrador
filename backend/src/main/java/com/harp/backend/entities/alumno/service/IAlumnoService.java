@@ -1,6 +1,7 @@
 package com.harp.backend.entities.alumno.service;
 
 import com.harp.backend.entities.alumno.model.Alumno;
+import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface IAlumnoService {
     Alumno findAlumno(Long idAlumno);
     Alumno editAlumno(Alumno alumno);
     List<Inscripcion> findInscripcionesDeAlumno(Long idAlumno);
+    List<Cuota> obtenerHistorialCuotasEsteAlumnoYServicio(Long idAlumno, Long idServicio);
 }

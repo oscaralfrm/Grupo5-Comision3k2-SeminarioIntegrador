@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.cuota.Cuota;
+import com.harp.backend.entities.cuota.CuotaService;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.servicio.Servicio;
@@ -102,6 +103,10 @@ public class Inscripcion {
         return Collections.max(cuotas, Comparator.comparing(Cuota::getFechaInicioCiclo));
     }
 
+    public List<Cuota> obtenerCuotasPendientes() {
+        return cuotas.stream().filter(Cuota::esPendiente).toList();
+    }
+
     public void iniciar() {
         // se puede iniciar si esta en pendiente o en aceptada
         // si un alumno se inscribe pagando se acepta solo
@@ -137,6 +142,9 @@ public class Inscripcion {
         // la puedo rechazar solo cuando está en Pendiente
         if (fechaAceptacion != null) {
             throw new UnsupportedOperationException("La inscripción ya fue previamente aceptada");
+        }
+        if (! this.estaPendiente()) {
+            throw new UnsupportedOperationException("La inscripción ya no se puede rechazar");
         }
         //cambiar el estado a Rechazada
         this.estado = EstadoInscripcion.Rechazada;
@@ -192,6 +200,10 @@ public class Inscripcion {
 
     public boolean esDeEsteGrupo(Grupo grupo) {
         return (this.grupo == grupo);
+    }
+
+    public boolean esDeEsteAlumno(Alumno alumno) {
+        return (this.alumno == alumno);
     }
 
     // Vigente es tanto aceptada como en curso

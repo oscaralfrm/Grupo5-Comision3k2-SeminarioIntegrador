@@ -21,4 +21,9 @@ public interface IServicioService {
     public MontoServicio actualizarYCrearNuevoMonto(MontoServicioDTO montoServicioDTO, Long idServicio);
     public List<Servicio> findServiciosAsistenciasActivas();
     void agregarGrupoAServicio(Grupo grupo, Long idServicio);
+    List<Inscripcion> findInscripcionesDeServicio(Long idServicio, boolean vigentes, boolean pendientes);
+    public List<Alumno> obtenerAlumnosActualesDeServicio(Long idServicio);
+    public List<MontoServicio> obtenerMontosActualesServicio(Long idServicio);
+    public long calcularDuracionTotalServicio(Long idServicio);
+    public long calcularDuracionTotalGrupo(Long idServicio, Long idGrupo);
 }

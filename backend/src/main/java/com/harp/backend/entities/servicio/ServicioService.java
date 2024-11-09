@@ -1,10 +1,13 @@
 package com.harp.backend.entities.servicio;
 
+import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.CategoriaService;
+import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioService;
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.EstrategiaCrearInscripcionFactory;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.IEstrategiaInscripcion;
 import com.harp.backend.entities.instructor.InstructorService;
@@ -189,5 +192,42 @@ public class ServicioService implements IServicioService {
 //        servicio.agregarAlumnoAGrupo(numGrupo, idAlumno);
 //    }
 
+    public List<Inscripcion> findInscripcionesDeServicio(Long idServicio, boolean vigentes, boolean pendientes) {
+        Servicio servicio = this.findServicio(idServicio);
+        if (vigentes) {
+            return servicio.obtenerInscripcionesVigentes();
+        } else {
+            if (pendientes) {
+                return servicio.obtenerInscripcionesPendientes();
+            }
+        }
+        return servicio.getInscripciones();
+    }
 
+    public List<List<Cuota>> findUltimasCuotasDeServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+            return servicio.obtenerCuotasPendientesAlumnosActuales();
+    }
+
+    // ver como hacer a
+    public List<Alumno> obtenerAlumnosActualesDeServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.obtenerAlumnosActuales();
+    }
+
+    public List<MontoServicio> obtenerMontosActualesServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.obtenerMontosActuales();
+    }
+
+    public long calcularDuracionTotalServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.calcularDuracionTotalEnDias();
+    }
+
+    public long calcularDuracionTotalGrupo(Long idServicio, Long idGrupo) {
+        Servicio servicio = this.findServicio(idServicio);
+        Grupo grupo = servicio.obtenerGrupoConEsteId(idGrupo);
+        return servicio.calcularDuracionTotalEnDiasDeGrupo(grupo);
+    }
 }

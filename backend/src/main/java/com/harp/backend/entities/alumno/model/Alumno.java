@@ -90,6 +90,15 @@ public class Alumno {
         return inscripciones.stream().map(Inscripcion::obtenerUltimaCuota).toList();
     }
 
+    public List<Cuota> obtenerHistorialCuotasEsteServicio(Servicio servicio) {
+        for (Inscripcion inscripcion : inscripciones) {
+            if (inscripcion.esDeEsteServicio(servicio)){
+                return inscripcion.getCuotas();
+            }
+        }
+        throw new NoSuchElementFoundException("Inscripcion de servicio no encontrada");
+    }
+
     public boolean estaInscriptoAServicio() {
         return inscripciones.stream().anyMatch(Inscripcion::estaVigente);
     }

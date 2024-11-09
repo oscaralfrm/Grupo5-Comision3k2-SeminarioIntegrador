@@ -275,6 +275,10 @@ public class Servicio {
         return inscripciones.stream().filter(i -> i.estaVigente() && i.esDeEsteGrupo(grupo) ).toList();
     }
 
+    public List<Inscripcion> obtenerInscripcionesPendientes() {
+        return inscripciones.stream().filter(Inscripcion::estaPendiente).toList();
+    }
+
     public boolean tieneEstaInscripcion(Inscripcion inscripcion) {
         return (inscripciones.contains(inscripcion));
     }
@@ -333,12 +337,30 @@ public class Servicio {
         return inscripciones.stream().filter(Inscripcion::estaEnCurso).map(Inscripcion::getAlumno).toList();
     }
 
-    public List<Cuota> obtenerUltimasCuotasAlumnosActuales() {
+//    public List<Cuota> obtenerUltimasCuotasAlumnosActuales() {
+//        return inscripciones.stream()
+//                .filter(Inscripcion::estaEnCurso)
+//                .map(Inscripcion::obtenerUltimaCuota).toList();
+//    }
+
+    public List<List<Cuota>> obtenerCuotasPendientesAlumnosActuales() {
         return inscripciones.stream()
                 .filter(Inscripcion::estaEnCurso)
-                .map(Inscripcion::obtenerUltimaCuota).toList();
+                .map(Inscripcion::obtenerCuotasPendientes).toList();
     }
 
+    public long calcularDuracionTotalEnDiasDeGrupo(Grupo grupo) {
+        if (fechaFin == null) {
+            throw new UnsupportedOperationException("Debe estar definida la fecha fin del servicio para calcular la duración");
+        }
+        return grupo.calcularDuracionTotalEnDias(fechaInicio, fechaFin);
+    }
 
+    public long calcularDuracionTotalEnDias() {
+        if (fechaFin == null) {
+            throw new UnsupportedOperationException("Debe estar definida la fecha fin del servicio para calcular la duración");
+        }
+        return ChronoUnit.DAYS.between(fechaInicio, fechaFin);
+    }
 
 }

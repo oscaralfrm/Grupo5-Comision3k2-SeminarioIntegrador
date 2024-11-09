@@ -1,6 +1,7 @@
 package com.harp.backend.entities.servicio;
 
 
+import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
@@ -82,6 +83,34 @@ public class ServicioController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoMontoServicio);
     }
+
+    @GetMapping("/{idServicio}/monto-actual")
+    public ResponseEntity<List<MontoServicio>> traerUnMontosActualesDeServicio(@PathVariable @Min(1) Long idServicio) {
+        List<MontoServicio> montosServicio = servicioService.obtenerMontosActualesServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
+    };
+
+
+    @GetMapping("/{idServicio}/alumnos")
+    public ResponseEntity<List<Alumno>> traerAlumnosActualesServicio(@PathVariable @Min(1) Long idServicio) {
+        List<Alumno> alumnos = servicioService.obtenerAlumnosActualesDeServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(alumnos);
+    };
+
+    @GetMapping("/{idServicio}/duracion-dias")
+    public ResponseEntity<Long> calcularDuracionServicio(@PathVariable @Min(1) Long idServicio) {
+        Long duracion = servicioService.calcularDuracionTotalServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(duracion);
+    };
+
+    @GetMapping("/{idServicio}/grupos/{idGrupo}/duracion-dias")
+    public ResponseEntity<Long> calcularDuracionGrupo(@PathVariable @Min(1) Long idServicio,
+                                                         @PathVariable @Min(1) Long idGrupo) {
+        Long duracion = servicioService.calcularDuracionTotalGrupo(idServicio, idGrupo);
+        return ResponseEntity.status(HttpStatus.OK).body(duracion);
+    };
+
+
 
 //    @PutMapping("/{idServicio}/generar-codigo-inscripcion")
 //    public ResponseEntity<String> generarCodigoInscripcion(@PathVariable @Min(1) Long idServicio) {

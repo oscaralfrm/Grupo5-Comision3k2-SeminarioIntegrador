@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -51,24 +54,26 @@ public class Grupo {
     @JoinColumn(name = "grupo_id")
     private Set<Clase> clases = new HashSet<>();
 
-/*
-    public void agregarAlumno(Alumno alumno) {
-        // Revisar que el grupo tenga cupos
-        if (! this.tieneCuposLibres()) {
-            throw new UnsupportedOperationException("El grupo no tiene cupos libres");
+    /*
+        public void agregarAlumno(Alumno alumno) {
+            // Revisar que el grupo tenga cupos
+            if (! this.tieneCuposLibres()) {
+                throw new UnsupportedOperationException("El grupo no tiene cupos libres");
+            }
+            alumnos.add(alumno);
         }
-        alumnos.add(alumno);
-    }
 
-    public void eliminarAlumno(Alumno alumno) {
-        alumnos.remove(alumno);
-    }
-*/
+        public void eliminarAlumno(Alumno alumno) {
+            alumnos.remove(alumno);
+        }
+    */
     public void agregarHorario(Horario horario) {
         horarios.add(horario);
     }
 
-    public void agregarClase(Clase clase) { clases.add(clase); }
+    public void agregarClase(Clase clase) {
+        clases.add(clase);
+    }
 
 //    public boolean tieneAEsteAlumno(Alumno alumno) {
 //        return alumnos.contains(alumno);
@@ -94,14 +99,14 @@ public class Grupo {
 
         // Verificar si todos los IDs de la lista están presentes en los horarios
         for (Long id : idsHorarios) {
-            if ( ! idsHorariosExistentes.contains(id) ) {
+            if (!idsHorariosExistentes.contains(id)) {
                 throw new IllegalArgumentException("Este grupo no tiene ese horario");
             }
         }
 
         // Recorro los horarios existentes y retorno los que tienen ids de la lista pasada por parametros
         return this.horarios.stream()
-                .filter(horario -> idsHorarios.contains( horario.getId() )).toList();
+                .filter(horario -> idsHorarios.contains(horario.getId())).toList();
     }
 
     public Integer calcularVecesSemanales() {
@@ -111,7 +116,7 @@ public class Grupo {
     }
 
     public boolean tieneEstasVecesSemanales(Integer cantVecesSemanles) {
-        return ( this.calcularVecesSemanales().equals(cantVecesSemanles));
+        return (this.calcularVecesSemanales().equals(cantVecesSemanles));
     }
 
     public long calcularHorasSemanales() {
@@ -120,5 +125,107 @@ public class Grupo {
             horasTotales += horario.calcularDuracionEnHoras();
         }
         return horasTotales;
+
+//        double horasSemanales = horarios.stream()
+//                .mapToDouble(Horario::calcularCantidadHoras)
+//                .sum();
+    }
+
+    public long calcularDuracionEnHorasEntreFechas(LocalDate fechaInicio, LocalDate fechaFin) {
+        long horasTotales = 0;
+
+        // Paso 1: Calcular las horas de la primera semana parcial
+        // Obtenemos el primer dia lunes del periodo entre fechas (cuando comienza la primer semana entera)
+        // nos da el primer lunes de la semana a la fecha inicio, lo cual podria darnos anterior
+        // por eso le sumamos una semana en caso de ser anterior
+        LocalDate primerLunes = fechaInicio.with(DayOfWeek.MONDAY);
+        if (!fechaInicio.isBefore(primerLunes)) {
+            primerLunes = primerLunes.plusWeeks(1);
+        }
+
+        // Calculamos desde la fecha inicio hasta un dia antes del primer lunes
+        horasTotales += calcularHorasDiasParciales(fechaInicio, primerLunes.minusDays(1));
+
+        // Paso 2: Calcular las semanas completas
+
+        // Obtenemos el ultimo lunes entre las fecha y corregimos
+        LocalDate ultimoLunes = fechaFin.with(DayOfWeek.MONDAY);
+        if (!fechaFin.isBefore(ultimoLunes)) {
+            ultimoLunes = ultimoLunes.minusWeeks(1);
+        }
+
+        // Obtenemos la cantidad de semanas que hay entre el primer y el ultimo lunes
+        // revisar porque plusDays(1)!!!
+        long semanasCompletas = ChronoUnit.WEEKS.between(primerLunes, ultimoLunes.plusDays(1));
+        double horasSemanales = this.calcularHorasSemanales();
+        horasTotales += semanasCompletas * horasSemanales;
+
+        // Paso 3: Calcular las horas de la última semana parcial
+        // de nuevo calculamos los dias parciales entre el ultimo lunes y la fecha fin
+        horasTotales += calcularHorasDiasParciales(ultimoLunes, fechaFin);
+
+        return horasTotales;
+    }
+
+    private double calcularHorasDiasParciales(LocalDate fechaInicio, LocalDate fechaFin) {
+        double horas = 0;
+        // Hacemos un ciclo para recorrer cada dia de la semana
+        // desde la fecha de inicio pasada por parametro
+        // hasta la fecha fin controlando como condicion que la fecha inicio no se pase de la fin
+        for (LocalDate fecha = fechaInicio; !fecha.isAfter(fechaFin); fecha = fecha.plusDays(1)) {
+            DayOfWeek diaSemana = fecha.getDayOfWeek();
+            // revisar aca porque estamos comparando
+            for (Horario horario : horarios) {
+                // revisar aca porque esta en diaSemana no en dayOfWeek
+                if (horario.getDiaSemana().equals(diaSemana)) {
+                    horas += horario.calcularDuracionEnHoras();
+                }
+            }
+        }
+        return horas;
+    }
+
+    public long calcularDuracionTotalEnDias(LocalDate fechaInicio, LocalDate fechaFin) {
+        long diasTotales = 0;
+
+        // Paso 1: Días de la primera semana parcial
+        LocalDate primerLunes = fechaInicio.with(DayOfWeek.MONDAY);
+        if (!fechaInicio.isBefore(primerLunes)) {
+            primerLunes = primerLunes.plusWeeks(1);
+        }
+        diasTotales += contarDiasParciales(fechaInicio, primerLunes.minusDays(1));
+
+        // Paso 2: Semanas completas
+        LocalDate ultimoLunes = fechaFin.with(DayOfWeek.MONDAY);
+        if (!fechaFin.isBefore(ultimoLunes)) {
+            ultimoLunes = ultimoLunes.minusWeeks(1);
+        }
+        long semanasCompletas = ChronoUnit.WEEKS.between(primerLunes, ultimoLunes.plusDays(1));
+        diasTotales += semanasCompletas * this.calcularVecesSemanales();
+        // 3 semanas completas * 2 veces a la semana
+        // me tendria que dar 6 dias
+
+        // Paso 3: Días de la última semana parcial
+        diasTotales += contarDiasParciales(ultimoLunes, fechaFin);
+
+        return diasTotales;
+    }
+
+    private long contarDiasParciales(LocalDate fechaInicio, LocalDate fechaFin) {
+        long dias = 0;
+        for (LocalDate fecha = fechaInicio; !fecha.isAfter(fechaFin); fecha = fecha.plusDays(1)) {
+            DayOfWeek diaSemana = fecha.getDayOfWeek();
+            // revisar aca porque estamos comparando
+            for (Horario horario : horarios) {
+                // revisar aca porque esta en diaSemana no en dayOfWeek
+                if (horario.getDiaSemana().equals(diaSemana)) {
+                    dias++;
+                }
+            }
+        }
+        return dias;
     }
 }
+
+
+

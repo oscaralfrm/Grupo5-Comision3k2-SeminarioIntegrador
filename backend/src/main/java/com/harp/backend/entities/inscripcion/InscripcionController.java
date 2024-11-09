@@ -4,6 +4,7 @@ import com.harp.backend.entities.alumno.service.IAlumnoService;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.grupo.GrupoDTO;
 import com.harp.backend.entities.grupo.IGrupoService;
+import com.harp.backend.entities.servicio.IServicioService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,15 @@ public class InscripcionController {
     @Autowired
     private IAlumnoService alumnoService;
 
-    // No tiene mucho sentido, siempre buscamos las inscripciones de un servicio o de un alumno
-    @GetMapping("/inscripciones")
-    public ResponseEntity<List<Inscripcion>> getAllInscripciones() {
-        List<Inscripcion> inscripciones = inscripcionService.getAllInscripciones();
-        return ResponseEntity.ok(inscripciones);
-    }
+    @Autowired
+    private IServicioService servicioService;
+
+//    // No tiene mucho sentido, siempre buscamos las inscripciones de un servicio o de un alumno
+//    @GetMapping("/inscripciones")
+//    public ResponseEntity<List<Inscripcion>> getAllInscripciones() {
+//        List<Inscripcion> inscripciones = inscripcionService.getAllInscripciones();
+//        return ResponseEntity.ok(inscripciones);
+//    }
 
 //    //implementar una inscrip por de idServicio
 //    // GET INSCRIPCIONES DE UN SERVICIO
@@ -45,15 +49,24 @@ public class InscripcionController {
         return ResponseEntity.status(HttpStatus.OK).body(inscripcion);
     };
 
-    // GET DE UNO POR ID_SERVICIO
+    // GET TODAS LAS DE UN SERVICIO
+    @GetMapping("/{idServicio}/inscripciones")
+    public ResponseEntity<List<Inscripcion>> traerInscripcionesDeServicio(@PathVariable @Min(1) Long idServicio,
+                                                                            @RequestParam boolean vigentes,
+                                                                          @RequestParam boolean pendientes) {
+        List<Inscripcion> inscripciones = servicioService.findInscripcionesDeServicio(idServicio, vigentes, pendientes);
+        return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
+    };
 
     // POST
-    @PostMapping("/{idServicio}/grupos/{idGrupo}/inscribir")
-    public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio, @PathVariable Long idGrupo, @RequestBody List<Long> idsHorarios) {
+    @PostMapping("/{idServicio}/inscribir")
+    public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio,
+                                                        @RequestBody InscripcionDTO inscripcionDTO) {
         // REVISAR: Obtener el id del servicio de headers
         Long idAlumno = Long.valueOf(1);
+        Long idGrupo = inscripcionDTO.getIdGrupo();
+        List<Long> idsHorarios = inscripcionDTO.getIdsHorarios();
         Inscripcion nuevaInscripcion = inscripcionService.createInscripcion(idAlumno, idServicio, idGrupo, idsHorarios);
-        //Inscripcion nuevaInscripcion = inscripcionService.createInscripcion(idAlumno, idServicio, idGrupo, idsHorarios);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaInscripcion); // 201 CREATED
     }
 

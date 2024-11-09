@@ -5,6 +5,7 @@ import com.harp.backend.entities.alumno.repository.IAlumnoRepository;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.servicio.IServicioService;
+import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class AlumnoService implements IAlumnoService {
 
     @Autowired
     private IAlumnoRepository alumnoRepository;
+
+    @Autowired
+    private IServicioService servicioService;
 
     @Override
     public List<Alumno> getAllAlumnos() {
@@ -67,5 +71,12 @@ public class AlumnoService implements IAlumnoService {
 //    public void agregarCuotaAAlumno(Alumno alumno, Cuota cuota) {
 //        alumno.agregarCuota(cuota);
 //    }
+
+    // se podría hacer en servicioService tmb
+    public List<Cuota> obtenerHistorialCuotasEsteAlumnoYServicio(Long idAlumno, Long idServicio) {
+        Servicio servicio = servicioService.findServicio(idServicio);
+        Alumno alumno = this.findAlumno(idAlumno);
+        return alumno.obtenerHistorialCuotasEsteServicio(servicio);
+    }
 
 }
