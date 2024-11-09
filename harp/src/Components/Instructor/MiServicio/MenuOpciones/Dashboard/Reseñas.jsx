@@ -9,13 +9,19 @@ const ReviewCarousel = () => {
   ];
 
   const cardStyle = {
-    backgroundColor: "#eef2ff",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+    backgroundColor: "white",
+    borderRadius: "20px",
+    padding:'20px',
+    boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
     maxWidth: "100%",
-    margin: "0 auto",
-    width: "80%",  // Ajuste de ancho
+    marginTop: "3vh",
+    width: "80%", // Ajuste de ancho
+    display: "flex",
+    flexDirection: "column", // Asegura que los elementos estén en columna
+    alignItems: "center", // Centra los elementos horizontalmente
+    textAlign: "center", // Opcional: centra el texto dentro de los elementos
+    position: "relative", // Para posicionar las flechas correctamente
+    height: "50vh", // Tamaño fijo del contenedor
   };
 
   const renderStars = (rating) => {
@@ -24,18 +30,22 @@ const ReviewCarousel = () => {
 
   return (
     <div style={cardStyle}>
-      <h2 style={{ color: "#4a47a3" }}>Reseñas</h2>
+      <div className='mb-0'style={{ backgroundColor: '#1E1B4B', borderRadius: '8px', width: '100%', padding: '20px', marginBottom:'0vh' }}>
+        <h2 style={{ color: "white", fontSize: '1.5rem' }}>Reseñas</h2>
+      </div>
       <Carousel variant="dark" interval={3000}>
         {reviews.map((review) => (
-          <Carousel.Item key={review.id}>
+          <Carousel.Item key={review.id} style={{padding:'20px'}}>
             <div style={{ textAlign: "center", padding: "10px 20px" }}>
-              <p style={{ fontSize: "16px", color: "#4a47a3", fontWeight: "bold" }}>
+              <p className="mt-0" style={{ fontSize: "16px", color: "#4F46E5", fontWeight: "bold" }}>
                 {review.author}
               </p>
               <p style={{ fontSize: "14px", color: "#666", margin: "5px 0" }}>
                 {review.text}
               </p>
-              <p style={{ fontSize: "14px", color: "#ffa500" }}>{renderStars(review.rating)}</p>
+              <p style={{ fontSize: "14px", color: "#ffa500", marginBottom: "30px" }}>
+                {renderStars(review.rating)}
+              </p>
             </div>
           </Carousel.Item>
         ))}
@@ -52,7 +62,17 @@ const ReviewCarousel = () => {
               font-size: 1em;
             }
             .carousel-control-prev-icon, .carousel-control-next-icon {
-              display: none;
+              display: block;
+              position: absolute;
+              top: 50%;
+              transform: translateY(-50%);
+              background-color: rgba(0, 0, 0, 0.5);
+            }
+            .carousel-control-prev-icon {
+              left: 10px;
+            }
+            .carousel-control-next-icon {
+              right: 10px;
             }
           }
         `}

@@ -1,16 +1,31 @@
 import React, { useState } from "react";
+import ReviewCarousel from "./Reseñas";
 
 const InfoCard = () => {
   const [showDetails, setShowDetails] = useState(true);
-  
+
   const toggleDetails = () => setShowDetails(!showDetails);
 
+  // Simulación de los datos del servicio
+  const serviceData = {
+    name: "Clases de Matemáticas",
+    category: "Educación",
+    location: "Ciudad XYZ, Calle Ficticia 123",
+    description: "Clases personalizadas de matemáticas para todos los niveles.",
+    serviceType: "Presencial",
+    paymentMode: "Mensual",
+    attendance: "Sí",
+    freePass: "No",
+    published: "Sí",
+    logoUrl: "https://via.placeholder.com/80", // URL de la imagen del logo
+  };
+
   const cardStyle = {
-    backgroundColor: "#eef2ff",
+    backgroundColor: "white",
     padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-    maxWidth: "100%",
+    borderRadius: "20px",
+    boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
+    maxWidth: "80%",
     margin: "0 auto",
   };
 
@@ -19,44 +34,108 @@ const InfoCard = () => {
     height: "80px",
     borderRadius: "50%",
     backgroundColor: "#4a47a3",
-    margin: "0 auto",
+    margin: "3vh auto",
     display: "block",
+    marginTop: "0px",
   };
 
   const buttonStyle = {
-    backgroundColor: "#4a47a3",
-    color: "#fff",
+    backgroundColor: "#4F46E5",
+    color: "white",
     padding: "8px 12px",
     borderRadius: "4px",
     border: "none",
-    marginTop: "10px",
     cursor: "pointer",
+  };
+
+  const buttonsContainerStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "10px",
   };
 
   return (
     <div style={cardStyle}>
-      <img src="logo_url_aqui" alt="Logo del servicio" style={logoStyle} />
-      <h2 style={{ color: "#4a47a3", textAlign: "center" }}>Nombre del Servicio</h2>
-      <p style={{ fontSize: "16px", color: "#666", textAlign: "center" }}>Categoría del Servicio</p>
+      {/* Contenedor con margen superior */}
+      <div
+        style={{
+          backgroundColor: "#1E1B4B",
+          borderRadius: "20px",
+          padding: "20px",
+        }}
+      >
+        {showDetails && (
+          <img
+            src={serviceData.logoUrl}
+            alt="Logo del servicio"
+            style={logoStyle}
+          />
+        )}
+        <h2
+          style={{
+            color: "white",
+            textAlign: "center",
+            fontFamily: "Roboto",
+            fontSize: "1.5rem",
+          }}
+        >
+          {serviceData.name}
+        </h2>
+        <p
+          style={{
+            fontSize: "1em",
+            color: "white",
+            textAlign: "center",
+            marginBottom: "0px",
+          }}
+        >
+          {serviceData.category}
+        </p>
+      </div>
 
       {showDetails && (
-        <div>
-          <p><strong>Ubicación:</strong> Ciudad, Dirección</p>
-          <p><strong>Descripción:</strong> Descripción breve del servicio...</p>
-          <p><strong>Tipo de Servicio:</strong> Presencial / Online</p>
-          <p><strong>Modalidad de Cobro:</strong> Mensual</p>
-          <p><strong>Asistencias:</strong> Sí</p>
-          <p><strong>Pase Libre:</strong> No</p>
-          <p><strong>Publicado:</strong> Sí</p>
+        <div style={{ textAlign: "left", marginTop: "10px" }}>
+          <p>
+            <strong>Ubicación:</strong> {serviceData.location}
+          </p>
+          <p>
+            <strong>Descripción:</strong> {serviceData.description}
+          </p>
+          <p>
+            <strong>Tipo de Servicio:</strong> {serviceData.serviceType}
+          </p>
+          <p>
+            <strong>Modalidad de Cobro:</strong> {serviceData.paymentMode}
+          </p>
+          <p>
+            <strong>Asistencias:</strong> {serviceData.attendance}
+          </p>
+          <p>
+            <strong>Pase Libre:</strong> {serviceData.freePass}
+          </p>
+          <p>
+            <strong>Publicado:</strong> {serviceData.published}
+          </p>
         </div>
       )}
 
-      <button onClick={toggleDetails} style={buttonStyle}>
-        {showDetails ? "Ocultar Detalles" : "Mostrar Detalles"}
-      </button>
-      <button style={{ ...buttonStyle, backgroundColor: "#6a67d1", marginLeft: "10px" }}>
-        Editar
-      </button>
+      <div style={buttonsContainerStyle}>
+        <button onClick={toggleDetails} style={buttonStyle}>
+          {showDetails ? "Ocultar Detalles" : "Mostrar Detalles"}
+        </button>
+        <button
+          style={{
+            ...buttonStyle,
+            backgroundColor: "white",
+            color: "#4F46E5", // Color del texto
+            borderColor: "#4F46E5", // Color del borde
+            borderWidth: "2px", // Puedes ajustar el grosor del borde si es necesario
+            borderStyle: "solid", // Definir el estilo del borde (opcional, pero recomendado)
+          }}
+        >
+          Editar
+        </button>
+      </div>
 
       {/* Responsive adjustments */}
       <style>

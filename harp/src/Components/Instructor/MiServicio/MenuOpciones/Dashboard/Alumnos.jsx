@@ -31,29 +31,32 @@ const StudentsCard = () => {
     <div
       style={{
         position: "relative",
-        backgroundColor: "#eef2ff",
+        backgroundColor: "white",
         padding: "20px",
-        borderRadius: "8px",
-        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+        borderRadius: "20px",
+        boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         maxWidth: "100%",
-        width: "80%",
-        margin: "0 auto",
+        width: "100%",
+        marginTop: "3vh",
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ color: "#4a47a3" }}>Alumnos</h2>
-        <button
-          onClick={goToStudentsPage}
-          style={{
-            backgroundColor: "transparent",
-            border: "none",
-            color: "#007bff",
-            fontSize: "14px",
-            cursor: "pointer",
-          }}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#1E1B4B",
+          borderRadius: "8px",
+          width: "100%",
+          padding:'15px'
+        }}
+      >
+        <h2
+          className="text-center"
+          style={{ color: "white", fontFamily: "Roboto", fontSize:'1.5em' }}
         >
-          Ir a Alumnos
-        </button>
+          Alumnos
+        </h2>
       </div>
 
       {displayedStudents.map((student) => (
