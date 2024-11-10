@@ -65,7 +65,8 @@ const Cobros = () => {
         padding: "20px",
         borderRadius: "20px",
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-        maxWidth: "100%",
+        maxWidth:'80%',
+        minWidth:'90%',
         width: "100%",
         margin: "auto",
       }}
@@ -81,6 +82,7 @@ const Cobros = () => {
           borderRadius:'8px'
         }}
       >
+        
         <h2 style={{ color: "white", margin: 0, fontFamily:'Roboto', fontSize:'1.5rem' }}>Cobros</h2>
         <button
           onClick={() => navigate("/cobros")}
@@ -98,7 +100,7 @@ const Cobros = () => {
           Ir a Cobros
         </button>
       </div>
-
+        <hr />
       <div style={{ marginTop: "20px" }}>
         <h3 style={{ color: "#1E1B4B", fontSize:'1.4rem' }}>Alumnos con Pago Pendiente</h3>
         <hr style={{}}/>
@@ -241,6 +243,7 @@ const Cobros = () => {
         }}
       >
         <h3 className='mb-3'style={{ color: "#1E1B4B", fontSize:'1.4rem' }}>Calendario de Pagos</h3>
+        <hr style={{width:'100%'}}/>
         <Calendar
           tileClassName={tileClassName}
           style={{ width: "100%", borderRadius: "8px" }}

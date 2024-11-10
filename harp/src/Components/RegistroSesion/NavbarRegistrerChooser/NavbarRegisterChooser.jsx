@@ -34,7 +34,7 @@ export default function NavbarRegisterChooser() {
       </button>
 
       {/* Logo centrado */}
-      <a className="navbar-brand mx-auto" href="#">
+      <a className="navbar-brand mx-auto" href="/">
         <img src={img} alt="App Logo" width="130" height="auto" className="d-inline-block align-top" />
       </a>
     </nav>

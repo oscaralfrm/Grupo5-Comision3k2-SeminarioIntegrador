@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom"; // Asegúrate de importar Link
 
 const StudentsCard = () => {
   const [expanded, setExpanded] = useState(false);
@@ -17,14 +18,6 @@ const StudentsCard = () => {
 
   const handleExpandToggle = () => {
     setExpanded(!expanded);
-  };
-
-  const handleStudentClick = (student) => {
-    console.log("Ver perfil de:", student.name);
-  };
-
-  const goToStudentsPage = () => {
-    console.log("Ir a la página de Alumnos");
   };
 
   return (
@@ -48,27 +41,43 @@ const StudentsCard = () => {
           backgroundColor: "#1E1B4B",
           borderRadius: "8px",
           width: "100%",
-          padding:'15px'
+          padding: "15px",
         }}
       >
         <h2
           className="text-center"
-          style={{ color: "white", fontFamily: "Roboto", fontSize:'1.5em' }}
+          style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5em" }}
         >
           Alumnos
         </h2>
       </div>
-
+      
+      <div
+        className="mt-3"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <span>Alumno</span>
+        <span>Asistencias %</span>
+      </div>
+      <hr />
+      
+      {/* Mapeo de estudiantes */}
       {displayedStudents.map((student) => (
-        <div
+        <Link
           key={student.id}
-          onClick={() => handleStudentClick(student)}
+          to={`/student/${student.id}`} // Aquí pones el link que desees
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             padding: "10px 0",
             cursor: "pointer",
+            textDecoration: "none", // Esto elimina el subrayado predeterminado de los enlaces
+            color: "inherit", // Esto asegura que el color del texto no cambie
             borderBottom: "1px solid #ccc",
           }}
         >
@@ -96,10 +105,12 @@ const StudentsCard = () => {
               {student.attendance}%
             </span>
           </div>
-        </div>
+        </Link>
       ))}
 
-      <button className="mt-3"
+      {/* Botón para expandir o contraer la lista de estudiantes */}
+      <button
+        className="mt-3"
         onClick={handleExpandToggle}
         style={{
           backgroundColor: "#4F46E5",

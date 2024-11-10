@@ -8,7 +8,7 @@ import StudentsCard from "../MenuOpciones/Dashboard/Alumnos";
 
 const Servicio = () => {
   return (
-    <div style={{ padding: "20px", fontFamily: "Roboto", color: "#1E1B4B" }}>
+    <div style={{ padding: "20px", fontFamily: "Roboto", color: "#1E1B4B", marginTop:'15vh' }}>
       <h1 style={{ color: "#1E1B4B", fontWeight: "bold", textAlign: "center" }}>
         Mi Servicio
       </h1>
@@ -19,6 +19,7 @@ const Servicio = () => {
           gridTemplateRows: "auto auto auto auto", // Cuatro filas, cada una con un tamaño ajustable según el contenido
           gap: "20px", // Espacio reducido entre los elementos
           maxWidth: "100%", // Asegura que el grid se ajuste al contenedor
+        
         }}
       >
         {/* Columna izquierda - Información del servicio */}

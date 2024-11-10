@@ -11,17 +11,17 @@ const ReviewCarousel = () => {
   const cardStyle = {
     backgroundColor: "white",
     borderRadius: "20px",
-    padding:'20px',
+    padding: '20px',
     boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
     maxWidth: "100%",
     marginTop: "3vh",
-    width: "80%", // Ajuste de ancho
+    width: "90%",
     display: "flex",
-    flexDirection: "column", // Asegura que los elementos estén en columna
-    alignItems: "center", // Centra los elementos horizontalmente
-    textAlign: "center", // Opcional: centra el texto dentro de los elementos
-    position: "relative", // Para posicionar las flechas correctamente
-    height: "auto", // Tamaño fijo del contenedor
+    flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
+    position: "relative",
+    height: "auto",
   };
 
   const renderStars = (rating) => {
@@ -30,12 +30,12 @@ const ReviewCarousel = () => {
 
   return (
     <div style={cardStyle}>
-      <div className='mb-0'style={{ backgroundColor: '#1E1B4B', borderRadius: '8px', width: '100%', padding: '20px', marginBottom:'0vh' }}>
+      <div className='mb-0' style={{ backgroundColor: '#1E1B4B', borderRadius: '8px', width: '100%', padding: '20px' }}>
         <h2 style={{ color: "white", fontSize: '1.5rem' }}>Reseñas</h2>
       </div>
-      <Carousel variant="dark" interval={3000}>
+      <Carousel variant="dark" interval={3000} indicators={false} controls={true}>
         {reviews.map((review) => (
-          <Carousel.Item key={review.id} style={{padding:'20px'}}>
+          <Carousel.Item key={review.id} style={{ padding: '20px' }}>
             <div style={{ textAlign: "center", padding: "10px 20px" }}>
               <p className="mt-0" style={{ fontSize: "16px", color: "#4F46E5", fontWeight: "bold" }}>
                 {review.author}
@@ -51,28 +51,38 @@ const ReviewCarousel = () => {
         ))}
       </Carousel>
 
-      {/* Responsive adjustments */}
       <style>
         {`
+          .carousel-control-prev, .carousel-control-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            z-index: 5;
+          }
+
+          .carousel-control-prev {
+            left: -20px; /* Ajusta esta distancia para mantenerla fija */
+          }
+
+          .carousel-control-next {
+            right: -20px; /* Ajusta esta distancia para mantenerla fija */
+          }
+
+          .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+          }
+
           @media (max-width: 768px) {
             h2 {
               font-size: 1.5em;
             }
             p {
               font-size: 1em;
-            }
-            .carousel-control-prev-icon, .carousel-control-next-icon {
-              display: block;
-              position: absolute;
-              top: 50%;
-              transform: translateY(-50%);
-              background-color: rgba(0, 0, 0, 0.5);
-            }
-            .carousel-control-prev-icon {
-              left: 10px;
-            }
-            .carousel-control-next-icon {
-              right: 10px;
             }
           }
         `}

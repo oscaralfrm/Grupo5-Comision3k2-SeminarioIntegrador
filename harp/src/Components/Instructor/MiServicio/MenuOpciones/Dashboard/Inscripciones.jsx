@@ -61,8 +61,8 @@ const Enrollments = () => {
         position: "relative",
         padding: "0px",
         borderRadius: "10px",
-        width: "90%",
-        maxWidth: "700px",
+        maxWidth:'90%',
+        minWidth:'90%',
         margin: "0 auto",
         minHeight: "fit-content",
         display: "flex",
@@ -250,9 +250,9 @@ const Enrollments = () => {
         >
           <div
             style={{
-              backgroundColor: "#fff",
+              backgroundColor: "white",
               padding: "20px",
-              borderRadius: "8px",
+              borderRadius: "20px",
               maxWidth: "90%",
               width: "400px",
               boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
@@ -268,10 +268,10 @@ const Enrollments = () => {
                 backgroundColor: "transparent",
                 border: "none",
                 fontSize: "20px",
-                color: "#dc3545",
+                color: "black",
               }}
             >
-              ✗
+              x
             </button>
             <img
               src={selectedEnrollment.photoUrl}
@@ -286,7 +286,7 @@ const Enrollments = () => {
             />
             <h3
               style={{
-                color: "#4a47a3",
+                color: "#1E1B4B",
                 textAlign: "center",
                 marginTop: "10px",
               }}
@@ -294,7 +294,7 @@ const Enrollments = () => {
               {selectedEnrollment.name}
             </h3>
             <p style={{ fontSize: "14px", color: "#666" }}>
-              DNI: {selectedEnrollment.dni}
+              Pagos al día: {selectedEnrollment.paymentsUpToDate ? "Sí" : "No"}
             </p>
             <p style={{ fontSize: "14px", color: "#666" }}>
               Teléfono: {selectedEnrollment.phone}
@@ -307,9 +307,6 @@ const Enrollments = () => {
             </p>
             <p style={{ fontSize: "14px", color: "#666" }}>
               Cursos inscritos: {selectedEnrollment.courses}
-            </p>
-            <p style={{ fontSize: "14px", color: "#666" }}>
-              Pagos al día: {selectedEnrollment.paymentsUpToDate ? "Sí" : "No"}
             </p>
             <p style={{ fontSize: "14px", color: "#666" }}>
               Edad: {selectedEnrollment.age}

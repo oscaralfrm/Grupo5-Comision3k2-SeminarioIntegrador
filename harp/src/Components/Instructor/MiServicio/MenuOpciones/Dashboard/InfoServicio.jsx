@@ -25,7 +25,8 @@ const InfoCard = () => {
     padding: "20px",
     borderRadius: "20px",
     boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-    maxWidth: "80%",
+    maxWidth:'90%',
+    minWidth:'90%',
     margin: "0 auto",
   };
 

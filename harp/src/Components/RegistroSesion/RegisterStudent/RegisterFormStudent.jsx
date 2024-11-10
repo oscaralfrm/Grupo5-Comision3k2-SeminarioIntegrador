@@ -372,7 +372,7 @@ export const RegisterFormStudent = () => {
             <div
               className="d-flex justify-content-center align-items-center"
               style={{
-                backgroundColor: "#A5B4FC",
+                backgroundColor: "#1E1B4B",
                 padding: "1rem",
                 borderTopLeftRadius: "0.375rem",
                 borderTopRightRadius: "0.375rem",
