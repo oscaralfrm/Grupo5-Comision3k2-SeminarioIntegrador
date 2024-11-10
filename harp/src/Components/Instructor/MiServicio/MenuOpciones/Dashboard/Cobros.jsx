@@ -85,7 +85,7 @@ const Cobros = () => {
         
         <h2 style={{ color: "white", margin: 0, fontFamily:'Roboto', fontSize:'1.5rem' }}>Cobros</h2>
         <button
-          onClick={() => navigate("/cobros")}
+          onClick={() => navigate("/instructor/1/servicio/1/cobros")}
           style={{
             backgroundColor: "#4F46E5",
             color: "white",

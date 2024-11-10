@@ -36,7 +36,7 @@ const StudentsCard = () => {
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
+          justifyContent: "space-between", // Cambiado para que los elementos se alineen a los extremos
           alignItems: "center",
           backgroundColor: "#1E1B4B",
           borderRadius: "8px",
@@ -50,8 +50,25 @@ const StudentsCard = () => {
         >
           Alumnos
         </h2>
+        
+        {/* Botón Ir a Alumnos */}
+        <Link
+          to="/instructor/1/servicio/1/alumnos"
+          style={{
+            backgroundColor: "#4F46E5",
+            color: "white",
+            padding: "10px 20px",  // Aumenté el tamaño del botón
+            borderRadius: "4px",
+            textDecoration: "none", // Elimina el subrayado
+            fontSize: "14px", // Tamaño de fuente más grande
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          Ir a Alumnos
+        </Link>
       </div>
-      
+
       <div
         className="mt-3"
         style={{
@@ -64,12 +81,12 @@ const StudentsCard = () => {
         <span>Asistencias %</span>
       </div>
       <hr />
-      
+
       {/* Mapeo de estudiantes */}
       {displayedStudents.map((student) => (
         <Link
           key={student.id}
-          to={`/student/${student.id}`} // Aquí pones el link que desees
+          to={`/student/${student.id}`} // Corregido para que funcione la ruta dinámica
           style={{
             display: "flex",
             justifyContent: "space-between",
@@ -96,7 +113,7 @@ const StudentsCard = () => {
               <div
                 style={{
                   height: "100%",
-                  width: `${student.attendance}%`,
+                  width: `${student.attendance}%`, // Corregido para interpolar el valor de asistencia
                   backgroundColor: "#4a47a3",
                 }}
               ></div>

@@ -19,6 +19,7 @@ import Alumnos from "./Components/Instructor/MiServicio/MenuOpciones/Alumnos";
 import Servicio from "./Components/Instructor/MiServicio/MenuOpciones/Servicio";
 import ServicioForm from './Components/Instructor/Servicio/RegistrarServicio.jsx';
 import AppNavbar from "./Components/Navbars/AppNavbars.jsx";
+import Asistencias from "./Components/Instructor/MiServicio/MenuOpciones/Asistencias.jsx";
 
 function App() {
     return (
@@ -43,6 +44,7 @@ function App() {
                         <Route path="/instructor/:idInstructor/servicio/:idServicio/cobros" element={<Cobros/>}/>
                         <Route path="/instructor/:idInstructor/servicio/:idServicio/alumnos" element={<Alumnos/>}/>
                         <Route path="/instructor/:idInstructor/servicio/:idServicio/mi-servicio" element={<Servicio/>}/>
+                        <Route path= "/instructor/:idInstructor/servicio/:idServicio/mi-servicio/clase/:idClase/asistencias" element={<Asistencias/>}/>
                     </Routes>
                 </div>
             </BrowserRouter>

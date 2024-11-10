@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tab, Tabs, Card, Form, Button, Col, Row, Image } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 
 const ServicioForm = () => {
   const [activeTab, setActiveTab] = useState("general");
+  const location = useLocation();
+  const serviceData = location.state || {};
+
   const [formData, setFormData] = useState({
     categoria: "",
     nombreServicio: "",
@@ -15,6 +19,25 @@ const ServicioForm = () => {
     costo: "",
     metodoPago: "",
   });
+
+  // Actualiza el estado inicial con `serviceData` cuando el componente se monta
+  useEffect(() => {
+    if (serviceData) {
+      setFormData((prevData) => ({
+        ...prevData,
+        categoria: serviceData.categoria || "",
+        nombreServicio: serviceData.nombreServicio || "",
+        descripcion: serviceData.descripcion || "",
+        ubicacion: serviceData.ubicacion || "",
+        logo: serviceData.logo || null,
+        duracion: serviceData.duracion || "",
+        frecuencia: serviceData.frecuencia || "",
+        capacidadMaxima: serviceData.capacidadMaxima || "",
+        costo: serviceData.costo || "",
+        metodoPago: serviceData.metodoPago || "",
+      }));
+    }
+  }, [serviceData]);
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -194,28 +217,20 @@ const ServicioForm = () => {
                   <Image
                     src={URL.createObjectURL(formData.logo)}
                     alt="Logo"
-                    roundedCircle
-                    style={{ width: "80px", height: "80px", border: "2px solid #007bff" }}
+                    thumbnail
+                    width="150"
+                    height="150"
+                    className="rounded-circle shadow-sm"
                   />
                 </div>
               )}
             </Card.Body>
-            <div className="text-center pb-3">
-              <Button
-                variant="primary"
-                className="rounded-pill px-4 py-2"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "0.9rem",
-                  transition: "transform 0.2s",
-                }}
-                onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
-                onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
-              >
-                Registrar Servicio
-              </Button>
-            </div>
           </Card>
+        </Col>
+      </Row>
+      <Row className="text-center mt-4">
+        <Col>
+          <Button variant="primary" className="fw-semibold">Guardar Servicio</Button>
         </Col>
       </Row>
     </div>

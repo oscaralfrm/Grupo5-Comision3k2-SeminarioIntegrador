@@ -1,10 +1,22 @@
 import React, { useState } from "react";
 import ReviewCarousel from "./Reseñas";
+import { useNavigate } from "react-router-dom";
 
 const InfoCard = () => {
   const [showDetails, setShowDetails] = useState(true);
 
   const toggleDetails = () => setShowDetails(!showDetails);
+  const navigate = useNavigate;
+
+  const onSubmit = async () => { 
+    //alert("Formulario enviado con éxito");
+    //console.log(data); // Aquí puedes manejar el envío de los datos
+    
+    // Asumiendo que `idInstructor` e `idServicio` vienen de `data`
+    const { idInstructor, idServicio } = data;
+    //navigate(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`);
+    navigate(`/instructor/1/servicio/1/mi-servicio`)
+  };
 
   // Simulación de los datos del servicio
   const serviceData = {
@@ -126,6 +138,7 @@ const InfoCard = () => {
           {showDetails ? "Ocultar Detalles" : "Mostrar Detalles"}
         </button>
         <button
+          type = "submit"
           style={{
             ...buttonStyle,
             backgroundColor: "white",

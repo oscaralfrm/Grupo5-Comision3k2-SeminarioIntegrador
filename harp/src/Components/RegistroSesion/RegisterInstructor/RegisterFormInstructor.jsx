@@ -26,11 +26,18 @@ export const RegisterFormInstructor = () => {
   });
   const [activeTab, setActiveTab] = useState("datosPersonales");
   const navigate = useNavigate();
+  const idInstructor = 1;
+  const idServicio = 1;
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data) => { 
     setFormData(data);
-    alert("Formulario enviado con éxito");
-    console.log(data); // Aquí puedes manejar el envío de los datos
+    //alert("Formulario enviado con éxito");
+    //console.log(data); // Aquí puedes manejar el envío de los datos
+    
+    // Asumiendo que `idInstructor` e `idServicio` vienen de `data`
+    const { idInstructor, idServicio } = data;
+    //navigate(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`);
+    navigate(`/instructor/1/crear-servicio`)
   };
 
   const handleInputChange = (e) => {

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaBell } from "react-icons/fa";
 import StudentsCard from "./Alumnos";
 import ReviewCarousel from "./Reseñas";
+import ClassesCard from "./Clases";
 const Enrollments = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
@@ -355,6 +356,7 @@ const Enrollments = () => {
         </div>
       )}
       <StudentsCard />
+      <ClassesCard/>
     </div>
   );
 };
