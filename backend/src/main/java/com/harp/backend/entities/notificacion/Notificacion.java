@@ -26,6 +26,15 @@ public class Notificacion {
     private Servicio servicio;
 
     // O es para alumno o es para instructor
+    // como era el obsever
+    // creabas la I observer concreta, la suscribias
+    // enviarNotificacion(destinatario, titulo, mensaje, )
+    // tenemos para cambios en el monto de la cuota
+    // cuando esta por vencerse la cuota o se vencio
+    // cuando un alumno pago una cuota
+    // cuando le aceptaron o rechazaron la solicitud al alumno
+    // cuando un alumno hace 3 clases que no asiste
+
 
     @ManyToOne
     @JoinColumn(name = "alumno_id")
@@ -50,4 +59,9 @@ public class Notificacion {
          this.titulo = titulo;
          this.mensaje = mensaje;
     }
+
+    public void leer() {
+        this.leido = true;
+    }
+
 }

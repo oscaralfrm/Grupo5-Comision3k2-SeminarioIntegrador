@@ -23,6 +23,12 @@ public class EstrategiaAServicio implements IEstrategiaInscripcion{
         return (servicio.getCantMaxAlumnos() > cantAlumnosTotales);
     }
 
+    @Override
+    public Integer obtenerCuposLibres(Servicio servicio, Long idGrupo, List<Long> idsHorarios) {
+        Integer cantAlumnosTotales = servicio.obtenerInscripcionesVigentes().size();
+        return (servicio.getCantMaxAlumnos() - cantAlumnosTotales);
+    }
+
     // PODEMOS CAMBIAR ESTE METODO POR UN tieneMontoActual(cantVecesSemanales)
     // y en el caso del AServicio ignoramos el cantVecesSemanales
     @Override

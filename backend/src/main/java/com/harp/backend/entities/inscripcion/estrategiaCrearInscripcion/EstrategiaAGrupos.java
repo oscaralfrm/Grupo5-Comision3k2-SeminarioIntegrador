@@ -27,6 +27,14 @@ public class EstrategiaAGrupos implements IEstrategiaInscripcion{
         return (grupo.getCantMaxAlumnos() > cantAlumnosGrupo);
     }
 
+    @Override
+    public Integer obtenerCuposLibres (Servicio servicio, Long idGrupo, List<Long> idsHorarios) {
+        Grupo grupo = servicio.obtenerGrupoConEsteId(idGrupo);
+        // calculamos la cantidad de inscripciones que hay en ese grupo
+        Integer cantAlumnosGrupo = servicio.obtenerInscripcionesVigentes(grupo).size();
+        return (grupo.getCantMaxAlumnos() - cantAlumnosGrupo);
+    }
+
 //    public List<MontoServicio> obtenerMontoActual() {
 // IMPLEMENTAR
 //    }

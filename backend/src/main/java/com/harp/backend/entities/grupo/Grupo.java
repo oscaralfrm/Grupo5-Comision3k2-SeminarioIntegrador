@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
@@ -92,6 +93,10 @@ public class Grupo {
 //    public boolean tieneCuposLibres() {
 //        return (this.cantMaxCupos > this.alumnos.size());
 //    }
+
+    public boolean tieneHorarioEn(LocalTime horaInicio, LocalTime horaFin, String diaSemana) {
+        return this.horarios.stream().anyMatch(horario -> horario.estaEn(horaInicio, horaFin, diaSemana));
+    }
 
     public List<Horario> obtenerHorariosConEstosIds(List<Long> idsHorarios) {
         // Obtenemos todos los ids de los horarios de este grupo

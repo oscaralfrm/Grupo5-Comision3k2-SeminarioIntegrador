@@ -11,4 +11,5 @@ public interface IEstrategiaInscripcion {
     Inscripcion crearInscripcion(Servicio servicio, Long idGrupo, List<Long> idsHorarios);
     boolean tieneCuposLibres(Servicio servicio, Long idGrupo, List<Long> idsHorarios);
     boolean tieneEstasVecesSemanales(Servicio servicio, int cantVecesSemanales);
+    Integer obtenerCuposLibres (Servicio servicio, Long idGrupo, List<Long> idsHorarios);
 }

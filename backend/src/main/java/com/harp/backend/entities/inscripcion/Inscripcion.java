@@ -103,6 +103,27 @@ public class Inscripcion {
         return Collections.max(cuotas, Comparator.comparing(Cuota::getFechaInicioCiclo));
     }
 
+    // quiero la ultima si es abonada
+    // la ultima si es pendiente
+    // y si tiene del mes anterior que tambien me la traiga
+
+    public List<Cuota> obtenerUltimasCuotas() {
+        Cuota ultimaCuota = obtenerUltimaCuota();
+        if (ultimaCuota.esAbonada()) {
+            return List.of(ultimaCuota);
+        } else {
+            if (tieneEstaCantCuotasPendientes(2)) {
+                return obtenerCuotasPendientes();
+            } else {
+                return List.of(ultimaCuota);
+            }
+        }
+    }
+
+    public boolean tieneEstaCantCuotasPendientes(int cant) {
+        return obtenerCuotasPendientes().size() == cant;
+    }
+
     public List<Cuota> obtenerCuotasPendientes() {
         return cuotas.stream().filter(Cuota::esPendiente).toList();
     }

@@ -59,7 +59,8 @@ public class GrupoService implements IGrupoService {
         //Aca se deberia busar el ultimo numero y sumarle 1
         Grupo nuevoGrupo = grupoConverter.dtoToEntity(grupoDTO);
         Grupo grupoCreado = grupoRepository.save(nuevoGrupo);
-        servicioService.agregarGrupoAServicio(nuevoGrupo, idServicio);
+        Servicio servicio = servicioService.findServicio(idServicio);
+        servicioService.agregarGrupoAServicio(nuevoGrupo, servicio);
         return grupoCreado;
     };
 
@@ -69,15 +70,22 @@ public class GrupoService implements IGrupoService {
         //Grupo grupoCreado = this.createGrupo(grupoDTO, idServicio);
         Grupo nuevoGrupo = grupoConverter.dtoToEntity(grupoDTO);
         Grupo grupoCreado = grupoRepository.save(nuevoGrupo);
-        servicioService.agregarGrupoAServicio(nuevoGrupo, idServicio);
+        Servicio servicio = servicioService.findServicio(idServicio);
+        servicioService.agregarGrupoAServicio(nuevoGrupo, servicio);
 
-        System.out.println("grupo creado" + grupoCreado);
-
+        List<HorarioDTO> horariosDTO = grupoDTO.getHorarios();
         // Validar aca que no se superpongan los horarios de ls grupos
-        // aca
+
+        for (HorarioDTO horarioDTO : horariosDTO) {
+            boolean noCumple = servicio.tienGrupoEnEsteHorario(horarioDTO.getHoraInicio(),
+                    horarioDTO.getHoraFin(),
+                    horarioDTO.getNombreDiaSemana());
+            if (noCumple) {
+                throw new UnsupportedOperationException("Un horario se superpone con otro configurado previamente.");
+            }
+        }
 
         // Por cada horario que nos llega
-        List<HorarioDTO> horariosDTO = grupoDTO.getHorarios();
         for (HorarioDTO horarioDTO : horariosDTO) {
             // aca asignarle al grupo el numero del último asociado al servicio
             Horario horarioCreado = horarioService.createHorario(horarioDTO);
@@ -91,7 +99,6 @@ public class GrupoService implements IGrupoService {
         // llamamos a claseService y le generamos las asistencias
         // seria mejor que todos estos servicios los llamaramos desde servicioService
         // y que aca solo nos llegue el servicio
-        Servicio servicio = servicioService.findServicio(idServicio);
         if (servicio.isAsistenciasActivas()) {
             claseService.crearClasesParaSemanaSiguienteGrupo(grupoCreado);
         }
@@ -125,6 +132,12 @@ public class GrupoService implements IGrupoService {
     public List<Clase> findClasesFuturasDeGrupo(Long idGrupo) {
         Grupo grupoExistente = this.findGrupo(idGrupo);
         return grupoExistente.getClases().stream().filter(Clase::esFutura).toList();
+    }
+
+    public List<Alumno> obtenerAlumnosActualesDeGrupo(Long idServicio, Long idGrupo) {
+        Grupo grupo = this.findGrupo(idGrupo);
+        Servicio servicio = servicioService.findServicio(idServicio);
+        return servicio.obtenerAlumnosActualesDeGrupo(grupo);
     }
 
 //    public List<Grupo> findGruposDeAlumno(Long idAlumno) {

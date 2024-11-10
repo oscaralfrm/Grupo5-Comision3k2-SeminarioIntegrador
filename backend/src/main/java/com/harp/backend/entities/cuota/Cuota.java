@@ -88,6 +88,18 @@ public class Cuota {
         return ( this.buscarCambioEstadoActual().esPendiente() );
     }
 
+    public boolean esAbonada() {
+        return ( this.buscarCambioEstadoActual().esAbonada() );
+    }
+
+    public boolean esVencida() {
+        return ( this.buscarCambioEstadoActual().esVencida() );
+    }
+
+    public boolean esAnulada() {
+        return ( this.buscarCambioEstadoActual().esAnulada() );
+    }
+
     public boolean estaProximaAFinalizarCiclo(LocalDate fechaActual, int diasProximos) {
         // Si faltan X "diasProximos" para que finalice el ciclo
         return fechaActual.plusDays(diasProximos).isEqual(this.fechaFinCiclo);

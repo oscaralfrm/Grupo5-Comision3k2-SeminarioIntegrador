@@ -8,9 +8,9 @@ import com.harp.backend.entities.cuota.estadoCuota.EstadoCuota;
 import com.harp.backend.entities.cuota.estrategiaCrearCuota.*;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
-import com.harp.backend.entities.inscripcion.IInscripcionService;
+//import com.harp.backend.entities.inscripcion.IInscripcionService;
 import com.harp.backend.entities.inscripcion.Inscripcion;
-import com.harp.backend.entities.inscripcion.InscripcionService;
+//import com.harp.backend.entities.inscripcion.InscripcionService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,8 @@ public class CuotaService implements ICuotaService {
     @Autowired
     private AlumnoService alumnoService;
 
-    @Autowired
-    private IInscripcionService inscripcionService;
+//    @Autowired
+//    private IInscripcionService inscripcionService;
 
     @Autowired
     private CambioEstadoCuotaService cambioEstadoService;
@@ -168,7 +168,7 @@ public class CuotaService implements ICuotaService {
         //Le agregamos la cuota creada a la inscripcion del alumno
         //alumnoService.agregarCuotaAAlumno(alumno, cuotaCreada);
         // REVISAR RECURSIVIDAD
-        inscripcionService.agregarCuotaAInscripcion(inscripcion, cuotaCreada);
+        //inscripcionService.agregarCuotaAInscripcion(inscripcion, cuotaCreada);
         cuotaRepository.save(cuotaCreada);
         return cuotaCreada;
     }

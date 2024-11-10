@@ -1,9 +1,11 @@
 package com.harp.backend.entities.grupo;
 
 
+import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.instructor.Instructor;
+import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioDTO;
 import jakarta.validation.Valid;
@@ -70,6 +72,13 @@ public class GrupoController {
         List<Clase> clases = grupoService.findClasesFuturasDeGrupo(idGrupo);
         return ResponseEntity.ok(clases);
     }
+
+    @GetMapping("/{idServicio}/grupo/{idGrupo}/alumnos")
+    public ResponseEntity<List<Alumno>> traerAlumnosActualesGrupo(@PathVariable @Min(1) Long idServicio,
+                                                                  @PathVariable @Min(1) Long idGrupo) {
+        List<Alumno> alumnos = grupoService.obtenerAlumnosActualesDeGrupo(idServicio, idGrupo);
+        return ResponseEntity.status(HttpStatus.OK).body(alumnos);
+    };
 
 //    // POST SIN GRUPOS
 //    @PostMapping("/{idServicio}/grupos")

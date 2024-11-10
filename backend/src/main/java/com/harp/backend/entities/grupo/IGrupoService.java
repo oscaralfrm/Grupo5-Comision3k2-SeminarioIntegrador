@@ -20,4 +20,5 @@ public interface IGrupoService {
     //public void agregarAlumnoAGrupo(Long idServicio, Integer numGrupo, Long idAlumno);
     //public void eliminarAlumnoDeGrupo(Long idServicio, Integer numGrupo, Long idAlumno);
     Grupo createGrupoConHorarios(GrupoDTO grupoDTO, Long idServicio);
+    List<Alumno> obtenerAlumnosActualesDeGrupo(Long idServicio, Long idGrupo);
 }

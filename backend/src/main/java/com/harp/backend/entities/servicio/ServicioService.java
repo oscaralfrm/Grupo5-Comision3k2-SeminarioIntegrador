@@ -1,6 +1,7 @@
 package com.harp.backend.entities.servicio;
 
 import com.harp.backend.entities.alumno.model.Alumno;
+import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.categoria.CategoriaService;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.grupo.Grupo;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 import java.time.LocalDate;
@@ -101,6 +103,11 @@ public class ServicioService implements IServicioService {
                 .findFirst().orElseThrow(() -> new NoSuchElementFoundException("Grupo no encontrado"));
     }
 
+    public void activarAsitencias(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        servicio.setAsistenciasActivas(true);
+    }
+
     @Override
     public Servicio editServicio(Long idServicio, ServicioDTO servicioDTO) {
         // VALIDAR: si cambio frecuencia de pago, u otros campos
@@ -114,8 +121,7 @@ public class ServicioService implements IServicioService {
         return servicioRepository.save(servicioExistente);
     };
 
-    public void agregarGrupoAServicio(Grupo grupo, Long idServicio) {
-        Servicio servicioExistente = this.findServicio(idServicio);
+    public void agregarGrupoAServicio(Grupo grupo, Servicio servicioExistente) {
         servicioExistente.agregarGrupo(grupo);
         servicioRepository.save(servicioExistente);
     }
@@ -204,7 +210,7 @@ public class ServicioService implements IServicioService {
         return servicio.getInscripciones();
     }
 
-    public List<List<Cuota>> findUltimasCuotasDeServicio(Long idServicio) {
+    public List<Cuota> findUltimasCuotasDeServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
             return servicio.obtenerCuotasPendientesAlumnosActuales();
     }
@@ -213,6 +219,13 @@ public class ServicioService implements IServicioService {
     public List<Alumno> obtenerAlumnosActualesDeServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
         return servicio.obtenerAlumnosActuales();
+    }
+
+    public Integer obtenerCuposLibresServicio(Long idServicio, Long idGrupo, List<Long> idsHorarios) {
+        Servicio servicio = this.findServicio(idServicio);
+        IEstrategiaInscripcion estrategiaInscripcion = EstrategiaCrearInscripcionFactory.getEstrategia(servicio.getModalidadInscripcion());
+        Integer cuposLibres = estrategiaInscripcion.obtenerCuposLibres(servicio, idGrupo, idsHorarios);
+        return cuposLibres;
     }
 
     public List<MontoServicio> obtenerMontosActualesServicio(Long idServicio) {
@@ -229,5 +242,25 @@ public class ServicioService implements IServicioService {
         Servicio servicio = this.findServicio(idServicio);
         Grupo grupo = servicio.obtenerGrupoConEsteId(idGrupo);
         return servicio.calcularDuracionTotalEnDiasDeGrupo(grupo);
+    }
+
+    public List<Double> calcularTotalPendienteYEsperado(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.calcularTotalPendienteYEsperado();
+    }
+
+    public List<Servicio> findServiciosByFilter(boolean clasePrueba,
+                                                Categoria categoria,
+                                                boolean yaInicio) {
+        return servicioRepository.findAll()
+                .stream()
+                .filter(servicio -> !clasePrueba || servicio.isClaseDePrueba() == clasePrueba)
+                .filter(servicio -> categoria == null || servicio.getCategoria().equals(categoria))
+                .filter(servicio -> !yaInicio || servicio.yaInicio() == yaInicio)
+                .collect(Collectors.toList());
+    }
+
+    public List<Servicio> findServicioByNombre(String nombre) {
+        return servicioRepository.findByNombre(nombre);
     }
 }

@@ -46,9 +46,9 @@ public class CuotaController {
 
     // REVISAR COMO HACER PARA QUE LAS CUOTAS TENGAN EL ALUMNO
     @GetMapping("/alumnos/cuotas")
-    public ResponseEntity<List<List<Cuota>>> getUltimasCuotasDeServicio(@PathVariable @Min(1) Long idServicio) {
+    public ResponseEntity<List<Cuota>> getUltimasCuotasDeServicio(@PathVariable @Min(1) Long idServicio) {
         // revisar si las cuotas llegan con el alumno o necesitan de un dto
-        List<List<Cuota>> cuotas = servicioService.findUltimasCuotasDeServicio(idServicio);
+        List<Cuota> cuotas = servicioService.findUltimasCuotasDeServicio(idServicio);
         return ResponseEntity.ok(cuotas);
     }
 

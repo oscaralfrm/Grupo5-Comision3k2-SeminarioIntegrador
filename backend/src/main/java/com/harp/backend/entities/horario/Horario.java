@@ -76,4 +76,30 @@ public class Horario {
         return duracion.toHours();
     }
 
+    public boolean estaEn(LocalTime horaInicio, LocalTime horaFin, String diaSemana) {
+        if (this.diaSemana.getNombre().equals(diaSemana)) {
+            // Si las horas ingresadas abarcan completamente las horas de este horario
+            if (horaInicio.isBefore(this.horaInicio) && horaFin.isAfter(this.horaFin)) {
+                return true;
+            }
+            // Si incluye el comienzo del horario
+            if ( (horaInicio.isBefore(this.horaInicio) || horaInicio.equals(this.horaInicio) )
+                    && horaFin.isBefore(this.horaFin) && horaFin.isAfter(this.horaInicio) ) {
+                return true;
+            }
+            // Si incluye el final del horario
+            if ( ( horaFin.isAfter(this.horaFin) || horaFin.equals(this.horaFin) )
+                    && horaInicio.isAfter(this.horaInicio) && horaInicio.isBefore(this.horaFin)) {
+                return true;
+            }
+            // Si es exactamente igual
+            if (horaInicio.equals(this.horaInicio) && horaFin.equals(this.horaFin)) {
+                return true;
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
 }

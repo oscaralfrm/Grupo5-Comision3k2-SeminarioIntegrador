@@ -2,9 +2,11 @@ package com.harp.backend.entities.servicio;
 
 
 import com.harp.backend.entities.alumno.model.Alumno;
+import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
+import com.harp.backend.entities.inscripcion.InscripcionDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
@@ -73,6 +75,13 @@ public class ServicioController {
         return  ResponseEntity.status(HttpStatus.OK).body(servicioEditado);
     }
 
+    // EDITAR
+    @PutMapping("/{idServicio}/inscripciones/habilitar")
+    public ResponseEntity<String> activarAsistencias(@PathVariable @Min(1) Long idServicio) {
+        servicioService.activarAsitencias(idServicio);
+        return  ResponseEntity.ok("Se habilitaron las inscripciones");
+    }
+
     @PostMapping("/{idServicio}/monto")
     public ResponseEntity<MontoServicio> crearNuevoMonto(
             @PathVariable Long idServicio,
@@ -97,6 +106,7 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(alumnos);
     };
 
+
     @GetMapping("/{idServicio}/duracion-dias")
     public ResponseEntity<Long> calcularDuracionServicio(@PathVariable @Min(1) Long idServicio) {
         Long duracion = servicioService.calcularDuracionTotalServicio(idServicio);
@@ -110,7 +120,20 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(duracion);
     };
 
+    @GetMapping("/{idServicio}/cupos-libres")
+    public ResponseEntity<Integer> obtenerCuposLibres(@PathVariable @Min(1) Long idServicio,
+                                                   @RequestBody InscripcionDTO inscripcionDTO) {
+        Long idGrupo = inscripcionDTO.getIdGrupo();
+        List<Long> idsHorarios = inscripcionDTO.getIdsHorarios();
+        Integer cuposLibres = servicioService.obtenerCuposLibresServicio(idServicio, idGrupo, idsHorarios);
+        return ResponseEntity.status(HttpStatus.OK).body(cuposLibres);
+    };
 
+    @GetMapping("/{idServicio}/ingreso-pendiente-esperado")
+    public ResponseEntity<List<Double>> calcularIngresoPendienteYEsperado(@PathVariable @Min(1) Long idServicio) {
+        List<Double> totales = servicioService.calcularTotalPendienteYEsperado(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(totales);
+    };
 
 //    @PutMapping("/{idServicio}/generar-codigo-inscripcion")
 //    public ResponseEntity<String> generarCodigoInscripcion(@PathVariable @Min(1) Long idServicio) {
@@ -119,15 +142,22 @@ public class ServicioController {
 //    }
 
 
-//    // EJ. /filtros?nombre=Deportes (sin " ")
-//    @GetMapping("/{idServicio}/filter")
-//    public ResponseEntity<List<HistorialMonto>> buscarMontosDeUnServicioFiltrados(
-//            @RequestParam boolean finalizados,
-//            @RequestParam LocalDate fechaInicio,
-//            @RequestParam LocalDate fechaFin,
-//            @RequestParam ) {
-//
-//        HistorialMonto historialMonto = historialMontoService.findHistorialMontoBy(nombre);
-//        return ResponseEntity.status(HttpStatus.OK).body(historialMonto);
-//    };
+    // EJ. /filtros?nombre=Deportes (sin " ")
+    @GetMapping("/{idServicio}/filter")
+    public ResponseEntity<List<Servicio>> findServiciosByFilter(
+            @RequestParam boolean clasePrueba,
+            @RequestParam Categoria categoria,
+            @RequestParam boolean yaInicio,
+            @RequestParam double montoMax) {
+
+        List<Servicio> servicios = servicioService.findServiciosByFilter(clasePrueba, categoria, yaInicio);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
+    @GetMapping("/{nombre}")
+    public ResponseEntity<List<Servicio>> findSeviciosByNombre(@PathVariable String nombre) {
+        List<Servicio> servicios = servicioService.findServicioByNombre(nombre);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    }
+
 }

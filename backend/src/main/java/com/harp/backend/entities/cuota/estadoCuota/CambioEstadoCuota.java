@@ -38,4 +38,15 @@ public class CambioEstadoCuota {
         return ( estadoCuota == EstadoCuota.Pendiente );
     }
 
+    public boolean esAbonada() {
+        return ( estadoCuota == EstadoCuota.Abonada );
+    }
+
+    public boolean esAnulada() {
+        return ( estadoCuota == EstadoCuota.Anulada );
+    }
+
+    public boolean esVencida() {
+        return ( estadoCuota == EstadoCuota.Vencida );
+    }
 }

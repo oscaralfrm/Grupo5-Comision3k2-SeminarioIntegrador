@@ -20,6 +20,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
@@ -69,6 +70,10 @@ public class Servicio {
     private String logoURL;
     private String ubicacion;
 
+    @ManyToOne
+    @JoinColumn(name = "categoria_id", referencedColumnName = "id")
+    private Categoria categoria;
+
     //Revisar valor por defecto null o cero
     @Column(name = "cant_max_alumnos_por_grupo")
     private Integer cantMaxAlumnosPorGrupo;
@@ -77,8 +82,6 @@ public class Servicio {
     @Column(name = "cant_veces_semanales")
     private Integer cantVecesSemanales;
 //    private Integer cantHorariosPorGrupo;
-
-
 
     @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion = LocalDate.now(); //No puede modificarse
@@ -101,10 +104,6 @@ public class Servicio {
     private boolean activo = false; //activo = que se esta cobrando
     private boolean publico; //publico = que se publicita
     private boolean inscripcionesAbiertas; // cargar en base de datos
-
-    @ManyToOne
-    @JoinColumn(name = "categoria_id", referencedColumnName = "id")
-    private Categoria categoria;
 
     // es != null si no es cada X cant dias
     @Column(name = "cant_dias_ciclo")
@@ -337,16 +336,31 @@ public class Servicio {
         return inscripciones.stream().filter(Inscripcion::estaEnCurso).map(Inscripcion::getAlumno).toList();
     }
 
+    public List<Alumno> obtenerAlumnosActualesDeGrupo(Grupo grupo) {
+        return inscripciones.stream()
+                .filter(i -> i.estaEnCurso() && i.esDeEsteGrupo(grupo))
+                .map(Inscripcion::getAlumno)
+                .toList();
+    }
+
 //    public List<Cuota> obtenerUltimasCuotasAlumnosActuales() {
 //        return inscripciones.stream()
 //                .filter(Inscripcion::estaEnCurso)
 //                .map(Inscripcion::obtenerUltimaCuota).toList();
 //    }
 
-    public List<List<Cuota>> obtenerCuotasPendientesAlumnosActuales() {
+    public List<Cuota> obtenerCuotasPendientesAlumnosActuales() {
         return inscripciones.stream()
                 .filter(Inscripcion::estaEnCurso)
-                .map(Inscripcion::obtenerCuotasPendientes).toList();
+                .flatMap(inscripcion -> inscripcion.obtenerCuotasPendientes().stream())
+                .toList();
+    }
+
+    public List<Cuota> obtenerUltimasCuotasAlumnosActuales() {
+        return inscripciones.stream()
+                .filter(Inscripcion::estaEnCurso)
+                .flatMap(inscripcion -> inscripcion.obtenerUltimasCuotas().stream())
+                .toList();
     }
 
     public long calcularDuracionTotalEnDiasDeGrupo(Grupo grupo) {
@@ -363,4 +377,19 @@ public class Servicio {
         return ChronoUnit.DAYS.between(fechaInicio, fechaFin);
     }
 
+    public boolean tienGrupoEnEsteHorario(LocalTime horaInicio,
+                                          LocalTime horaFin, String nombreDiaSemana) {
+        return this.grupos.stream().anyMatch(grupo -> grupo.tieneHorarioEn(horaInicio, horaFin, nombreDiaSemana));
+    }
+
+    public List<Double> calcularTotalPendienteYEsperado() {
+        List<Cuota> cuotasPendientes = this.obtenerCuotasPendientesAlumnosActuales();
+        List<Cuota> ultimasCuotas = this.obtenerUltimasCuotasAlumnosActuales();
+        double totalPendiente = cuotasPendientes.stream()
+                .mapToDouble(cuota -> cuota.getMontoServicio().getMonto()).sum();
+        double totalEsperado = ultimasCuotas.stream()
+                .mapToDouble(cuota -> cuota.getMontoServicio().getMonto()).sum();
+        List<Double> totales = List.of(totalPendiente, totalEsperado);
+        return totales;
+    }
 }
