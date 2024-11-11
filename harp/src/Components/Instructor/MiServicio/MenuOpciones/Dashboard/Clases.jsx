@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const ClassesCard = () => {
-  const navigate = useNavigate();
-  const [classesToday, setClassesToday] = useState([]);
-  const [nextClass, setNextClass] = useState(null);
+  const [classes, setClasses] = useState([]); // Contendrá todas las clases
   const [expanded, setExpanded] = useState(false);
-  const [attendance, setAttendance] = useState({});
 
   // Datos de clases simulados
-  const classes = [
+  const allClasses = [
     {
       id: 1,
       name: "Clase 1",
@@ -33,30 +30,10 @@ const ClassesCard = () => {
     },
   ];
 
-  // Filtrar clases de hoy y las próximas
+  // Setear las clases simuladas
   useEffect(() => {
-    const today = new Date().toISOString().split("T")[0];
-    const todayClasses = classes.filter((cls) => cls.date === today);
-    const nextClass = classes.find((cls) => cls.date > today);
-    setClassesToday(todayClasses);
-    setNextClass(nextClass);
-  }, []); // Asegúrate de que el efecto solo dependa de la primera carga
-
-  const handleAttendance = (cls) => {
-    const now = new Date();
-    const classTime = new Date(`${cls.date} ${cls.time}`);
-    const isLate = now > classTime;
-
-    if (attendance[cls.id]) {
-      alert("La asistencia ya fue ingresada.");
-    } else {
-      setAttendance({
-        ...attendance,
-        [cls.id]: { status: isLate ? "Tarde" : "A tiempo", time: now },
-      });
-      navigate(`/instructor/1/servicio/1/mi-servicio/clase/${cls.id}/asistencias`);
-    }
-  };
+    setClasses(allClasses);
+  }, []); // Esto solo se ejecuta una vez cuando el componente se monta
 
   const handleExpandToggle = () => {
     setExpanded(!expanded);
@@ -72,7 +49,7 @@ const ClassesCard = () => {
         </Link>
       </div>
 
-      {classesToday.length > 0 ? (
+      {classes.length > 0 ? (
         <>
           <div className="mt-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>Clase</span>
@@ -81,12 +58,23 @@ const ClassesCard = () => {
           </div>
           <hr />
 
-          {classesToday.map((cls) => (
-            <div key={cls.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", cursor: "pointer", color: "inherit", borderBottom: "1px solid #ccc" }}>
+          {/* Mostrar solo la primera clase si no se ha expandido */}
+          {classes.slice(0, expanded ? classes.length : 1).map((cls) => (
+            <div
+              key={cls.id}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "10px 0",
+                cursor: "pointer",
+                color: "inherit",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
               <span>{cls.name}</span>
               <span>{cls.group}</span>
               <span>{cls.time}</span>
-              <button onClick={() => handleAttendance(cls)} style={{ backgroundColor: "#4F46E5", color: "white", padding: "5px 10px", borderRadius: "4px", fontSize: "12px", border: "none" }}>Tomar Asistencia</button>
             </div>
           ))}
 
@@ -98,8 +86,7 @@ const ClassesCard = () => {
         </>
       ) : (
         <div>
-          <p>No hay clases hoy</p>
-          {nextClass && <p>La próxima clase es el {nextClass.date} a las {nextClass.time}</p>}
+          <p>No hay clases disponibles</p>
         </div>
       )}
     </div>
