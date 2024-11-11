@@ -358,7 +358,7 @@ export const RegisterFormInstructor = () => {
                         className="btn btn-primary"
                         disabled={!isValid} // Deshabilitar si el formulario no es válido
                       >
-                        Registrarme
+                        Regístrte
                       </button>
                     </div>
                   </Tab>
@@ -388,7 +388,7 @@ export const RegisterFormInstructor = () => {
             >
               <h1
                 className="mb-3 text-center fs-1 text-white"
-                style={{ fontFamily: "Roboto", fontWeight: "250" }}
+                style={{ fontFamily: "Roboto", fontWeight: "400" }}
               >
                 Información Ingresada
               </h1>

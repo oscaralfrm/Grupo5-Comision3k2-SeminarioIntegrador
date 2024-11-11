@@ -17,7 +17,9 @@ const AppNavbar = () => {
   location.pathname.includes('/servicio/');
   const isRegisterRoute = location.pathname.startsWith('/registro');
   const isLoginRoute = location.pathname.startsWith('/login')
-  const isServiciosRoute = location.pathname.startsWith('/instructor/1/servicios')
+  const isServiciosRoute = location.pathname.startsWith('/instructor/:idInstructor/servicios')
+  const isCrearServicio = location.pathname.startsWith('/instructor')
+  
   return (
     <>      
       {isPrincipalRoute && <Navbar />}
@@ -25,7 +27,8 @@ const AppNavbar = () => {
       {isRegisterRoute && <NavbarRegisterChooser />}
       {isLoginRoute && <NavbarRegisterChooser />}
       {isServiciosRoute && <NavbarServicio/>}
-    </>
+      {isCrearServicio && <NavbarRegisterChooser/>}  
+     </>
 
   );
 };
