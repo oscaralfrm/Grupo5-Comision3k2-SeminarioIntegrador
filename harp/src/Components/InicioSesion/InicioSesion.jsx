@@ -35,7 +35,7 @@ export const LoginForm = () => {
     };
 
     const loginForm = () => (
-        <div className="container-fluid" style={{ overflow: 'hidden', marginTop: '0vh' }}>
+        <div className="container-fluid" style={{ overflow: 'hidden', marginTop: '0vh', fontFamily:'Roboto' }}>
             <div className="row">
                 {/* Sección de Imagen */}
                 <div className="col-lg-6 d-flex justify-content-center align-items-center bg-light">
