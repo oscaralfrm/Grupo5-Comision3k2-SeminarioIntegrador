@@ -10,8 +10,10 @@ function NavbarInstructor() {
     { id: 2, nombre: "Servicio 2" },
     { id: 3, nombre: "Servicio 3" },
   ];
-  const idInstructor = 1;
-  const idServicio = 1;
+ const idServicio = 1;
+ const idInstructor = 1
+ 
+
   const servicio = servicios.find((a) => a.id === idServicio);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -25,7 +27,7 @@ function NavbarInstructor() {
     const service = servicios.find((servicio) => servicio.id === serviceId);
     if (service) {
       setSelectedService(service);
-      navigate(`/instructor/${idInstructor}/servicio/${serviceId}/general`);
+      navigate(`/instructor/${idInstructor}/servicio/${serviceId}/`);
     }
     setDropdownOpen(false);
   };

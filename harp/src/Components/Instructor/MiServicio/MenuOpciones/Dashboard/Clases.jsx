@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom"; // Asegúrate de importar useNavigate
+import { useNavigate, Link } from "react-router-dom";
 
 const ClassesCard = () => {
-  const navigate = useNavigate(); // Inicializa useNavigate para la navegación
+  const navigate = useNavigate();
   const [classesToday, setClassesToday] = useState([]);
   const [nextClass, setNextClass] = useState(null);
   const [expanded, setExpanded] = useState(false);
-  const [attendance, setAttendance] = useState({}); // Estado para llevar el registro de las asistencias
+  const [attendance, setAttendance] = useState({});
 
-  // Simulamos datos de clases
+  // Datos de clases simulados
   const classes = [
     {
       id: 1,
@@ -35,31 +35,26 @@ const ClassesCard = () => {
 
   // Filtrar clases de hoy y las próximas
   useEffect(() => {
-    const today = new Date().toISOString().split("T")[0]; // Fecha actual en formato YYYY-MM-DD
+    const today = new Date().toISOString().split("T")[0];
     const todayClasses = classes.filter((cls) => cls.date === today);
     const nextClass = classes.find((cls) => cls.date > today);
     setClassesToday(todayClasses);
     setNextClass(nextClass);
-  }, [classes]);
+  }, []); // Asegúrate de que el efecto solo dependa de la primera carga
 
   const handleAttendance = (cls) => {
     const now = new Date();
     const classTime = new Date(`${cls.date} ${cls.time}`);
     const isLate = now > classTime;
 
-    // Si la clase ya tiene asistencia, mostramos el mensaje de que ya fue registrada
     if (attendance[cls.id]) {
       alert("La asistencia ya fue ingresada.");
     } else {
-      // Si la clase no tiene asistencia, la registramos y navegamos
       setAttendance({
         ...attendance,
         [cls.id]: { status: isLate ? "Tarde" : "A tiempo", time: now },
       });
-      // Redirigir a la pantalla de detalles de la clase
-      navigate(
-        `/instructor/1/servicio/1/mi-servicio/clase/${cls.id}/asistencias`
-      );
+      navigate(`/instructor/1/servicio/1/mi-servicio/clase/${cls.id}/asistencias`);
     }
   };
 
@@ -68,128 +63,35 @@ const ClassesCard = () => {
   };
 
   return (
-    <div
-      style={{
-        position: "relative",
-        backgroundColor: "white",
-        padding: "20px",
-        borderRadius: "20px",
-        boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-        maxWidth: "100%",
-        width: "100%",
-        fontFamily: "Roboto",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          backgroundColor: "#1E1B4B",
-          borderRadius: "8px",
-          width: "100%",
-          padding: "15px",
-        }}
-      >
-        <h2
-          className="text-center"
-          style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5em" }}
-        >
-          Clases
-        </h2>
+    <div style={{ position: "relative", backgroundColor: "white", padding: "20px", borderRadius: "20px", boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)", maxWidth: "100%", width: "100%", fontFamily: "Roboto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1E1B4B", borderRadius: "8px", width: "100%", padding: "15px" }}>
+        <h2 className="text-center" style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5em" }}>Clases</h2>
 
-        {/* Botón de Historial de Clases */}
-        <Link
-          to="/instructor/1/servicio/1/mi-servicio/clases-historial"
-          style={{
-            backgroundColor: "#4F46E5",
-            color: "white",
-            padding: "10px 20px", // Aumenté el tamaño del botón
-            borderRadius: "4px",
-            textDecoration: "none", // Elimina el subrayado
-            fontSize: "14px", // Tamaño de fuente más grande
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
+        <Link to="/instructor/1/servicio/1/mi-servicio/clases-historial" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px", display: "flex", alignItems: "center" }}>
           Historial de Clases
         </Link>
       </div>
 
       {classesToday.length > 0 ? (
         <>
-          <div
-            className="mt-3"
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          <div className="mt-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>Clase</span>
             <span>Grupo</span>
             <span>Hora</span>
           </div>
           <hr />
 
-          {/* Mapeo de clases de hoy */}
           {classesToday.map((cls) => (
-            <div
-              key={cls.id}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "10px 0",
-                cursor: "pointer",
-                textDecoration: "none", // Esto elimina el subrayado predeterminado de los enlaces
-                color: "inherit", // Esto asegura que el color del texto no cambie
-                borderBottom: "1px solid #ccc",
-              }}
-            >
+            <div key={cls.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", cursor: "pointer", color: "inherit", borderBottom: "1px solid #ccc" }}>
               <span>{cls.name}</span>
               <span>{cls.group}</span>
               <span>{cls.time}</span>
-              <button
-                onClick={() => handleAttendance(cls)} // Llamar a la función de asistencia
-                style={{
-                  backgroundColor: "#4F46E5",
-                  color: "white",
-                  padding: "5px 10px",
-                  borderRadius: "4px",
-                  textDecoration: "none",
-                  fontSize: "12px",
-                  border: "none", // Quitar el borde
-                }}
-              >
-                Tomar Asistencia
-              </button>
+              <button onClick={() => handleAttendance(cls)} style={{ backgroundColor: "#4F46E5", color: "white", padding: "5px 10px", borderRadius: "4px", fontSize: "12px", border: "none" }}>Tomar Asistencia</button>
             </div>
           ))}
 
-          {/* Botón para expandir o contraer la lista de clases */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center", // Centra el botón
-              marginTop: "15px", // Añadí margen superior para separarlo de las clases
-            }}
-          >
-            <button
-              onClick={handleExpandToggle}
-              style={{
-                backgroundColor: "#4F46E5",
-                color: "white",
-                padding: "10px 20px", // Aumenté el tamaño del botón
-                borderRadius: "4px",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "14px",
-                transition: "background-color 0.3s ease",
-              }}
-              onMouseEnter={(e) => (e.target.style.backgroundColor = "#3b3ac2")} // Efecto al pasar el ratón
-              onMouseLeave={(e) => (e.target.style.backgroundColor = "#4F46E5")} // Vuelve al color original
-            >
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "15px" }}>
+            <button onClick={handleExpandToggle} style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", fontSize: "14px", border: "none", cursor: "pointer" }}>
               {expanded ? "Ver menos" : "Ver todos"}
             </button>
           </div>
@@ -197,11 +99,7 @@ const ClassesCard = () => {
       ) : (
         <div>
           <p>No hay clases hoy</p>
-          {nextClass && (
-            <p>
-              La próxima clase es el {nextClass.date} a las {nextClass.time}
-            </p>
-          )}
+          {nextClass && <p>La próxima clase es el {nextClass.date} a las {nextClass.time}</p>}
         </div>
       )}
     </div>
