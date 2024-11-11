@@ -25,7 +25,7 @@ export default function CardInfo() {
                 >
                     <GenericCard
                         title="Publicidad del servicio"
-                        description="Se les dará a conocer a personas interesadas tu servicio toda la información necesaria para que decidan inscribirse."
+                        description="Se proporcionará a las personas interesadas toda la información necesaria sobre tu servicio para que puedan tomar una decisión informada respecto a su inscripción."
                         icon={<FaBullhorn size={80} />}
                     />
                 </div>
