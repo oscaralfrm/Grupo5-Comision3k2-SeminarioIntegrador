@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import img from "../../../../assets/LogoHarp420.png";
 
@@ -10,14 +10,10 @@ function NavbarInstructor() {
     { id: 2, nombre: "Servicio 2" },
     { id: 3, nombre: "Servicio 3" },
   ];
- const idServicio = 1;
- const idInstructor = 1
- 
-
-  const servicio = servicios.find((a) => a.id === idServicio);
+  const { idInstructor, idServicio } = useParams();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState(servicio);
+  const [selectedService, setSelectedService] = useState(null);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -35,16 +31,18 @@ function NavbarInstructor() {
   useEffect(() => {
     if (idServicio) {
       const selected = servicios.find(
-        (servicio) => servicio.id === parseInt(idServicio)
+        (servicio) => servicio.id === parseInt(idServicio, 10) // Convertir a número para la comparación
       );
       if (selected) {
         setSelectedService(selected);
       }
     }
-  }, [idServicio, servicios]);
+  }, [idServicio]);
+
   const handleClick = () => {
     navigate("/login"); // Redirige a /login
   };
+
   return (
     <nav
       className="navbar navbar-expand-lg navbar-light fixed-top"
@@ -57,7 +55,6 @@ function NavbarInstructor() {
         fontSize: "1.2rem",
       }}
     >
-      {/* Botón de toggler en dispositivos móviles */}
       <button
         className="navbar-toggler"
         type="button"
@@ -70,7 +67,6 @@ function NavbarInstructor() {
         ></span>
       </button>
 
-      {/* Logo visible en responsive */}
       <a className="navbar-brand d-lg-none" href="/">
         <img src={img} alt="Harp Logo" width="100" />
       </a>
@@ -129,7 +125,7 @@ function NavbarInstructor() {
               onClick={toggleDropdown}
               style={{ color: "white" }}
             >
-              {selectedService && selectedService.nombre}
+              {selectedService ? selectedService.nombre : "Selecciona un servicio"}
             </a>
             <div
               className={`dropdown-menu ${dropdownOpen ? "show" : ""}`}
@@ -151,7 +147,7 @@ function NavbarInstructor() {
 
         <ul className="navbar-nav">
           <li className="nav-item">
-            <a className="nav-link" href="/" style={{ color: "white" }}>
+            <a className="nav-link" href="/" style={{ color: "white" }} onClick={handleClick}>
               Cerrar Sesión
             </a>
           </li>
