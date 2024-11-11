@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { Table, Button, Modal, Form, Row, Col } from 'react-bootstrap';
+import { format } from 'date-fns'; // Importa la función format de date-fns
 
 const Cobros = () => {
   const [students, setStudents] = useState([
-    { id: 1, name: 'Juan Pérez', group: 'Yoga Adultos', paymentStatus: 'Pendiente', payments: [], attendance: 'Asistió 10 veces', lastPaymentDate: '', nextPaymentDate: '2024-11-15', totalPaid: 0, amountDue: 50 },
-    { id: 2, name: 'Ana Gómez', group: 'Entrenamiento Funcional', paymentStatus: 'Pagado', payments: [{ date: '2024-11-01', amount: 50 }], attendance: 'Asistió 12 veces', lastPaymentDate: '2024-11-01', nextPaymentDate: '2024-12-01', totalPaid: 50, amountDue: 0 },
-    { id: 3, name: 'Carlos Rodríguez', group: 'Yoga Jóvenes', paymentStatus: 'Pendiente', payments: [], attendance: 'Asistió 8 veces', lastPaymentDate: '', nextPaymentDate: '2024-11-20', totalPaid: 0, amountDue: 50 },
+    { id: 1, name: 'Juan Pérez', group: 'Yoga Adultos', paymentStatus: 'Pendiente', payments: [], attendance: 'Asistió 10 veces', lastPaymentDate: '', nextPaymentDate: '2024-11-15', totalPaid: 0, amountDue: 50, originalAmountDue: 50 },
+    { id: 2, name: 'Ana Gómez', group: 'Entrenamiento Funcional', paymentStatus: 'Pagado', payments: [{ date: '2024-11-01', amount: 50, surcharge: 5, paymentMethod: 'Tarjeta' }], attendance: 'Asistió 12 veces', lastPaymentDate: '2024-11-01', nextPaymentDate: '2024-12-01', totalPaid: 50, amountDue: 0, originalAmountDue: 50 },
+    { id: 3, name: 'Carlos Rodríguez', group: 'Yoga Jóvenes', paymentStatus: 'Pendiente', payments: [], attendance: 'Asistió 8 veces', lastPaymentDate: '', nextPaymentDate: '2024-11-20', totalPaid: 0, amountDue: 50, originalAmountDue: 50 },
   ]);
-  
+
   const [showPaymentHistory, setShowPaymentHistory] = useState(false);
-  const [showStudentDetails, setShowStudentDetails] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [groupFilter, setGroupFilter] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
   const [showAddPayment, setShowAddPayment] = useState(false);
+  const [paymentDate, setPaymentDate] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
 
   const handleGroupFilterChange = (e) => setGroupFilter(e.target.value);
   const handlePaymentFilterChange = (e) => setPaymentFilter(e.target.value);
@@ -29,34 +31,68 @@ const Cobros = () => {
     setShowPaymentHistory(true);
   };
 
-  const handleShowStudentDetails = (student) => {
+  const handleAddPayment = (student) => {
     setSelectedStudent(student);
-    setShowStudentDetails(true);
+    setShowAddPayment(true);
   };
 
-  const handleAddPayment = () => setShowAddPayment(true);
-  const handleCloseAddPayment = () => setShowAddPayment(false);
+  const handleSavePayment = () => {
+    const updatedStudents = students.map((student) => {
+      if (student.id === selectedStudent.id) {
+        const newPayment = {
+          date: paymentDate,
+          amount: student.originalAmountDue, // El monto siempre es el mismo
+          paymentMethod: paymentMethod
+        };
+        const updatedPayments = [newPayment, ...student.payments]; // Insertamos el pago al principio
+        return {
+          ...student,
+          payments: updatedPayments,
+          totalPaid: student.totalPaid + student.originalAmountDue,
+          amountDue: 0,
+          paymentStatus: 'Pagado', // Cambia el estado de pago a "Pagado"
+        };
+      }
+      return student;
+    });
+
+    setStudents(updatedStudents);
+    setShowAddPayment(false);
+    setPaymentDate('');
+    setPaymentMethod('');
+  };
+
+  const handleCloseAddPayment = () => {
+    setShowAddPayment(false);
+    setPaymentDate('');
+    setPaymentMethod('');
+  };
+
   const handleClosePaymentHistory = () => setShowPaymentHistory(false);
-  const handleCloseStudentDetails = () => setShowStudentDetails(false);
+
+  // Función para formatear la fecha en formato dd/mm/yyyy
+  const formatDate = (date) => {
+    return format(new Date(date), 'dd/MM/yyyy');
+  };
 
   return (
     <div
-      className="container-fluid d-flex flex-column justify-content-center align-items-center"
-      style={{ minHeight: '100vh', paddingTop: '1vh' }}
+      className="container-fluid d-flex flex-column justify-content-start align-items-center"
+      style={{ minHeight: '85vh', paddingTop: '2vh', marginTop: "15vh" }} // Se ajusta el alto para subir el componente
     >
-      <h1 className="text-center">Mis Cobros</h1>
+      <h1 className="text-center mb-4">Mis Cobros</h1>
       
-      <Row className="mb-4 w-100">
-        <Col md={6}>
-          <Form.Control as="select" onChange={handleGroupFilterChange} value={groupFilter}>
+      <Row className="mb-4 w-75 justify-content-center"> {/* Usamos w-75 para ajustar el ancho */}
+        <Col md={5} className="p-0">
+          <Form.Control as="select" onChange={handleGroupFilterChange} value={groupFilter} className="w-100">
             <option value="">Filtrar por Grupo</option>
             <option value="Yoga Adultos">Yoga Adultos</option>
             <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
             <option value="Yoga Jóvenes">Yoga Jóvenes</option>
           </Form.Control>
         </Col>
-        <Col md={6}>
-          <Form.Control as="select" onChange={handlePaymentFilterChange} value={paymentFilter}>
+        <Col md={5} className="p-0 ms-2"> {/* ms-2 agrega margen a la derecha */}
+          <Form.Control as="select" onChange={handlePaymentFilterChange} value={paymentFilter} className="w-100">
             <option value="">Filtrar por Estado de Pago</option>
             <option value="Pendiente">Pendiente</option>
             <option value="Pagado">Pagado</option>
@@ -69,11 +105,10 @@ const Cobros = () => {
           <tr>
             <th>Nombre</th>
             <th>Grupo</th>
-            <th>Último Pago</th>
-            <th>Próximo Pago</th>
-            <th>Monto Total Pagado</th>
-            <th>Monto Pendiente</th>
-            <th>Estado de Pago</th>
+            <th>Monto</th>
+            <th>Recargo</th>
+            <th>Método de Pago</th>
+            <th>Fecha de Pago</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -82,16 +117,13 @@ const Cobros = () => {
             <tr key={student.id}>
               <td>{student.name}</td>
               <td>{student.group}</td>
-              <td>{student.lastPaymentDate || 'N/A'}</td>
-              <td>{student.nextPaymentDate}</td>
-              <td>${student.totalPaid}</td>
-              <td>${student.amountDue}</td>
-              <td>{student.paymentStatus}</td>
+              <td>${student.originalAmountDue}</td>
+              <td>${student.payments.length > 0 ? student.payments[0].surcharge : 0}</td>
+              <td>{student.payments.length > 0 ? student.payments[0].paymentMethod : 'N/A'}</td>
+              <td>{student.payments.length > 0 ? formatDate(student.payments[0].date) : 'N/A'}</td>
               <td>
                 <Button variant="info" onClick={() => handleShowPaymentHistory(student)}>Ver Historial de Pagos</Button>
-                <Button variant="primary" className="ms-2" onClick={() => handleShowStudentDetails(student)}>Ver Detalles</Button>
-                <Button variant="success" className="ms-2" onClick={handleAddPayment}>Agregar Pago</Button>
-                <Button variant="warning" className="ms-2">Enviar Recordatorio</Button>
+                <Button variant="success" className="ms-2" onClick={() => handleAddPayment(student)}>Agregar Pago</Button>
               </td>
             </tr>
           ))}
@@ -109,13 +141,19 @@ const Cobros = () => {
                 <tr>
                   <th>Fecha</th>
                   <th>Monto</th>
+                  <th>Recargo</th>
+                  <th>Método de Pago</th>
+                  <th>Estado de Pago</th>
                 </tr>
               </thead>
               <tbody>
                 {selectedStudent.payments.map((payment, index) => (
                   <tr key={index}>
-                    <td>{payment.date}</td>
+                    <td>{formatDate(payment.date)}</td>
                     <td>${payment.amount}</td>
+                    <td>${payment.surcharge}</td>
+                    <td>{payment.paymentMethod}</td>
+                    <td>{selectedStudent.paymentStatus}</td>
                   </tr>
                 ))}
               </tbody>
@@ -129,39 +167,33 @@ const Cobros = () => {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showStudentDetails} onHide={handleCloseStudentDetails}>
-        <Modal.Header closeButton>
-          <Modal.Title>Detalles del Estudiante - {selectedStudent?.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p><strong>Grupo:</strong> {selectedStudent?.group}</p>
-          <p><strong>Estado de Pago:</strong> {selectedStudent?.paymentStatus}</p>
-          <p><strong>Historial de Asistencia:</strong> {selectedStudent?.attendance}</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseStudentDetails}>Cerrar</Button>
-        </Modal.Footer>
-      </Modal>
-
       <Modal show={showAddPayment} onHide={handleCloseAddPayment}>
         <Modal.Header closeButton>
-          <Modal.Title>Agregar Pago</Modal.Title>
+          <Modal.Title>Agregar Pago - {selectedStudent?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="paymentAmount">
               <Form.Label>Monto</Form.Label>
-              <Form.Control type="number" placeholder="Ingresa el monto del pago" />
+              <Form.Control type="number" value={selectedStudent?.originalAmountDue} readOnly />
             </Form.Group>
             <Form.Group controlId="paymentDate" className="mt-3">
               <Form.Label>Fecha</Form.Label>
-              <Form.Control type="date" />
+              <Form.Control type="date" value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} />
+            </Form.Group>
+            <Form.Group controlId="paymentMethod" className="mt-3">
+              <Form.Label>Método de Pago</Form.Label>
+              <Form.Control as="select" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+                <option value="">Seleccione un método</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia</option>
+              </Form.Control>
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseAddPayment}>Cerrar</Button>
-          <Button variant="primary">Guardar Pago</Button>
+          <Button variant="primary" onClick={handleSavePayment}>Guardar Pago</Button>
         </Modal.Footer>
       </Modal>
     </div>

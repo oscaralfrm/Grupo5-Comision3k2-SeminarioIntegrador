@@ -52,19 +52,20 @@ const Statistics = () => {
   };
 
   return (
-    <div style={{ padding: "20px", backgroundColor: "#f5f5f5", borderRadius: "8px" }}>
+    <div style={{ padding: "20px", borderRadius: "8px" }}>
       <h3>Estadísticas</h3>
-      <div style={{ display: "flex", gap: "40px", flexDirection: "row", justifyContent: "center" }}>
+      {/* Contenedor con los gráficos apilados */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
         {/* Gráfico de Barras */}
-        <div style={{ width: "300px", height: "200px" }}>
+        <div style={{ width: "100%", maxWidth: "600px", height: "300px" }}>
           <h4 style={{ textAlign: "center" }}>Ganancias Mensuales</h4>
-          <Bar data={barData} options={barOptions} width={300} height={200} />
+          <Bar data={barData} options={barOptions} width={600} height={300} />
         </div>
 
         {/* Gráfico de Pastel */}
-        <div style={{ width: "300px", height: "200px" }}>
+        <div style={{ width: "100%", maxWidth: "600px", height: "300px", marginTop: "5vh" }}>
           <h4 style={{ textAlign: "center" }}>Inscripciones por Categoría</h4>
-          <Pie data={pieData} options={pieOptions} width={300} height={200} />
+          <Pie data={pieData} options={pieOptions} width={600} height={300} />
         </div>
       </div>
     </div>

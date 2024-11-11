@@ -4,6 +4,7 @@ const CourseCards = ({ courses }) => {
   // Estado para manejar la página actual
   const [currentPage, setCurrentPage] = useState(1);
   const coursesPerPage = 6; // Número de cursos por página
+  const [selectedCourse, setSelectedCourse] = useState(null); // Estado para mostrar más información
 
   // Calcular los índices de los cursos a mostrar en la página actual
   const indexOfLastCourse = currentPage * coursesPerPage;
@@ -15,9 +16,12 @@ const CourseCards = ({ courses }) => {
 
   // Función para manejar el clic en "Ver Más"
   const handleMoreInfo = (courseId) => {
-    console.log(`Ver más detalles del curso con ID: ${courseId}`);
-    // Aquí puedes redirigir a la página de detalles del curso o mostrar más información
+    const course = courses.find((c) => c.id === courseId);
+    setSelectedCourse(course); // Mostrar los detalles del curso
   };
+
+  // Función para cerrar los detalles
+  const closeDetails = () => setSelectedCourse(null);
 
   return (
     <div style={{ marginTop: "20px", textAlign: "center" }}>
@@ -26,8 +30,8 @@ const CourseCards = ({ courses }) => {
           <div
             key={course.id}
             style={{
-              width: "350px", // Hacer la tarjeta más ancha
-              padding: "20px",
+              width: "300px", // Hacer la tarjeta un poco más pequeña
+              padding: "15px",
               backgroundColor: "#fff",
               borderRadius: "10px",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
@@ -41,8 +45,8 @@ const CourseCards = ({ courses }) => {
             {/* Imagen del logo en un círculo */}
             <div
               style={{
-                width: "80px",
-                height: "80px",
+                width: "70px",
+                height: "70px",
                 borderRadius: "50%",
                 backgroundColor: "#4a47a3",
                 marginBottom: "15px",
@@ -55,8 +59,8 @@ const CourseCards = ({ courses }) => {
                 src={course.image}
                 alt={course.name}
                 style={{
-                  width: "60px",
-                  height: "60px",
+                  width: "50px",
+                  height: "50px",
                   borderRadius: "50%",
                 }}
               />
@@ -65,7 +69,7 @@ const CourseCards = ({ courses }) => {
             {/* Nombre del curso */}
             <h4
               style={{
-                fontSize: "1.25rem",
+                fontSize: "1.15rem",
                 color: "#333",
                 fontWeight: "bold",
                 marginBottom: "5px",
@@ -145,6 +149,48 @@ const CourseCards = ({ courses }) => {
           &#8594; {/* Flecha derecha */}
         </button>
       </div>
+
+      {/* Detalles del curso seleccionado */}
+      {selectedCourse && (
+        <div
+          style={{
+            position: "fixed",
+            top: "20%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#fff",
+            padding: "20px",
+            borderRadius: "10px",
+            boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
+            zIndex: "1000",
+            width: "80%",
+            maxWidth: "500px",
+          }}
+        >
+          <h3>{selectedCourse.name}</h3>
+          <p><strong>Ubicación:</strong> {selectedCourse.location}</p>
+          <p><strong>Descripción:</strong> {selectedCourse.description}</p>
+          <p><strong>Tipo de Servicio:</strong> {selectedCourse.serviceType}</p>
+          <p><strong>Modalidad de Cobro:</strong> {selectedCourse.paymentMethod}</p>
+          <p><strong>Asistencias:</strong> {selectedCourse.attendance ? "Sí" : "No"}</p>
+          <p><strong>Pase Libre:</strong> {selectedCourse.freePass ? "Sí" : "No"}</p>
+          <p><strong>Publicado:</strong> {selectedCourse.published ? "Sí" : "No"}</p>
+          <button
+            onClick={closeDetails}
+            style={{
+              backgroundColor: "#FF5C5C",
+              color: "white",
+              padding: "8px 12px",
+              borderRadius: "4px",
+              border: "none",
+              cursor: "pointer",
+              marginTop: "20px",
+            }}
+          >
+            Cerrar
+          </button>
+        </div>
+      )}
     </div>
   );
 };

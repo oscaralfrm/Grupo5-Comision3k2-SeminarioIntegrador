@@ -15,7 +15,7 @@ const Servicio = () => {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Roboto", color: "#1E1B4B", marginTop: "15vh", position: "relative" }}>
+    <div style={{ padding: "20px", fontFamily: "Roboto", color: "#1E1B4B", marginTop: "2vh", position: "relative" }}>
       {/* Botón "Mis Servicio" en la esquina superior derecha */}
       <button
         onClick={handleNavigate}
@@ -59,6 +59,7 @@ const Servicio = () => {
             flexDirection: "column",
             alignItems: "center",
             textAlign: "center",
+            marginTop: "5vh"
           }}
         >
           <InfoCard />
@@ -74,6 +75,7 @@ const Servicio = () => {
             padding: "0",
             margin: "0",
             fontFamily: "Roboto",
+            marginTop: "5vh"
           }}
         >
           <Enrollments />
@@ -85,6 +87,7 @@ const Servicio = () => {
             gridColumn: "3 / 4",
             gridRow: "1 / 2",
             fontFamily: "Roboto",
+            marginTop: "5vh"
           }}
         >
           <Cobros />

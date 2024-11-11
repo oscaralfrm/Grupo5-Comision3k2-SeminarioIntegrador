@@ -23,7 +23,7 @@ function NavbarInstructor() {
     const service = servicios.find((servicio) => servicio.id === serviceId);
     if (service) {
       setSelectedService(service);
-      navigate(`/instructor/${idInstructor}/servicio/${serviceId}/`);
+      navigate(`/instructor/${idInstructor}/servicio/${serviceId}/mi-servicio`);
     }
     setDropdownOpen(false);
   };

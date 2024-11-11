@@ -22,25 +22,28 @@ const Dashboard = () => {
   };
 
   return (
-    <div style={{ marginTop: "13vh", padding: "20px" }}>
-         {/* Título "Mis Servicios" */}
+    <div style={{ marginTop: "2vh", padding: "20px" }}>
+      {/* Título "Mis Servicios" */}
       <h2 style={{ textAlign: "center", marginLeft: "20px", color: "#000000" }}>
         Mis Servicios
       </h2>
+      
       {/* Filtro centrado en la parte superior */}
       <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
         <SearchFilter onSearch={handleSearch} onFilter={handleFilter} />
       </div>
       
-      {/* Contenido Principal */}
-      <div style={{ padding: "20px", overflowY: "auto" }}>
+      {/* Contenedor Principal */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", padding: "20px" }}>
         {/* Cards de Cursos */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
-          <CourseCards courses={filteredCourses} />
+        <div style={{ flex: "1 1 60%", minWidth: "300px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
+            <CourseCards courses={filteredCourses} />
+          </div>
         </div>
         
-        {/* Estadísticas debajo de las Cards */}
-        <div style={{ marginTop: "20px" }}>
+        {/* Estadísticas */}
+        <div style={{ flex: "1 1 35%", minWidth: "300px" }}>
           <Statistics />
         </div>
       </div>

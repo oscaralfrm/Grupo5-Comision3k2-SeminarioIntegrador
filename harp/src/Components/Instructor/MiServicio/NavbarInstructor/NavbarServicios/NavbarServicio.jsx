@@ -1,82 +1,63 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import img from "../../../../../assets/LogoHarp420.png";
+import React from 'react';
+import img from '../../../../../assets/LogoHarp420.png';
 
-function NavbarServicio() {
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate("/login"); // Redirige a /login
-  };
-
+export default function NavbarServicio() {
   return (
-    <nav
-      className="navbar navbar-expand-lg navbar-light fixed-top"
-      style={{
-        fontFamily: "Roboto",
-        backgroundColor: "#1E1B4B",
-        color: "white",
-        width: "100%",
-        height: "13vh",
-        fontSize: "1.2rem",
-      }}
-    >
-      {/* Botón de toggler en dispositivos móviles */}
+    <nav className="navbar navbar-expand-lg navbar-light" style={{ backgroundColor: '#1E1B4B', height: '13vh' }}>
+      {/* Flecha de regreso */}
       <button
-        className="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarNavDropdown"
-        aria-controls="navbarNavDropdown"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-        style={{ borderColor: "white" }}
+        className="btn"
+        onClick={() => window.history.back()}
+        style={{
+          position: 'absolute',
+          left: '1rem',
+          border: 'none',
+          background: 'none',
+          boxShadow: 'none', // Eliminar la sombra
+          padding: '0', // Eliminar padding extra
+          width: '40px', // Tamaño del área de clic
+          height: '40px', // Asegurar que la zona de clic sea adecuada
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center', // Centrar el ícono
+        }}
+        aria-label="Back"
       >
-        <span
-          className="navbar-toggler-icon"
-          style={{ filter: "invert(1)" }}
-        ></span>
+        <i
+          className="bi bi-arrow-left"
+          style={{
+            fontSize: '1.5rem',
+            color: 'white',  // Hacer la flecha blanca
+            textShadow: 'none', // Asegurarse de que no haya sombra en el texto del icono
+          }}
+        ></i>
       </button>
 
-      {/* Logo visible en responsive */}
-      <a className="navbar-brand d-lg-none" href="/">
-        <img src={img} alt="Harp Logo" width="100" />
+      {/* Logo centrado */}
+      <a className="navbar-brand mx-auto" href="/">
+        <img src={img} alt="App Logo" width="130" height="auto" className="d-inline-block align-top" />
       </a>
 
-      <div
-        className="collapse navbar-collapse"
-        id="navbarNavDropdown"
+      {/* Botón de Cerrar Sesión a la derecha */}
+      <button
+        className="btn"
+        onClick={() => {
+          // Aquí puedes agregar la lógica de cierre de sesión
+          console.log('Cerrar sesión');
+        }}
+        style={{
+          position: 'absolute',
+          right: '1rem',
+          border: 'none',
+          background: 'none',
+          color: 'white',
+          fontSize: '1rem',
+          cursor: 'pointer',
+          padding: '0.5rem 1rem',
+        }}
       >
-        <ul className="nav">
-          <li className="nav-item d-none d-lg-block">
-            <a
-              className="nav-link"
-              href="/"
-              style={{ paddingLeft: "1vw" }}
-            >
-              <img src={img} alt="Harp Logo" width="130" />
-            </a>
-          </li>
-        </ul>
-
-        <ul className="navbar-nav mx-auto"></ul>
-
-        <ul className="navbar-nav">
-          <li className="nav-item">
-            <a
-              className="nav-link"
-              href="#"
-              onClick={handleClick}
-              style={{ color: "white" }}
-            >
-              Cerrar Sesión
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  );
+        Cerrar Sesión
+      </button>
+    </nav>
+  );
 }
-
-export default NavbarServicio;
