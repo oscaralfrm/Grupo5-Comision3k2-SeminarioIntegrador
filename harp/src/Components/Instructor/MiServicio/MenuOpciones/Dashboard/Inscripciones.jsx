@@ -72,12 +72,14 @@ const Enrollments = () => {
         alignItems: "center",
       }}
     >
+      <ClassesCard style/>
       <div
         style={{
           padding: "20px",
           width: "100%",
           borderRadius: "20px",
           boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
+          marginTop:'4vh'
         }}
       >
         <div
@@ -356,7 +358,7 @@ const Enrollments = () => {
         </div>
       )}
       <StudentsCard />
-      <ClassesCard/>
+
     </div>
   );
 };

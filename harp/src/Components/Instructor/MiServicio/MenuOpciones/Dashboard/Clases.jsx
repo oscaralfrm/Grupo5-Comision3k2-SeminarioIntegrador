@@ -10,9 +10,27 @@ const ClassesCard = () => {
 
   // Simulamos datos de clases
   const classes = [
-    { id: 1, name: "Clase 1", group: "Grupo A", date: "2024-11-10", time: "10:00 AM" },
-    { id: 2, name: "Clase 2", group: "Grupo B", date: "2024-11-10", time: "02:00 PM" },
-    { id: 3, name: "Clase 3", group: "Grupo A", date: "2024-11-11", time: "10:00 AM" },
+    {
+      id: 1,
+      name: "Clase 1",
+      group: "Grupo A",
+      date: "2024-11-10",
+      time: "10:00 AM",
+    },
+    {
+      id: 2,
+      name: "Clase 2",
+      group: "Grupo B",
+      date: "2024-11-10",
+      time: "02:00 PM",
+    },
+    {
+      id: 3,
+      name: "Clase 3",
+      group: "Grupo A",
+      date: "2024-11-11",
+      time: "10:00 AM",
+    },
   ];
 
   // Filtrar clases de hoy y las próximas
@@ -39,7 +57,9 @@ const ClassesCard = () => {
         [cls.id]: { status: isLate ? "Tarde" : "A tiempo", time: now },
       });
       // Redirigir a la pantalla de detalles de la clase
-      navigate(`/instructor/1/servicio/1/mi-servicio/clase/${cls.id}/asistencias`);
+      navigate(
+        `/instructor/1/servicio/1/mi-servicio/clase/${cls.id}/asistencias`
+      );
     }
   };
 
@@ -57,7 +77,7 @@ const ClassesCard = () => {
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         maxWidth: "100%",
         width: "100%",
-        marginTop: "3vh",
+        fontFamily: "Roboto",
       }}
     >
       <div
@@ -84,7 +104,7 @@ const ClassesCard = () => {
           style={{
             backgroundColor: "#4F46E5",
             color: "white",
-            padding: "10px 20px",  // Aumenté el tamaño del botón
+            padding: "10px 20px", // Aumenté el tamaño del botón
             borderRadius: "4px",
             textDecoration: "none", // Elimina el subrayado
             fontSize: "14px", // Tamaño de fuente más grande
@@ -139,6 +159,7 @@ const ClassesCard = () => {
                   borderRadius: "4px",
                   textDecoration: "none",
                   fontSize: "12px",
+                  border: "none", // Quitar el borde
                 }}
               >
                 Tomar Asistencia
@@ -159,7 +180,7 @@ const ClassesCard = () => {
               style={{
                 backgroundColor: "#4F46E5",
                 color: "white",
-                padding: "10px 20px",  // Aumenté el tamaño del botón
+                padding: "10px 20px", // Aumenté el tamaño del botón
                 borderRadius: "4px",
                 border: "none",
                 cursor: "pointer",
@@ -177,7 +198,9 @@ const ClassesCard = () => {
         <div>
           <p>No hay clases hoy</p>
           {nextClass && (
-            <p>La próxima clase es el {nextClass.date} a las {nextClass.time}</p>
+            <p>
+              La próxima clase es el {nextClass.date} a las {nextClass.time}
+            </p>
           )}
         </div>
       )}
