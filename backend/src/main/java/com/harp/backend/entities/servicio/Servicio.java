@@ -16,9 +16,7 @@ import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.modalidad.Modalidad;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,7 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 
 @Entity
@@ -145,7 +144,7 @@ public class Servicio {
     @Enumerated(EnumType.STRING)
     private Modalidad modalidadInscripcion;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "servicio_id")
     @JsonIgnore
     private Set<Grupo> grupos = new HashSet<>();

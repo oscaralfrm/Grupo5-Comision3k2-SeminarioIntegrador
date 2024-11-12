@@ -19,7 +19,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 
 @Entity
@@ -64,13 +65,13 @@ public class Inscripcion {
     @JsonIgnore
     private Servicio servicio;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "grupo_id")
     private Grupo grupo;
 
     //HACERLO EN LA BASE DE DATOS CON TABLA INTERMEDIA
     //HAcerlo LAZY
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
             name = "horariosxinscripcion", // Nombre de la tabla intermedia
             joinColumns = @JoinColumn(name = "inscripcion_id"), // FK hacia la tabla Inscripcion

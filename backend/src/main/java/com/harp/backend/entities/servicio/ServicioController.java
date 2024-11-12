@@ -85,14 +85,14 @@ public class ServicioController {
         return  ResponseEntity.ok("Se habilitaron las inscripciones");
     }
 
-    // EDITAR
-    @GetMapping("/{idServicio}/inscripciones/obtener")
-    public ResponseEntity<List<Inscripcion>> obtenerInscripcionesDeServicio(@PathVariable @Min(1) Long idServicio) {
-        Servicio servicio = servicioService.findServicio(idServicio);
-        List<Inscripcion> inscripciones = servicio.getInscripciones();
-        System.out.println(inscripciones);
-        return  ResponseEntity.status(HttpStatus.OK).body(inscripciones);
-    }
+//    // EDITAR
+//    @GetMapping("/{idServicio}/inscripciones/obtener")
+//    public ResponseEntity<List<Inscripcion>> obtenerInscripcionesDeServicio(@PathVariable @Min(1) Long idServicio) {
+//        Servicio servicio = servicioService.findServicio(idServicio);
+//        List<Inscripcion> inscripciones = servicio.getInscripciones();
+//        System.out.println(inscripciones);
+//        return  ResponseEntity.status(HttpStatus.OK).body(inscripciones);
+//    }
 
     // EDITAR
     @PutMapping("/{idServicio}/inicio")
