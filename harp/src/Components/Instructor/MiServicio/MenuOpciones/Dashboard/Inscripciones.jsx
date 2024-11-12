@@ -357,7 +357,7 @@ const Enrollments = () => {
           </div>
         </div>
       )}
-      <StudentsCard />
+      
 
     </div>
   );

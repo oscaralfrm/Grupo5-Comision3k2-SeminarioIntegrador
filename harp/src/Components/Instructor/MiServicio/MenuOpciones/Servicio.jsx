@@ -63,8 +63,7 @@ const Servicio = () => {
           }}
         >
           <InfoCard />
-          <GroupSection />
-          <ReviewCarousel />
+          <StudentsCard />
         </div>
 
         {/* Columna central - Inscripciones */}
