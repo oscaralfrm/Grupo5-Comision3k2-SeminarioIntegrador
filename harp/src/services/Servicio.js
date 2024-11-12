@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/'; // Cambiar a la URL de tu API
+const API_URL = 'http://localhost:9001/api/'; // Cambiar a la URL de tu API
 
 // Función para obtener todos los servicios con paginación
 export const getAllServicios = async (page, size) => {
@@ -13,13 +13,24 @@ export const getAllServicios = async (page, size) => {
     }
 };
 
-// Función para obtener servicios activos de asistencias
-export const getServiciosAsistenciasActivas = async () => {
+export const getServicioByNombre = async (nombre) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/asistencias-activas`);
+        const response = await axios.get(`${API_URL}servicios/by-nombre/${nombre}`);
         return response.data;
     } catch (error) {
-        console.error('Error al obtener servicios activos de asistencias', error);
+        console.error('Error al calcular duración total del servicio', error);
+        throw error;
+    }
+};
+
+
+// Función para obtener servicios activos de asistencias
+export const getUnServicio = async (idServicio) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener el servicio', error);
         throw error;
     }
 };
@@ -27,10 +38,7 @@ export const getServiciosAsistenciasActivas = async () => {
 // Función para crear un nuevo servicio
 export const createServicio = async (servicioDTO, idInstructorLoggeado) => {
     try {
-        const response = await axios.post(`${API_URL}servicios`, {
-            ...servicioDTO,
-            idInstructorLoggeado,
-        });
+        const response = await axios.post(`${API_URL}servicios`, servicioDTO);
         return response.data;
     } catch (error) {
         console.error('Error al crear servicio', error);
@@ -70,70 +78,60 @@ export const updateServicio = async (idServicio, servicioDTO) => {
     }
 };
 
-// Función para agregar un grupo a un servicio
-export const addGrupoToServicio = async (grupo, idServicio) => {
+
+// Función para definit el inicio de un servicio
+export const definirFechaInicioDeServicio = async (idServicio, fechaInicio) => {
     try {
-        const response = await axios.post(`${API_URL}servicios/${idServicio}/grupos`, grupo);
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/inicio`, fechaInicio);
         return response.data;
     } catch (error) {
-        console.error('Error al agregar grupo al servicio', error);
+        console.error('Error al actualizar servicio', error);
         throw error;
     }
 };
 
-// Función para agregar un monto a un servicio
-export const addMontoToServicio = async (montoServicio, idServicio) => {
-    try {
-        const response = await axios.post(`${API_URL}servicios/${idServicio}/montos`, montoServicio);
-        return response.data;
-    } catch (error) {
-        console.error('Error al agregar monto al servicio', error);
-        throw error;
-    }
-};
-
-// Función para obtener los grupos de un servicio
-export const getGruposDeServicio = async (idServicio) => {
-    try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/grupos`);
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener grupos del servicio', error);
-        throw error;
-    }
-};
-
-// Función para obtener las inscripciones de un servicio
-export const getInscripcionesDeServicio = async (idServicio, vigentes, pendientes) => {
-    try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/inscripciones`, {
-            params: { vigentes, pendientes },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener inscripciones del servicio', error);
-        throw error;
-    }
-};
-
-// Función para obtener los montos actuales de un servicio
-export const getMontosActualesDeServicio = async (idServicio) => {
-    try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/montos/actuales`);
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener montos actuales del servicio', error);
-        throw error;
-    }
-};
 
 // Función para calcular la duración total de un servicio
-export const calcularDuracionTotalServicio = async (idServicio) => {
+export const calcularDuracionTotalDiasServicio = async (idServicio) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/duracion`);
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/duracion-dias`);
         return response.data;
     } catch (error) {
         console.error('Error al calcular duración total del servicio', error);
         throw error;
     }
 };
+
+// Calcula si el servicio tiene cupos libres segun si las incripcioens son al servicio, a grupos o horarios
+export const getCuposLibresDeServicio = async (idServicio, idGrupo, idsHorarios) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/cupos-libres`, 
+            {idGrupo, idsHorarios});
+        return response.data;
+    } catch (error) {
+        console.error('Error al calcular duración total del servicio', error);
+        throw error;
+    }
+};
+
+
+export const calcularIngresosPendienteYEsperado = async (idServicio) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/ingreso-pendiente-esperado`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al calcular duración total del servicio', error);
+        throw error;
+    }
+};
+
+export const calcularIngresosDeServicioEnCadaMesDelAñoActual = async (idServicio) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/ingresos-por-mes`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al calcular duración total del servicio', error);
+        throw error;
+    }
+};
+
