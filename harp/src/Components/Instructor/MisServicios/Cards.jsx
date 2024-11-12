@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Adicional from "./Adicional"
 
 const CourseCards = ({ courses }) => {
   // Estado para manejar la página actual
@@ -191,6 +192,9 @@ const CourseCards = ({ courses }) => {
           </button>
         </div>
       )}
+      <div style={{ marginTop: "10px" }}>
+        <Adicional />  {/* Componente Adicional agregado debajo de las Cards */}
+      </div>
     </div>
   );
 };

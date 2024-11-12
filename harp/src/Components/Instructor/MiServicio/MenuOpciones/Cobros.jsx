@@ -78,7 +78,7 @@ const Cobros = () => {
   return (
     <div
       className="container-fluid d-flex flex-column justify-content-start align-items-center"
-      style={{ minHeight: '85vh', paddingTop: '2vh', marginTop: "15vh" }} // Se ajusta el alto para subir el componente
+      style={{ minHeight: '85vh', paddingTop: '2vh', marginTop: "5vh" }} // Se ajusta el alto para subir el componente
     >
       <h1 className="text-center mb-4">Mis Cobros</h1>
       

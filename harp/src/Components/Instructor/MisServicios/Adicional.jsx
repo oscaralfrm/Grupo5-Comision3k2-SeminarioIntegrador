@@ -33,23 +33,23 @@ const Adicional = () => {
   };
 
   return (
-    <div style={{ padding: "20px", backgroundColor: "#f5f5f5", borderRadius: "8px", marginTop: "20px" }}>
-      <h3>Resumen de Ingresos del Mes</h3>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px" }}>
+    <div style={{ padding: "5px", borderRadius: "5px", marginTop: "20px", width: "90%"}}>
+      <h4 style={{ textAlign: "center", fontSize: "1.2rem" }}>Resumen de Ingresos del Mes</h4>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "10px" }}>
         {/* Monto total ingresado y pendiente */}
-        <div style={{ display: "flex", gap: "50px", marginBottom: "20px" }}>
+        <div style={{ display: "flex", gap: "30px", marginBottom: "15px" }}>
           <div>
-            <h4>Ingresos Este Mes</h4>
-            <p style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#4B8DF8" }}>${currentMonthIncome}</p>
+            <h5>Ingresos Este Mes</h5>
+            <p style={{ fontSize: "1rem", fontWeight: "bold", color: "#4B8DF8" }}>${currentMonthIncome}</p>
           </div>
           <div>
-            <h4>Pendiente de Ingreso</h4>
-            <p style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#FF6384" }}>${pendingIncome}</p>
+            <h5>Pendiente de Ingreso</h5>
+            <p style={{ fontSize: "1rem", fontWeight: "bold", color: "#FF6384" }}>${pendingIncome}</p>
           </div>
         </div>
 
         {/* Gráfico de barras */}
-        <div style={{ width: "80%", height: "300px" }}>
+        <div style={{ width: "100%", height: "200px" }}>
           <Bar data={barData} options={barOptions} />
         </div>
       </div>

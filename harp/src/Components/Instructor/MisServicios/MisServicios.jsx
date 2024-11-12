@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SearchFilter from "./Busqueda";
 import CourseCards from "./Cards";
 import Statistics from "./Estadisticas";
+import Adicional from "./Adicional";  // Importar el componente Adicional
 
 const Dashboard = () => {
   const [courses, setCourses] = useState([
