@@ -6,6 +6,7 @@ import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.inscripcion.InscripcionDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -16,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/servicios")
@@ -54,7 +57,7 @@ public class ServicioController {
     public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicioDTO) {
         //System.out.println(servicioDTO);
         // REVISAR: Obtener el id del Instructor loggeado de la manera correcta
-        Long idInstructorLoggeado = Long.valueOf(2);
+        Long idInstructorLoggeado = Long.valueOf(14);
         Servicio nuevoServicio = servicioService.createServicio(servicioDTO, idInstructorLoggeado);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio); // 201 CREATED
@@ -77,9 +80,26 @@ public class ServicioController {
 
     // EDITAR
     @PutMapping("/{idServicio}/inscripciones/habilitar")
-    public ResponseEntity<String> activarAsistencias(@PathVariable @Min(1) Long idServicio) {
-        servicioService.activarAsitencias(idServicio);
+    public ResponseEntity<String> habilitarInscripciones(@PathVariable @Min(1) Long idServicio) {
+        servicioService.habilitarInscripciones(idServicio);
         return  ResponseEntity.ok("Se habilitaron las inscripciones");
+    }
+
+    // EDITAR
+    @GetMapping("/{idServicio}/inscripciones/obtener")
+    public ResponseEntity<List<Inscripcion>> obtenerInscripcionesDeServicio(@PathVariable @Min(1) Long idServicio) {
+        Servicio servicio = servicioService.findServicio(idServicio);
+        List<Inscripcion> inscripciones = servicio.getInscripciones();
+        System.out.println(inscripciones);
+        return  ResponseEntity.status(HttpStatus.OK).body(inscripciones);
+    }
+
+    // EDITAR
+    @PutMapping("/{idServicio}/inicio")
+    public ResponseEntity<String> setFechaInicioServicio(@PathVariable @Min(1) Long idServicio,
+                                                         @RequestBody LocalDate fechaInicio) {
+        servicioService.setFechaInicioServicio(idServicio, fechaInicio);
+        return  ResponseEntity.ok("Se configuró el inicio del servicio");
     }
 
     @PostMapping("/{idServicio}/monto")
@@ -96,6 +116,12 @@ public class ServicioController {
     @GetMapping("/{idServicio}/monto-actual")
     public ResponseEntity<List<MontoServicio>> traerUnMontosActualesDeServicio(@PathVariable @Min(1) Long idServicio) {
         List<MontoServicio> montosServicio = servicioService.obtenerMontosActualesServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
+    };
+
+    @GetMapping("/{idServicio}/historial-montos")
+    public ResponseEntity<Set<MontoServicio>> traerHistorialMontosDeServicio(@PathVariable @Min(1) Long idServicio) {
+        Set<MontoServicio> montosServicio = servicioService.obtenerHistorialMontosDeServicio(idServicio);
         return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
     };
 
@@ -154,7 +180,7 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     };
 
-    @GetMapping("/{nombre}")
+    @GetMapping("/by-nombre/{nombre}")
     public ResponseEntity<List<Servicio>> findSeviciosByNombre(@PathVariable String nombre) {
         List<Servicio> servicios = servicioService.findServicioByNombre(nombre);
         return ResponseEntity.status(HttpStatus.OK).body(servicios);

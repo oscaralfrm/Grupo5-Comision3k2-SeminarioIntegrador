@@ -5,6 +5,7 @@ import com.harp.backend.entities.alumno.service.AlumnoService;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.horario.Horario;
+import com.harp.backend.entities.horario.HorarioConverter;
 import com.harp.backend.entities.horario.HorarioDTO;
 import com.harp.backend.entities.horario.IHorarioService;
 import com.harp.backend.entities.servicio.IServicioService;
@@ -39,6 +40,9 @@ public class GrupoService implements IGrupoService {
 
     @Autowired
     private IClaseService claseService;
+
+    @Autowired
+    private HorarioConverter horarioConverter;
 
     //Lo usamos en la generacion de clases automaticas
     @Override
@@ -85,13 +89,29 @@ public class GrupoService implements IGrupoService {
             }
         }
 
-        // Por cada horario que nos llega
-        for (HorarioDTO horarioDTO : horariosDTO) {
-            // aca asignarle al grupo el numero del último asociado al servicio
-            Horario horarioCreado = horarioService.createHorario(horarioDTO);
-            //this.agregarHorarioAGrupo(horarioCreado, grupoCreado.getId());
-            grupoCreado.agregarHorario(horarioCreado);
+        List<Horario> horarios = horariosDTO.stream().map(dto -> horarioConverter.dtoToEntity(dto)).toList();
+
+        for (int i=0; i< horarios.size(); i++) {
+            Horario horario1 = horarios.get(i);
+
+            for (int j = i+1; j<horariosDTO.size(); j++) {
+                Horario horario2 = horarios.get(j);
+                if (horario2.estaEn(horario1.getHoraInicio(),
+                        horario1.getHoraFin(),
+                        horario1.getDiaSemana().getNombre())) {
+                    throw new UnsupportedOperationException("Los horarios ingresados se superponen entre sí");
+                }
+            }
         }
+
+        // Por cada horario que nos llega
+        for (Horario horario : horarios) {
+            // aca asignarle al grupo el numero del último asociado al servicio
+            horarioService.saveHorario(horario);
+            grupoCreado.agregarHorario(horario);
+        }
+
+        System.out.println("horarios" + horarios);
 
         grupoRepository.save(grupoCreado);
 
@@ -99,8 +119,10 @@ public class GrupoService implements IGrupoService {
         // llamamos a claseService y le generamos las asistencias
         // seria mejor que todos estos servicios los llamaramos desde servicioService
         // y que aca solo nos llegue el servicio
-        if (servicio.isAsistenciasActivas()) {
-            claseService.crearClasesParaSemanaSiguienteGrupo(grupoCreado);
+        if (servicio.isAsistenciasActivas() && servicio.tieneFechaInicio()) {
+            // Creamos las clases a partir de la fecha inicio del servicio
+            // Cuando setteamos la fecha inicio tambien deberiamos crear las clases
+            claseService.crearClasesParaSemanaSiguienteGrupo(grupoCreado, servicio.getFechaInicio());
         }
 
         return grupoCreado;

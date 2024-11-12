@@ -3,6 +3,7 @@ package com.harp.backend.entities.servicio;
 //import com.harp.backend.entities.grupo.Grupo;
 //import com.harp.backend.entities.historialMontoCuota.HistorialMonto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
@@ -35,15 +36,18 @@ import java.util.UUID;
 public class Servicio {
 
     public Servicio(String nombre, String descripcion, String logoURL, String ubicacion,
-                    Integer cantMaxAlumnosPorGrupo, int cantHorariosPorGrupo, int duracionTotalMeses,
+                    Integer cantMaxAlumnosPorGrupo, Integer cantVecesSemanales, int duracionTotalMeses,
                     LocalDate fechaInicio, LocalDate fechaFin,
                     boolean publico, int cantDiasCiclo, int diaLimitePago,
-                    boolean claseDePrueba, boolean asistenciasActivas) {
+                    boolean claseDePrueba, boolean asistenciasActivas,
+                    boolean pagoAnticipadoDeMontoInscripcion, boolean pagoAnticipadoDePrimeraCuota,
+                    int diasDeAntelacionPago , double montoInscripcion) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.logoURL = logoURL;
         this.ubicacion = ubicacion;
         this.cantMaxAlumnosPorGrupo = cantMaxAlumnosPorGrupo;
+        this.cantVecesSemanales = cantVecesSemanales;
         //this.cantHorariosPorGrupo = cantHorariosPorGrupo;
         this.duracionTotalMeses = duracionTotalMeses;
         this.fechaInicio = fechaInicio;
@@ -54,11 +58,17 @@ public class Servicio {
         this.claseDePrueba = claseDePrueba;
         this.asistenciasActivas = asistenciasActivas;
 
+        this.pagoAnticipadoDeMontoInscripcion = pagoAnticipadoDeMontoInscripcion;
+        this.pagoAnticipadoDePrimeraCuota = pagoAnticipadoDePrimeraCuota;
+        this.diasDeAntelacionPago = diasDeAntelacionPago;
+        this.montoInscripcion = montoInscripcion;
+
         // Valores predeterminados o inicializados por defecto
         this.fechaCreacion = LocalDate.now(); // Fecha de creación en la fecha actual
         this.activo = false;                  // Por defecto, el servicio no está activo
         this.historialMontos = new HashSet<>(); // Inicializa el historial de montos vacío
         this.grupos = new HashSet<>();          // Inicializa los grupos vacíos
+        this.inscripcionesAbiertas = false;
     }
 
     @Id
@@ -153,6 +163,7 @@ public class Servicio {
 
     private Integer diasDeAntelacionPago;
 
+    @Column(name = "monto_inscripcion")
     private double montoInscripcion;
 
 
@@ -249,6 +260,10 @@ public class Servicio {
         return (! this.obtenerMontosActuales().isEmpty());
     }
 
+    public boolean tieneInscripcionesActivas() {
+        return ( ! this.obtenerInscripcionesVigentes().isEmpty() );
+    }
+
     public boolean tieneMontoActualConEstasVecesSemanales(Integer cantVecesSemanales) {
         if (! tieneMontoActualConfigurado()) {
             return false;
@@ -265,6 +280,10 @@ public class Servicio {
 //        // a algunos horarios de un grupo en vez de a todos
 //        return this.cantHorariosPorGrupo.equals(vecesSemanales);
 //    }
+
+    public boolean tieneFechaInicio() {
+        return this.fechaInicio != null;
+    }
 
     public List<Inscripcion> obtenerInscripcionesVigentes() {
         return inscripciones.stream().filter(Inscripcion::estaVigente).toList();
@@ -291,7 +310,7 @@ public class Servicio {
 
     public boolean yaInicio() {
         // si hoy es la fecha de inicio entonces me da que no inició todavia
-        return (fechaInicio.isBefore(LocalDate.now()));
+        return (fechaInicio != null && fechaInicio.isBefore(LocalDate.now()));
     }
 
     // sacar de lombook
@@ -317,6 +336,13 @@ public class Servicio {
                 this.esCambioFechaFinRazonable(fechaFinNueva, 15);
             }
         }
+    }
+
+    public void setFechaInicio(LocalDate fechaInicioNueva) {
+        if (fechaInicioNueva.isBefore(LocalDate.now())) {
+            throw new UnsupportedOperationException("La fecha inicio debe ser mayor a la actual");
+        }
+        this.fechaInicio = fechaInicioNueva;
     }
 
     public boolean esCambioFechaFinRazonable(LocalDate fechaFinNueva, long diasAceptados) {
@@ -391,5 +417,9 @@ public class Servicio {
                 .mapToDouble(cuota -> cuota.getMontoServicio().getMonto()).sum();
         List<Double> totales = List.of(totalPendiente, totalEsperado);
         return totales;
+    }
+
+    public void agregarInscripcion(Inscripcion inscripcion) {
+        this.inscripciones.add(inscripcion);
     }
 }

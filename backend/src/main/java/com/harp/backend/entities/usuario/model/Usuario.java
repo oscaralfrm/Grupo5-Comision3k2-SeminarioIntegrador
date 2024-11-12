@@ -1,12 +1,15 @@
 package com.harp.backend.entities.usuario.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.harp.backend.entities.alumno.dto.AlumnoDTO;
 import com.harp.backend.entities.alumno.model.Alumno;
+import com.harp.backend.entities.instructor.InstructorDTO;
 import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.suspension.model.Suspension;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +38,7 @@ public class Usuario {
     private String contrasena;
 
     @Column(name = "sesion_habilitada")
-    private int sesionHabilitada;
+    private int sesionHabilitada = 1;
 
     @Column(name = "dni")
     private String dni;
@@ -50,10 +53,10 @@ public class Usuario {
     private String direccion;
 
     @Column(name = "fecha_registro")
-    private Date fechaRegistro;
+    private LocalDate fechaRegistro;
 
     @Column(name = "fecha_nacimiento")
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
 
     // Relación con las Suspensiones... 1 a N
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
@@ -70,9 +73,32 @@ public class Usuario {
     private Set<Perfil> perfiles = new HashSet<>();
 
     // Atributos persistentes de configuración...
-    private boolean enabled;
-    private boolean accountNotExpired;
+    private boolean enabled = true;
+    private boolean accountNotExpired = true;
     private boolean notLocked = true;
-    private boolean credentialNotExpired;
+    private boolean credentialNotExpired = true;
 
+    public Usuario(InstructorDTO instructorDTO) {
+        this.nombre = instructorDTO.getNombre();
+        this.apellido = instructorDTO.getApellido();
+        this.email = instructorDTO.getEmail();
+        this.nombreUsuario = instructorDTO.getNombreUsuario();
+        this.contrasena = instructorDTO.getContrasena();
+        this.telefono = instructorDTO.getTelefono();
+        this.direccion = instructorDTO.getDireccion();
+        this.fechaNacimiento = instructorDTO.getFechaNacimiento();
+        this.fechaRegistro = LocalDate.now();
+    }
+
+    public Usuario(AlumnoDTO alumnoDTO) {
+        this.nombre = alumnoDTO.getNombre();
+        this.apellido = alumnoDTO.getApellido();
+        this.email = alumnoDTO.getEmail();
+        this.nombreUsuario = alumnoDTO.getNombreUsuario();
+        this.contrasena = alumnoDTO.getContrasena();
+        this.telefono = alumnoDTO.getTelefono();
+        this.direccion = alumnoDTO.getDireccion();
+        this.fechaNacimiento = alumnoDTO.getFechaNacimiento();
+        this.fechaRegistro = LocalDate.now();
+    }
 }

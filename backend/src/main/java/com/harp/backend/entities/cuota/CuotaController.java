@@ -1,6 +1,7 @@
 package com.harp.backend.entities.cuota;
 
 import com.harp.backend.entities.alumno.service.IAlumnoService;
+import com.harp.backend.entities.pagos.metodoPago.MetodoPago;
 import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioService;
@@ -66,12 +67,12 @@ public class CuotaController {
 //        return ResponseEntity.ok("");
 //    }
 
-    //    // EDITAR
-//    @PutMapping("/cuotas/{idCuota}/pagar")
-//    public ResponseEntity<String> pagarCuota(@PathVariable @Min(1) Long idCuota, @RequestBody PagoDTO pagoDTO) {
-//        cuotaService.pagarCuota(idCuota);
-//        return ResponseEntity.ok("");
-//    }
+        // EDITAR
+    @PutMapping("/cuotas/{idCuota}/pagar")
+    public ResponseEntity<String> pagarCuota(@PathVariable @Min(1) Long idCuota, @RequestBody MetodoPago metodoPago) {
+        cuotaService.pagarCuota(idCuota, metodoPago);
+        return ResponseEntity.ok("Se registró el pago de la cuota.");
+    }
 
 
 }

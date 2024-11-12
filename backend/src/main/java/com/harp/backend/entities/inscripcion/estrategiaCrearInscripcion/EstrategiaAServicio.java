@@ -12,7 +12,7 @@ public class EstrategiaAServicio implements IEstrategiaInscripcion{
     @Override
     public Inscripcion crearInscripcion(Servicio servicio, Long idGrupo, List<Long> idsHorarios) {
         // Aca se podria crear la inscripcion definiendo la cantVecesSemanales
-        Inscripcion nuevaInscripcion = new Inscripcion();
+        Inscripcion nuevaInscripcion = new Inscripcion(servicio);
         nuevaInscripcion.setCantVecesSemanales(servicio.getCantVecesSemanales());
         return nuevaInscripcion;
     }
@@ -33,7 +33,8 @@ public class EstrategiaAServicio implements IEstrategiaInscripcion{
     // y en el caso del AServicio ignoramos el cantVecesSemanales
     @Override
     public boolean tieneEstasVecesSemanales(Servicio servicio, int cantVecesSemanales) {
-        return (servicio.getCantVecesSemanales().equals(cantVecesSemanales));
+//        return (servicio.getCantVecesSemanales().equals(cantVecesSemanales));
+        return true;
     }
 
 }

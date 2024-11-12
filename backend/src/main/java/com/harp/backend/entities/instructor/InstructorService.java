@@ -1,7 +1,11 @@
 package com.harp.backend.entities.instructor;
 
+import com.harp.backend.entities.perfil.model.Perfil;
+import com.harp.backend.entities.perfil.service.IPerfilService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioService;
+import com.harp.backend.entities.usuario.model.Usuario;
+import com.harp.backend.entities.usuario.service.IUsuarioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,12 @@ public class InstructorService implements IInstructorService {
     @Autowired
     private InstructorConverter instructorConverter;
 
+    @Autowired
+    private IUsuarioService usuarioService;
+
+    @Autowired
+    private IPerfilService perfilService;
+
     @Override
     public List<Instructor> getAllInstructores() {
         return instructorRepository.findAll();
@@ -26,6 +36,17 @@ public class InstructorService implements IInstructorService {
 
     public Instructor createInstructor(InstructorDTO instructorDTO) {
         Instructor nuevoInstructor = instructorConverter.dtoToEntity(instructorDTO);
+
+        //Usuario
+        Usuario usuario = new Usuario(instructorDTO);
+
+        //Perfil al usuario
+        Perfil perfil = perfilService.findPerfil(2L);
+        usuario.setPerfiles(Set.of(perfil));
+
+        usuarioService.saveUsuario(usuario);
+        nuevoInstructor.setUsuario(usuario);
+
         return instructorRepository.save(nuevoInstructor);
     }
 

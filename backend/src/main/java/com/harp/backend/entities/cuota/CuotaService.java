@@ -8,9 +8,10 @@ import com.harp.backend.entities.cuota.estadoCuota.EstadoCuota;
 import com.harp.backend.entities.cuota.estrategiaCrearCuota.*;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
-//import com.harp.backend.entities.inscripcion.IInscripcionService;
 import com.harp.backend.entities.inscripcion.Inscripcion;
-//import com.harp.backend.entities.inscripcion.InscripcionService;
+import com.harp.backend.entities.pagos.IPagoService;
+import com.harp.backend.entities.pagos.Pago;
+import com.harp.backend.entities.pagos.metodoPago.MetodoPago;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,11 @@ public class CuotaService implements ICuotaService {
     @Autowired
     private AlumnoService alumnoService;
 
-//    @Autowired
-//    private IInscripcionService inscripcionService;
-
     @Autowired
     private CambioEstadoCuotaService cambioEstadoService;
+
+    @Autowired
+    private IPagoService pagoService;
 
     @Override
     public List<Cuota> getAllCuotas() {
@@ -168,7 +169,7 @@ public class CuotaService implements ICuotaService {
         //Le agregamos la cuota creada a la inscripcion del alumno
         //alumnoService.agregarCuotaAAlumno(alumno, cuotaCreada);
         // REVISAR RECURSIVIDAD
-        //inscripcionService.agregarCuotaAInscripcion(inscripcion, cuotaCreada);
+
         cuotaRepository.save(cuotaCreada);
         return cuotaCreada;
     }
@@ -183,7 +184,7 @@ public class CuotaService implements ICuotaService {
             };
     }
 
-    public void crearPrimerCuotaConEstrategia(Inscripcion inscripcion, Servicio servicio) {
+    public Cuota crearPrimerCuotaConEstrategia(Inscripcion inscripcion, Servicio servicio) {
         // si los alumnos se inscriben al servicio, el servicio tiene una cantidad de veces semanales
         // si los alumnos se inscriben al grupo, el grupo tiene una cantidad de veces semanales
 
@@ -227,7 +228,7 @@ public class CuotaService implements ICuotaService {
         }
 
         // Creamos la primer cuota
-        this.createCuota(inscripcion, montoCuota, recargo,
+        return this.createCuota(inscripcion, montoCuota, recargo,
                 fechasNuevaCuota.getFechaInicioCiclo(), fechasNuevaCuota.getFechaFinCiclo(),
                 fechasNuevaCuota.getFechaLimitePago());
     }
@@ -249,4 +250,12 @@ public class CuotaService implements ICuotaService {
 //    public Cuota editCuota(Long idCuota, Cuota cuota) {
 //        return cuotaRepository.save(cuota);
 //    }
+
+    public void pagarCuota(Long idCuota, MetodoPago metodoPago) {
+        Cuota cuota = this.findCuota(idCuota);
+        //PAGO
+        Pago pago = pagoService.createPago(metodoPago);
+        cuota.setPago(pago);
+        cuotaRepository.save(cuota);
+    }
 }

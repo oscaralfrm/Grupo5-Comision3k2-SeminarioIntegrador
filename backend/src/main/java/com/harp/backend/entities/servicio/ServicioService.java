@@ -3,6 +3,7 @@ package com.harp.backend.entities.servicio;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.categoria.CategoriaService;
+import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
@@ -103,9 +104,10 @@ public class ServicioService implements IServicioService {
                 .findFirst().orElseThrow(() -> new NoSuchElementFoundException("Grupo no encontrado"));
     }
 
-    public void activarAsitencias(Long idServicio) {
+    public void habilitarInscripciones(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
-        servicio.setAsistenciasActivas(true);
+        servicio.setInscripcionesAbiertas(true);
+        servicioRepository.save(servicio);
     }
 
     @Override
@@ -233,6 +235,11 @@ public class ServicioService implements IServicioService {
         return servicio.obtenerMontosActuales();
     }
 
+    public Set<MontoServicio> obtenerHistorialMontosDeServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.getHistorialMontos();
+    }
+
     public long calcularDuracionTotalServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
         return servicio.calcularDuracionTotalEnDias();
@@ -262,5 +269,22 @@ public class ServicioService implements IServicioService {
 
     public List<Servicio> findServicioByNombre(String nombre) {
         return servicioRepository.findByNombre(nombre);
+    }
+
+    public void setFechaInicioServicio(Long idServicio, LocalDate fechaInicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        if (servicio.yaInicio() && servicio.tieneInscripcionesActivas()) {
+            throw new UnsupportedOperationException("No se puede modificar la fecha inicio del servicio.");
+        }
+        servicio.setFechaInicio(fechaInicio);
+        servicioRepository.save(servicio);
+
+        // Luego creamos las clases
+        // AGREAGARRRRRRRR
+    }
+
+    public void agregarInscripcionAServicio(Inscripcion inscripcion, Servicio servicio) {
+        servicio.agregarInscripcion(inscripcion);
+        servicioRepository.save(servicio);
     }
 }

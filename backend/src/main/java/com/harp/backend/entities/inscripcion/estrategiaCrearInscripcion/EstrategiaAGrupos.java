@@ -15,7 +15,7 @@ public class EstrategiaAGrupos implements IEstrategiaInscripcion{
         List<Horario> horarios = grupo.obtenerHorariosConEstosIds(idsHorarios);
 
         // Aca se podria crear la inscripcion definiendo la cantVecesSemanales por la cantidad de horarios
-        Inscripcion nuevaInscripcion = new Inscripcion(grupo);
+        Inscripcion nuevaInscripcion = new Inscripcion(servicio, grupo);
         return nuevaInscripcion;
     }
 

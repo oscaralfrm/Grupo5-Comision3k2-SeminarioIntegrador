@@ -5,6 +5,7 @@ import com.harp.backend.entities.perfil.service.IPerfilService;
 import com.harp.backend.entities.permiso.model.Permiso;
 import com.harp.backend.entities.permiso.service.IPermisoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +32,8 @@ public class PerfilController {
 
     @GetMapping("/{id}")
     public ResponseEntity getPerfilById(@PathVariable Long id) {
-        Optional perfil = perfilService.findPerfil(id);
-        return (ResponseEntity) perfil.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Perfil perfil = perfilService.findPerfil(id);
+        return ResponseEntity.status(HttpStatus.OK).body(perfil);
     }
 
     @PostMapping

@@ -43,6 +43,11 @@ public class MontoServicio {
           this.cantVecesSemanales = vecesSemanales;
      }
 
+     public MontoServicio(double monto, LocalDate fechaInicio) {
+          this.monto = monto;
+          this.fechaInicio = fechaInicio;
+     }
+
      public boolean esMontoActual() {
           // Es el monto actual si todavia no finalizó y no está programado a futuro
           // La fecha fin se actualiza al crear el proximo monto, si es el primer monto del servicio tendrá valor null

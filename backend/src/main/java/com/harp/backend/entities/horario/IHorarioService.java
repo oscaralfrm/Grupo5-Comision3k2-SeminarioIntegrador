@@ -8,4 +8,5 @@ public interface IHorarioService {
     public void deleteHorario(Long idHorario);
     public Horario findHorario(Long idHorario);
     public Horario editHorario(Long idHorario, HorarioDTO horarioDTO);
+    public Horario saveHorario(Horario horario);
 }

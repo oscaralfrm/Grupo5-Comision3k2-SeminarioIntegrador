@@ -91,7 +91,8 @@ public class GrupoController {
 
     // POST CON HORARIOS DTOS
     @PostMapping("/{idServicio}/grupos")
-    public ResponseEntity<Grupo> crearGrupoConHorarios(@PathVariable Long idServicio, @RequestBody @Valid GrupoDTO grupoDTO) {
+    public ResponseEntity<Grupo> crearGrupoConHorarios(@PathVariable Long idServicio,
+                                                       @RequestBody @Valid GrupoDTO grupoDTO) {
         // REVISAR: Obtener el id del servicio de manera correcta
         // validando siempre que el instructor loggeado tenga ese servicio asociado
         // para eso podriamos hacer un middleware

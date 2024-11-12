@@ -1,17 +1,23 @@
 package com.harp.backend.entities.alumno.service;
 
+import com.harp.backend.entities.alumno.dto.AlumnoDTO;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.repository.IAlumnoRepository;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.perfil.model.Perfil;
+import com.harp.backend.entities.perfil.service.IPerfilService;
 import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
+import com.harp.backend.entities.usuario.model.Usuario;
+import com.harp.backend.entities.usuario.service.IUsuarioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,14 +29,32 @@ public class AlumnoService implements IAlumnoService {
     @Autowired
     private IServicioService servicioService;
 
+    @Autowired
+    private IUsuarioService usuarioService;
+
+    @Autowired
+    private IPerfilService perfilService;
+
     @Override
     public List<Alumno> getAllAlumnos() {
         return alumnoRepository.findAll();
     }
 
     @Override
-    public Alumno createAlumno(Alumno alumno) {
-        return alumnoRepository.save(alumno);
+    public Alumno createAlumno(AlumnoDTO alumnoDTO) {
+        Alumno nuevoAlumno = new Alumno();
+
+        // Usuario
+        Usuario usuario = new Usuario(alumnoDTO);
+
+        //Perfil al usuario
+        Perfil perfil = perfilService.findPerfil(2L);
+        usuario.setPerfiles(Set.of(perfil));
+
+        usuarioService.saveUsuario(usuario);
+        nuevoAlumno.setUsuario(usuario);
+
+        return alumnoRepository.save(nuevoAlumno);
     }
 
     @Override

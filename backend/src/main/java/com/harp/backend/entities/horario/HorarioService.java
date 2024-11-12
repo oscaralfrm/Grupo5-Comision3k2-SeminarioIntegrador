@@ -54,6 +54,12 @@ public class HorarioService implements IHorarioService {
         return horarioCreado;
     };
 
+
+    public Horario saveHorario(Horario horario) {
+        horarioRepository.save(horario);
+        return horario;
+    };
+
     @Override
     public void deleteHorario(Long idHorario){
         //Se valida que exista

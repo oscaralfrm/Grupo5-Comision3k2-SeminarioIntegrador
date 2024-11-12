@@ -1,13 +1,16 @@
 package com.harp.backend.entities.alumno.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.servicio.Servicio;
 //import com.harp.backend.entities.usuario.model.Usuario;
+import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,17 +25,22 @@ import java.util.stream.Collectors;
 @Table(name = "alumnos")
 public class Alumno {
 
+    public Alumno(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "usuario_id")
-//    private Usuario usuario;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     @OneToMany
     @JoinColumn(name = "alumno_id")
+    @JsonIgnore
     private List<Inscripcion> inscripciones = new ArrayList<>();
 
 //    @OneToMany

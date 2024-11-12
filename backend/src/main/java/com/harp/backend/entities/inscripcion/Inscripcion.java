@@ -32,6 +32,7 @@ public class Inscripcion {
 
     @ManyToOne
     @JoinColumn(name = "alumno_id", nullable = false)
+    @JsonIgnore
     private Alumno alumno;
 
     //AGREGAR EN LA BASE DE DATOS
@@ -39,6 +40,7 @@ public class Inscripcion {
     private LocalDate fechaSolicitud = LocalDate.now();
 
     // agregar en la base de datos
+    @Column(name = "fecha_aceptacion")
     private LocalDate fechaAceptacion;
 
     @Setter(AccessLevel.NONE) // SOlo se puede modificar con el método aceptar()
@@ -50,12 +52,16 @@ public class Inscripcion {
     @Column(name = "fecha_fin_inscripcion")
     private LocalDate fechaFin;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "nombre_estado")
     private EstadoInscripcion estado = EstadoInscripcion.PendienteAceptacion; //PendienteAceptacion Aceptada Rechazada Finalizada
 
+    @Column(name = "cant_veces_semanales")
     private Integer cantVecesSemanales;
 
     @ManyToOne
     @JoinColumn(name = "servicio_id")
+    @JsonIgnore
     private Servicio servicio;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -75,18 +81,25 @@ public class Inscripcion {
 
     @OneToMany
     @JoinColumn(name = "inscripcion_id")
+    @JsonIgnore
     private List<Cuota> cuotas = new ArrayList<>();
 
-    public Inscripcion(Grupo grupo, List<Horario> horarios) {
+    public Inscripcion(Servicio servicio, Grupo grupo, List<Horario> horarios) {
+        this.servicio = servicio;
         this.grupo = grupo;
         this.horarios = horarios;
         this.cantVecesSemanales = horarios.size();
     }
 
-    public Inscripcion(Grupo grupo) {
+    public Inscripcion(Servicio servicio, Grupo grupo) {
+        this.servicio = servicio;
         this.grupo = grupo;
         // definimos la cantidad de veces semanales como la cantidad de horarios que tiene el grupo
         this.cantVecesSemanales = grupo.getHorarios().size();
+    }
+
+    public Inscripcion(Servicio servicio) {
+        this.servicio = servicio;
     }
 
     public void agregarCuota(Cuota cuota) {

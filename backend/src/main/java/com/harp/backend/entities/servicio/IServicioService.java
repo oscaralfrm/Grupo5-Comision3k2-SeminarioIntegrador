@@ -8,7 +8,9 @@ import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public interface IServicioService {
     //public List<Servicio> getAllServiciosDeInstructor(Long idServicio);
@@ -27,9 +29,11 @@ public interface IServicioService {
     public List<MontoServicio> obtenerMontosActualesServicio(Long idServicio);
     public long calcularDuracionTotalServicio(Long idServicio);
     public long calcularDuracionTotalGrupo(Long idServicio, Long idGrupo);
-    void activarAsitencias(Long idServicio);
+    void habilitarInscripciones(Long idServicio);
     Integer obtenerCuposLibresServicio(Long idServicio, Long idGrupo, List<Long> idsHorarios);
     List<Servicio> findServiciosByFilter(boolean clasePrueba, Categoria categoria, boolean yaInicio);
     List<Servicio> findServicioByNombre(String nombre);
     List<Double> calcularTotalPendienteYEsperado(Long idServicio);
+    Set<MontoServicio> obtenerHistorialMontosDeServicio(Long idServicio);
+    void setFechaInicioServicio(Long idServicio, LocalDate fechaInicio);
 }

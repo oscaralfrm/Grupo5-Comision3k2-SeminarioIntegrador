@@ -52,11 +52,8 @@ public class UsuarioController {
 
         // Recuperar la Permission/s por su ID
         for (Perfil perfil : usuario.getPerfiles()){
-            perfilLeido = perfilService.findPerfil(perfil.getId()).orElse(null);
-            if (perfilLeido != null) {
-                //si encuentro, guardo en la lista
-                listaPerfiles.add(perfilLeido);
-            }
+            perfilLeido = perfilService.findPerfil(perfil.getId());
+            listaPerfiles.add(perfilLeido);
         }
 
         if (!listaPerfiles.isEmpty()) {

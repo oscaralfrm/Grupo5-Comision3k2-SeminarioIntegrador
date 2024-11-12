@@ -1,5 +1,6 @@
 package com.harp.backend.entities.alumno.controller;
 
+import com.harp.backend.entities.alumno.dto.AlumnoDTO;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.IAlumnoService;
 import com.harp.backend.entities.inscripcion.Inscripcion;
@@ -40,8 +41,8 @@ public class AlumnoController {
 
 
     @PostMapping
-    public ResponseEntity<Alumno> saveAlumno(@RequestBody Alumno alumno) {
-        Alumno nuevoAlumno = alumnoService.createAlumno(alumno);
+    public ResponseEntity<Alumno> saveAlumno(@RequestBody AlumnoDTO alumnoDTO) {
+        Alumno nuevoAlumno = alumnoService.createAlumno(alumnoDTO);
         return ResponseEntity.ok(nuevoAlumno);
     }
 

@@ -30,16 +30,18 @@ public class ServicioConverter {
         //servicio.setCantHorariosPorGrupo(dto.getCantHorariosPorGrupo());
         servicio.setDuracionTotalMeses(dto.getDuracionTotalMeses());
         servicio.setFechaInicio(dto.getFechaInicio());
-        servicio.setFechaFin(dto.getFechaFin());
+        //servicio.setFechaFin(dto.getFechaFin());
         servicio.setPublico(dto.isPublico());
         servicio.setCantDiasCiclo(dto.getCantDiasCiclo());
         servicio.setDiaLimitePago(dto.getDiaLimitePago());
         servicio.setClaseDePrueba(dto.isClaseDePrueba());
         servicio.setAsistenciasActivas(dto.isAsistenciasActivas());
+        servicio.setMontoInscripcion(dto.getMontoInscripcion());
 
-        //System.out.println("servicio desp dto" + servicio);
+
         //Definir manualmente los atributos que son otros objetos
-        servicio.setCategoria(categoriaService.findCategoriaByNombre(dto.getNombreCategoria()));
+        servicio.setCategoria(categoriaService.findCategoriaByNombre(dto.getCategoria()));
+
         servicio.setTipoFrecuenciaPago(tipoFrecuenciaPagoService.findTipoFrecuenciaPago(dto.getFrecuenciaPagoId()));
         servicio.setModalidadInscripcion(Modalidad.valueOf(dto.getTipoModalidad()));
         return servicio;
@@ -48,7 +50,7 @@ public class ServicioConverter {
     public ServicioDTO entityToDTO(Servicio servicio) {
         ServicioDTO servicioDTO = modelMapper.map(servicio, ServicioDTO.class);
         // Definimos manualmente los atributos que son otros objetos
-        servicioDTO.setNombreCategoria(servicio.getCategoria().getNombre());
+        servicioDTO.setCategoria(servicio.getCategoria().getNombre());
         return servicioDTO;
     }
 }

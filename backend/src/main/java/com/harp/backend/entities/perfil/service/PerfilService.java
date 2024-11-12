@@ -2,6 +2,7 @@ package com.harp.backend.entities.perfil.service;
 
 import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.perfil.repository.IPerfilRepository;
+import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +32,9 @@ public class PerfilService implements IPerfilService {
     }
 
     @Override
-    public Optional<Perfil> findPerfil(Long idPerfil) {
-        return perfilRepository.findById(idPerfil);
+    public Perfil findPerfil(Long idPerfil) {
+        return perfilRepository.findById(idPerfil)
+                .orElseThrow(() -> new NoSuchElementFoundException("Asistencia no encontrado"));
     }
 
     @Override

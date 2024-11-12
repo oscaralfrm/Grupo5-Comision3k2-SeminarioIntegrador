@@ -15,6 +15,7 @@ import com.harp.backend.entities.servicio.ServicioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -70,14 +71,15 @@ public class ClaseService implements IClaseService {
         Set<Grupo> grupos = servicio.getGrupos();
         // Iteramos sobre cada grupo y sus horarios para crear clases para la semana siguiente
         for (Grupo grupo : grupos) {
-                this.crearClasesParaSemanaSiguienteGrupo(grupo);
+                this.crearClasesParaSemanaSiguienteGrupo(grupo, null);
             }
     }
 
-    @Override
-    public void crearClasesParaSemanaSiguienteGrupo(Grupo grupo) {
-        Set<Horario> horarios = grupo.getHorarios(); // Obtener los horarios del grupo
 
+    @Override
+    public void crearClasesParaSemanaSiguienteGrupo(Grupo grupo, LocalDate fechaInicio) {
+        Set<Horario> horarios = grupo.getHorarios(); // Obtener los horarios del grupo
+        System.out.println("horarios2" + horarios);
         System.out.println("grupo" + grupo);
 
         // Iteramos sobre cada horario del grupo
@@ -85,12 +87,16 @@ public class ClaseService implements IClaseService {
             DiaSemana diaSemanaHorario = horario.getDiaSemana();
             DayOfWeek dayOfWeek = diaSemanaHorario.toDayOfWeek();
 
+            if (fechaInicio == null) {
+                fechaInicio = LocalDate.now();
+            }
+
             // Calcular la próxima fecha para el día del horario
-            LocalDate fechaClase = LocalDate.now().with(dayOfWeek);
+            LocalDate fechaClase = fechaInicio.with(dayOfWeek);
 
             // Si el día obtenido es hoy osea es domingo o ya pasó, ajustamos a la semana siguiente
             // Los domingos a primera hora se crean las clases desde el lunes hasta el doming siguiente
-            if (!fechaClase.isAfter(LocalDate.now())) {
+            if (!fechaClase.isAfter(fechaInicio)) {
                 fechaClase = fechaClase.plusWeeks(1);
             }
 

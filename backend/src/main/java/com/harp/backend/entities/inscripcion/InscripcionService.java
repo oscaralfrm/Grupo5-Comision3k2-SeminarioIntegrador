@@ -88,15 +88,15 @@ public class InscripcionService implements IInscripcionService {
         }
 
         // Ver aca que hacer con pagos anticipados
-        servicio.isPagoAnticipadoDeMontoInscripcion();
+        //servicio.isPagoAnticipadoDeMontoInscripcion();
 
-        servicio.isPagoAnticipadoDeMontoInscripcion();
+        //servicio.isPagoAnticipadoDeMontoInscripcion();
 
         Inscripcion inscripcionCreada = estrategiaInscripcion.crearInscripcion(servicio, idGrupo, idsHorarios);
 
         inscripcionRepository.save(inscripcionCreada);
         alumnoService.agregarInscripcionAAlumno(inscripcionCreada, alumno); // hacerlo con alumno no id
-
+        servicioService.agregarInscripcionAServicio(inscripcionCreada, servicio);
         // Aca: generar una notificacion al instructor donde se notifique una solicitud de inscripcion
         return inscripcionCreada;
     };
@@ -223,8 +223,9 @@ public class InscripcionService implements IInscripcionService {
         inscripcionRepository.save(inscripcionExistente);
 
         // ACA creamos la primera cuota REVISAR!!°!!!
-        cuotaService.crearPrimerCuotaConEstrategia(inscripcionExistente, servicio);
+        Cuota cuota = cuotaService.crearPrimerCuotaConEstrategia(inscripcionExistente, servicio);
 
+        this.agregarCuotaAInscripcion(inscripcionExistente, cuota);
         //Aca notificamos que la inscripcion ya fue aceptada
     }
 

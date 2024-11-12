@@ -31,7 +31,7 @@ public class ServicioDTO {
     private String ubicacion;
 
     // Tambien podria ser el id
-    private String nombreCategoria;
+    private String categoria;
 
     // Tipo frecuencia id: segun si es "A mes calendario" "Con fecha limite" "Segun inscripcion" "Cada X dias"
     private Long frecuenciaPagoId;
@@ -51,7 +51,7 @@ public class ServicioDTO {
 
     // SI es Modalidad FechaInicio-Fin
     private LocalDate fechaInicio;
-    private LocalDate fechaFin;
+//    private LocalDate fechaFin;
 
     // Si es Modalidad +duracion
     private int duracionTotalMeses;
@@ -62,6 +62,7 @@ public class ServicioDTO {
     private boolean claseDePrueba;
     private boolean asistenciasActivas;
 
+    private double montoInscripcion;
 }
 
 

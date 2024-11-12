@@ -4,6 +4,7 @@ package com.harp.backend.entities.cuota;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.pagos.metodoPago.MetodoPago;
 import com.harp.backend.entities.servicio.Servicio;
 
 import java.time.LocalDate;
@@ -16,5 +17,6 @@ public interface ICuotaService {
 //    public List<Cuota> findCuotasDeServicio(Long idServicio);
     public void deleteCuota(Long idCuota);
     public Cuota findCuota(Long idCuota);
-    public void crearPrimerCuotaConEstrategia(Inscripcion inscripcionExistente, Servicio servicio);
+    public Cuota crearPrimerCuotaConEstrategia(Inscripcion inscripcionExistente, Servicio servicio);
+    public void pagarCuota(Long idCuota, MetodoPago metodoPago);
 }

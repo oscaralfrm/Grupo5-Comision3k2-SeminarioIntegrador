@@ -25,7 +25,7 @@ public class MontoServicioController {
     */
 
     // GET DE TODOS (no tiene mucho sentido, siempre buscamos por servicio)
-    @GetMapping("/historialesMontos")
+    @GetMapping("/historiales-montos")
     public ResponseEntity<List<MontoServicio>> traerTodosHistorialesMontos() {
         List<MontoServicio> historialMontos = montoServicioService.getAllHistorialesMontos();
         return ResponseEntity.status(HttpStatus.OK).body(historialMontos);
@@ -33,7 +33,7 @@ public class MontoServicioController {
 
 
     // GET DE UNO EN PARTICULAR
-    @GetMapping("/historialesMontos/{idMonto}")
+    @GetMapping("/historiales-montos/{idMonto}")
     public ResponseEntity<MontoServicio> traerUnMontoServicio(@PathVariable @Min(1) Long idMonto) {
         MontoServicio montoServicio = montoServicioService.findMontoServicio(idMonto);
         return ResponseEntity.status(HttpStatus.OK).body(montoServicio);
@@ -48,16 +48,16 @@ public class MontoServicioController {
 //    }
 
     // ELIMINAR
-    @DeleteMapping("/historialesMontos/{idMonto}")
+    @DeleteMapping("/historiales-montos/{idMonto}")
     public ResponseEntity<Void> eliminarUnMontoServicio(@PathVariable Long idMonto) {
         montoServicioService.deleteMontoServicio(idMonto);
         return ResponseEntity.noContent().build();
     };
 
     // EDITAR: se puede editar solo si es programado a futuro
-    @PutMapping("/historialesMontos/{idMonto}")
-    public MontoServicio editarMontoServicio(@PathVariable Long idHistorialMonto, @RequestBody MontoServicioDTO montoServicioDTO) {
-        MontoServicio montoEditado = montoServicioService.editMontoServicio(idHistorialMonto, montoServicioDTO);
+    @PutMapping("/historiales-montos/{idMonto}")
+    public MontoServicio editarMontoServicio(@PathVariable Long idMonto, @RequestBody MontoServicioDTO montoServicioDTO) {
+        MontoServicio montoEditado = montoServicioService.editMontoServicio(idMonto, montoServicioDTO);
         return montoEditado;
     }
 }

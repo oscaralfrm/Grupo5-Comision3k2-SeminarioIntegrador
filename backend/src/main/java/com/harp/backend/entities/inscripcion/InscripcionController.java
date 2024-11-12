@@ -83,7 +83,7 @@ public class InscripcionController {
                                                      @PathVariable Long idServicio,
                                                      @RequestBody LocalDate fechaInicioActividad) {
         // REVISAR: Obtener el id del usuario de headers
-        Long idInstructor = Long.valueOf(2);
+        Long idInstructor = Long.valueOf(14);
         inscripcionService.aceptarInscripcion(idInstructor, idServicio, idInscripcion, fechaInicioActividad);
         return ResponseEntity.ok("Se aceptó la inscripción correctamente.");
     };
