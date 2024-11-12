@@ -6,7 +6,6 @@ import { LoginForm } from "./Components/InicioSesion/InicioSesion";
 import { RegisterFormChooser } from "./Components/RegistroSesion/RegisterChooser";
 import { RegisterFormInstructor } from "./Components/RegistroSesion/RegisterInstructor/RegisterFormInstructor";
 import { RegisterFormStudent } from "./Components/RegistroSesion/RegisterStudent/RegisterFormStudent";
-import CreateGroups from "./Components/Instructor/Grupo/CrearGrupo";
 import MiServicio from "./Components/Instructor/MiServicio/MiServicio";
 import PaginaDeInicio from "./Components/PaginaDeInicio/PaginaDeInicio";
 import General from "./Components/Instructor/MiServicio/MenuOpciones/General";
@@ -17,6 +16,7 @@ import ServicioForm from "./Components/Instructor/Servicio/RegistrarServicio.jsx
 import AppNavbar from "./Components/Navbars/AppNavbars.jsx";
 import Asistencias from "./Components/Instructor/MiServicio/MenuOpciones/Asistencias.jsx";
 import Dashboard from "./Components/Instructor/MisServicios/MisServicios.jsx";
+import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/Grupos.jsx";
 
 function App() {
   return (
@@ -34,10 +34,6 @@ function App() {
           <Route
             path="instructor/:idInstructor/crear-servicio"
             element={<><AppNavbar /><ServicioForm /></>}
-          />
-          <Route
-            path="instructor/:idInstructor/servicio/:idServicio/crear-grupo"
-            element={<><AppNavbar /><CreateGroups /></>}
           />
           <Route
             path="instructor/:idInstructor/servicio/:idServicio"
@@ -65,6 +61,7 @@ function App() {
           />
           <Route path= "instructor/:idInstructor/servicios" element={<><AppNavbar /><Dashboard /></>}
           />
+          <Route path= "instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo/></>}/>
         </Routes>
       </BrowserRouter>
     </div>

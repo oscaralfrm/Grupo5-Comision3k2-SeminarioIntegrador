@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Row, Col, Modal, Container, Form, Table } from "react-bootstrap";
 import { Person } from "react-bootstrap-icons";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AiOutlineClose } from "react-icons/ai"; // Icono de cruz fino
 
-
 const Alumnos = () => {
+  const navigate = useNavigate();
+  
   const [students, setStudents] = useState([
     {
       id: 1,
@@ -125,221 +126,138 @@ const Alumnos = () => {
   return (
     <Container fluid>
       <Row className="mt-5">
-        <Col xs={12}>
-          <h1 className="text-center mb-4" style={{ color: "#1E1B4B", fontWeight: "bold", marginTop: "" }}>
+        <Col xs={12} className="d-flex justify-content-between align-items-center mb-4">
+          <h1 className="text-center mb-4" style={{ color: "#1E1B4B", fontWeight: "bold" }}>
             Alumnos
           </h1>
+          <Button
+            variant="primary"
+            onClick={() => navigate("/instructor/1/servicio/1/crear-grupo")}
+          >
+            Agregar Grupo
+          </Button>
+        </Col>
 
-          {/* Filtros */}
-          <Form className="mb-4">
-            <Row className="justify-content-center">
-              <Col xs={10} md={4}>
-                <Form.Group controlId="filterName" className="text-center">
-                  <Form.Label>Nombre y Apellido</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Filtrar por nombre"
-                    name="name"
-                    value={filters.name}
-                    onChange={handleFilterChange}
-                    style={{ width: '80%', margin: '0 auto' }}
-                  />
-                </Form.Group>
-              </Col>
-              <Col xs={10} md={4}>
-                <Form.Group controlId="filterDni" className="text-center">
-                  <Form.Label>DNI</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Filtrar por DNI"
-                    name="dni"
-                    value={filters.dni}
-                    onChange={handleFilterChange}
-                    style={{ width: '80%', margin: '0 auto' }}
-                  />
-                </Form.Group>
-              </Col>
-              <Col xs={10} md={4}>
-                <Form.Group controlId="filterGroup" className="text-center">
-                  <Form.Label>Grupo</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="group"
-                    value={filters.group}
-                    onChange={handleFilterChange}
-                    style={{ width: '80%', margin: '0 auto' }}
-                  >
-                    <option value="">Seleccionar grupo</option>
-                    <option value="Yoga Adultos">Yoga Adultos</option>
-                    <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
-                    <option value="Yoga Jóvenes">Yoga Jóvenes</option>
-                  </Form.Control>
-                </Form.Group>
-              </Col>
-            </Row>
-          </Form>
+        {/* Filtros */}
+        <Form className="mb-4">
+          <Row className="justify-content-center">
+            <Col xs={10} md={4}>
+              <Form.Group controlId="filterName" className="text-center">
+                <Form.Label>Nombre y Apellido</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Filtrar por nombre"
+                  name="name"
+                  value={filters.name}
+                  onChange={handleFilterChange}
+                  style={{ width: '80%', margin: '0 auto' }}
+                />
+              </Form.Group>
+            </Col>
+            <Col xs={10} md={4}>
+              <Form.Group controlId="filterDni" className="text-center">
+                <Form.Label>DNI</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Filtrar por DNI"
+                  name="dni"
+                  value={filters.dni}
+                  onChange={handleFilterChange}
+                  style={{ width: '80%', margin: '0 auto' }}
+                />
+              </Form.Group>
+            </Col>
+            <Col xs={10} md={4}>
+              <Form.Group controlId="filterGroup" className="text-center">
+                <Form.Label>Grupo</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="group"
+                  value={filters.group}
+                  onChange={handleFilterChange}
+                  style={{ width: '80%', margin: '0 auto' }}
+                >
+                  <option value="">Seleccionar grupo</option>
+                  <option value="Yoga Adultos">Yoga Adultos</option>
+                  <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
+                  <option value="Yoga Jóvenes">Yoga Jóvenes</option>
+                </Form.Control>
+              </Form.Group>
+            </Col>
+          </Row>
+        </Form>
 
-          {/* Lista de Alumnos filtrados */}
-          <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-            {filteredStudents.map((student) => (
-              <Col key={student.id}>
-                <Card className="shadow-sm position-relative" style={{ borderColor: "#4F46E5", borderRadius: "15px", marginBottom: "20px" }}>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    className="position-absolute top-0 end-0 m-1"
-                    onClick={() => handleRemoveStudent(student)}
-                  >
-                    ✖
-                  </Button>
-                  <Card.Img
-                    variant="top"
-                    src={student.image || ""}
-                    alt={student.name}
+        {/* Lista de Alumnos filtrados */}
+        <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+          {filteredStudents.map((student) => (
+            <Col key={student.id}>
+              <Card className="shadow-sm position-relative" style={{ borderColor: "#4F46E5", borderRadius: "15px", marginBottom: "20px" }}>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  className="position-absolute top-0 end-0 m-1"
+                  onClick={() => handleRemoveStudent(student)}
+                >
+                  <AiOutlineClose />
+                </Button>
+                <Card.Img
+                  variant="top"
+                  src={student.image || ""}
+                  alt={student.name}
+                  style={{
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    height: "130px",
+                    width: "130px",
+                    margin: "15px auto 0",
+                    display: student.image ? "block" : "none",
+                    border: "3px solid #4F46E5",
+                  }}
+                />
+                {!student.image && (
+                  <div
                     style={{
                       borderRadius: "50%",
-                      objectFit: "cover",
-                      height: "130px",
                       width: "130px",
+                      height: "130px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                       margin: "15px auto 0",
-                      display: student.image ? "block" : "none",
                       border: "3px solid #4F46E5",
+                      color: "#4F46E5",
+                      fontSize: "4rem",
                     }}
-                  />
-                  {!student.image && (
-                    <div
-                      style={{
-                        borderRadius: "50%",
-                        width: "130px",
-                        height: "130px",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        margin: "15px auto 0",
-                        border: "3px solid #4F46E5",
-                        color: "#4F46E5",
-                        fontSize: "4rem",
-                      }}
-                    >
-                      <Person />
-                    </div>
-                  )}
-                  <Card.Body className="text-center">
-                    <Card.Title className="mb-1" style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
-                      {student.name}
-                    </Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted" style={{ fontSize: "0.95rem" }}>
-                      {student.group}
-                    </Card.Subtitle>
-                    <div className="d-flex justify-content-around mt-3">
-                      <Button variant="primary" onClick={() => handleShowDetails(student)}>
-                        Detalle
-                      </Button>
-                      <Button variant="primary" onClick={() => handleShowAttendance(student)}>
-                        Asistencias
-                      </Button>
-                      <Button variant="primary" onClick={() => handleShowPayments(student)}>
-                        Pagos
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-
-          {/* Modal de Detalles */}
-          <Modal show={showDetails} onHide={handleCloseDetails} centered>
-            <Modal.Header closeButton>
-              <Modal.Title>Detalles de {selectedStudent?.name}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <p><strong>DNI:</strong> {selectedStudent?.details.dni}</p>
-              <p><strong>Teléfono:</strong> {selectedStudent?.details.phone}</p>
-              <p><strong>Email:</strong> {selectedStudent?.details.email}</p>
-              <p><strong>Edad:</strong> {selectedStudent?.details.age}</p>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleCloseDetails}>
-                Cerrar
-              </Button>
-            </Modal.Footer>
-          </Modal>
-
-          {/* Modal de Asistencias */}
-          <Modal show={showAttendance} onHide={handleCloseAttendance} centered>
-            <Modal.Header closeButton>
-              <Modal.Title>Asistencias de {selectedStudent?.name}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Table striped bordered>
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Asistió</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedStudent?.attendanceRecords.map((record, index) => (
-                    <tr key={index}>
-                      <td>{record.date}</td>
-                      <td>{record.attended ? 'Sí' : 'No'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleCloseAttendance}>
-                Cerrar
-              </Button>
-            </Modal.Footer>
-          </Modal>
-
-          {/* Modal de Pagos */}
-          <Modal show={showPayments} onHide={handleClosePayments} centered>
-            <Modal.Header closeButton className="position-relative">
-              <AiOutlineClose
-                style={{
-                  color: "red",
-                  position: "absolute",
-                  top: "10px",
-                  right: "10px",
-                  fontSize: "1.2rem",
-                  cursor: "pointer",
-                }}
-                onClick={() => handleRemoveStudent(selectedStudent.id)}
-              />
-              <Modal.Title>Detalles de {selectedStudent?.name}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Table striped bordered>
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Monto</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedStudent?.payments.map((payment, index) => (
-                    <tr key={index}>
-                      <td>{payment.date}</td>
-                      <td>${payment.amount}</td>
-                      <td>{payment.status ? 'Pagado' : 'Pendiente'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleClosePayments}>
-                Cerrar
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        </Col>
+                  >
+                    <Person />
+                  </div>
+                )}
+                <Card.Body className="text-center">
+                  <Card.Title className="mb-1" style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                    {student.name}
+                  </Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted" style={{ fontSize: "0.95rem" }}>
+                    {student.group}
+                  </Card.Subtitle>
+                  <div className="d-flex justify-content-around mt-3">
+                    <Button variant="primary" onClick={() => handleShowDetails(student)}>
+                      Detalle
+                    </Button>
+                    <Button variant="primary" onClick={() => handleShowAttendance(student)}>
+                      Asistencias
+                    </Button>
+                    <Button variant="primary" onClick={() => handleShowPayments(student)}>
+                      Pagos
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
       </Row>
+
+      {/* Aquí irían los Modals para Detalles, Asistencias y Pagos */}
     </Container>
   );
 };

@@ -68,3 +68,13 @@ export const cambiarClaseANoFueDada = async (idClase) => {
     }
 };
 
+export const getClasesDeServicio = async (idServicio) => {
+    try {
+        const response = await axios.get(`${API_URL}/servicios//${idServicio}/clases`);
+        return response.data;  // Suponiendo que la respuesta es un array de clases
+    } catch (error) {
+        console.error("Error fetching clases de grupo: ", error);
+        throw error;
+    }
+};
+
