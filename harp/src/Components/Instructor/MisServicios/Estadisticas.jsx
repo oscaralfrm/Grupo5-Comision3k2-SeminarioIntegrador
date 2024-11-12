@@ -61,12 +61,6 @@ const Statistics = () => {
           <h4 style={{ textAlign: "center" }}>Ganancias Mensuales</h4>
           <Bar data={barData} options={barOptions} width={600} height={300} />
         </div>
-
-        {/* Gráfico de Pastel */}
-        <div style={{ width: "100%", maxWidth: "600px", height: "300px", marginTop: "5vh" }}>
-          <h4 style={{ textAlign: "center" }}>Inscripciones por Categoría</h4>
-          <Pie data={pieData} options={pieOptions} width={600} height={300} />
-        </div>
       </div>
     </div>
   );

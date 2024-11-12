@@ -45,7 +45,7 @@ const ClassesCard = () => {
         <h2 className="text-center" style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5em" }}>Clases</h2>
 
         <Link to="/instructor/1/servicio/1/mi-servicio/clases-historial" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px", display: "flex", alignItems: "center" }}>
-          Historial de Clases
+          Historial
         </Link>
       </div>
 
