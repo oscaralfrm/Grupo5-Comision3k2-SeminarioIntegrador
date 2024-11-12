@@ -79,16 +79,22 @@ const ServicioForm = () => {
 
   return (
     <div style={{ fontFamily: "Roboto, sans-serif" }}>
-      <Row className="m-3" >
+      <Row className="m-3">
         <Col xs={12} md={8} lg={6} className="mx-auto">
           <Card className="shadow-sm rounded" style={{ border: "none" }}>
             <Card.Header
               className="fs-3 text-center text-white rounded-top"
-              style={{ backgroundColor: "#1E1B4B",  boxShadow: "0 10px 12px rgba(0, 0, 0, 0.1)"}} 
+              style={{
+                backgroundColor: "#1E1B4B",
+                boxShadow: "0 10px 12px rgba(0, 0, 0, 0.1)",
+              }}
             >
               Registrar Servicio
             </Card.Header>
-            <Card.Body className="p-4"style={{  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)"}}>
+            <Card.Body
+              className="p-4"
+              style={{ boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)" }}
+            >
               <Tabs
                 activeKey={activeTab}
                 onSelect={(k) => setActiveTab(k)}
@@ -165,49 +171,113 @@ const ServicioForm = () => {
                     </span>
                   </div>
                 </Tab>
-
-                <Tab eventKey="detalles" title="Detalles">
+                <Tab eventKey="modalidad" title="Modalidad">
                   <Form>
-                    <Form.Group controlId="duracion" className="mt-3">
-                      <Form.Label className="fw-semibold">Duración</Form.Label>
-                      <Form.Control
-                        type="time"
-                        name="duracion"
-                        value={formData.duracion}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
-
-                    <Form.Group controlId="frecuencia" className="mt-3">
+                    {/* Frecuencia de las cuotas */}
+                    <Form.Group controlId="frecuenciaCuotas" className="mt-3">
                       <Form.Label className="fw-semibold">
-                        Frecuencia
+                        ¿Con qué frecuencia se realizarán las cuotas?
                       </Form.Label>
                       {["Diaria", "Semanal", "Mensual"].map((freq) => (
                         <Form.Check
                           key={freq}
                           type="radio"
-                          name="frecuencia"
+                          name="frecuenciaCuotas"
                           label={freq}
                           value={freq.toLowerCase()}
-                          checked={formData.frecuencia === freq.toLowerCase()}
+                          checked={
+                            formData.frecuenciaCuotas === freq.toLowerCase()
+                          }
                           onChange={handleInputChange}
                         />
                       ))}
                     </Form.Group>
 
-                    <Form.Group controlId="capacidadMaxima" className="mt-3">
+                    {/* Fecha límite de pago cada mes */}
+                    <Form.Group controlId="fechaLimitePago" className="mt-3">
                       <Form.Label className="fw-semibold">
-                        Capacidad Máxima
+                        ¿Habrá una fecha límite de pago cada mes?
                       </Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="capacidadMaxima"
-                        min="1"
-                        value={formData.capacidadMaxima}
-                        onChange={handleInputChange}
-                      />
+                      {["Sí", "No"].map((answer) => (
+                        <Form.Check
+                          key={answer}
+                          type="radio"
+                          name="fechaLimitePago"
+                          label={answer}
+                          value={answer.toLowerCase()}
+                          checked={
+                            formData.fechaLimitePago === answer.toLowerCase()
+                          }
+                          onChange={handleInputChange}
+                        />
+                      ))}
                     </Form.Group>
+
+                    {/* Pago anticipado */}
+                    <Form.Group controlId="pagoAnticipado" className="mt-3">
+                      <Form.Label className="fw-semibold">
+                        ¿Se requiere que el alumno realice un pago anticipado?
+                      </Form.Label>
+                      {["Sí", "No"].map((answer) => (
+                        <Form.Check
+                          key={answer}
+                          type="radio"
+                          name="pagoAnticipado"
+                          label={answer}
+                          value={answer.toLowerCase()}
+                          checked={
+                            formData.pagoAnticipado === answer.toLowerCase()
+                          }
+                          onChange={handleInputChange}
+                        />
+                      ))}
+                    </Form.Group>
+
+                    {/* Monto de inscripción */}
+                    <Form.Group controlId="montoInscripcion" className="mt-3">
+                      <Form.Label className="fw-semibold">
+                        ¿Requiere un monto de inscripción?
+                      </Form.Label>
+                      {["Sí", "No"].map((answer) => (
+                        <Form.Check
+                          key={answer}
+                          type="radio"
+                          name="montoInscripcion"
+                          label={answer}
+                          value={answer.toLowerCase()}
+                          checked={
+                            formData.montoInscripcion === answer.toLowerCase()
+                          }
+                          onChange={handleInputChange}
+                        />
+                      ))}
+                    </Form.Group>
+
+                    {/* Abono de inscripción */}
+                    {formData.montoInscripcion === "sí" && (
+                      <Form.Group controlId="abonoInscripcion" className="mt-3">
+                        <Form.Label className="fw-semibold">
+                          ¿El monto de inscripción se abonará con antelación o
+                          junto con la primera cuota?
+                        </Form.Label>
+                        {["Antelación", "Primera cuota"].map((answer) => (
+                          <Form.Check
+                            key={answer}
+                            type="radio"
+                            name="abonoInscripcion"
+                            label={answer}
+                            value={answer.toLowerCase()}
+                            checked={
+                              formData.abonoInscripcion === answer.toLowerCase()
+                            }
+                            onChange={handleInputChange}
+                          />
+                        ))}
+                      </Form.Group>
+                    )}
                   </Form>
+
+                  {/* Navegación de pestañas */}
                   <div className="d-flex justify-content-between">
                     <span
                       className="fs-3 d-flex justify-content-start ms-0"
@@ -225,110 +295,6 @@ const ServicioForm = () => {
                     </span>
                   </div>
                 </Tab>
-                <Tab eventKey="modalidad" title="Modalidad">
-  <Form>
-    {/* Frecuencia de las cuotas */}
-    <Form.Group controlId="frecuenciaCuotas" className="mt-3">
-      <Form.Label className="fw-semibold">¿Con qué frecuencia se realizarán las cuotas?</Form.Label>
-      {["Diaria", "Semanal", "Mensual"].map((freq) => (
-        <Form.Check
-          key={freq}
-          type="radio"
-          name="frecuenciaCuotas"
-          label={freq}
-          value={freq.toLowerCase()}
-          checked={formData.frecuenciaCuotas === freq.toLowerCase()}
-          onChange={handleInputChange}
-        />
-      ))}
-    </Form.Group>
-
-    {/* Fecha límite de pago cada mes */}
-    <Form.Group controlId="fechaLimitePago" className="mt-3">
-      <Form.Label className="fw-semibold">¿Habrá una fecha límite de pago cada mes?</Form.Label>
-      {["Sí", "No"].map((answer) => (
-        <Form.Check
-          key={answer}
-          type="radio"
-          name="fechaLimitePago"
-          label={answer}
-          value={answer.toLowerCase()}
-          checked={formData.fechaLimitePago === answer.toLowerCase()}
-          onChange={handleInputChange}
-        />
-      ))}
-    </Form.Group>
-
-    {/* Pago anticipado */}
-    <Form.Group controlId="pagoAnticipado" className="mt-3">
-      <Form.Label className="fw-semibold">¿Se requiere que el alumno realice un pago anticipado?</Form.Label>
-      {["Sí", "No"].map((answer) => (
-        <Form.Check
-          key={answer}
-          type="radio"
-          name="pagoAnticipado"
-          label={answer}
-          value={answer.toLowerCase()}
-          checked={formData.pagoAnticipado === answer.toLowerCase()}
-          onChange={handleInputChange}
-        />
-      ))}
-    </Form.Group>
-
-    {/* Monto de inscripción */}
-    <Form.Group controlId="montoInscripcion" className="mt-3">
-      <Form.Label className="fw-semibold">¿Requiere un monto de inscripción?</Form.Label>
-      {["Sí", "No"].map((answer) => (
-        <Form.Check
-          key={answer}
-          type="radio"
-          name="montoInscripcion"
-          label={answer}
-          value={answer.toLowerCase()}
-          checked={formData.montoInscripcion === answer.toLowerCase()}
-          onChange={handleInputChange}
-        />
-      ))}
-    </Form.Group>
-
-    {/* Abono de inscripción */}
-    {formData.montoInscripcion === "sí" && (
-      <Form.Group controlId="abonoInscripcion" className="mt-3">
-        <Form.Label className="fw-semibold">¿El monto de inscripción se abonará con antelación o junto con la primera cuota?</Form.Label>
-        {["Antelación", "Primera cuota"].map((answer) => (
-          <Form.Check
-            key={answer}
-            type="radio"
-            name="abonoInscripcion"
-            label={answer}
-            value={answer.toLowerCase()}
-            checked={formData.abonoInscripcion === answer.toLowerCase()}
-            onChange={handleInputChange}
-          />
-        ))}
-      </Form.Group>
-    )}
-  </Form>
-
-  {/* Navegación de pestañas */}
-  <div className="d-flex justify-content-between">
-    <span
-      className="fs-3 d-flex justify-content-start ms-0"
-      onClick={goToPreviousTab}
-      style={{ cursor: "pointer" }} // Volver a la sección anterior
-    >
-      &#8592;
-    </span>
-    <span
-      className="fs-3"
-      style={{ cursor: "pointer" }}
-      onClick={goToNextTab} // Avanzar a la siguiente sección
-    >
-      &#8594;
-    </span>
-  </div>
-</Tab>
-
 
                 <Tab eventKey="precio" title="Precio">
                   <Form>
@@ -392,7 +358,10 @@ const ServicioForm = () => {
             className="shadow-lg rounded-3 border-0"
             style={{ backgroundColor: "white" }}
           >
-            <Card.Header className="fs-4 fw-semibold text-center  text-white rounded-top-3" style={{backgroundColor:'#1E1B4B'}}>
+            <Card.Header
+              className="fs-4 fw-semibold text-center  text-white rounded-top-3"
+              style={{ backgroundColor: "#1E1B4B" }}
+            >
               Resumen del Servicio
             </Card.Header>
             <Card.Body className="text-center">
