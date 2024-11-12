@@ -198,21 +198,20 @@ const ServicioForm = () => {
                       )}
                     </Form.Group>
 
+
                     {/* Fecha límite de pago */}
-                    {formData.frecuenciaCuotas === "mensual" && (
-                      <Form.Group controlId="fechaLimitePago" className="mt-3">
-                        <Form.Label className="fw-semibold">
-                          Fecha límite de pago (X días desde el inicio del ciclo)
-                        </Form.Label>
-                        <Form.Control
-                          type="number"
-                          name="fechaLimitePago"
-                          placeholder="Ej: 10"
-                          value={formData.fechaLimitePago || ""}
-                          onChange={handleInputChange}
-                        />
-                      </Form.Group>
-                    )}
+                    <Form.Group controlId="fechaLimitePago" className="mt-3">
+                      <Form.Label className="fw-semibold">
+                        Fecha límite de pago (X días desde el inicio del ciclo)
+                      </Form.Label>
+                      <Form.Control
+                        type="number"
+                        name="fechaLimitePago"
+                        placeholder=""
+                        value={formData.fechaLimitePago || ""}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
 
                     {/* División en Grupos */}
                     <Form.Group controlId="divideEnGrupos" className="mt-3">

@@ -1,34 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { getClasesDeServicio } from "../../../../../services/Clase";
 
 const ClassesCard = () => {
   const [classes, setClasses] = useState([]); // Contendrá todas las clases
   const [expanded, setExpanded] = useState(false);
+  const {idServicio} = useParams();
 
   // Datos de clases simulados
-  const allClasses = [
-    {
-      id: 1,
-      name: "Clase 1",
-      group: "Grupo A",
-      date: "2024-11-10",
-      time: "10:00 AM",
-    },
-    {
-      id: 2,
-      name: "Clase 2",
-      group: "Grupo B",
-      date: "2024-11-10",
-      time: "02:00 PM",
-    },
-    {
-      id: 3,
-      name: "Clase 3",
-      group: "Grupo A",
-      date: "2024-11-11",
-      time: "10:00 AM",
-    },
-  ];
+  const allClasses = getClasesDeServicio(idServicio) ;
 
   // Setear las clases simuladas
   useEffect(() => {
