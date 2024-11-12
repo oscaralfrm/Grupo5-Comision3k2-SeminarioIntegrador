@@ -4,16 +4,16 @@ import {
   Tabs,
   Card,
   Form,
-  Button,
   Col,
   Row,
   Image,
 } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
+import { useNavigate , useLocation } from "react-router-dom";
 
 const ServicioForm = () => {
   const [activeTab, setActiveTab] = useState("general");
   const location = useLocation();
+  const navegate = useNavigate();
   const serviceData = location.state || {};
 
   const [formData, setFormData] = useState({
@@ -22,14 +22,19 @@ const ServicioForm = () => {
     descripcion: "",
     ubicacion: "",
     logo: null,
-    duracion: "",
-    frecuencia: "",
-    capacidadMaxima: "",
-    costo: "",
-    metodoPago: "",
+    frecuenciaCuotas: "",
+    duracionCuotasPersonalizada: "",
+    fechaLimitePago: "",
+    divideEnGrupos: "",
+    cupoMaximoAlumnos: "",
+    incluyeInscripcion: false,
+    montoInscripcion: "",
+    pagoInscripcion: "",
+    cantidadDiasSemana: "",
+    montoPorSemana: "",
   });
-
-  // Actualiza el estado inicial con `serviceData` solo al montar el componente
+  const handleRegister = (() =>{navegate("/instructor/1/servicio/1/mi-servicio")});
+  // Actualiza el estado inicial con serviceData solo al montar el componente
   useEffect(() => {
     if (serviceData) {
       setFormData((prevData) => ({
@@ -39,36 +44,31 @@ const ServicioForm = () => {
         descripcion: serviceData.descripcion || "",
         ubicacion: serviceData.ubicacion || "",
         logo: serviceData.logo || null,
-        duracion: serviceData.duracion || "",
-        frecuencia: serviceData.frecuencia || "",
-        capacidadMaxima: serviceData.capacidadMaxima || "",
-        costo: serviceData.costo || "",
-        metodoPago: serviceData.metodoPago || "",
       }));
     }
   }, []); // Solo se ejecuta una vez al montar el componente
 
   const handleInputChange = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, value, type, checked, files } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: type === "file" ? files[0] : value,
+      [name]: type === "file" ? files[0] : type === "checkbox" ? checked : value,
     }));
   };
 
   const goToNextTab = () => {
     if (activeTab === "general") {
-      setActiveTab("detalles");
-    } else if (activeTab === "detalles") {
-      setActiveTab("precio");
+      setActiveTab("modalidad");
+    } else if (activeTab === "modalidad") {
+      setActiveTab("monto");
     }
   };
 
   const goToPreviousTab = () => {
-    if (activeTab === "detalles") {
+    if (activeTab === "modalidad") {
       setActiveTab("general");
-    } else if (activeTab === "precio") {
-      setActiveTab("detalles");
+    } else if (activeTab === "monto") {
+      setActiveTab("modalidad");
     }
   };
 
@@ -94,6 +94,7 @@ const ServicioForm = () => {
                 onSelect={(k) => setActiveTab(k)}
                 className="mb-3"
               >
+                {/* General Tab */}
                 <Tab eventKey="general" title="General">
                   <Form>
                     <Form.Group controlId="categoria">
@@ -158,69 +159,18 @@ const ServicioForm = () => {
                   <div
                     className="d-flex justify-content-end align-items-center"
                     style={{ cursor: "pointer", margin: 0, padding: 0 }}
-                    onClick={goToNextTab} // Avanzar a la siguiente sección
+                    onClick={goToNextTab}
                   >
                     <span className="fs-3" style={{ margin: 0, padding: 0 }}>
                       &#8594;
                     </span>
                   </div>
                 </Tab>
-                <Tab eventKey="modalidad" title="Modalidad">
-                  <Form>
-                    {/* Frecuencia de las cuotas */}
-                    <Form.Group controlId="frecuenciaCuotas" className="mt-3">
-                      <Form.Label className="fw-semibold">
-                        ¿Con qué frecuencia se realizarán las cuotas?
-                      </Form.Label>
-                      {["Diaria", "Semanal", "Mensual"].map((freq) => (
-                        <Form.Check
-                          key={freq}
-                          type="radio"
-                          name="frecuenciaCuotas"
-                          label={freq}
-                          value={freq.toLowerCase()}
-                          checked={
-                            formData.frecuenciaCuotas === freq.toLowerCase()
-                          }
-                          onChange={handleInputChange}
-                        />
-                      ))}
-                    </Form.Group>
 
-                    {/* Fecha límite de pago cada mes */}
-                    <Form.Group controlId="fechaLimitePago" className="mt-3">
-                      <Form.Label className="fw-semibold">
-                        ¿Habrá una fecha límite de pago cada mes?
-                      </Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="capacidadMaxima"
-                        min="1"
-                        value={formData.capacidadMaxima}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
-                  </Form>
-                  <div className="d-flex justify-content-between">
-                    <span
-                      className="fs-3 d-flex justify-content-start ms-0"
-                      onClick={goToPreviousTab}
-                      style={{ cursor: "pointer" }} // Volver a la sección anterior
-                    >
-                      &#8592;
-                    </span>
-                    <span
-                      className="fs-3"
-                      style={{ cursor: "pointer" }}
-                      onClick={goToNextTab} // Avanzar a la siguiente sección
-                    >
-                      &#8594;
-                    </span>
-                  </div>
-                </Tab>
+                {/* Modalidad Tab */}
                 <Tab eventKey="modalidad" title="Modalidad">
                   <Form>
-                    {/* Frecuencia de las cuotas */}
+                    {/* Frecuencia de Cuotas */}
                     <Form.Group controlId="frecuenciaCuotas" className="mt-3">
                       <Form.Label className="fw-semibold">¿Con qué frecuencia se realizará el cobro?</Form.Label>
                       {["Diaria", "Semanal", "Mensual", "Otros"].map((freq) => (
@@ -231,22 +181,12 @@ const ServicioForm = () => {
                           label={freq}
                           value={freq.toLowerCase()}
                           checked={formData.frecuenciaCuotas === freq.toLowerCase()}
-                          onChange={(e) => {
-                            handleInputChange(e);
-                            if (e.target.value !== "otros") {
-                              setFormData((prevData) => ({
-                                ...prevData,
-                                duracionCuotasPersonalizada: "", // Limpiar la duración personalizada si selecciona otra opción
-                              }));
-                            }
-                          }}
+                          onChange={handleInputChange}
                         />
                       ))}
-
-                      {/* Campo adicional para duración personalizada si selecciona "Otros" */}
                       {formData.frecuenciaCuotas === "otros" && (
                         <Form.Group controlId="duracionCuotasPersonalizada" className="mt-3">
-                          <Form.Label className="fw-semibold">Ingrese frecuencia de cobro (en días)</Form.Label>
+                          <Form.Label className="fw-semibold">Frecuencia de cobro en días</Form.Label>
                           <Form.Control
                             type="number"
                             name="duracionCuotasPersonalizada"
@@ -258,35 +198,32 @@ const ServicioForm = () => {
                       )}
                     </Form.Group>
 
-
                     {/* Fecha límite de pago */}
-                    <Form.Group controlId="fechaLimitePago" className="mt-3">
-                      <Form.Label className="fw-semibold">
-                        Fecha límite de pago (X días desde el inicio del ciclo)
-                      </Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="fechaLimitePago"
-                        placeholder=""
-                        value={formData.fechaLimitePago || ""}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
+                    {formData.frecuenciaCuotas === "mensual" && (
+                      <Form.Group controlId="fechaLimitePago" className="mt-3">
+                        <Form.Label className="fw-semibold">
+                          Fecha límite de pago (X días desde el inicio del ciclo)
+                        </Form.Label>
+                        <Form.Control
+                          type="number"
+                          name="fechaLimitePago"
+                          placeholder="Ej: 10"
+                          value={formData.fechaLimitePago || ""}
+                          onChange={handleInputChange}
+                        />
+                      </Form.Group>
+                    )}
 
-                    {/* División en grupos */}
+                    {/* División en Grupos */}
                     <Form.Group controlId="divideEnGrupos" className="mt-3">
-                      <Form.Label className="fw-semibold">¿Va a dividir su servicio en grupos?</Form.Label>
+                      <Form.Label className="fw-semibold">¿Querés dividir tu servicio en grupos?</Form.Label>
                       <Form.Check
                         type="radio"
                         name="divideEnGrupos"
                         label="Sí"
                         value="si"
                         checked={formData.divideEnGrupos === "si"}
-                        onChange={(e) => setFormData((prevData) => ({
-                          ...prevData,
-                          divideEnGrupos: e.target.value,
-                          cupoMaximoAlumnos: "", // Restablece el cupo máximo si cambia la respuesta
-                        }))}
+                        onChange={handleInputChange}
                       />
                       <Form.Check
                         type="radio"
@@ -294,15 +231,11 @@ const ServicioForm = () => {
                         label="No"
                         value="no"
                         checked={formData.divideEnGrupos === "no"}
-                        onChange={(e) => setFormData((prevData) => ({
-                          ...prevData,
-                          divideEnGrupos: e.target.value,
-                          cupoMaximoAlumnos: "", // Restablece el cupo máximo si cambia la respuesta
-                        }))}
+                        onChange={handleInputChange}
                       />
                     </Form.Group>
 
-                    {/* Cupo máximo de alumnos por grupo */}
+                    {/* Cupo máximo de alumnos */}
                     {formData.divideEnGrupos === "si" && (
                       <Form.Group controlId="cupoMaximoAlumnos" className="mt-3">
                         <Form.Label className="fw-semibold">Cupo máximo de alumnos por grupo</Form.Label>
@@ -313,21 +246,17 @@ const ServicioForm = () => {
                           value={formData.cupoMaximoAlumnos || ""}
                           onChange={handleInputChange}
                         />
-                      </Form.Group>)}
+                      </Form.Group>
+                    )}
 
-                    {/* Incluye inscripción */}
+                    {/* Incluye Inscripción */}
                     <Form.Group controlId="incluyeInscripcion" className="mt-3">
                       <Form.Check
                         type="checkbox"
                         name="incluyeInscripcion"
                         label="¿Incluye un cobro la inscripción?"
                         checked={formData.incluyeInscripcion || false}
-                        onChange={(e) =>
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            incluyeInscripcion: e.target.checked,
-                          }))
-                        }
+                        onChange={handleInputChange}
                       />
                     </Form.Group>
 
@@ -348,12 +277,10 @@ const ServicioForm = () => {
                     {/* Pago de inscripción */}
                     {formData.incluyeInscripcion && (
                       <Form.Group controlId="pagoInscripcion" className="mt-3">
-                        <Form.Label className="fw-semibold">
-                          La inscripción se paga:
-                        </Form.Label>
-                        {["Icluido en la Primera Cuota", "De forma Anticipada"].map((opcion, index) => (
+                        <Form.Label className="fw-semibold">La inscripción se paga:</Form.Label>
+                        {["Incluido en la Primera Cuota", "De forma Anticipada"].map((opcion) => (
                           <Form.Check
-                            key={index}
+                            key={opcion}
                             type="radio"
                             name="pagoInscripcion"
                             label={opcion}
@@ -365,73 +292,54 @@ const ServicioForm = () => {
                       </Form.Group>
                     )}
                   </Form>
-
-                  {/* Navegación de pestañas */}
                   <div className="d-flex justify-content-between">
-                    <span
-                      className="fs-3 d-flex justify-content-start ms-0"
-                      onClick={goToPreviousTab}
-                      style={{ cursor: "pointer" }}
-                    >
+                    <span className="fs-3" onClick={goToPreviousTab} style={{ cursor: "pointer" }}>
                       &#8592;
                     </span>
-                    <span
-                      className="fs-3"
-                      style={{ cursor: "pointer" }}
-                      onClick={goToNextTab}
-                    >
+                    <span className="fs-3" style={{ cursor: "pointer" }} onClick={goToNextTab}>
                       &#8594;
                     </span>
                   </div>
                 </Tab>
 
-
-                <Tab eventKey="precio" title="Precio">
+                {/* Monto Tab */}
+                <Tab eventKey="monto" title="Monto">
                   <Form>
-                    <Form.Group controlId="costo" className="mt-3">
-                      <Form.Label className="fw-semibold">Costo</Form.Label>
+                    {/* Cantidad de días por semana */}
+                    <Form.Group controlId="cantidadDiasSemana" className="mt-3">
+                      <Form.Label className="fw-semibold">Cantidad de días por semana</Form.Label>
                       <Form.Control
                         type="number"
-                        name="costo"
-                        min="0"
-                        value={formData.costo}
+                        name="cantidadDiasSemana"
+                        placeholder="Ej: 3"
+                        value={formData.cantidadDiasSemana || ""}
                         onChange={handleInputChange}
                       />
                     </Form.Group>
 
-                    <Form.Group controlId="metodoPago" className="mt-3">
-                      <Form.Label className="fw-semibold">
-                        Método de Pago
-                      </Form.Label>
-                      {["Efectivo", "Tarjeta", "Transferencia"].map(
-                        (metodo) => (
-                          <Form.Check
-                            key={metodo}
-                            type="radio"
-                            name="metodoPago"
-                            label={metodo}
-                            value={metodo.toLowerCase()}
-                            checked={
-                              formData.metodoPago === metodo.toLowerCase()
-                            }
-                            onChange={handleInputChange}
-                          />
-                        )
-                      )}
+                    {/* Monto correspondiente */}
+                    <Form.Group controlId="montoPorSemana" className="mt-3">
+                      <Form.Label className="fw-semibold">Monto correspondiente por semana</Form.Label>
+                      <Form.Control
+                        type="number"
+                        name="montoPorSemana"
+                        placeholder="Ej: 500"
+                        value={formData.montoPorSemana || ""}
+                        onChange={handleInputChange}
+                      />
                     </Form.Group>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span
-                        className="fs-3"
-                        onClick={goToPreviousTab}
-                        style={{ cursor: "pointer" }} // Volver a la sección anterior
-                      >
+
+                    {/* Botones de navegación */}
+                    <div className="d-flex justify-content-between align-items-center mt-3">
+                      <span className="fs-3" onClick={goToPreviousTab} style={{ cursor: "pointer" }}>
                         &#8592;
                       </span>
                       <button
-                        type="submit"
+                        type="button" // Cambiado a "button" para evitar submit del formulario completo
                         className="btn btn-primary"
-                        disabled={!isValid} // Deshabilitar si el formulario no es válido
-                        style={{ marginLeft: "auto" }} // Esto asegura que el botón se alinee a la derecha
+                        // Deshabilitar si el formulario no es válido
+                        style={{ marginLeft: "auto" }}
+                        onClick={handleRegister} // Llama a la función de navegación
                       >
                         Regístrate
                       </button>
@@ -443,12 +351,10 @@ const ServicioForm = () => {
           </Card>
         </Col>
 
+        {/* Resumen del Servicio */}
         <Col xs={12} md={4} className="mt-4 mt-md-0">
-          <Card
-            className="shadow-lg rounded-3 border-0"
-            style={{ backgroundColor: "white" }}
-          >
-            <Card.Header className="fs-4 fw-semibold text-center  text-white rounded-top-3" style={{ backgroundColor: '#1E1B4B' }}>
+          <Card className="shadow-lg rounded-3 border-0" style={{ backgroundColor: "white" }}>
+            <Card.Header className="fs-4 fw-semibold text-center text-white rounded-top-3" style={{ backgroundColor: '#1E1B4B' }}>
               Resumen del Servicio
             </Card.Header>
             <Card.Body className="text-center">
