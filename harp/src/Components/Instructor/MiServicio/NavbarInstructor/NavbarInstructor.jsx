@@ -67,7 +67,7 @@ function NavbarInstructor() {
         ></span>
       </button>
 
-      <a className="navbar-brand d-lg-none" href="/">
+      <a className="navbar-brand d-lg-none" href="localhost/" >
         <img src={img} alt="Harp Logo" width="100" />
       </a>
       <div
