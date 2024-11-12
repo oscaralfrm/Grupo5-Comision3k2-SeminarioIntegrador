@@ -78,9 +78,9 @@ const Cobros = () => {
   return (
     <div
       className="container-fluid d-flex flex-column justify-content-start align-items-center"
-      style={{ minHeight: '85vh', paddingTop: '2vh', marginTop: "5vh" }} // Se ajusta el alto para subir el componente
+      style={{ minHeight: '85vh', paddingTop: '2vh', marginTop: "2vh" }} // Se ajusta el alto para subir el componente
     >
-      <h1 className="text-center mb-4">Mis Cobros</h1>
+      <h1 className="text-center mb-4">Cobros</h1>
       
       <Row className="mb-4 w-75 justify-content-center"> {/* Usamos w-75 para ajustar el ancho */}
         <Col md={5} className="p-0">

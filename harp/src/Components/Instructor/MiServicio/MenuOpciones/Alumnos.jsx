@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Row, Col, Modal, Container, Form } from "react-bootstrap";
+import { Card, Button, Row, Col, Modal, Container, Form, Table } from "react-bootstrap";
 import { Person } from "react-bootstrap-icons";
 import { useParams } from "react-router-dom";
+import { AiOutlineClose } from "react-icons/ai"; // Icono de cruz fino
+
 
 const Alumnos = () => {
   const [students, setStudents] = useState([
@@ -10,8 +12,11 @@ const Alumnos = () => {
       name: "Juan Pérez",
       group: "Yoga Adultos",
       image: "",
-      attendance: "Asistió 10 veces",
-      payments: [{ date: "2024-11-01", amount: 50 }],
+      attendanceRecords: [
+        { date: "2024-11-01", attended: true },
+        { date: "2024-11-02", attended: false },
+      ],
+      payments: [{ date: "2024-11-01", amount: 50, status: true }],
       details: {
         dni: "12345678",
         phone: "123-456-7890",
@@ -24,8 +29,11 @@ const Alumnos = () => {
       name: "Ana Gómez",
       group: "Entrenamiento Funcional",
       image: "https://randomuser.me/api/portraits/women/21.jpg",
-      attendance: "Asistió 12 veces",
-      payments: [{ date: "2024-10-20", amount: 40 }],
+      attendanceRecords: [
+        { date: "2024-11-01", attended: true },
+        { date: "2024-11-03", attended: true },
+      ],
+      payments: [{ date: "2024-10-20", amount: 40, status: false }],
       details: {
         dni: "87654321",
         phone: "098-765-4321",
@@ -38,8 +46,11 @@ const Alumnos = () => {
       name: "Carlos Rodríguez",
       group: "Yoga Jóvenes",
       image: "",
-      attendance: "Asistió 8 veces",
-      payments: [{ date: "2024-09-30", amount: 30 }],
+      attendanceRecords: [
+        { date: "2024-09-30", attended: false },
+        { date: "2024-10-01", attended: true },
+      ],
+      payments: [{ date: "2024-09-30", amount: 30, status: true }],
       details: {
         dni: "11223344",
         phone: "321-654-9870",
@@ -48,8 +59,8 @@ const Alumnos = () => {
       },
     },
   ]);
-  const [filteredStudents, setFilteredStudents] = useState(students);
 
+  const [filteredStudents, setFilteredStudents] = useState(students);
   const [showDetails, setShowDetails] = useState(false);
   const [showPayments, setShowPayments] = useState(false);
   const [showAttendance, setShowAttendance] = useState(false);
@@ -61,7 +72,6 @@ const Alumnos = () => {
     group: "",
   });
 
-  // Cambiar los filtros automáticamente mientras se escribe
   useEffect(() => {
     const applyFilters = () => {
       setFilteredStudents(
@@ -104,19 +114,27 @@ const Alumnos = () => {
   const handleClosePayments = () => setShowPayments(false);
   const handleCloseAttendance = () => setShowAttendance(false);
 
+  const handleRemoveStudent = (student) => {
+    if (student.payments.some(payment => payment.status)) {
+      alert("No se puede dar de baja al alumno ya que ya ha pagado.");
+    } else if (window.confirm("¿Estás seguro de que deseas dar de baja a este alumno?")) {
+      setStudents(students.filter(s => s.id !== student.id));
+    }
+  };
+
   return (
     <Container fluid>
       <Row className="mt-5">
         <Col xs={12}>
-          <h1 className="text-center mb-4" style={{ color: "#1E1B4B", fontWeight: "bold" }}>
+          <h1 className="text-center mb-4" style={{ color: "#1E1B4B", fontWeight: "bold", marginTop: "" }}>
             Alumnos
           </h1>
 
           {/* Filtros */}
           <Form className="mb-4">
-            <Row className="g-2">
-              <Col xs={12} md={4}>
-                <Form.Group controlId="filterName">
+            <Row className="justify-content-center">
+              <Col xs={10} md={4}>
+                <Form.Group controlId="filterName" className="text-center">
                   <Form.Label>Nombre y Apellido</Form.Label>
                   <Form.Control
                     type="text"
@@ -124,11 +142,12 @@ const Alumnos = () => {
                     name="name"
                     value={filters.name}
                     onChange={handleFilterChange}
+                    style={{ width: '80%', margin: '0 auto' }}
                   />
                 </Form.Group>
               </Col>
-              <Col xs={12} md={4}>
-                <Form.Group controlId="filterDni">
+              <Col xs={10} md={4}>
+                <Form.Group controlId="filterDni" className="text-center">
                   <Form.Label>DNI</Form.Label>
                   <Form.Control
                     type="text"
@@ -136,23 +155,24 @@ const Alumnos = () => {
                     name="dni"
                     value={filters.dni}
                     onChange={handleFilterChange}
+                    style={{ width: '80%', margin: '0 auto' }}
                   />
                 </Form.Group>
               </Col>
-              <Col xs={12} md={4}>
-                <Form.Group controlId="filterGroup">
+              <Col xs={10} md={4}>
+                <Form.Group controlId="filterGroup" className="text-center">
                   <Form.Label>Grupo</Form.Label>
                   <Form.Control
                     as="select"
                     name="group"
                     value={filters.group}
                     onChange={handleFilterChange}
+                    style={{ width: '80%', margin: '0 auto' }}
                   >
                     <option value="">Seleccionar grupo</option>
                     <option value="Yoga Adultos">Yoga Adultos</option>
                     <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
                     <option value="Yoga Jóvenes">Yoga Jóvenes</option>
-                    {/* Agregar más grupos si es necesario */}
                   </Form.Control>
                 </Form.Group>
               </Col>
@@ -163,7 +183,15 @@ const Alumnos = () => {
           <Row xs={1} sm={2} md={3} lg={4} className="g-4">
             {filteredStudents.map((student) => (
               <Col key={student.id}>
-                <Card className="shadow-sm" style={{ borderColor: "#4F46E5", borderRadius: "15px", marginBottom: "20px" }}>
+                <Card className="shadow-sm position-relative" style={{ borderColor: "#4F46E5", borderRadius: "15px", marginBottom: "20px" }}>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    className="position-absolute top-0 end-0 m-1"
+                    onClick={() => handleRemoveStudent(student)}
+                  >
+                    ✖
+                  </Button>
                   <Card.Img
                     variant="top"
                     src={student.image || ""}
@@ -204,14 +232,14 @@ const Alumnos = () => {
                       {student.group}
                     </Card.Subtitle>
                     <div className="d-flex justify-content-around mt-3">
-                      <Button variant="outline-primary" onClick={() => handleShowDetails(student)}>
-                        Ver Detalle
+                      <Button variant="primary" onClick={() => handleShowDetails(student)}>
+                        Detalle
                       </Button>
-                      <Button variant="outline-info" onClick={() => handleShowAttendance(student)}>
-                        Ver Asistencia
+                      <Button variant="primary" onClick={() => handleShowAttendance(student)}>
+                        Asistencias
                       </Button>
-                      <Button variant="outline-success" onClick={() => handleShowPayments(student)}>
-                        Ver Cobros
+                      <Button variant="primary" onClick={() => handleShowPayments(student)}>
+                        Pagos
                       </Button>
                     </div>
                   </Card.Body>
@@ -230,7 +258,6 @@ const Alumnos = () => {
               <p><strong>Teléfono:</strong> {selectedStudent?.details.phone}</p>
               <p><strong>Email:</strong> {selectedStudent?.details.email}</p>
               <p><strong>Edad:</strong> {selectedStudent?.details.age}</p>
-              <p><strong>Grupo:</strong> {selectedStudent?.group}</p>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleCloseDetails}>
@@ -239,13 +266,28 @@ const Alumnos = () => {
             </Modal.Footer>
           </Modal>
 
-          {/* Modal de Asistencia */}
+          {/* Modal de Asistencias */}
           <Modal show={showAttendance} onHide={handleCloseAttendance} centered>
             <Modal.Header closeButton>
-              <Modal.Title>Asistencia - {selectedStudent?.name}</Modal.Title>
+              <Modal.Title>Asistencias de {selectedStudent?.name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p><strong>Asistencia Total:</strong> {selectedStudent?.attendance}</p>
+              <Table striped bordered>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Asistió</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedStudent?.attendanceRecords.map((record, index) => (
+                    <tr key={index}>
+                      <td>{record.date}</td>
+                      <td>{record.attended ? 'Sí' : 'No'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleCloseAttendance}>
@@ -254,19 +296,41 @@ const Alumnos = () => {
             </Modal.Footer>
           </Modal>
 
-          {/* Modal de Cobros */}
+          {/* Modal de Pagos */}
           <Modal show={showPayments} onHide={handleClosePayments} centered>
-            <Modal.Header closeButton>
-              <Modal.Title>Cobros - {selectedStudent?.name}</Modal.Title>
+            <Modal.Header closeButton className="position-relative">
+              <AiOutlineClose
+                style={{
+                  color: "red",
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  fontSize: "1.2rem",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleRemoveStudent(selectedStudent.id)}
+              />
+              <Modal.Title>Detalles de {selectedStudent?.name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <ul>
-                {selectedStudent?.payments.map((payment, index) => (
-                  <li key={index}>
-                    <strong>Fecha:</strong> {payment.date} - <strong>Monto:</strong> ${payment.amount}
-                  </li>
-                ))}
-              </ul>
+              <Table striped bordered>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedStudent?.payments.map((payment, index) => (
+                    <tr key={index}>
+                      <td>{payment.date}</td>
+                      <td>${payment.amount}</td>
+                      <td>{payment.status ? 'Pagado' : 'Pendiente'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleClosePayments}>
