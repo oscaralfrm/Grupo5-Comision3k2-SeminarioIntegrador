@@ -12,6 +12,7 @@ import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.pagos.IPagoService;
 import com.harp.backend.entities.pagos.Pago;
 import com.harp.backend.entities.pagos.metodoPago.MetodoPago;
+import com.harp.backend.entities.pagos.metodoPago.MetodoPagoService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class CuotaService implements ICuotaService {
 
     @Autowired
     private IPagoService pagoService;
+
+    @Autowired
+    private MetodoPagoService metodoPagoService;
 
     @Override
     public List<Cuota> getAllCuotas() {
@@ -161,7 +165,8 @@ public class CuotaService implements ICuotaService {
                              LocalDate fechaInicioCiclo, LocalDate fechaFinCiclo, LocalDate fechaLimitePago) {
 
         //Creamos el cambio de estado, por defecto tiene asociado el estado.Pendiente
-        CambioEstadoCuota cambioEstado = new CambioEstadoCuota(EstadoCuota.Pendiente);
+        //CambioEstadoCuota cambioEstado = new CambioEstadoCuota(EstadoCuota.Pendiente);
+        CambioEstadoCuota cambioEstado = cambioEstadoService.createCambioEstadoCuota(EstadoCuota.Pendiente);
 
         Cuota cuotaCreada = new Cuota(montoServicio, recargo, fechaInicioCiclo, fechaFinCiclo, fechaLimitePago);
         cuotaCreada.agregarCambioEstado(cambioEstado);
@@ -171,6 +176,7 @@ public class CuotaService implements ICuotaService {
         // REVISAR RECURSIVIDAD
 
         cuotaRepository.save(cuotaCreada);
+        System.out.println("cuota creada" + cuotaCreada);
         return cuotaCreada;
     }
 
@@ -187,7 +193,7 @@ public class CuotaService implements ICuotaService {
     public Cuota crearPrimerCuotaConEstrategia(Inscripcion inscripcion, Servicio servicio) {
         // si los alumnos se inscriben al servicio, el servicio tiene una cantidad de veces semanales
         // si los alumnos se inscriben al grupo, el grupo tiene una cantidad de veces semanales
-
+        System.out.println("creando cuota");
         // REVISARRRRRRRRRR
         // REVISAR SI RESUELVE TENER EN INSCRIPCION LA CANTIDAD DE VECES SEMANALES
         Integer cantVecesSemanalesAlumno = inscripcion.getCantVecesSemanales();
@@ -251,11 +257,40 @@ public class CuotaService implements ICuotaService {
 //        return cuotaRepository.save(cuota);
 //    }
 
-    public void pagarCuota(Long idCuota, MetodoPago metodoPago) {
+    public void pagarCuota(Long idCuota, String nombre) {
+        MetodoPago metodoPago = metodoPagoService.findMetodoPagoByNombre(nombre);
         Cuota cuota = this.findCuota(idCuota);
+
+        if ( ! ( cuota.esPendiente() || cuota.esVencida() ) )  {
+            throw new UnsupportedOperationException("La cuota no puede ser abonada.");
+        }
+
         //PAGO
         Pago pago = pagoService.createPago(metodoPago);
         cuota.setPago(pago);
+
+        // CAMBIO DE ESTADO
+        this.cambiarEstadoCuota(EstadoCuota.Abonada, cuota);
+    }
+
+    public void anularCuota(Long idCuota) {
+        Cuota cuota = this.findCuota(idCuota);
+
+        // CAMBIO DE ESTADO
+        this.cambiarEstadoCuota(EstadoCuota.Anulada, cuota);
+    }
+
+    public void cambiarEstadoCuota(EstadoCuota estadoCuota, Cuota cuota) {
+        // Buscar cambio de estado actual y finalizarlo
+        CambioEstadoCuota cambioEstadoActual = cuota.buscarCambioEstadoActual();
+        cambioEstadoActual.setFechaFin(LocalDate.now());
+        cambioEstadoService.save(cambioEstadoActual);
+
+        // Creamos estado actual
+        CambioEstadoCuota cambioEstadoNuevo = cambioEstadoService.createCambioEstadoCuota(estadoCuota);
+        cuota.agregarCambioEstado(cambioEstadoNuevo);
+
+        // Persistimos los cambios
         cuotaRepository.save(cuota);
     }
 }

@@ -38,6 +38,12 @@ public class InstructorController {
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     };
 
+    // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
+    @GetMapping("/{idInstructor}/servicios/ingresos-por-mes")
+    public ResponseEntity<double[]> calcularIngresosPorMesDeServicios(@PathVariable Long idInstructor) {
+        double[] totalesPorMes = instructorService.calcularIngresosPorMesDeServiciosDeInstructor(idInstructor);
+        return ResponseEntity.status(HttpStatus.OK).body(totalesPorMes);
+    };
 
     @PostMapping
     public ResponseEntity<Instructor> saveInstructor(@RequestBody InstructorDTO instructorDTO) {

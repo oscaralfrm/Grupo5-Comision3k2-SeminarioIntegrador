@@ -84,27 +84,31 @@ public class HorarioService implements IHorarioService {
 
     // FALTA IMPLEMENTAR EL CAMBIO DE GRUPO o de HORARIO
 
-    public void agregarAlumnoAHorario(Alumno alumnoExistente, Horario horario) {
-        // Agregamos al alumno al horario y persistimos los cambios
-        horario.agregarAlumno(alumnoExistente);
-        horarioRepository.save(horario);
-        //Agregar asistencias alumno a las clases futuras ya creadas
+    public void agregarAlumnoAAsistencias(Alumno alumnoExistente, Horario horario) {
         claseService.agregarAsistenciasDeAlumnoNuevoAClasesFuturas(alumnoExistente, horario);
     }
 
-    public void eliminarAlumnoDeUnHorario(Alumno alumnoExistente, Horario horario) {
-        // Eliminamos el alumno del horario y persistimos los cambios
-        horario.eliminarAlumno(alumnoExistente);
-        horarioRepository.save(horario);
-
-        // Eliminar asistencias alumno de clases futuras ya creadas
-        claseService.eliminarAsistenciasDeAlumnoDeClasesFuturas(alumnoExistente, horario);
-    }
-
-    public void eliminarAlumnoDeHorarios(Alumno alumnoExistente, List<Horario> horarios) {
-        for (Horario horario : horarios) {
-            eliminarAlumnoDeUnHorario(alumnoExistente, horario);
-        }
-    }
+//    public void agregarAlumnoAHorario(Alumno alumnoExistente, Horario horario) {
+//        // Agregamos al alumno al horario y persistimos los cambios
+//        horario.agregarAlumno(alumnoExistente);
+//        horarioRepository.save(horario);
+//        //Agregar asistencias alumno a las clases futuras ya creadas
+//        claseService.agregarAsistenciasDeAlumnoNuevoAClasesFuturas(alumnoExistente, horario);
+//    }
+//
+//    public void eliminarAlumnoDeUnHorario(Alumno alumnoExistente, Horario horario) {
+//        // Eliminamos el alumno del horario y persistimos los cambios
+//        horario.eliminarAlumno(alumnoExistente);
+//        horarioRepository.save(horario);
+//
+//        // Eliminar asistencias alumno de clases futuras ya creadas
+//        claseService.eliminarAsistenciasDeAlumnoDeClasesFuturas(alumnoExistente, horario);
+//    }
+//
+//    public void eliminarAlumnoDeHorarios(Alumno alumnoExistente, List<Horario> horarios) {
+//        for (Horario horario : horarios) {
+//            eliminarAlumnoDeUnHorario(alumnoExistente, horario);
+//        }
+//    }
 
 }

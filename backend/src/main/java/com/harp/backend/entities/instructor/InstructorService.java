@@ -88,4 +88,9 @@ public class InstructorService implements IInstructorService {
         instructorRepository.save(instructor);
     }
 
+    public double[] calcularIngresosPorMesDeServiciosDeInstructor(Long idInstructor) {
+        Instructor instructor = this.findInstructor(idInstructor);
+        return instructor.calcularTotalIngresoServicioPorMes();
+    }
+
 }

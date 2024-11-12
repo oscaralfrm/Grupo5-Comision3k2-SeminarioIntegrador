@@ -65,4 +65,17 @@ public class Instructor {
 //        return usuario.getNombre() + usuario.getApellido();
 //    }
 
+    public double[] calcularTotalIngresoServicioPorMes() {
+        double[] totalIngresosServiciosPorMes = new double[12];
+
+        for (Servicio servicio : servicios) {
+            double[] ingresosPorMesUnServicio = servicio.calcularIngresosPorMes();
+            for (int i = 0; i < 12; i++) {
+                totalIngresosServiciosPorMes[i] += ingresosPorMesUnServicio[i];
+            }
+        }
+
+        return totalIngresosServiciosPorMes;
+    }
+
 }

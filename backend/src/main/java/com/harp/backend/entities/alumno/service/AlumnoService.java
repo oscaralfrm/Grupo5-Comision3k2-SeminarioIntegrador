@@ -65,7 +65,7 @@ public class AlumnoService implements IAlumnoService {
     @Override
     public Alumno findAlumno(Long idAlumno) {
         return alumnoRepository.findById(idAlumno)
-                .orElseThrow(() -> new NoSuchElementFoundException("Servicio no encontrado"));
+                .orElseThrow(() -> new NoSuchElementFoundException("Alumno no encontrado"));
     }
 
     public List<Alumno> getAlumnosInscriptosAServicio() {

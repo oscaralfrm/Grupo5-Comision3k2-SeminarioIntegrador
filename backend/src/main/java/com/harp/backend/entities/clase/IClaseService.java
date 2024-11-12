@@ -18,6 +18,6 @@ public interface IClaseService {
     public Clase findClase(Long idClase);
     public Clase editClase(Long idClase, ClaseDTO claseDTO);
     public void cambiarClaseANoFueDada(Long idClase);
-    void crearClasesParaSemanaSiguente(Servicio servicio);
+    void crearClasesParaSemanaSiguente(Servicio servicio, LocalDate fechaInicio);
     void crearClasesParaSemanaSiguienteGrupo(Grupo grupo, LocalDate fechaInicio);
 }

@@ -18,6 +18,11 @@ public class CambioEstadoCuotaService implements ICambioEstadoCuotaService {
     }
 
     @Override
+    public void save(CambioEstadoCuota cambioEstadoCuota) {
+        cambioEstadoCuotaRepository.save(cambioEstadoCuota);
+    }
+
+    @Override
     public void deleteCambioEstadoCuota(CambioEstadoCuota cambioEstadoCuota) {
         cambioEstadoCuotaRepository.delete(cambioEstadoCuota);
     }

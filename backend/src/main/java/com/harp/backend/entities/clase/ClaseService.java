@@ -9,9 +9,7 @@ import com.harp.backend.entities.diaSemana.DiaSemana;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.grupo.GrupoService;
 import com.harp.backend.entities.horario.Horario;
-import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
-import com.harp.backend.entities.servicio.ServicioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +29,6 @@ public class ClaseService implements IClaseService {
     private IClaseRepository claseRepository;
 
     @Autowired
-    private IServicioService servicioService;
-
-    @Autowired
     private AsistenciaService asistenciaService;
 
     @Override
@@ -51,27 +46,14 @@ public class ClaseService implements IClaseService {
         return claseRepository.save(clase);
     };
 
-    // Programa la creación de clases para ejecutarse cada domingo a la medianoche
-    @Transactional
-    //@Scheduled(cron = "0 40 23 * * *", zone = "America/Argentina/Buenos_Aires")
-    @Scheduled(cron = "0 0 0 * * SUN", zone = "America/Argentina/Buenos_Aires")
-    public void crearClasesParaLaSemanaSiguienteServicioAsistenciasActivas() {
-        System.out.println("Proceso automatico creacion de clases y asistencias");
-        // Obtenemos todos los servicios con sus grupos y horarios
-        // REVISAR: buscar solo los que tienen asistencias activas
-        List<Servicio> serviciosAsistenciasActivas = servicioService.findServiciosAsistenciasActivas();
 
-        for (Servicio servicio : serviciosAsistenciasActivas) {
-            crearClasesParaSemanaSiguente(servicio);
-        }
-    }
-
-    @Override
-    public void crearClasesParaSemanaSiguente(Servicio servicio) {
+    public void crearClasesParaSemanaSiguente(Servicio servicio, LocalDate fechaInicio) {
+        // Fecha inicio podria ser null
+        // O podria ser la fecha de inicio del servicio a partir de la cual se quiere crear las clases
         Set<Grupo> grupos = servicio.getGrupos();
         // Iteramos sobre cada grupo y sus horarios para crear clases para la semana siguiente
         for (Grupo grupo : grupos) {
-                this.crearClasesParaSemanaSiguienteGrupo(grupo, null);
+                this.crearClasesParaSemanaSiguienteGrupo(grupo, fechaInicio);
             }
     }
 

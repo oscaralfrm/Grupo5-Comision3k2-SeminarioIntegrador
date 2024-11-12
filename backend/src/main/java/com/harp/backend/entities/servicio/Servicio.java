@@ -14,6 +14,7 @@ import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.modalidad.Modalidad;
+import com.harp.backend.entities.pagos.Pago;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
 import lombok.*;
@@ -338,7 +339,7 @@ public class Servicio {
     }
 
     public void setFechaInicio(LocalDate fechaInicioNueva) {
-        if (fechaInicioNueva.isBefore(LocalDate.now())) {
+        if (fechaInicioNueva != null && fechaInicioNueva.isBefore(LocalDate.now())) {
             throw new UnsupportedOperationException("La fecha inicio debe ser mayor a la actual");
         }
         this.fechaInicio = fechaInicioNueva;
@@ -420,5 +421,31 @@ public class Servicio {
 
     public void agregarInscripcion(Inscripcion inscripcion) {
         this.inscripciones.add(inscripcion);
+    }
+
+//    public List<Inscripcion> obtenerInscripcionesEntre(LocalDate fechaInicio, LocalDate fechaFin) {
+//        return this.inscripciones.stream().filter(i -> i.estaEntreEstasFechas(fechaInicio, fechaFin)).toList();
+//    }
+
+    public List<Inscripcion> obtenerInscripcionesEsteAnio(int anio) {
+        return this.inscripciones.stream().filter(i -> i.esDeEsteAnio(anio)).toList();
+    }
+
+    public double[] calcularIngresosPorMes() {
+        LocalDate fechaActual = LocalDate.now();
+        int anioActual = fechaActual.getYear();
+
+        double[] totalIngresosPorMes = new double[12];
+
+        List<Cuota> cuotas = this.obtenerInscripcionesEsteAnio(anioActual)
+                .stream().flatMap(i -> i.getCuotas().stream()) // Convertimos la lista de cuotas en un stream
+                .toList();
+        // LE sumamos el total del pago de la cuota al mes de la fecha del pago de la cuota
+        for (Cuota cuota :cuotas) {
+            Pago pago = cuota.getPago();
+            int mes = pago.getFechaPago().getMonthValue();
+            totalIngresosPorMes[mes] += cuota.getMontoServicio().getMonto();
+        }
+        return totalIngresosPorMes;
     }
 }

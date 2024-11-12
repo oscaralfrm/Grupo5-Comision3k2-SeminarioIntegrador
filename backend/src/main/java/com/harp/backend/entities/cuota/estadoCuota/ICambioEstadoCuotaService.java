@@ -8,4 +8,5 @@ public interface ICambioEstadoCuotaService {
     public CambioEstadoCuota createCambioEstadoCuota(EstadoCuota estadoCuota);
     public void deleteCambioEstadoCuota(CambioEstadoCuota cambioEstadoCuota);
     public void finalizarCambioEstadoCuota(CambioEstadoCuota cambioEstadoCuota, LocalDate fechaActual);
+    void save(CambioEstadoCuota cambioEstadoCuota);
 }

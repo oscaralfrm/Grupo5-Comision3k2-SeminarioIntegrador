@@ -28,7 +28,4 @@ public class ClaseController {
         claseService.cambiarClaseANoFueDada(idClase);
         return  ResponseEntity.ok("Se registró que la clase no fue dada");
     }
-
-
-
 }

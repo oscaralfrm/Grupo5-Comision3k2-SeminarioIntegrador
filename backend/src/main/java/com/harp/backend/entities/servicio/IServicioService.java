@@ -36,4 +36,5 @@ public interface IServicioService {
     List<Double> calcularTotalPendienteYEsperado(Long idServicio);
     Set<MontoServicio> obtenerHistorialMontosDeServicio(Long idServicio);
     void setFechaInicioServicio(Long idServicio, LocalDate fechaInicio);
+    double[] calcularIngresosPorMesDeServicio(Long idServicio);
 }

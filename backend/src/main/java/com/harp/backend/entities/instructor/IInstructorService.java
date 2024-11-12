@@ -12,4 +12,5 @@ public interface IInstructorService {
     Instructor editInstructor(Long idInstructor, InstructorDTO instructorDTO);
     Instructor createInstructor(InstructorDTO instructorDTO);
     List<Servicio> findServiciosDeInstructor(Long idInstructor);
+    double[] calcularIngresosPorMesDeServiciosDeInstructor(Long idInstructor);
 }

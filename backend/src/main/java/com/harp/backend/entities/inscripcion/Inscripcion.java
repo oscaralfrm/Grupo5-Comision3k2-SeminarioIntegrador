@@ -150,7 +150,9 @@ public class Inscripcion {
         }
         LocalDate fechaActual = LocalDate.now();
 
-        this.fechaInicio = fechaActual;
+        // no setteamos la fecha inicio = actual porque
+        // al aceptar la inscrip ya la definimos de antemano, revisar cuando el alumno se inscriba al pagar el solo
+        //this.fechaInicio = fechaActual;
         this.estado = EstadoInscripcion.EnCurso;
     }
 
@@ -171,6 +173,11 @@ public class Inscripcion {
 
         //cambiar el estado a Aceptada
         this.estado = EstadoInscripcion.Aceptada;
+
+        // En caso que la fecha inicio sea igual a la actual se inicia la inscripcion
+        if (fechaInicio.isEqual(LocalDate.now())) {
+            this.iniciar();
+        }
     }
 
     public void rechazar() {
@@ -256,6 +263,10 @@ public class Inscripcion {
 
     public boolean estaPendiente() {
         return (this.estado == EstadoInscripcion.PendienteAceptacion);
+    }
+
+    public boolean esDeEsteAnio(int anio) {
+        return ( this.fechaInicio.getYear() == anio );
     }
 
  }

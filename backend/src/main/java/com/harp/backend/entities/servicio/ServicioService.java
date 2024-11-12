@@ -3,6 +3,7 @@ package com.harp.backend.entities.servicio;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.categoria.CategoriaService;
+import com.harp.backend.entities.clase.ClaseService;
 import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.grupo.Grupo;
@@ -12,12 +13,15 @@ import com.harp.backend.entities.historialMontoCuota.MontoServicioService;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.EstrategiaCrearInscripcionFactory;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.IEstrategiaInscripcion;
+import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.instructor.InstructorService;
 import com.harp.backend.exception.NoSuchElementFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -44,6 +48,9 @@ public class ServicioService implements IServicioService {
 
     @Autowired
     private MontoServicioService montoService;
+
+    @Autowired
+    private ClaseService claseService;
 
 //    @Autowired
 //    private IInscripcionService inscripcionService;
@@ -214,7 +221,8 @@ public class ServicioService implements IServicioService {
 
     public List<Cuota> findUltimasCuotasDeServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
-            return servicio.obtenerCuotasPendientesAlumnosActuales();
+            //return servicio.obtenerCuotasPendientesAlumnosActuales();
+        return servicio.obtenerUltimasCuotasAlumnosActuales();
     }
 
     // ver como hacer a
@@ -280,11 +288,34 @@ public class ServicioService implements IServicioService {
         servicioRepository.save(servicio);
 
         // Luego creamos las clases
-        // AGREAGARRRRRRRR
+        claseService.crearClasesParaSemanaSiguente(servicio, fechaInicio);
     }
+
+
+    // TRASLADAMOS GENERACION DE CLASES AQUI
+    // Programa la creación de clases para ejecutarse cada domingo a la medianoche
+    @Transactional
+    //@Scheduled(cron = "0 40 23 * * *", zone = "America/Argentina/Buenos_Aires")
+    @Scheduled(cron = "0 0 0 * * SUN", zone = "America/Argentina/Buenos_Aires")
+    public void crearClasesParaLaSemanaSiguienteServicioAsistenciasActivas() {
+        System.out.println("Proceso automatico creacion de clases y asistencias");
+        // Obtenemos todos los servicios con sus grupos y horarios
+        // REVISAR: buscar solo los que tienen asistencias activas
+        List<Servicio> serviciosAsistenciasActivas = this.findServiciosAsistenciasActivas();
+
+        for (Servicio servicio : serviciosAsistenciasActivas) {
+            claseService.crearClasesParaSemanaSiguente(servicio, null);
+        }
+    }
+
 
     public void agregarInscripcionAServicio(Inscripcion inscripcion, Servicio servicio) {
         servicio.agregarInscripcion(inscripcion);
         servicioRepository.save(servicio);
+    }
+
+    public double[] calcularIngresosPorMesDeServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.calcularIngresosPorMes();
     }
 }

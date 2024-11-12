@@ -6,6 +6,7 @@ import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.cuota.CuotaService;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.grupo.GrupoService;
+import com.harp.backend.entities.grupo.IGrupoService;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.horario.HorarioService;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.EstrategiaCrearInscripcionFactory;
@@ -219,12 +220,27 @@ public class InscripcionService implements IInscripcionService {
 //        }
         // Aca hacer lo mismo si es modalidad grupos y las asistencias estan activas
 
+        // Tengo que agregar al alumno a las clases del horario al que se inscribio
+        if (servicio.isAsistenciasActivas()) {
+            List<Horario> horariosInscripcion = null;
+            if (servicio.esDeModalidadAHorarios()) {
+                horariosInscripcion = inscripcionExistente.getHorarios();
+            }
+            if (servicio.esDeModalidadAGrupo()) {
+                horariosInscripcion = inscripcionExistente.getGrupo().getHorarios().stream().toList();
+            }
+            for (Horario horario : horariosInscripcion) {
+                horarioService.agregarAlumnoAAsistencias(alumnoExistente, horario);
+            }
+        }
+
+
         // Persisitemos los cambios
         inscripcionRepository.save(inscripcionExistente);
 
         // ACA creamos la primera cuota REVISAR!!°!!!
         Cuota cuota = cuotaService.crearPrimerCuotaConEstrategia(inscripcionExistente, servicio);
-
+        System.out.println("cuota3" + cuota);
         this.agregarCuotaAInscripcion(inscripcionExistente, cuota);
         //Aca notificamos que la inscripcion ya fue aceptada
     }

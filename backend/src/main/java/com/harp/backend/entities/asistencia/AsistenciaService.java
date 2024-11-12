@@ -1,7 +1,6 @@
 package com.harp.backend.entities.asistencia;
 
 import com.harp.backend.entities.alumno.model.Alumno;
-import com.harp.backend.entities.alumno.service.AlumnoService;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.ClaseService;
 import com.harp.backend.exception.NoSuchElementFoundException;
@@ -16,9 +15,6 @@ public class AsistenciaService implements IAsistenciaService{
 
     @Autowired
     private IAsistenciaRepository asistenciaRepository;
-
-    @Autowired
-    private AlumnoService alumnoService;
 
     @Override
     public List<Asistencia> getAllAsistencias() {

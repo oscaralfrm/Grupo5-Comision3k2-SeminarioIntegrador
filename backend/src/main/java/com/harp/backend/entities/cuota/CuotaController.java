@@ -1,6 +1,7 @@
 package com.harp.backend.entities.cuota;
 
 import com.harp.backend.entities.alumno.service.IAlumnoService;
+import com.harp.backend.entities.pagos.PagoDTO;
 import com.harp.backend.entities.pagos.metodoPago.MetodoPago;
 import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
@@ -32,12 +33,14 @@ public class CuotaController {
 //        return ResponseEntity.ok(cuotas);
 //    }
 
+    // UNA CUOTA ESPECIFICA
     @GetMapping("/alumnos/cuotas/{idCuota}")
     public ResponseEntity<Cuota> getCuotaById(@PathVariable @Min(1) Long idCuota) {
         Cuota cuotas = cuotaService.findCuota(idCuota);
         return ResponseEntity.ok(cuotas);
     }
 
+    // LAS CUOTAS DE UN ALUMNO
     @GetMapping("/alumnos/{idAlumno}/cuotas")
     public ResponseEntity<List<Cuota>> getCuotasDeAlumnosYServicio(@PathVariable @Min(1) Long idAlumno,
                                                             @PathVariable @Min(1) Long idServicio) {
@@ -45,6 +48,7 @@ public class CuotaController {
         return ResponseEntity.ok(cuotas);
     }
 
+    // LAS CUOTAS DE UN SS
     // REVISAR COMO HACER PARA QUE LAS CUOTAS TENGAN EL ALUMNO
     @GetMapping("/alumnos/cuotas")
     public ResponseEntity<List<Cuota>> getUltimasCuotasDeServicio(@PathVariable @Min(1) Long idServicio) {
@@ -60,17 +64,17 @@ public class CuotaController {
         return ResponseEntity.noContent().build();
     };
 
-//    // EDITAR
-//    @PutMapping("/cuotas/{idCuota}/anular")
-//    public ResponseEntity<String> anularCuota(@PathVariable @Min(1) Long idCuota) {
-//        cuotaService.anularCuota(idCuota);
-//        return ResponseEntity.ok("");
-//    }
+    // EDITAR
+    @PutMapping("/cuotas/{idCuota}/anular")
+    public ResponseEntity<String> anularCuota(@PathVariable @Min(1) Long idCuota) {
+        cuotaService.anularCuota(idCuota);
+        return ResponseEntity.ok("Se anuló la cuota.");
+    }
 
         // EDITAR
     @PutMapping("/cuotas/{idCuota}/pagar")
-    public ResponseEntity<String> pagarCuota(@PathVariable @Min(1) Long idCuota, @RequestBody MetodoPago metodoPago) {
-        cuotaService.pagarCuota(idCuota, metodoPago);
+    public ResponseEntity<String> pagarCuota(@PathVariable @Min(1) Long idCuota, @RequestBody PagoDTO pagoDTO) {
+        cuotaService.pagarCuota(idCuota, pagoDTO.getNombre());
         return ResponseEntity.ok("Se registró el pago de la cuota.");
     }
 

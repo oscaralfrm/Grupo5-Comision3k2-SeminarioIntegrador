@@ -161,6 +161,14 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(totales);
     };
 
+    // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
+    @GetMapping("/{idServicio}/ingresos-por-mes")
+    public ResponseEntity<double[]> calcularIngresosPorMesDeServicios(@PathVariable Long idServicio) {
+        double[] totalesPorMes = servicioService.calcularIngresosPorMesDeServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(totalesPorMes);
+    };
+
+
 //    @PutMapping("/{idServicio}/generar-codigo-inscripcion")
 //    public ResponseEntity<String> generarCodigoInscripcion(@PathVariable @Min(1) Long idServicio) {
 //        String codigoInscripcion = servicioService.generarCodigoInscripcion(idServicio);

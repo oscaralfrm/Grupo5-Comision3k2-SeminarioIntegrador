@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
 
 @Entity
 @Table(name = "cambiosestadocuota")
@@ -24,6 +25,8 @@ public class CambioEstadoCuota {
 
 //    @ManyToOne
 //    @JoinColumn(name = "estado_cuota_id")
+    @Column(name = "estado_cuota")
+    @Enumerated(EnumType.STRING)
     private EstadoCuota estadoCuota;
 
     public CambioEstadoCuota(EstadoCuota estadoCuota) {
