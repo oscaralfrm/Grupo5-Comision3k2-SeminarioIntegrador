@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = 'http://localhost:3000/api'; // Ajusta según tu configuración de backend
+const API_URL = 'http://localhost:9001/api'; // Ajusta según tu configuración de backend
 
 // Servicio para obtener todos los alumnos
 export const getAllAlumnos = async () => {
@@ -25,10 +25,33 @@ export const getAlumnoById = async (idAlumno) => {
     }
 };
 
-// Servicio para crear un alumno
-export const createAlumno = async (alumno) => {
+export const getAlumnosDeServicio = async (idServicio) => {
     try {
-        const response = await axios.post(`${API_URL}/alumnos`, alumno);
+        const response = await axios.get(`${API_URL}/${idServicio}/alumnos`);
+        return response.data;  // Suponiendo que la respuesta es un alumno
+    } catch (error) {
+        console.error("Error fetching alumno by ID: ", error);
+        throw error;
+    }
+};
+
+export const getAlumnosDeGrupo = async (idServicio, idGrupo) => {
+    try {
+        const response = await axios.get(`${API_URL}/servicios/${idServicio}/grupos/${idGrupo}/alumnos`);
+        return response.data;  // Suponiendo que la respuesta es un alumno
+    } catch (error) {
+        console.error("Error fetching alumno by ID: ", error);
+        throw error;
+    }
+};
+
+
+// Servicio para crear un alumno
+export const createAlumno = async (nombre, apellido, dni, nombreUsuario, contrasena, 
+    email, telefono, direccion, fechaNacimiento) => {
+    try {
+        const response = await axios.post(`${API_URL}/alumnos`, {ombre, apellido, dni, nombreUsuario, contrasena, 
+            email, telefono, direccion, fechaNacimiento});
         return response.data;  // Suponiendo que la respuesta es el alumno creado
     } catch (error) {
         console.error("Error creating alumno: ", error);
@@ -37,9 +60,11 @@ export const createAlumno = async (alumno) => {
 };
 
 // Servicio para editar un alumno
-export const editAlumno = async (alumno) => {
+export const editAlumno = async (alumnoId, nombre, apellido, dni, nombreUsuario, contrasena, 
+    email, telefono, direccion, fechaNacimiento) => {
     try {
-        const response = await axios.put(`${API_URL}/alumnos/${alumno.id}`, alumno);
+        const response = await axios.put(`${API_URL}/alumnos/${alumnoId}`, {nombre, apellido, dni, nombreUsuario, contrasena, 
+            email, telefono, direccion, fechaNacimiento});
         return response.data;  // Suponiendo que la respuesta es el alumno actualizado
     } catch (error) {
         console.error("Error editing alumno: ", error);
@@ -57,13 +82,10 @@ export const deleteAlumno = async (idAlumno) => {
     }
 };
 
-// Servicio para obtener las inscripciones de un alumno, con un filtro opcional de estado
-export const getInscripcionesDeAlumno = async (idAlumno, estado = '') => {
+export const getInscripcionesDeAlumno = async (idAlumno) => {
     try {
-        const response = await axios.get(`${API_URL}/alumnos/${idAlumno}/inscripciones`, {
-            params: { estado }  // Le pasamos el parámetro de estado si está disponible
-        });
-        return response.data;  // Suponiendo que la respuesta es una lista de inscripciones
+        const response = await axios.get(`${API_URL}/alumnos/${idAlumno}/inscripciones`);
+        return response.data;  
     } catch (error) {
         console.error("Error fetching inscripciones: ", error);
         throw error;
@@ -91,3 +113,4 @@ export const getHistorialCuotasDeAlumno = async (idAlumno, idServicio) => {
         throw error;
     }
 };
+

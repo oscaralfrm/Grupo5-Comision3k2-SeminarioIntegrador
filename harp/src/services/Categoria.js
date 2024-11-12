@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = 'http://localhost:3000/api'; // Ajusta según tu configuración de backend
+const API_URL = 'http://localhost:9001/api'; // Ajusta según tu configuración de backend
 
 // Servicio para obtener todas las categorías
 export const getAllCategorias = async () => {

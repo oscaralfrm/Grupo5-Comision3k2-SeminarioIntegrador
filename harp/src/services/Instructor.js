@@ -1,80 +1,76 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/instructores';  // Ajusta la URL según tu configuración
+const BASE_URL = 'http://localhost:9001/api/instructores';
 
-// Obtener todos los instructores
-const getAllInstructores = async () => {
+export const getAllInstructores = async () => {
   try {
-    const response = await axios.get(`${API_URL}`);
+    const response = await axios.get(`${BASE_URL}`);
     return response.data;
   } catch (error) {
-    throw new Error('Error al obtener instructores');
+    console.error('Error fetching instructores:', error);
+    throw error;
   }
 };
 
-// Obtener los servicios de un instructor por ID
-const getServiciosDeInstructor = async (idInstructor) => {
+export const getInstructorById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/${idInstructor}/servicios`);
+    const response = await axios.get(`${BASE_URL}/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error('Error al obtener los servicios del instructor');
+    console.error(`Error fetching instructor with ID ${id}:`, error);
+    throw error;
   }
 };
 
-// Crear un nuevo instructor
-const createInstructor = async (instructorDTO) => {
+export const getServiciosDeInstructor = async (idInstructor) => {
   try {
-    const response = await axios.post(API_URL, instructorDTO);
+    const response = await axios.get(`${BASE_URL}/${idInstructor}/servicios`);
     return response.data;
   } catch (error) {
-    throw new Error('Error al crear instructor');
+    console.error(`Error fetching servicios for instructor with ID ${idInstructor}:`, error);
+    throw error;
   }
 };
 
-// Eliminar un instructor
-const deleteInstructor = async (idInstructor) => {
+export const calcularIngresosPorMesDeServicios = async (idInstructor) => {
   try {
-    await axios.delete(`${API_URL}/${idInstructor}`);
-  } catch (error) {
-    throw new Error('Error al eliminar instructor');
-  }
-};
-
-// Editar un instructor
-const editInstructor = async (idInstructor, instructorDTO) => {
-  try {
-    const response = await axios.put(`${API_URL}/${idInstructor}`, instructorDTO);
+    const response = await axios.get(`${BASE_URL}/${idInstructor}/servicios/ingresos-por-mes`);
     return response.data;
   } catch (error) {
-    throw new Error('Error al editar instructor');
+    console.error(`Error calculating monthly income for instructor with ID ${idInstructor}:`, error);
+    throw error;
   }
 };
 
-// Agregar un servicio a un instructor
-const agregarServicioAInstructor = async (idInstructor, idServicio) => {
+export const createInstructor = async (nombre, apellido, dni, nombreUsuario, contrasena, 
+  email, telefono, direccion, fechaNacimiento) => {
   try {
-    await axios.post(`${API_URL}/${idInstructor}/servicios/${idServicio}`);
+    const response = await axios.post(`${BASE_URL}`, {nombre, apellido, dni, nombreUsuario, contrasena, 
+      email, telefono, direccion, fechaNacimiento});
+    return response.data;
   } catch (error) {
-    throw new Error('Error al agregar servicio al instructor');
+    console.error('Error saving new instructor:', error);
+    throw error;
   }
 };
 
-// Eliminar un servicio de un instructor
-const eliminarServicioDeInstructor = async (idInstructor, idServicio) => {
+export const deleteInstructor = async (idInstructor) => {
   try {
-    await axios.delete(`${API_URL}/${idInstructor}/servicios/${idServicio}`);
+    await axios.delete(`${BASE_URL}/${idInstructor}`);
   } catch (error) {
-    throw new Error('Error al eliminar servicio del instructor');
+    console.error(`Error deleting instructor with ID ${idInstructor}:`, error);
+    throw error;
   }
 };
 
-export default {
-  getAllInstructores,
-  getServiciosDeInstructor,
-  createInstructor,
-  deleteInstructor,
-  editInstructor,
-  agregarServicioAInstructor,
-  eliminarServicioDeInstructor,
+export const editInstructor = async (idInstructor, nombre, apellido, dni, nombreUsuario, contrasena, 
+  email, telefono, direccion, fechaNacimiento) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/${idInstructor}`, {nombre, apellido, dni, nombreUsuario, contrasena, 
+      email, telefono, direccion, fechaNacimiento});
+    return response.data;
+  } catch (error) {
+    console.error(`Error editing instructor with ID ${idInstructor}:`, error);
+    throw error;
+  }
 };
