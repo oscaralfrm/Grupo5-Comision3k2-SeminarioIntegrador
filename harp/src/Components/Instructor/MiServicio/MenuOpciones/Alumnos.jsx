@@ -28,7 +28,7 @@ const Alumnos = () => {
     {
       id: 2,
       name: "Ana Gómez",
-      group: "Entrenamiento Funcional",
+      group: "Yoga Adultos",
       image: "https://randomuser.me/api/portraits/women/21.jpg",
       attendanceRecords: [
         { date: "2024-11-01", attended: true },
@@ -126,17 +126,21 @@ const Alumnos = () => {
   return (
     <Container fluid>
       <Row className="mt-5">
-        <Col xs={12} className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="text-center mb-4" style={{ color: "#1E1B4B", fontWeight: "bold" }}>
-            Alumnos
-          </h1>
-          <Button
-            variant="primary"
-            onClick={() => navigate("/instructor/1/servicio/1/crear-grupo")}
-          >
-            Agregar Grupo
-          </Button>
-        </Col>
+      <Row className="mb-4 d-flex justify-content-between align-items-center">
+  <div className="text-center" style={{ flex: 1 }}>
+    <h1 style={{ color: "#1E1B4B", fontWeight: "bold" }}>Alumnos</h1>
+  </div>
+  <div className="text-end">
+    <Button
+      variant="primary"
+      onClick={() => navigate("/instructor/1/servicio/1/crear-grupo")}
+    >
+      Agregar Grupo
+    </Button>
+  </div>
+</Row>
+
+
 
         {/* Filtros */}
         <Form className="mb-4">
@@ -179,7 +183,6 @@ const Alumnos = () => {
                 >
                   <option value="">Seleccionar grupo</option>
                   <option value="Yoga Adultos">Yoga Adultos</option>
-                  <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
                   <option value="Yoga Jóvenes">Yoga Jóvenes</option>
                 </Form.Control>
               </Form.Group>

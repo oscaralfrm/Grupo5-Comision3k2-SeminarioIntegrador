@@ -27,7 +27,7 @@ const ServicioForm = () => {
     fechaLimitePago: "",
     divideEnGrupos: "",
     cupoMaximoAlumnos: "",
-    incluyeInscripcion: false,
+    incluyeInscripcion: "",
     montoInscripcion: "",
     pagoInscripcion: "",
     cantidadDiasSemana: "",
@@ -109,6 +109,7 @@ const ServicioForm = () => {
                         <option value="idiomas">Idiomas</option>
                         <option value="danza">Danza</option>
                         <option value="musica">Música</option>
+                        <option value="yoga">Yoga</option>
                       </Form.Control>
                     </Form.Group>
 
@@ -202,7 +203,7 @@ const ServicioForm = () => {
                     {/* Fecha límite de pago */}
                     <Form.Group controlId="fechaLimitePago" className="mt-3">
                       <Form.Label className="fw-semibold">
-                        Fecha límite de pago (X días desde el inicio del ciclo)
+                        Dia límite de pago (X días desde el inicio del ciclo)
                       </Form.Label>
                       <Form.Control
                         type="number"
@@ -303,22 +304,9 @@ const ServicioForm = () => {
 
                 {/* Monto Tab */}
                 <Tab eventKey="monto" title="Monto">
-                  <Form>
-                    {/* Cantidad de días por semana */}
-                    <Form.Group controlId="cantidadDiasSemana" className="mt-3">
-                      <Form.Label className="fw-semibold">Cantidad de días por semana</Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="cantidadDiasSemana"
-                        placeholder="Ej: 3"
-                        value={formData.cantidadDiasSemana || ""}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
-
-                    {/* Monto correspondiente */}
+                  <Form>                    {/* Monto correspondiente */}
                     <Form.Group controlId="montoPorSemana" className="mt-3">
-                      <Form.Label className="fw-semibold">Monto correspondiente por semana</Form.Label>
+                      <Form.Label className="fw-semibold">Monto de cuota</Form.Label>
                       <Form.Control
                         type="number"
                         name="montoPorSemana"
@@ -356,13 +344,26 @@ const ServicioForm = () => {
             <Card.Header className="fs-4 fw-semibold text-center text-white rounded-top-3" style={{ backgroundColor: '#1E1B4B' }}>
               Resumen del Servicio
             </Card.Header>
-            <Card.Body className="text-center">
+            <Card.Body className="text-left">
               {formData.logo && (
                 <Image src={URL.createObjectURL(formData.logo)} roundedCircle />
               )}
-              <h5>{formData.nombreServicio || "Nombre del Servicio"}</h5>
-              <p>{formData.descripcion || "Descripción del servicio"}</p>
-              <p>{formData.categoria || "Categoría"}</p>
+              <img>{formData.logo}</img>
+              <p>Categotria: {formData.categoria }</p>
+              <p>Nombre: {formData.nombreServicio }</p>
+              <p>Frecuencia de pago: {formData.frecuenciaCuotas }</p>
+              <p>Dia límite de pago: {formData.fechaLimitePago }</p>
+              <p>Se divide en grupos: {formData.divideEnGrupos }</p>
+              { (formData.divideEnGrupos == "si")? <p>Cantidad máxima por grupo: {formData.cupoMaximoAlumnos} </p>:<p></p>}
+              <p>Incluye cobro de inscripción: {(formData.incluyeInscripcion) ? "si":"no" }</p>
+              {formData.incluyeInscripcion ? (<> <p> Monto por la inscripción: {formData.montoInscripcion} </p>
+              <p> La inscripción se paga: {formData.pagoInscripcion} </p>
+                </>)
+              :(<p></p>)}
+              <p> Monto de cuota: {formData.montoPorSemana} </p>
+              
+              
+
             </Card.Body>
           </Card>
         </Col>

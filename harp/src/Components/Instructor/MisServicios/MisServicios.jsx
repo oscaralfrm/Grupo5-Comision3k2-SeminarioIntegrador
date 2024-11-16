@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import SearchFilter from "./Busqueda";
 import CourseCards from "./Cards";
-
+import Adicional from "./Adicional";
+import Statistics from "./Estadisticas";
+import GraficoDeTorta from "./GráficoPastel"
 const Dashboard = () => {
   const [courses, setCourses] = useState([
     { id: 1, name: "Introduction to Programming", instructor: "Jane Smith", image: "path/to/image1.jpg", category: "programming" },
@@ -62,7 +64,26 @@ const Dashboard = () => {
           </div>
         </div>
         
- 
+        <div
+          style={{
+            display: "flex",
+            gap: "20px",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            marginTop: "30px",
+          }}
+        >
+          <div>
+            <Adicional />
+          </div>
+          <div >
+            <Statistics />
+          </div>
+          <div >
+            <GraficoDeTorta />
+          </div>
+
+        </div>
       </div>
     </div>
   );

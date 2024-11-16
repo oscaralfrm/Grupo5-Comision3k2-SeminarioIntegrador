@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Table, Button, Modal, Form, Row, Col } from 'react-bootstrap';
-import { format } from 'date-fns'; // Importa la función format de date-fns
+import { format } from 'date-fns';
 
 const Cobros = () => {
   const [students, setStudents] = useState([
     { id: 1, name: 'Juan Pérez', group: 'Yoga Adultos', paymentStatus: 'Pendiente', payments: [], attendance: 'Asistió 10 veces', lastPaymentDate: '', nextPaymentDate: '2024-11-15', totalPaid: 0, amountDue: 50, originalAmountDue: 50 },
-    { id: 2, name: 'Ana Gómez', group: 'Entrenamiento Funcional', paymentStatus: 'Pagado', payments: [{ date: '2024-11-01', amount: 50, surcharge: 5, paymentMethod: 'Tarjeta' }], attendance: 'Asistió 12 veces', lastPaymentDate: '2024-11-01', nextPaymentDate: '2024-12-01', totalPaid: 50, amountDue: 0, originalAmountDue: 50 },
+    { id: 2, name: 'Ana Gómez', group: 'Yoga Adultos', paymentStatus: 'Pagado', payments: [{ date: '2024-11-01', amount: 50, surcharge: 5, paymentMethod: 'Tarjeta' }], attendance: 'Asistió 12 veces', lastPaymentDate: '2024-11-01', nextPaymentDate: '2024-12-01', totalPaid: 50, amountDue: 0, originalAmountDue: 50 },
     { id: 3, name: 'Carlos Rodríguez', group: 'Yoga Jóvenes', paymentStatus: 'Pendiente', payments: [], attendance: 'Asistió 8 veces', lastPaymentDate: '', nextPaymentDate: '2024-11-20', totalPaid: 0, amountDue: 50, originalAmountDue: 50 },
   ]);
 
@@ -41,16 +41,17 @@ const Cobros = () => {
       if (student.id === selectedStudent.id) {
         const newPayment = {
           date: paymentDate,
-          amount: student.originalAmountDue, // El monto siempre es el mismo
-          paymentMethod: paymentMethod
+          amount: student.originalAmountDue,
+          paymentMethod: paymentMethod,
+          surcharge: 0,
         };
-        const updatedPayments = [newPayment, ...student.payments]; // Insertamos el pago al principio
+        const updatedPayments = [newPayment, ...student.payments];
         return {
           ...student,
           payments: updatedPayments,
           totalPaid: student.totalPaid + student.originalAmountDue,
           amountDue: 0,
-          paymentStatus: 'Pagado', // Cambia el estado de pago a "Pagado"
+          paymentStatus: 'Pagado',
         };
       }
       return student;
@@ -70,7 +71,6 @@ const Cobros = () => {
 
   const handleClosePaymentHistory = () => setShowPaymentHistory(false);
 
-  // Función para formatear la fecha en formato dd/mm/yyyy
   const formatDate = (date) => {
     return format(new Date(date), 'dd/MM/yyyy');
   };
@@ -78,20 +78,19 @@ const Cobros = () => {
   return (
     <div
       className="container-fluid d-flex flex-column justify-content-start align-items-center"
-      style={{ minHeight: '85vh', paddingTop: '2vh', marginTop: "2vh" }} // Se ajusta el alto para subir el componente
+      style={{ minHeight: '85vh', paddingTop: '2vh', marginTop: "2vh" }}
     >
       <h1 className="text-center mb-4">Cobros</h1>
       
-      <Row className="mb-4 w-75 justify-content-center"> {/* Usamos w-75 para ajustar el ancho */}
+      <Row className="mb-4 w-75 justify-content-center">
         <Col md={5} className="p-0">
           <Form.Control as="select" onChange={handleGroupFilterChange} value={groupFilter} className="w-100">
             <option value="">Filtrar por Grupo</option>
             <option value="Yoga Adultos">Yoga Adultos</option>
-            <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
             <option value="Yoga Jóvenes">Yoga Jóvenes</option>
           </Form.Control>
         </Col>
-        <Col md={5} className="p-0 ms-2"> {/* ms-2 agrega margen a la derecha */}
+        <Col md={5} className="p-0 ms-2">
           <Form.Control as="select" onChange={handlePaymentFilterChange} value={paymentFilter} className="w-100">
             <option value="">Filtrar por Estado de Pago</option>
             <option value="Pendiente">Pendiente</option>
@@ -105,6 +104,7 @@ const Cobros = () => {
           <tr>
             <th>Nombre</th>
             <th>Grupo</th>
+            <th>Estado</th>
             <th>Monto</th>
             <th>Recargo</th>
             <th>Método de Pago</th>
@@ -117,6 +117,7 @@ const Cobros = () => {
             <tr key={student.id}>
               <td>{student.name}</td>
               <td>{student.group}</td>
+              <td>{student.paymentStatus}</td>
               <td>${student.originalAmountDue}</td>
               <td>${student.payments.length > 0 ? student.payments[0].surcharge : 0}</td>
               <td>{student.payments.length > 0 ? student.payments[0].paymentMethod : 'N/A'}</td>
@@ -143,7 +144,6 @@ const Cobros = () => {
                   <th>Monto</th>
                   <th>Recargo</th>
                   <th>Método de Pago</th>
-                  <th>Estado de Pago</th>
                 </tr>
               </thead>
               <tbody>
@@ -153,7 +153,6 @@ const Cobros = () => {
                     <td>${payment.amount}</td>
                     <td>${payment.surcharge}</td>
                     <td>{payment.paymentMethod}</td>
-                    <td>{selectedStudent.paymentStatus}</td>
                   </tr>
                 ))}
               </tbody>

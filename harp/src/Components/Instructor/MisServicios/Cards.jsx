@@ -83,17 +83,7 @@ const CourseCards = ({ courses }) => {
                 >
                   Ver Más
                 </button>
-                <button
-                  onClick={() => toggleGraphics(course.id)}
-                  className="btn btn-secondary"
-                >
-                  {highlightedCourseId === course.id ? (
-                    <i className="bi bi-reception-3"></i> // Icono de ocultar gráficos
-                  ) : (
-                    <i className="bi bi-reception-2"></i> // Icono de mostrar gráficos
-                  )}
-                </button>
-              </div>
+             </div>
             </div>
           </div>
         ))}
@@ -158,31 +148,6 @@ const CourseCards = ({ courses }) => {
           </button>
         </div>
       )}
-      <div style={{width:'50%'}}>
-      {/* Contenedor de gráficos */}
-      {highlightedCourseId && (
-        <div
-          style={{
-            display: "flex",
-            gap: "20px",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            marginTop: "30px",
-          }}
-        >
-          <div style={chartContainerStyles}>
-            <Adicional />
-          </div>
-          <div style={chartContainerStyles}>
-            <Statistics />
-          </div>
-          <div style={chartContainerStyles}>
-            <GraficoDeTorta />
-          </div>
-
-        </div>
-      )}
-      </div>
     </div>
   );
 };

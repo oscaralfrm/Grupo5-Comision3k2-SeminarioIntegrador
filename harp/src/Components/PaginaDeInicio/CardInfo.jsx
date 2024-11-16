@@ -25,7 +25,7 @@ export default function CardInfo() {
                 >
                     <GenericCard
                         title="Publicidad del servicio"
-                        description="Se proporcionará a las personas interesadas toda la información necesaria sobre tu servicio para que puedan tomar una decisión informada respecto a su inscripción."
+                        description="Se proporcionará a las personas interesadas toda la información necesaria sobre su servicio."
                         icon={<FaBullhorn size={80} />}
                     />
                 </div>
@@ -49,7 +49,7 @@ export default function CardInfo() {
                 >
                     <GenericCard
                         title="Cobros Automatizados"
-                        description="Tus alumnos podrán abonar las cuotas por la aplicación de manera que queden registrados automáticamente."
+                        description="Tus alumnos podrán abonar las cuotas por la aplicación para que se registren automáticamente."
                         icon={<FaMoneyBillWave size={80} />}
                     />
                 </div>

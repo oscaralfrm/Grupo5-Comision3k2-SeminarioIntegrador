@@ -13,7 +13,7 @@ const Enrollments = () => {
   const enrollments = [
     { id: 1, name: "Juan Pérez", status: "Pendiente" },
     { id: 2, name: "Ana Gómez", status: "Pendiente" },
-    { id: 3, name: "Ana Gómez", status: "Pendiente" },
+    { id: 3, name: "Oscar Romero", status: "Pendiente" },
   ];
 
   const pendingEnrollments = enrollments.filter(

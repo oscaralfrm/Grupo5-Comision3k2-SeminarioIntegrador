@@ -67,7 +67,7 @@ function NavbarInstructor() {
         ></span>
       </button>
 
-      <a className="navbar-brand d-lg-none" href="localhost/" >
+      <a className="navbar-brand d-lg-none" href="/" >
         <img src={img} alt="Harp Logo" width="100" />
       </a>
       <div
@@ -78,7 +78,7 @@ function NavbarInstructor() {
           <li className="nav-item d-none d-lg-block">
             <a
               className="nav-link"
-              href={`/instructor/${idInstructor}/servicio/${idServicio}/general`}
+              href={`/`}
               style={{ paddingLeft: "1vw" }}
             >
               <img src={img} alt="Harp Logo" width="130" />

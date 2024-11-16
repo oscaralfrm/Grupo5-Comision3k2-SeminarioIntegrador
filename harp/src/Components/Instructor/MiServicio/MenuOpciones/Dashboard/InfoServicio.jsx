@@ -20,10 +20,10 @@ const InfoCard = () => {
 
   // Simulación de los datos del servicio
   const serviceData = {
-    name: "Clases de Matemáticas",
-    category: "Educación",
-    location: "Ciudad XYZ, Calle Ficticia 123",
-    description: "Clases personalizadas de matemáticas para todos los niveles.",
+    name: "Yoga",
+    category: "Salud y Bienestar",
+    location: "Ciudad Cordoba, Calle Alcorta 123",
+    description: "Clases personalizadas de yoga para todas las edades.",
     serviceType: "Presencial",
     paymentMode: "Mensual",
     attendance: "Sí",

@@ -8,7 +8,6 @@ import { RegisterFormInstructor } from "./Components/RegistroSesion/RegisterInst
 import { RegisterFormStudent } from "./Components/RegistroSesion/RegisterStudent/RegisterFormStudent";
 import MiServicio from "./Components/Instructor/MiServicio/MiServicio";
 import PaginaDeInicio from "./Components/PaginaDeInicio/PaginaDeInicio";
-import General from "./Components/Instructor/MiServicio/MenuOpciones/General";
 import Cobros from "./Components/Instructor/MiServicio/MenuOpciones/Cobros";
 import Alumnos from "./Components/Instructor/MiServicio/MenuOpciones/Alumnos";
 import Servicio from "./Components/Instructor/MiServicio/MenuOpciones/Servicio";
@@ -38,10 +37,6 @@ function App() {
           <Route
             path="instructor/:idInstructor/servicio/:idServicio"
             element={<><AppNavbar /><MiServicio /></>}
-          />
-          <Route
-            path="instructor/:idInstructor/servicio/:idServicio/general"
-            element={<><AppNavbar /><General /></>}
           />
           <Route
             path="instructor/:idInstructor/servicio/:idServicio/cobros"
