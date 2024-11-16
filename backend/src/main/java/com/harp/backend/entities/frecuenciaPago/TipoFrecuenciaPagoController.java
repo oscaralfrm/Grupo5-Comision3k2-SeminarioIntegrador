@@ -21,14 +21,12 @@ public class TipoFrecuenciaPagoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoTipoFrecuenciaPago); // 201 CREATED
     }
 
-
     // GET DE TODOS
     @GetMapping
     public ResponseEntity<List<TipoFrecuenciaPago>> traerTiposFrecuenciaPago() {
         List<TipoFrecuenciaPago> categorias = tipoFrecuenciaPagoService.getAllTiposFrecuenciaPago();
         return ResponseEntity.status(HttpStatus.OK).body(categorias);
     };
-
 
     // GET DE UNO EN PARTICULAR
     @GetMapping("/{idTipoFrecuenciaPago}")
@@ -43,7 +41,6 @@ public class TipoFrecuenciaPagoController {
         tipoFrecuenciaPagoService.deleteTipoFrecuenciaPago(idTipoFrecuenciaPago);
         return ResponseEntity.noContent().build();
     };
-
 
     // EDITAR
     @PutMapping("/{idTipoFrecuenciaPago}")

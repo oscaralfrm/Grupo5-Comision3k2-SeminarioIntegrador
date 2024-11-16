@@ -96,7 +96,6 @@ public class GrupoController {
         // REVISAR: Obtener el id del servicio de manera correcta
         // validando siempre que el instructor loggeado tenga ese servicio asociado
         // para eso podriamos hacer un middleware
-        System.out.println("grupodto" + grupoDTO);
         Grupo nuevoGrupo = grupoService.createGrupoConHorarios(grupoDTO, idServicio);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoGrupo); // 201 CREATED

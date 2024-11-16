@@ -91,10 +91,6 @@ public class Cuota {
 //
 //    }
 
-    public void pagar() {
-
-    }
-
     public boolean esPendiente() {
         return ( this.buscarCambioEstadoActual().esPendiente() );
     }
