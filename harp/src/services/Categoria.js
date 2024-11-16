@@ -1,12 +1,13 @@
-import axios from 'axios';
+import axios from './axiosConfig.js';
 
 // Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = 'http://localhost:9001/api'; // Ajusta según tu configuración de backend
+const API_URL = '/servicios/categorias'; // Ajusta según tu configuración de backend
 
 // Servicio para obtener todas las categorías
 export const getAllCategorias = async () => {
     try {
-        const response = await axios.get(`${API_URL}/categorias`);
+        const response = await axios.get(`${API_URL}`);
+        console.log("Buscando categorias...", response.data)
         return response.data;  // Suponiendo que la respuesta es un array de categorías
     } catch (error) {
         console.error("Error fetching categorias: ", error);
@@ -17,7 +18,7 @@ export const getAllCategorias = async () => {
 // Servicio para crear una nueva categoría
 export const createCategoria = async (categoria) => {
     try {
-        const response = await axios.post(`${API_URL}/categorias`, categoria);
+        const response = await axios.post(`${API_URL}`, categoria);
         return response.data;  // Suponiendo que la respuesta es la categoría creada
     } catch (error) {
         console.error("Error creating categoria: ", error);
@@ -28,7 +29,7 @@ export const createCategoria = async (categoria) => {
 // Servicio para eliminar una categoría por su ID
 export const deleteCategoria = async (idCategoria) => {
     try {
-        await axios.delete(`${API_URL}/categorias/${idCategoria}`);
+        await axios.delete(`${API_URL}/${idCategoria}`);
     } catch (error) {
         console.error("Error deleting categoria: ", error);
         throw error;
@@ -38,7 +39,7 @@ export const deleteCategoria = async (idCategoria) => {
 // Servicio para obtener una categoría por su ID
 export const getCategoriaById = async (idCategoria) => {
     try {
-        const response = await axios.get(`${API_URL}/categorias/${idCategoria}`);
+        const response = await axios.get(`${API_URL}/${idCategoria}`);
         return response.data;  // Suponiendo que la respuesta es la categoría
     } catch (error) {
         console.error("Error fetching categoria by ID: ", error);
@@ -49,7 +50,7 @@ export const getCategoriaById = async (idCategoria) => {
 // Servicio para obtener una categoría por su nombre
 export const getCategoriaByNombre = async (nombre) => {
     try {
-        const response = await axios.get(`${API_URL}/categorias/nombre/${nombre}`);
+        const response = await axios.get(`${API_URL}/nombre/${nombre}`);
         return response.data;  // Suponiendo que la respuesta es la categoría
     } catch (error) {
         console.error("Error fetching categoria by nombre: ", error);
@@ -60,7 +61,7 @@ export const getCategoriaByNombre = async (nombre) => {
 // Servicio para editar una categoría
 export const editCategoria = async (idCategoria, categoria) => {
     try {
-        const response = await axios.put(`${API_URL}/categorias/${idCategoria}`, categoria);
+        const response = await axios.put(`${API_URL}/${idCategoria}`, categoria);
         return response.data;  // Suponiendo que la respuesta es la categoría editada
     } catch (error) {
         console.error("Error editing categoria: ", error);

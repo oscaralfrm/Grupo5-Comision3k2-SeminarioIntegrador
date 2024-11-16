@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from './axiosConfig.js';
 
-const API_URL = 'http://localhost:9001/api/'; // Cambiar a la URL de tu API
+const API_URL = '/'; // Cambiar a la URL de tu API
 
 // Función para obtener todos los servicios con paginación
 export const getAllServicios = async (page, size) => {
@@ -36,7 +36,7 @@ export const getUnServicio = async (idServicio) => {
 };
 
 // Función para crear un nuevo servicio
-export const createServicio = async (servicioDTO, idInstructorLoggeado) => {
+export const createServicio = async (servicioDTO) => {
     try {
         const response = await axios.post(`${API_URL}servicios`, servicioDTO);
         return response.data;

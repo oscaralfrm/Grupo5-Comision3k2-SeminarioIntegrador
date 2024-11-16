@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap"; // Importamos componentes de React Bootstrap
+import {createInstructor} from "../../../services/Instructor.js"
 
 export const RegisterFormInstructor = () => {
   const {
@@ -11,9 +12,10 @@ export const RegisterFormInstructor = () => {
     watch,
     setValue,
   } = useForm({ mode: "onChange" });
-  const password = watch("password");
+  const contrasena = watch("contrasena");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
@@ -30,14 +32,28 @@ export const RegisterFormInstructor = () => {
   const idServicio = 1;
 
   const onSubmit = async (data) => { 
-    setFormData(data);
-    //alert("Formulario enviado con éxito");
-    //console.log(data); // Aquí puedes manejar el envío de los datos
-    
-    // Asumiendo que `idInstructor` e `idServicio` vienen de `data`
-    const { idInstructor, idServicio } = data;
-    //navigate(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`);
-    navigate(`/instructor/1/crear-servicio`)
+    console.log(data);
+
+    try {
+      // Llama al servicio `createInstructor`
+      const instructorCreado = await createInstructor(
+        data.nombre,
+        data.apellido,
+        data.dni,
+        data.nombreUsuario,
+        data.contrasena,
+        data.email,
+        data.telefono,
+        data.direccion || "", // Valores opcionales si no los usas en el formulario
+        data.fechaNacimiento || ""
+      );
+      
+      // Si se crea correctamente, navega a otra página
+      navigate(`/instructor/${instructorCreado.id}/crear-servicio`);
+    } catch (error) {
+      // Muestra el mensaje de error si ocurre
+      setErrorMessage(error.response?.data?.message || "Error inesperado");
+    }
   };
 
   const handleInputChange = (e) => {
@@ -167,24 +183,51 @@ export const RegisterFormInstructor = () => {
                       )}
                     </div>
 
+                    <div className="form-group mb-3">
+                      <label htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
+                        <input
+                          type="date"
+                            id="fechaNacimiento"
+                               name="fechaNacimiento"
+                                className={`form-control ${errors.fechaNacimiento ? "is-invalid" : ""}`}
+                                {...register("fechaNacimiento", {
+                                  required: "La fecha de nacimiento es obligatoria",
+                                  validate: (value) => {
+                                  const currentDate = new Date();
+                                  const inputDate = new Date(value);
+                                  return (
+                                  inputDate < currentDate || "La fecha debe ser anterior a hoy"
+                                  );
+                                  },
+                            onChange: handleInputChange, // Para actualizar el formData
+                            })}
+                  />
+                        {errors.fechaNacimiento && (
+                        <div className="invalid-feedback">
+                        {errors.fechaNacimiento.message}
+                        </div>
+                        )}
+              </div>
+
+
                     <div className="form-group ">
-                      <label htmlFor="username">Nombre de usuario</label>
+                      <label htmlFor="nombreUsuario">Nombre de usuario</label>
                       <input
                         type="text"
-                        id="username"
-                        name="username"
+                        id="nombreUsuario"
+                        name="nombreUsuario"
                         className={`form-control ${
-                          errors.username ? "is-invalid" : ""
+                          errors.nombreUsuario ? "is-invalid" : ""
                         }`}
                         placeholder="Nombre de usuario"
-                        {...register("username", {
+                        {...register("nombreUsuario", {
                           required: "El nombre de usuario es obligatorio",
                           onChange: handleInputChange,
                         })}
                       />
-                      {errors.username && (
+                      {errors.nombreUsuario && (
                         <div className="invalid-feedback">
-                          {errors.username.message}
+                          {errors.nombreUsuario.message}
                         </div>
                       )}
                     </div>
@@ -201,16 +244,16 @@ export const RegisterFormInstructor = () => {
                   {/* Sección 2: Contacto */}
                   <Tab eventKey="contacto" title="Contacto">
                     <div className="form-group mb-3">
-                      <label htmlFor="mail">Email</label>
+                      <label htmlFor="email">Email</label>
                       <input
                         type="email"
-                        id="mail"
-                        name="mail"
+                        id="email"
+                        name="email"
                         className={`form-control ${
-                          errors.mail ? "is-invalid" : ""
+                          errors.email ? "is-invalid" : ""
                         }`}
                         placeholder="Email"
-                        {...register("mail", {
+                        {...register("email", {
                           required: "El email es obligatorio",
                           pattern: {
                             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -219,9 +262,9 @@ export const RegisterFormInstructor = () => {
                           onChange: handleInputChange,
                         })}
                       />
-                      {errors.mail && (
+                      {errors.email && (
                         <div className="invalid-feedback">
-                          {errors.mail.message}
+                          {errors.email.message}
                         </div>
                       )}
                     </div>
@@ -282,10 +325,10 @@ export const RegisterFormInstructor = () => {
                         id="password"
                         name="password"
                         className={`form-control ${
-                          errors.password ? "is-invalid" : ""
+                          errors.contrasena ? "is-invalid" : ""
                         }`}
                         placeholder="Contraseña"
-                        {...register("password", {
+                        {...register("contrasena", {
                           required: "La contraseña es obligatoria",
                           minLength: {
                             value: 8,
@@ -295,9 +338,9 @@ export const RegisterFormInstructor = () => {
                           onChange: handleInputChange,
                         })}
                       />
-                      {errors.password && (
+                      {errors.contrasena && (
                         <div className="invalid-feedback">
-                          {errors.password.message}
+                          {errors.contrasena.message}
                         </div>
                       )}
                       <button
@@ -323,7 +366,7 @@ export const RegisterFormInstructor = () => {
                         {...register("confirmPassword", {
                           required: "Por favor, confirma tu contraseña",
                           validate: (value) =>
-                            value === password ||
+                            value === contrasena ||
                             "Las contraseñas no coinciden",
                           onChange: handleInputChange,
                         })}
@@ -358,7 +401,7 @@ export const RegisterFormInstructor = () => {
                         className="btn btn-primary"
                         disabled={!isValid} // Deshabilitar si el formulario no es válido
                       >
-                        Regístrte
+                        Regístrate
                       </button>
                     </div>
                   </Tab>

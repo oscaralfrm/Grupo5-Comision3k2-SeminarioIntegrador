@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from './axiosConfig.js';
 
-const BASE_URL = 'http://localhost:9001/api/instructores';
+const BASE_URL = '/instructores';
 
 export const getAllInstructores = async () => {
   try {
@@ -45,6 +45,7 @@ export const calcularIngresosPorMesDeServicios = async (idInstructor) => {
 export const createInstructor = async (nombre, apellido, dni, nombreUsuario, contrasena, 
   email, telefono, direccion, fechaNacimiento) => {
   try {
+    console.log("En service", nombre)
     const response = await axios.post(`${BASE_URL}`, {nombre, apellido, dni, nombreUsuario, contrasena, 
       email, telefono, direccion, fechaNacimiento});
     return response.data;

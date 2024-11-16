@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import {
   Tab,
   Tabs,
@@ -8,52 +9,78 @@ import {
   Row,
   Image,
 } from "react-bootstrap";
-import { useNavigate , useLocation } from "react-router-dom";
+import { useNavigate , useLocation, useParams } from "react-router-dom";
+import {getAllCategorias} from "../../../services/Categoria.js"
+import {createServicio} from "../../../services/Servicio.js"
 
 const ServicioForm = () => {
   const [activeTab, setActiveTab] = useState("general");
-  const location = useLocation();
+  const {idInstructor} = useParams();
   const navegate = useNavigate();
-  const serviceData = location.state || {};
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    watch
+  } = useForm({ mode: "onChange" });
+  //const formData = watch();
+  //const incluyeInscripcion = watch("incluyeInscripcion");
+  //const frecuenciaCuotas = watch("frecuenciaCuotas");
+  //const divideEnGrupos = watch("divideEnGrupos");
+  const formData = watch();
 
-  const [formData, setFormData] = useState({
-    categoria: "",
-    nombreServicio: "",
-    descripcion: "",
-    ubicacion: "",
-    logo: null,
-    frecuenciaCuotas: "",
-    duracionCuotasPersonalizada: "",
-    fechaLimitePago: "",
-    divideEnGrupos: "",
-    cupoMaximoAlumnos: "",
-    incluyeInscripcion: "",
-    montoInscripcion: "",
-    pagoInscripcion: "",
-    cantidadDiasSemana: "",
-    montoPorSemana: "",
-  });
-  const handleRegister = (() =>{navegate("/instructor/1/servicio/1/mi-servicio")});
+  //const handleRegister = (() =>{navegate("/instructor/1/servicio/1/mi-servicio")});
   // Actualiza el estado inicial con serviceData solo al montar el componente
-  useEffect(() => {
-    if (serviceData) {
-      setFormData((prevData) => ({
-        ...prevData,
-        categoria: serviceData.categoria || "",
-        nombreServicio: serviceData.nombreServicio || "",
-        descripcion: serviceData.descripcion || "",
-        ubicacion: serviceData.ubicacion || "",
-        logo: serviceData.logo || null,
-      }));
-    }
-  }, []); // Solo se ejecuta una vez al montar el componente
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === "file" ? files[0] : type === "checkbox" ? checked : value,
-    }));
+  const [categorias, setCategorias] = useState([]); // Estado para las categorías
+
+  useEffect(() => {
+    // Llama al servicio para obtener las categorías
+    const fetchCategorias = async () => {
+      try {
+        const response = await getAllCategorias(); // Asume que esto retorna un array
+        setCategorias(response); // Ajusta según la estructura de tu respuesta
+      } catch (error) {
+        console.error("Error al obtener las categorías:", error);
+      }
+    };
+
+    fetchCategorias();
+  }, []); // Ejecuta al montar el componente
+
+  const onSubmit = async (data) => {
+
+    // Transforma formData al formato esperado por el backend
+    const servicioDTO = {
+      nombre: data.nombreServicio,
+      descripcion: data.descripcion,
+      //logoURL: data.logo ? URL.createObjectURL(data.logo) : null,
+      ubicacion: data.ubicacion,
+      categoria: data.categoria,
+      frecuenciaPagoId: data.frecuenciaCuotas === "mensual" ? (data.ciclos === "Mismas Fechas" ? 1 : 2 ) : null, // PROVISORIOOOO "A mes calendario"
+      diaLimitePago: data.frecuenciaCuotas === "mensual" ? data.fechaLimitePago : null,
+      cantDiasCiclo: data.frecuenciaCuotas === "otros" ? data.duracionCuotasPersonalizada : null,
+      cantMaxAlumnosPorGrupo: (data.divideEnGrupos === "Grupales" || data.divideEnGrupos === "Individuales y grupales" ) ? data.cupoMaximoAlumnos : (data.divideEnGrupos === "Individuales" ? 1 : null),
+      tipoModalidad: data.divideEnGrupos === "Sin clases" ? "AServicio" : "AGrupo",
+      fechaInicio: null, // Puedes ajustar según la lógica
+      duracionTotalMeses: null,
+      publico: false, // Por defecto
+      claseDePrueba: false, // Por defecto
+      asistenciasActivas: data.asistencias === "Sí" ? true : false, // Por defecto
+      montoInscripcion: data.montoInscripcion || 0,
+      pagoAnticipadoDeMontoInscripcion: data.pagoInscripcion === "De forma Anticipada" ? true : false,
+    };
+    console.log("data", servicioDTO);
+
+    try {
+      const response = await createServicio(servicioDTO);
+      alert("Servicio creado con éxito");
+      navegate(`/instructor/${idInstructor}/servicio/${response.id}/mi-servicio`)
+    } catch (error) {
+      console.error("Error al crear el servicio:", error.response.message || "Error inesperado");
+      alert("Hubo un problema al crear el servicio.");
+    }
   };
 
   const goToNextTab = () => {
@@ -72,11 +99,6 @@ const ServicioForm = () => {
     }
   };
 
-  // Verificación de validez del formulario
-  const isValid = Object.values(formData).every(
-    (field) => field !== "" && field !== null
-  );
-
   return (
     <div style={{ fontFamily: "Roboto, sans-serif" }}>
       <Row className="m-3">
@@ -89,6 +111,7 @@ const ServicioForm = () => {
               Registrar Servicio
             </Card.Header>
             <Card.Body className="p-4" style={{ boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)" }}>
+            <Form onSubmit={handleSubmit(onSubmit)}>
               <Tabs
                 activeKey={activeTab}
                 onSelect={(k) => setActiveTab(k)}
@@ -96,21 +119,21 @@ const ServicioForm = () => {
               >
                 {/* General Tab */}
                 <Tab eventKey="general" title="General">
-                  <Form>
-                    <Form.Group controlId="categoria">
+                  <Form.Group controlId="categoria">
                       <Form.Label className="fw-semibold">Categoría</Form.Label>
                       <Form.Control
                         as="select"
-                        name="categoria"
-                        value={formData.categoria}
-                        onChange={handleInputChange}
+                        {...register("categoria", 
+                          {  required: "Selecciona una categoría" })}
                       >
                         <option value="">Selecciona una categoría</option>
-                        <option value="idiomas">Idiomas</option>
-                        <option value="danza">Danza</option>
-                        <option value="musica">Música</option>
-                        <option value="yoga">Yoga</option>
+                        {categorias && categorias.map((cat) => (
+                          <option key={cat.id} value={cat.nombre}>
+                            {cat.nombre}
+                          </option>
+                        ))}
                       </Form.Control>
+                      {errors.categoria && <p className="text-danger">{errors.categoria.message}</p>}
                     </Form.Group>
 
                     <Form.Group controlId="nombreServicio" className="mt-3">
@@ -119,10 +142,9 @@ const ServicioForm = () => {
                       </Form.Label>
                       <Form.Control
                         type="text"
-                        name="nombreServicio"
-                        value={formData.nombreServicio}
-                        onChange={handleInputChange}
+                        {...register("nombreServicio", {  required: "El nombre es obligatorio" })}
                       />
+                      {errors.nombreServicio && <p className="text-danger">{errors.nombreServicio.message}</p>}
                     </Form.Group>
 
                     <Form.Group controlId="descripcion" className="mt-3">
@@ -133,8 +155,8 @@ const ServicioForm = () => {
                         as="textarea"
                         rows={3}
                         name="descripcion"
-                        value={formData.descripcion}
-                        onChange={handleInputChange}
+                        placeholder="Ej: En los encuentros se relizarán actividades en las que podrás experimentar y aprender..."
+                        {...register("descripcion" )}
                       />
                     </Form.Group>
 
@@ -143,8 +165,7 @@ const ServicioForm = () => {
                       <Form.Control
                         type="text"
                         name="ubicacion"
-                        value={formData.ubicacion}
-                        onChange={handleInputChange}
+                        {...register("ubicacion") }
                       />
                     </Form.Group>
 
@@ -152,11 +173,10 @@ const ServicioForm = () => {
                       <Form.Label className="fw-semibold">Logo</Form.Label>
                       <Form.Control
                         type="file"
-                        name="logo"
-                        onChange={handleInputChange}
+                        {...register("logo" )}
                       />
                     </Form.Group>
-                  </Form>
+                  
                   <div
                     className="d-flex justify-content-end align-items-center"
                     style={{ cursor: "pointer", margin: 0, padding: 0 }}
@@ -169,8 +189,7 @@ const ServicioForm = () => {
                 </Tab>
 
                 {/* Modalidad Tab */}
-                <Tab eventKey="modalidad" title="Modalidad">
-                  <Form>
+                <Tab eventKey="cobros" title="Cobros">
                     {/* Frecuencia de Cuotas */}
                     <Form.Group controlId="frecuenciaCuotas" className="mt-3">
                       <Form.Label className="fw-semibold">¿Con qué frecuencia se realizará el cobro?</Form.Label>
@@ -178,24 +197,48 @@ const ServicioForm = () => {
                         <Form.Check
                           key={freq}
                           type="radio"
-                          name="frecuenciaCuotas"
                           label={freq}
                           value={freq.toLowerCase()}
-                          checked={formData.frecuenciaCuotas === freq.toLowerCase()}
-                          onChange={handleInputChange}
+                          {...register("frecuenciaCuotas", {
+                            required: "Debes seleccionar una opción."
+                          })}
                         />
                       ))}
+                      {errors.frecuenciaCuotas && (
+                          <p className="text-danger">{errors.frecuenciaCuotas.message}</p>
+                      )}
+
                       {formData.frecuenciaCuotas === "otros" && (
                         <Form.Group controlId="duracionCuotasPersonalizada" className="mt-3">
                           <Form.Label className="fw-semibold">Frecuencia de cobro en días</Form.Label>
                           <Form.Control
                             type="number"
-                            name="duracionCuotasPersonalizada"
                             placeholder="Ej: 45 días"
-                            value={formData.duracionCuotasPersonalizada || ""}
-                            onChange={handleInputChange}
+                            {...register("duracionCuotasPersonalizada", {
+                              required: "Debes seleccionar una opción."
+                            })}
                           />
                         </Form.Group>
+                      )}
+                    </Form.Group>
+
+                    {/* Segun fecha de inscripcion o A mes calendario */}
+                    <Form.Group controlId="ciclos" className="mt-3">
+                      <Form.Label className="fw-semibold">¿Tus alumnos podrán abonar en las mismas fechas o según su inscripción?</Form.Label>
+                      <Form.Check
+                        type="radio"
+                        label="Mismas Fechas"
+                        value="Mismas Fechas"
+                        {...register("ciclos", { required: "Debes seleccionar una opción." })} // Aquí agregamos el registro
+                      />
+                      <Form.Check
+                        type="radio"
+                        label="Según Inscripcion"
+                        value="Segun Inscripcion"
+                        {...register("ciclos", { required: "Debes seleccionar una opción." })} // Aquí agregamos el registro
+                      />
+                      {errors.ciclos && (
+                        <p className="text-danger">{errors.ciclos.message}</p> // Muestra el error si no se selecciona nada
                       )}
                     </Form.Group>
 
@@ -209,89 +252,76 @@ const ServicioForm = () => {
                         type="number"
                         name="fechaLimitePago"
                         placeholder=""
-                        value={formData.fechaLimitePago || ""}
-                        onChange={handleInputChange}
+                        {...register("fechaLimitePago", {
+                          validate: (value) =>
+                            !value || value > 0 || "El día límite debe ser mayor a 0",
+                        })}
                       />
+                       {errors.fechaLimitePago && (
+                        <p className="text-danger">{errors.fechaLimitePago.message}</p> // Muestra el error si no se selecciona nada
+                      )}
                     </Form.Group>
 
-                    {/* División en Grupos */}
-                    <Form.Group controlId="divideEnGrupos" className="mt-3">
-                      <Form.Label className="fw-semibold">¿Querés dividir tu servicio en grupos?</Form.Label>
-                      <Form.Check
-                        type="radio"
-                        name="divideEnGrupos"
-                        label="Sí"
-                        value="si"
-                        checked={formData.divideEnGrupos === "si"}
-                        onChange={handleInputChange}
-                      />
-                      <Form.Check
-                        type="radio"
-                        name="divideEnGrupos"
-                        label="No"
-                        value="no"
-                        checked={formData.divideEnGrupos === "no"}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
+ {/* Incluye Inscripción */}
+ <Form.Group controlId="incluyeInscripcion" className="mt-3">
+        <Form.Label className="fw-semibold">¿Incluye un monto de inscripción?</Form.Label>
+        <Form.Check
+          type="radio"
+          label="No incluye"
+          value="no"
+          {...register("incluyeInscripcion", { required: "Debes seleccionar una opción." })}
+        />
+        <Form.Check
+          type="radio"
+          label="Incluye"
+          value="si"
+          {...register("incluyeInscripcion", { required: "Debes seleccionar una opción." })}
+        />
+        {errors.incluyeInscripcion && (
+          <p className="text-danger">{errors.incluyeInscripcion.message}</p>
+        )}
+      </Form.Group>
 
-                    {/* Cupo máximo de alumnos */}
-                    {formData.divideEnGrupos === "si" && (
-                      <Form.Group controlId="cupoMaximoAlumnos" className="mt-3">
-                        <Form.Label className="fw-semibold">Cupo máximo de alumnos por grupo</Form.Label>
-                        <Form.Control
-                          type="number"
-                          name="cupoMaximoAlumnos"
-                          placeholder="Ej: 20"
-                          value={formData.cupoMaximoAlumnos || ""}
-                          onChange={handleInputChange}
-                        />
-                      </Form.Group>
-                    )}
+      {/* Monto de inscripción */}
+      {formData.incluyeInscripcion === "si" && (
+        <>
+          <Form.Group controlId="montoInscripcion" className="mt-3">
+            <Form.Label className="fw-semibold">Monto por la inscripción</Form.Label>
+            <Form.Control
+              type="number"
+              placeholder="$X"
+              {...register("montoInscripcion", {
+                required: "El monto es obligatorio.",
+                valueAsNumber: true,
+                validate: (value) => value > 0 || "El monto debe ser mayor a 0.",
+              })}
+            />
+            {errors.montoInscripcion && (
+              <p className="text-danger">{errors.montoInscripcion.message}</p>
+            )}
+          </Form.Group>
 
-                    {/* Incluye Inscripción */}
-                    <Form.Group controlId="incluyeInscripcion" className="mt-3">
-                      <Form.Check
-                        type="checkbox"
-                        name="incluyeInscripcion"
-                        label="¿Incluye un cobro la inscripción?"
-                        checked={formData.incluyeInscripcion || false}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
-
-                    {/* Monto de inscripción */}
-                    {formData.incluyeInscripcion && (
-                      <Form.Group controlId="montoInscripcion" className="mt-3">
-                        <Form.Label className="fw-semibold">Monto por la inscripción</Form.Label>
-                        <Form.Control
-                          type="number"
-                          name="montoInscripcion"
-                          placeholder="$X"
-                          value={formData.montoInscripcion || ""}
-                          onChange={handleInputChange}
-                        />
-                      </Form.Group>
-                    )}
-
-                    {/* Pago de inscripción */}
-                    {formData.incluyeInscripcion && (
-                      <Form.Group controlId="pagoInscripcion" className="mt-3">
-                        <Form.Label className="fw-semibold">La inscripción se paga:</Form.Label>
-                        {["Incluido en la Primera Cuota", "De forma Anticipada"].map((opcion) => (
-                          <Form.Check
-                            key={opcion}
-                            type="radio"
-                            name="pagoInscripcion"
-                            label={opcion}
-                            value={opcion.toLowerCase()}
-                            checked={formData.pagoInscripcion === opcion.toLowerCase()}
-                            onChange={handleInputChange}
-                          />
-                        ))}
-                      </Form.Group>
-                    )}
-                  </Form>
+          {/* Pago de inscripción */}
+          <Form.Group controlId="pagoInscripcion" className="mt-3">
+            <Form.Label className="fw-semibold">La inscripción se paga:</Form.Label>
+            {["Incluido en la Primera Cuota", "De forma Anticipada"].map((opcion) => (
+              <Form.Check
+                key={opcion}
+                type="radio"
+                label={opcion}
+                value={opcion.toLowerCase()}
+                {...register("pagoInscripcion", {
+                  required: "Selecciona cómo se paga la inscripción.",
+                })}
+              />
+            ))}
+            {errors.pagoInscripcion && (
+              <p className="text-danger">{errors.pagoInscripcion.message}</p>
+            )}
+          </Form.Group>
+        </>
+      )}
+                  
                   <div className="d-flex justify-content-between">
                     <span className="fs-3" onClick={goToPreviousTab} style={{ cursor: "pointer" }}>
                       &#8592;
@@ -302,42 +332,94 @@ const ServicioForm = () => {
                   </div>
                 </Tab>
 
-                {/* Monto Tab */}
-                <Tab eventKey="monto" title="Monto">
-                  <Form>                    {/* Monto correspondiente */}
-                    <Form.Group controlId="montoPorSemana" className="mt-3">
-                      <Form.Label className="fw-semibold">Monto de cuota</Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="montoPorSemana"
-                        placeholder="Ej: 500"
-                        value={formData.montoPorSemana || ""}
-                        onChange={handleInputChange}
+              {/* Resumen del Servicio */}
+              <Tab eventKey="modalidad" title="Modalidad">
+                {/* División en Grupos */}
+                <Form.Group controlId="divideEnGrupos" className="mt-3">
+                      <Form.Label className="fw-semibold">¿Cómo son tus clases?</Form.Label>
+                      <Form.Check
+                        type="radio"
+                        name="divideEnGrupos"
+                        label="Individuales"
+                        value="Individuales"
+                        {...register("divideEnGrupos", { required: "Debes seleccionar una opción." })} // Registrar la opción 'Sí'
                       />
+                      <Form.Check
+                        type="radio"
+                        name="divideEnGrupos"
+                        label="Grupales"
+                        value="Grupales"
+                        {...register("divideEnGrupos", { required: "Debes seleccionar una opción." })} // Registrar la opción 'Sí'
+                      />
+                      <Form.Check
+                        type="radio"
+                        name="divideEnGrupos"
+                        label="Individuales y grupales"
+                        value="Individuales y grupales"
+                        {...register("divideEnGrupos", { required: "Debes seleccionar una opción." })} // Registrar la opción 'Sí'
+                      />
+                      <Form.Check
+                        type="radio"
+                        name="divideEnGrupos"
+                        label="No doy clases"
+                        value="Sin clases"
+                        {...register("divideEnGrupos", { required: "Debes seleccionar una opción." })} // Registrar la opción 'Sí'
+                      />
+                      {errors.divideEnGrupos && (
+                        <p className="text-danger">{errors.divideEnGrupos.message}</p> // Mensaje de error si no se selecciona nada
+                      )}
                     </Form.Group>
 
-                    {/* Botones de navegación */}
-                    <div className="d-flex justify-content-between align-items-center mt-3">
-                      <span className="fs-3" onClick={goToPreviousTab} style={{ cursor: "pointer" }}>
-                        &#8592;
-                      </span>
-                      <button
-                        type="button" // Cambiado a "button" para evitar submit del formulario completo
-                        className="btn btn-primary"
-                        // Deshabilitar si el formulario no es válido
-                        style={{ marginLeft: "auto" }}
-                        onClick={handleRegister} // Llama a la función de navegación
-                      >
-                        Regístrate
-                      </button>
-                    </div>
-                  </Form>
-                </Tab>
+                    {/* Cupo máximo de alumnos */}
+                    { (formData.divideEnGrupos === "Grupales" || formData.divideEnGrupos === "Individuales y grupales" ) && (
+                      <Form.Group controlId="cupoMaximoAlumnos" className="mt-3">
+                        <Form.Label className="fw-semibold">Cupo máximo de alumnos por grupo</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder="Ej: 20"
+                          {...register("cupoMaximoAlumnos", {
+                            required: ( formData.divideEnGrupos === "Grupales" || formData.divideEnGrupos === "Individuales y grupales" ) 
+                            ? "Este campo es obligatorio." : false,
+                            min: { value: 1, message: "El cupo debe ser al menos 1." },
+                          })} // Registrar campo de cupo máximo con validación
+                        />
+                        {errors.cupoMaximoAlumnos && (
+                        <p className="text-danger">{errors.cupoMaximoAlumnos.message}</p> // Mensaje de error si no es válido
+                        )}
+                      </Form.Group>
+                    )}
+
+                  {/* Asistencias */}
+                  { ( formData.divideEnGrupos != "Sin clases" ) && (
+                    <Form.Group controlId="asistencias" className="mt-3">
+                      <Form.Label className="fw-semibold">¿Quieres registrar las asistencias de tus alumnos?</Form.Label>
+                      <Form.Check
+                        type="radio"
+                        name="asistencias"
+                        label="Sí"
+                        value="si"
+                        {...register("asistencias", { required: "Debes seleccionar una opción." })} // Registrar la opción 'Sí'
+                      />
+                      <Form.Check
+                        type="radio"
+                        name="asistencias"
+                        label="No"
+                        value="no"
+                        {...register("asistencias", { required: "Debes seleccionar una opción." })} // Registrar la opción 'Sí'
+                      />
+                      {errors.asistencias && (
+                        <p className="text-danger">{errors.asistencias.message}</p> // Mensaje de error si no se selecciona nada
+                      )}
+                    </Form.Group>
+                  )}
+              </Tab>
+
+
               </Tabs>
+              </Form>
             </Card.Body>
           </Card>
         </Col>
-
         {/* Resumen del Servicio */}
         <Col xs={12} md={4} className="mt-4 mt-md-0">
           <Card className="shadow-lg rounded-3 border-0" style={{ backgroundColor: "white" }}>
@@ -345,28 +427,22 @@ const ServicioForm = () => {
               Resumen del Servicio
             </Card.Header>
             <Card.Body className="text-left">
-              {formData.logo && (
-                <Image src={URL.createObjectURL(formData.logo)} roundedCircle />
-              )}
-              <img>{formData.logo}</img>
-              <p>Categotria: {formData.categoria }</p>
+              <p>Categoría: {formData.categoria }</p>
               <p>Nombre: {formData.nombreServicio }</p>
               <p>Frecuencia de pago: {formData.frecuenciaCuotas }</p>
+              <p>Ciclos de alumnos: {formData.ciclos }</p>
               <p>Dia límite de pago: {formData.fechaLimitePago }</p>
               <p>Se divide en grupos: {formData.divideEnGrupos }</p>
-              { (formData.divideEnGrupos == "si")? <p>Cantidad máxima por grupo: {formData.cupoMaximoAlumnos} </p>:<p></p>}
+              { (formData.divideEnGrupos == "grupal")? <p>Cantidad máxima por grupo: {formData.cupoMaximoAlumnos} </p>:<p></p>}
               <p>Incluye cobro de inscripción: {(formData.incluyeInscripcion) ? "si":"no" }</p>
               {formData.incluyeInscripcion ? (<> <p> Monto por la inscripción: {formData.montoInscripcion} </p>
               <p> La inscripción se paga: {formData.pagoInscripcion} </p>
                 </>)
               :(<p></p>)}
-              <p> Monto de cuota: {formData.montoPorSemana} </p>
-              
-              
-
             </Card.Body>
           </Card>
         </Col>
+        
       </Row>
     </div>
   );
