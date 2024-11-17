@@ -1,6 +1,6 @@
 import axios from "./axiosConfig.js";
 
-const API_URL = 'http://localhost:9001/api/servicios'; // Cambiar a la URL de tu API
+const API_URL = '/servicios'; // Cambiar a la URL de tu API
 
 
 export const habilitarInscripcionesDeServicio = async (idServicio) => {

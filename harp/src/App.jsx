@@ -16,6 +16,7 @@ import AppNavbar from "./Components/Navbars/AppNavbars.jsx";
 import Asistencias from "./Components/Instructor/MiServicio/MenuOpciones/Asistencias.jsx";
 import Dashboard from "./Components/Instructor/MisServicios/MisServicios.jsx";
 import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/Grupos.jsx";
+import Ingresos from "./Components/Instructor/MiServicio/MenuOpciones/Ingresos.jsx";
 
 function App() {
   return (
@@ -45,6 +46,10 @@ function App() {
           <Route
             path="instructor/:idInstructor/servicio/:idServicio/alumnos"
             element={<><AppNavbar /><Alumnos /></>}
+          />
+          <Route
+            path="instructor/:idInstructor/servicio/:idServicio/ingresos"
+            element={<><AppNavbar /><Ingresos /></>}
           />
           <Route
             path="instructor/:idInstructor/servicio/:idServicio/mi-servicio"

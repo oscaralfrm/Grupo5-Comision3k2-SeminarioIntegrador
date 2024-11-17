@@ -99,6 +99,15 @@ function NavbarInstructor() {
           <li className="nav-item">
             <a
               className="nav-link"
+              href={`/instructor/${idInstructor}/servicio/${idServicio}/ingresos`}
+              style={{ color: "white" }}
+            >
+              Ingresos
+            </a>
+          </li>
+          <li className="nav-item">
+            <a
+              className="nav-link"
               href={`/instructor/${idInstructor}/servicio/${idServicio}/alumnos`}
               style={{ color: "white" }}
             >

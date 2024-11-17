@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios from './axiosConfig.js';
 
 // Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = 'http://localhost:9001/api/servicios'; // Ajusta según tu configuración de backend
+const API_URL = '/servicios'; // Ajusta según tu configuración de backend
 
 // Servicio para obtener todos los grupos
 export const getAllGrupos = async () => {
@@ -28,7 +28,7 @@ export const createGrupo = async (grupoDTO, idServicio) => {
 // Servicio para crear un grupo con horarios
 export const createGrupoConHorarios = async (numero, cantMaxCupos, horariosConFechasYDia, idServicio) => {
     try {
-        const response = await axios.post(`${API_URL}/servicios/${idServicio}/grupos`, 
+        const response = await axios.post(`${API_URL}/${idServicio}/grupos`, 
             { numero, cantMaxCupos, horariosConFechasYDia });
         return response.data; 
     } catch (error) {
@@ -40,7 +40,7 @@ export const createGrupoConHorarios = async (numero, cantMaxCupos, horariosConFe
 // Servicio para eliminar un grupo por su ID
 export const deleteGrupo = async (idGrupo) => {
     try {
-        await axios.delete(`${API_URL}/servicios/grupos/${idGrupo}`);
+        await axios.delete(`${API_URL}/grupos/${idGrupo}`);
     } catch (error) {
         console.error("Error deleting grupo: ", error);
         throw error;
@@ -61,7 +61,7 @@ export const getGrupoById = async (idGrupo) => {
 // Función para obtener todos los grupos de un servicio
 export const getGruposDeServicio = async (idServicio) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/grupos`);
+        const response = await axios.get(`${API_URL}/${idServicio}/grupos`);
         return response.data;
     } catch (error) {
         console.error('Error al obtener el servicio', error);
@@ -127,7 +127,7 @@ export const getClasesFuturasDeGrupo = async (idGrupo) => {
 // Función para calcular la duración total de un grupo
 export const calcularDuracionTotalDiasServicio = async (idServicio, idGrupo) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/grupos/${idGrupo}/duracion-dias`);
+        const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/duracion-dias`);
         return response.data;
     } catch (error) {
         console.error('Error al calcular duración total del servicio', error);
