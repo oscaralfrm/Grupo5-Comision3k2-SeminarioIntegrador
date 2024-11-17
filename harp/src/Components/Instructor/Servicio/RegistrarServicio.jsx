@@ -66,8 +66,8 @@ const ServicioForm = () => {
       fechaInicio: null, // Puedes ajustar según la lógica
       duracionTotalMeses: null,
       publico: false, // Por defecto
-      claseDePrueba: false, // Por defecto
-      asistenciasActivas: data.asistencias === "Sí" ? true : false, // Por defecto
+      claseDePrueba: formData.clasePrueba === "si" ? true : false,
+      asistenciasActivas: data.asistencias === "si" ? true : false,
       montoInscripcion: data.montoInscripcion || 0,
       pagoAnticipadoDeMontoInscripcion: data.pagoInscripcion === "De forma Anticipada" ? true : false,
     };

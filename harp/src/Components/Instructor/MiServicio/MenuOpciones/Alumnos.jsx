@@ -195,14 +195,7 @@ const Alumnos = () => {
           {filteredStudents.map((student) => (
             <Col key={student.id}>
               <Card className="shadow-sm position-relative" style={{ borderColor: "#4F46E5", borderRadius: "15px", marginBottom: "20px" }}>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  className="position-absolute top-0 end-0 m-1"
-                  onClick={() => handleRemoveStudent(student)}
-                >
-                  <AiOutlineClose />
-                </Button>
+                
                 <Card.Img
                   variant="top"
                   src={student.image || ""}
@@ -243,9 +236,7 @@ const Alumnos = () => {
                     {student.group}
                   </Card.Subtitle>
                   <div className="d-flex justify-content-around mt-3">
-                    <Button variant="primary" onClick={() => handleShowDetails(student)}>
-                      Detalle
-                    </Button>
+
                     <Button variant="primary" onClick={() => handleShowAttendance(student)}>
                       Asistencias
                     </Button>
