@@ -29,7 +29,7 @@ export const getInscripcionesDeServicio = async (idServicio, vigentes, pendiente
 // Obtener una inscripción por su ID
 export const traerUnaInscripcion = async (idInscripcion) => {
     try {
-      const response = await axios.get(`${baseUrl}/inscripciones/${idInscripcion}`);
+      const response = await axios.get(`${API_URL}/inscripciones/${idInscripcion}`);
       return response.data;
     } catch (error) {
       console.error("Error al traer la inscripción:", error);
@@ -40,7 +40,7 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   // Obtener todas las inscripciones de un servicio
   export const traerInscripcionesDeServicio = async (idServicio, vigentes, pendientes) => {
     try {
-      const response = await axios.get(`${baseUrl}/${idServicio}/inscripciones`, {
+      const response = await axios.get(`${API_URL}/${idServicio}/inscripciones`, {
         params: { vigentes, pendientes }
       });
       return response.data;
@@ -53,7 +53,7 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   // Crear una inscripción
   export const crearInscripcion = async (idServicio, idGrupo, idsHorarios) => {
     try {
-      const response = await axios.post(`${baseUrl}/${idServicio}/inscribir`, {idGrupo, idsHorarios});
+      const response = await axios.post(`${API_URL}/${idServicio}/inscribir`, {idGrupo, idsHorarios});
       return response.data;
     } catch (error) {
       console.error("Error al crear la inscripción:", error);
@@ -64,7 +64,7 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   // Eliminar una inscripción
   export const eliminarUnaInscripcion = async (idInscripcion) => {
     try {
-      await axios.delete(`${baseUrl}/inscripciones/${idInscripcion}`);
+      await axios.delete(`${API_URL}/inscripciones/${idInscripcion}`);
     } catch (error) {
       console.error("Error al eliminar la inscripción:", error);
       throw error;
@@ -73,9 +73,10 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   
   // Aceptar una inscripción
   export const aceptarInscripcion = async (idServicio, idInscripcion, fechaInicioActividad) => {
+    console.log("id", idInscripcion, idServicio, fechaInicioActividad)
     try {
       const response = await axios.put(
-        `${baseUrl}/${idServicio}/inscripciones/${idInscripcion}/aceptar`,
+        `${API_URL}/${idServicio}/inscripciones/${idInscripcion}/aceptar`,
         fechaInicioActividad
       );
       return response.data;
@@ -88,7 +89,7 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   // Rechazar una inscripción
   export const rechazarInscripcion = async (idInscripcion) => {
     try {
-      const response = await axios.put(`${baseUrl}/inscripciones/${idInscripcion}/rechazar`);
+      const response = await axios.put(`${API_URL}/inscripciones/${idInscripcion}/rechazar`);
       return response.data;
     } catch (error) {
       console.error("Error al rechazar la inscripción:", error);
@@ -99,7 +100,7 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   // Finalizar una inscripción
   export const finalizarInscripcion = async (idInscripcion) => {
     try {
-      const response = await axios.put(`${baseUrl}/inscripciones/${idInscripcion}/finalizar`);
+      const response = await axios.put(`${API_URL}/inscripciones/${idInscripcion}/finalizar`);
       return response.data;
     } catch (error) {
       console.error("Error al finalizar la inscripción:", error);

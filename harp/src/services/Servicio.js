@@ -23,18 +23,6 @@ export const getServicioByNombre = async (nombre) => {
     }
 };
 
-
-// Función para obtener servicios activos de asistencias
-export const getUnServicio = async (idServicio) => {
-    try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}`);
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener el servicio', error);
-        throw error;
-    }
-};
-
 // Función para crear un nuevo servicio
 export const createServicio = async (servicioDTO) => {
     try {
@@ -69,6 +57,17 @@ export const getServicioById = async (idServicio) => {
 
 // Función para actualizar un servicio
 export const updateServicio = async (idServicio, servicioDTO) => {
+    try {
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/activar-asistencias`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al activar asistencias', error);
+        throw error;
+    }
+};
+
+
+export const activarAsistencias = async (idServicio) => {
     try {
         const response = await axios.put(`${API_URL}servicios/${idServicio}`, servicioDTO);
         return response.data;

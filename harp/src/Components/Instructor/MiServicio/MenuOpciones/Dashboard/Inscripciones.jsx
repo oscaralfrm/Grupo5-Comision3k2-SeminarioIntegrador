@@ -1,20 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { FaBell } from "react-icons/fa";
 import StudentsCard from "./Alumnos";
 import ReviewCarousel from "./Reseñas";
 import ClassesCard from "./Clases";
+import { getInscripcionesDeServicio, aceptarInscripcion, rechazarInscripcion} from "../../../../../services/Inscripcion.js";
+import { useParams } from "react-router-dom";
+
+function calcularEdad(fechaNacimiento) {
+  const hoy = new Date();
+  const nacimiento = new Date(fechaNacimiento);
+
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+
+  // Ajustar si el cumpleaños no ha ocurrido aún este año
+  const mes = hoy.getMonth() - nacimiento.getMonth();
+  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+  }
+
+  return edad;
+}
+
+function calcularAntiguedadComoTexto(fechaRegistro) {
+  const hoy = new Date();
+  const registro = new Date(fechaRegistro);
+
+  let años = hoy.getFullYear() - registro.getFullYear();
+  let meses = hoy.getMonth() - registro.getMonth();
+  let días = hoy.getDate() - registro.getDate();
+
+  // Ajuste si el día es negativo
+  if (días < 0) {
+      meses--;
+      const diasMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0).getDate();
+      días += diasMesAnterior;
+  }
+
+  // Ajuste si el mes es negativo
+  if (meses < 0) {
+      años--;
+      meses += 12;
+  }
+
+  // Formatear como texto
+  const partes = [];
+  if (años > 0) partes.push(`${años} ${años === 1 ? "año" : "años"}`);
+  if (meses > 0) partes.push(`${meses} ${meses === 1 ? "mes" : "meses"}`);
+  if (años === 0 && meses === 0 && días > 0) partes.push(`${días} ${días === 1 ? "día" : "días"}`);
+
+  return partes.join(" ");
+}
+
+
 const Enrollments = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [acceptedEnrollments, setAcceptedEnrollments] = useState([]);
   const [rejectedEnrollments, setRejectedEnrollments] = useState([]);
   const [showAcceptedList, setShowAcceptedList] = useState(false);
-
-  const enrollments = [
-    { id: 1, name: "Juan Pérez", status: "Pendiente" },
-    { id: 2, name: "Ana Gómez", status: "Pendiente" },
-    { id: 3, name: "Oscar Romero", status: "Pendiente" },
-  ];
+  const [enrollments, setEnrrolments] = useState([]);
+  const {idServicio} = useParams();
 
   const pendingEnrollments = enrollments.filter(
     (enroll) =>
@@ -22,16 +67,28 @@ const Enrollments = () => {
       !rejectedEnrollments.some((rejected) => rejected.id === enroll.id)
   );
 
+  useEffect(() => {
+    const fetchInscripciones = async () => {
+      try {
+        const data = await getInscripcionesDeServicio(idServicio, false, true);
+        setEnrrolments(data);
+      } catch (error) {
+        console.error('Error al traer las solicitudes de inscripcion:', error);
+      }
+    };
+    fetchInscripciones();
+  }, []);
+
   const handleDetailClick = (enroll) => {
     setSelectedEnrollment({
       ...enroll,
-      dni: "12345678",
-      phone: "+123456789",
-      email: "juan.perez@example.com",
-      seniority: "2 años",
+      dni: enroll.alumno.usuario.dni,
+      phone: enroll.alumno.usuario.telefono,
+      email: enroll.alumno.usuario.email,
+      seniority: calcularAntiguedadComoTexto(enroll.alumno.usuario.fechaRegistro),
       courses: 3,
       paymentsUpToDate: true,
-      age: 28,
+      age: calcularEdad(enroll.alumno.usuario.fechaNacimiento),
       photoUrl: "https://via.placeholder.com/100",
     });
     setShowDetail(true);
@@ -43,11 +100,15 @@ const Enrollments = () => {
   };
 
   const handleAccept = (enroll) => {
+    const fechaActual = new Date();
+    const fechaISO = fechaActual.toISOString().split('T')[0]; 
+    const aceptado = aceptarInscripcion(idServicio, enroll.id, fechaISO);
     setAcceptedEnrollments([...acceptedEnrollments, enroll]);
     handleCloseDetail();
   };
 
   const handleReject = (enroll) => {
+    const aceptado = rechazarInscripcion(enroll.id);
     setRejectedEnrollments([...rejectedEnrollments, enroll]);
     handleCloseDetail();
   };
@@ -133,7 +194,8 @@ const Enrollments = () => {
                 marginTop: "2vh",
               }}
             >
-              <span style={{ flex: "1 1 60%" }}>{enroll.name}</span>
+              <span style={{ flex: "1 1 60%" }}>{enroll.alumno.usuario.nombre + " " + enroll.alumno.usuario.apellido}</span>
+              <span style={{ flex: "1 1 60%" }}>{enroll.grupo.nombre}</span>
               <div
                 style={{
                   display: "flex",
@@ -214,7 +276,7 @@ const Enrollments = () => {
                       margin: "5px 0",
                     }}
                   >
-                    <span>{enroll.name}</span>
+                    <span>{enroll.alumno.nombre}</span>
                     <button
                       onClick={() => handleDetailClick(enroll)}
                       style={{

@@ -1,36 +1,29 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import ReviewCarousel from "./Reseñas";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getServicioById } from "../../../../../services/Servicio.js";
 
 const InfoCard = () => {
   const [showDetails, setShowDetails] = useState(true);
+  const [serviceData, setServiceData] = useState(null);
+  const {idServicio} = useParams();
 
   const toggleDetails = () => setShowDetails(!showDetails);
-  const navigate = useNavigate;
 
-  const onSubmit = async () => { 
-    //alert("Formulario enviado con éxito");
-    //console.log(data); // Aquí puedes manejar el envío de los datos
-    
-    // Asumiendo que `idInstructor` e `idServicio` vienen de `data`
-    const { idInstructor, idServicio } = data;
-    //navigate(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`);
-    navigate(`/instructor/1/servicio/1/mi-servicio`)
-  };
-
-  // Simulación de los datos del servicio
-  const serviceData = {
-    name: "Yoga",
-    category: "Salud y Bienestar",
-    location: "Ciudad Cordoba, Calle Alcorta 123",
-    description: "Clases personalizadas de yoga para todas las edades.",
-    serviceType: "Presencial",
-    paymentMode: "Mensual",
-    attendance: "Sí",
-    freePass: "No",
-    published: "Sí",
-    logoUrl: "https://via.placeholder.com/80", // URL de la imagen del logo
-  };
+  useEffect(() => {
+    console.log("idServicio", idServicio);
+    const fetchServicio = async () => {
+      try {
+        const data = await getServicioById(idServicio);
+        setServiceData(data);
+        console.log("data", data);
+        console.log(serviceData);
+      } catch (error) {
+        console.error('Error al traer el servicio:', error);
+      }
+    };
+    fetchServicio();
+  }, []);
 
   const cardStyle = {
     backgroundColor: "white",
@@ -79,7 +72,6 @@ const InfoCard = () => {
       >
         {showDetails && (
           <img
-            src={serviceData.logoUrl}
             alt="Logo del servicio"
             style={logoStyle}
           />
@@ -92,7 +84,7 @@ const InfoCard = () => {
             fontSize: "1.5rem",
           }}
         >
-          {serviceData.name}
+          {serviceData?.nombre}
         </h2>
         {showDetails &&
         <p
@@ -103,32 +95,35 @@ const InfoCard = () => {
             marginBottom: "0px",
           }}
         >
-          {serviceData.category}
+          {serviceData?.categoria?.nombre}
         </p>}
       </div>
 
       {showDetails && (
         <div style={{ textAlign: "left", marginTop: "10px" }}>
           <p>
-            <strong>Ubicación:</strong> {serviceData.location}
+            <strong>Ubicación:</strong> {serviceData?.ubicacion}
           </p>
           <p>
-            <strong>Descripción:</strong> {serviceData.description}
+            <strong>Descripción:</strong> {serviceData?.descripcion}
           </p>
           <p>
-            <strong>Tipo de Servicio:</strong> {serviceData.serviceType}
+            <strong>Tipo de Servicio:</strong> {serviceData?.categoria?.nombre}
           </p>
           <p>
-            <strong>Modalidad de Cobro:</strong> {serviceData.paymentMode}
+            <strong>Modalidad de Cobro:</strong> {serviceData?.tipoFrecuenciaPago?.nombre}
           </p>
           <p>
-            <strong>Asistencias:</strong> {serviceData.attendance}
+            <strong>Inscripciones:</strong> {serviceData?.inscripcionesAbiertas === true ? "Habilitadas" : "Inhabilitadas"}
           </p>
           <p>
-            <strong>Pase Libre:</strong> {serviceData.freePass}
+            <strong>Asistencias:</strong> {serviceData?.asistenciasActivas === true ? "Activas" : "Inactivas"}
           </p>
           <p>
-            <strong>Publicado:</strong> {serviceData.published}
+            <strong>Clase prueba:</strong> {serviceData?.claseDePruba === true ? "Si" : "No"}
+          </p>
+          <p>
+            <strong>Publicado:</strong> {serviceData?.publico === true ? "Si" : "No"} 
           </p>
         </div>
       )}

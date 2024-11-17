@@ -1,17 +1,26 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Asegúrate de importar Link
+import React, { useState, useEffect} from "react";
+import { Link, useParams } from "react-router-dom"; // Asegúrate de importar Link
+import {getAlumnosDeServicio} from "../../../../../services/Alumno.js"
 
 const StudentsCard = () => {
   const [expanded, setExpanded] = useState(false);
+  const [students, setStudents] = useState([]);
+  const {idServicio} = useParams();
 
-  // Datos simulados de los estudiantes
-  const students = [
-    { id: 1, name: "Juan Pérez", attendance: 75 },
-    { id: 2, name: "Ana Gómez", attendance: 85 },
-    { id: 3, name: "Carlos Ramírez", attendance: 90 },
-    { id: 4, name: "Marta López", attendance: 65 },
-    { id: 5, name: "Luis Fernández", attendance: 80 },
-  ];
+  
+  useEffect(() => {
+    const fetchAlumnos = async () => {
+      try {
+        const data = await getAlumnosDeServicio(idServicio);
+        setStudents(data);
+        
+      } catch (error) {
+        console.error('Error al traer los alumnos:', error);
+      }
+    };
+    fetchAlumnos();
+  }, []);
+
 
   // Mostrar solo tres estudiantes si la lista no está expandida
   const displayedStudents = expanded ? students : students.slice(0, 3);
@@ -83,7 +92,7 @@ const StudentsCard = () => {
       <hr />
 
       {/* Mapeo de estudiantes */}
-      {displayedStudents.map((student) => (
+      {students && students.map((student) => (
         <Link
           key={student.id}
           to={`/student/${student.id}`} // Corregido para que funcione la ruta dinámica
@@ -98,7 +107,7 @@ const StudentsCard = () => {
             borderBottom: "1px solid #ccc",
           }}
         >
-          <span>{student.name}</span>
+          <span>{student.usuario.nombre + " " + student.usuario.apellido}</span>
           <div style={{ display: "flex", alignItems: "center" }}>
             <div
               style={{
