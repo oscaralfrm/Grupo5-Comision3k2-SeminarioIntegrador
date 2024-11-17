@@ -37,7 +37,7 @@ const isHorarioSuperpuesto = (nuevoHorario, horariosExistentes) => {
   
   
 
-const Grupos = () => {
+const Configuracion = () => {
   const [grupos, setGrupos] = useState([]);
   const [editingHorarioId, setEditingHorarioId] = useState(null);
   const [editedHorario, setEditedHorario] = useState({});
@@ -407,4 +407,4 @@ const handleHorarioChange = (field, value) => {
   );
 };
 
-export default Grupos;
+export default Configuracion;

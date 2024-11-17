@@ -99,10 +99,10 @@ function NavbarInstructor() {
           <li className="nav-item">
             <a
               className="nav-link"
-              href={`/instructor/${idInstructor}/servicio/${idServicio}/ingresos`}
+              href={`/instructor/${idInstructor}/servicio/${idServicio}/configuracion`}
               style={{ color: "white" }}
             >
-              Ingresos
+              Configuracion
             </a>
           </li>
           <li className="nav-item">
