@@ -85,17 +85,17 @@ const ServicioForm = () => {
 
   const goToNextTab = () => {
     if (activeTab === "general") {
+      setActiveTab("cobros");
+    } else if (activeTab === "cobros") {
       setActiveTab("modalidad");
-    } else if (activeTab === "modalidad") {
-      setActiveTab("monto");
     }
   };
 
   const goToPreviousTab = () => {
-    if (activeTab === "modalidad") {
+    if (activeTab === "cobros") {
       setActiveTab("general");
-    } else if (activeTab === "monto") {
-      setActiveTab("modalidad");
+    } else if (activeTab === "modalidad") {
+      setActiveTab("cobros");
     }
   };
 
@@ -412,10 +412,51 @@ const ServicioForm = () => {
                       )}
                     </Form.Group>
                   )}
+
+                  {/* Clase prueba */}
+                  { ( formData.divideEnGrupos != "Sin clases" ) && (
+                    <Form.Group controlId="clasePrueba" className="mt-3">
+                      <Form.Label className="fw-semibold">¿Ofreces clase de prueba gratuita?</Form.Label>
+                      <Form.Check
+                        type="radio"
+                        name="clasePrueba"
+                        label="Sí"
+                        value="si"
+                        {...register("clasePrueba", { required: "Debes seleccionar una opción." })} // Registrar la opción 'Sí'
+                      />
+                      <Form.Check
+                        type="radio"
+                        name="clasePrueba"
+                        label="No"
+                        value="no"
+                        {...register("clasePrueba", { required: "Debes seleccionar una opción." })} // Registrar la opción 'Sí'
+                      />
+                      {errors.clasePrueba && (
+                        <p className="text-danger">{errors.clasePrueba.message}</p> // Mensaje de error si no se selecciona nada
+                      )}
+                    </Form.Group>
+                  )}
+
+
+                   
+                  <div className="d-flex justify-content-between">
+                    <span className="fs-3" onClick={goToPreviousTab} style={{ cursor: "pointer" }}>
+                      &#8592;
+                    </span>
+                  </div>
               </Tab>
 
 
               </Tabs>
+              <button
+                        type="submit" // Cambiado a "button" para evitar submit del formulario completo
+                        className="btn btn-primary"
+                        // Deshabilitar si el formulario no es válido
+                        style={{ marginLeft: "auto" }}
+                        disabled={!isValid} // Deshabilitar si el formulario no es válido
+                      >
+                        Crear
+                      </button>
               </Form>
             </Card.Body>
           </Card>
@@ -432,13 +473,20 @@ const ServicioForm = () => {
               <p>Frecuencia de pago: {formData.frecuenciaCuotas }</p>
               <p>Ciclos de alumnos: {formData.ciclos }</p>
               <p>Dia límite de pago: {formData.fechaLimitePago }</p>
-              <p>Se divide en grupos: {formData.divideEnGrupos }</p>
-              { (formData.divideEnGrupos == "grupal")? <p>Cantidad máxima por grupo: {formData.cupoMaximoAlumnos} </p>:<p></p>}
-              <p>Incluye cobro de inscripción: {(formData.incluyeInscripcion) ? "si":"no" }</p>
-              {formData.incluyeInscripcion ? (<> <p> Monto por la inscripción: {formData.montoInscripcion} </p>
+              <p>Incluye cobro de inscripción: {(formData.incluyeInscripcion) }</p>
+              {formData.incluyeInscripcion === "si" ? (<> <p> Monto por la inscripción: {formData.montoInscripcion} </p>
               <p> La inscripción se paga: {formData.pagoInscripcion} </p>
                 </>)
               :(<p></p>)}
+              <p>Clases: {formData.divideEnGrupos }</p>
+              { (formData.divideEnGrupos == "Grupales" || formData.divideEnGrupos == "Individuales y grupales" ) 
+                    ? <p>Cantidad máxima por grupo: {formData.cupoMaximoAlumnos} </p>
+                    :<p></p>}
+              { (formData.divideEnGrupos != "Sin clases" ) 
+              ? <div><p>Asistencias: {formData.asistencias }</p>
+              <p>Clase prueba gratuita: {formData.clasePrueba }</p></div>
+               :<p></p>}
+              
             </Card.Body>
           </Card>
         </Col>
