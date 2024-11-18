@@ -20,7 +20,7 @@ const InfoCard = () => {
       }
     };
     fetchServicio();
-  }, []);
+  }, [idServicio]);
 
   const cardStyle = {
     backgroundColor: "white",

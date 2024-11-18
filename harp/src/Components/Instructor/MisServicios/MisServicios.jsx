@@ -6,6 +6,7 @@ import Statistics from "./Estadisticas";
 import GraficoDeTorta from "./GráficoPastel"
 import { getServiciosDeInstructor } from "../../../services/Instructor";
 import { useParams } from "react-router-dom";
+
 const Dashboard = () => {
   const [servicios, setServicios] = useState([]);
   const [filteredServicios, setFilteredServicios] = useState(servicios);

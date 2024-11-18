@@ -19,7 +19,7 @@ const ClassesCard = () => {
       }
     };
     fetchClases();
-  }, []);
+  }, [idServicio]);
 
   const handleExpandToggle = () => {
     setExpanded(!expanded);

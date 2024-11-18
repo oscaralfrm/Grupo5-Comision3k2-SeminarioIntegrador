@@ -2,18 +2,28 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import img from "../../../../assets/LogoHarp420.png";
+import { getServiciosDeInstructor } from "../../../../services/Instructor";
 
 function NavbarInstructor() {
   const navigate = useNavigate();
-  const servicios = [
-    { id: 1, nombre: "Servicio 1" },
-    { id: 2, nombre: "Servicio 2" },
-    { id: 3, nombre: "Servicio 3" },
-  ];
+  const [servicios, setServicios] = useState([]);
   const { idInstructor, idServicio } = useParams();
-
+  
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  
+  useEffect(() => {
+    const fetchServicios = async () => {
+      try {
+        const data = await getServiciosDeInstructor(idInstructor);
+        setServicios(data);
+      } catch (error) {
+        console.error('Error al traer los servicios del instructor:', error);
+      }
+    };
+    fetchServicios();
+  }, []);
+
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);

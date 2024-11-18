@@ -77,7 +77,7 @@ const Enrollments = () => {
       }
     };
     fetchInscripciones();
-  }, []);
+  }, [idServicio]);
 
   const handleDetailClick = (enroll) => {
     setSelectedEnrollment({
