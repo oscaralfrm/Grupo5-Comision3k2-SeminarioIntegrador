@@ -2,16 +2,20 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { format } from "date-fns";
 import { traerUltimasCuotasDeServicio} from "../../../../services/Cuota.js"; // Ajusta la ruta según tu estructura
+import { useParams } from "react-router-dom";
 
-const Cobros = ({ idServicio }) => {
+
+const Cobros = ({ id }) => {
   const [students, setStudents] = useState([]); // Datos reales de estudiantes y cuotas
   const [showPaymentHistory, setShowPaymentHistory] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedCuota, setSelectedCuota] = useState(null);
   const [groupFilter, setGroupFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [paymentDate, setPaymentDate] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
+  const {idServicio} = useParams();
 
   // Llamada al servicio para obtener cuotas
   useEffect(() => {
@@ -56,8 +60,9 @@ const Cobros = ({ idServicio }) => {
     setShowPaymentHistory(true);
   };
 
-  const handleAddPayment = (student) => {
+  const handleAddPayment = (student, cuota) => {
     setSelectedStudent(student);
+    setSelectedCuota(cuota);
     setShowAddPayment(true);
   };
 
@@ -171,9 +176,9 @@ const Cobros = ({ idServicio }) => {
                 <Button
                   variant="success"
                   className="ms-2"
-                  onClick={() => handleAddPayment(student)}
+                  onClick={() => handleAddPayment(student, cuota)}
                 >
-                  Agregar Pago
+                  Registrar Pago
                 </Button>
               </td>
             </tr>
@@ -181,91 +186,65 @@ const Cobros = ({ idServicio }) => {
         </tbody>
       </Table>
 
-      {/* Modales */}
-      {/* Historial de pagos */}
-      <Modal show={showPaymentHistory} onHide={handleClosePaymentHistory}>
-        <Modal.Header closeButton>
-          <Modal.Title>Historial de Pagos - {selectedStudent?.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedStudent?.payments.length > 0 ? (
-            <Table striped bordered hover responsive>
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Monto</th>
-                  <th>Recargo</th>
-                  <th>Método de Pago</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedStudent.payments.map((payment, index) => (
-                  <tr key={index}>
-                    <td>{formatDate(payment.date)}</td>
-                    <td>${payment.amount}</td>
-                    <td>${payment.surcharge}</td>
-                    <td>{payment.paymentMethod}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          ) : (
-            <p>No hay pagos registrados.</p>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClosePaymentHistory}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
       {/* Modal de agregar pago */}
-      <Modal show={showAddPayment} onHide={handleCloseAddPayment}>
-        <Modal.Header closeButton>
-          <Modal.Title>Agregar Pago - {selectedStudent?.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="paymentAmount">
-              <Form.Label>Monto</Form.Label>
-              <Form.Control
-                type="number"
-                value={selectedStudent?.payments[0]?.amount || 0}
-                readOnly
-              />
-            </Form.Group>
-            <Form.Group controlId="paymentDate" className="mt-3">
-              <Form.Label>Fecha</Form.Label>
-              <Form.Control
-                type="date"
-                value={paymentDate}
-                onChange={(e) => setPaymentDate(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group controlId="paymentMethod" className="mt-3">
-              <Form.Label>Método de Pago</Form.Label>
-              <Form.Control
-                as="select"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              >
-                <option value="">Seleccione un método</option>
-                <option value="Efectivo">Efectivo</option>
-                <option value="Transferencia">Transferencia</option>
-              </Form.Control>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseAddPayment}>
-            Cerrar
-          </Button>
-          <Button variant="primary" onClick={handleSavePayment}>
-            Guardar Pago
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <Modal show={showAddPayment} onHide={handleCloseAddPayment} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          Registrar Pago - {selectedStudent?.usuario.nombre} {selectedStudent?.usuario.apellido}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {/* Monto total */}
+        <div className="text-center mb-4">
+          <h2 className="display-6">
+            Total: ${selectedCuota?.montoServicio?.monto + (selectedCuota?.recargo || 0)}
+          </h2>
+        </div>
+
+        {/* Métodos de pago */}
+        <Form.Group className="mt-3 text-center">
+          <Form.Label className="mb-3">Método de Pago</Form.Label>
+          <div className="d-flex justify-content-center gap-3">
+            <Button
+              variant={paymentMethod === "Efectivo" ? "primary" : "outline-primary"}
+              className="px-4 py-2"
+              onClick={() => setPaymentMethod("Efectivo")}
+            >
+              Efectivo
+            </Button>
+            <Button
+              variant={paymentMethod === "Transferencia" ? "primary" : "outline-primary"}
+              className="px-4 py-2"
+              onClick={() => setPaymentMethod("Transferencia")}
+            >
+              Transferencia
+            </Button>
+          </div>
+        </Form.Group>
+
+        {/* Fecha */}
+        <Form.Group controlId="paymentDate" className="mt-4">
+          <Form.Label>Fecha</Form.Label>
+          <Form.Control
+            type="date"
+            value={paymentDate}
+            onChange={(e) => setPaymentDate(e.target.value)}
+          />
+        </Form.Group>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleCloseAddPayment}>
+          Cerrar
+        </Button>
+        <Button
+          variant="primary"
+          onClick={() => onSave(paymentMethod, paymentDate)}
+          disabled={!paymentMethod || !paymentDate}
+        >
+          Guardar Pago
+        </Button>
+      </Modal.Footer>
+    </Modal>
     </div>
   );
 };
