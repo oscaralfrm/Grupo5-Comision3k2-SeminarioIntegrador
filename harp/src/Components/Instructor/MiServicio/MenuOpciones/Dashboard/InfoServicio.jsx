@@ -11,13 +11,10 @@ const InfoCard = () => {
   const toggleDetails = () => setShowDetails(!showDetails);
 
   useEffect(() => {
-    console.log("idServicio", idServicio);
     const fetchServicio = async () => {
       try {
         const data = await getServicioById(idServicio);
         setServiceData(data);
-        console.log("data", data);
-        console.log(serviceData);
       } catch (error) {
         console.error('Error al traer el servicio:', error);
       }
@@ -109,6 +106,9 @@ const InfoCard = () => {
           </p>
           <p>
             <strong>Tipo de Servicio:</strong> {serviceData?.categoria?.nombre}
+          </p>
+          <p>
+            <strong>Fecha inicio:</strong> {serviceData?.fechaInicio || "Sin definir"}
           </p>
           <p>
             <strong>Modalidad de Cobro:</strong> {serviceData?.tipoFrecuenciaPago?.nombre}
