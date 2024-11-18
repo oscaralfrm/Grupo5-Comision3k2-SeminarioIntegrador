@@ -61,7 +61,14 @@ function App() {
           />
           <Route path= "instructor/:idInstructor/servicios" element={<><AppNavbar /><Dashboard /></>}
           />
+
+          /* Componente de Creación de Grupos. Observar que se puede llegar al mismo por varias rutas. Una desde la creación del servicio y otra 
+          desde la configuración.
+           */
+
           <Route path= "instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo/></>}/>
+          {/* <Route path="instructor/:idInstructor/servicio/:idServicio/configuracion/crear-grupo" element={<><AppNavbar /><CrearGrupo /></>} /> */}
+
         </Routes>
       </BrowserRouter>
     </div>
