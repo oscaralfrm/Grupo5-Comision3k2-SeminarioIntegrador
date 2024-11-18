@@ -6,7 +6,7 @@ import ClassesCard from "./Clases";
 import { getInscripcionesDeServicio, aceptarInscripcion, rechazarInscripcion} from "../../../../../services/Inscripcion.js";
 import { useParams } from "react-router-dom";
 
-function calcularEdad(fechaNacimiento) {
+export function calcularEdad(fechaNacimiento) {
   const hoy = new Date();
   const nacimiento = new Date(fechaNacimiento);
 
@@ -21,7 +21,7 @@ function calcularEdad(fechaNacimiento) {
   return edad;
 }
 
-function calcularAntiguedadComoTexto(fechaRegistro) {
+export function calcularAntiguedadComoTexto(fechaRegistro) {
   const hoy = new Date();
   const registro = new Date(fechaRegistro);
 
@@ -245,7 +245,7 @@ const Enrollments = () => {
             </div>
           ))
         ) : (
-          <p className="mt-3 text-center">No hay nuevas inscripciones</p>
+          <p className="mt-3 text-center">No hay nuevas solicitudes</p>
         )}
 
         <div
@@ -262,7 +262,7 @@ const Enrollments = () => {
             style={{ color: "white", backgroundColor:'#4F46E5',padding:'10px',borderRadius:'8px', cursor: "pointer", fontSize: "1.25em" }}
             onClick={handleToggleAcceptedList}
           >
-            Inscriptos ({acceptedEnrollments.length})
+            Nuevos Inscriptos ({acceptedEnrollments.length})
           </h3>
           {showAcceptedList && (
             <div>
@@ -292,7 +292,7 @@ const Enrollments = () => {
                   </div>
                 ))
               ) : (
-                <p>No hay inscriptos</p>
+                <p>No hay nuevos inscriptos</p>
               )}
             </div>
           )}

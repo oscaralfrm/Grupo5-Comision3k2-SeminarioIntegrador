@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { format } from "date-fns";
-import { traerUltimasCuotasDeServicio} from "../../../../services/Cuota.js"; // Ajusta la ruta según tu estructura
+import { pagarCuota, traerUltimasCuotasDeServicio} from "../../../../services/Cuota.js"; // Ajusta la ruta según tu estructura
 import { useParams } from "react-router-dom";
 
 
 const Cobros = ({ id }) => {
-  const [students, setStudents] = useState([]); // Datos reales de estudiantes y cuotas
+  const [cuotas, setCuotas] = useState([]); // Datos reales de estudiantes y cuotas
   const [showPaymentHistory, setShowPaymentHistory] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedCuota, setSelectedCuota] = useState(null);
@@ -17,43 +17,44 @@ const Cobros = ({ id }) => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const {idServicio} = useParams();
 
+
+  const fetchCuotas = async () => {
+    try {
+      const data = await traerUltimasCuotasDeServicio(idServicio);
+      console.log("data",data);
+      // Filtrar solo los estados actuales de cada cuota
+      const cuotasConEstadoActual = data.map(([alumno, cuotas]) => [
+        alumno,
+        cuotas.map((cuota) => ({
+          ...cuota,
+          cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
+        })),
+      ]);
+      setCuotas(cuotasConEstadoActual);
+    } catch (error) {
+      console.error("Error al traer las cuotas:", error);
+    }
+  };
+
+  const filteredCuotas = cuotas.filter(([student, cuotasStudent]) =>
+    cuotasStudent.some((cuota) => {
+      const estadoActual = cuota.cambiosEstado[0]?.estadoCuota; // Accede al estado actual de la cuota
+      return (
+        paymentFilter === "" || // Sin filtro
+        (paymentFilter === "Pendiente" && estadoActual === "Pendiente") ||
+        (paymentFilter === "Abonada" && estadoActual === "Abonada") ||
+        (paymentFilter === "Vencida" && estadoActual === "Vencida")
+      );
+    })
+  );
+  
   // Llamada al servicio para obtener cuotas
   useEffect(() => {
-    const fetchCuotas = async () => {
-      try {
-        const data = await traerUltimasCuotasDeServicio(idServicio);
-        console.log("data",data);
-        // Filtrar solo los estados actuales de cada cuota
-        const cuotasConEstadoActual = data.map(([alumno, cuotas]) => [
-          alumno,
-          cuotas.map((cuota) => ({
-            ...cuota,
-            cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
-          })),
-        ]);
-        
-        setStudents(cuotasConEstadoActual);
-      } catch (error) {
-        console.error("Error al traer las cuotas:", error);
-      }
-    };
-
     fetchCuotas();
   }, []);
 
   const handleGroupFilterChange = (e) => setGroupFilter(e.target.value);
   const handlePaymentFilterChange = (e) => setPaymentFilter(e.target.value);
-
-  const filteredStudents = students.filter((student) => {
-    const matchesGroup = groupFilter ? student.group === groupFilter : true;
-    const matchesPaymentStatus =
-      paymentFilter === "Pendiente"
-        ? student.payments.some((p) => !p.estado?.pagado)
-        : paymentFilter === "Pagado"
-        ? student.payments.some((p) => p.estado?.pagado)
-        : true;
-    return matchesGroup && matchesPaymentStatus;
-  });
 
   const handleShowPaymentHistory = (student) => {
     setSelectedStudent(student);
@@ -67,24 +68,13 @@ const Cobros = ({ id }) => {
   };
 
   const handleSavePayment = () => {
-    const updatedStudents = students.map((student) => {
-      if (student.id === selectedStudent.id) {
-        const newPayment = {
-          date: paymentDate,
-          amount: selectedStudent.payments[0]?.amount || 0,
-          paymentMethod: paymentMethod,
-          surcharge: 0,
-        };
-        const updatedPayments = [newPayment, ...student.payments];
-        return {
-          ...student,
-          payments: updatedPayments,
-        };
-      }
-      return student;
-    });
+    try {
+      pagarCuota(idServicio, paymentMethod, selectedCuota.id);
+      fetchCuotas();
+    } catch (error) {
+      console.error('Error al traer las solicitudes de inscripcion:', error);
+    }
 
-    setStudents(updatedStudents);
     setShowAddPayment(false);
     setPaymentDate("");
     setPaymentMethod("");
@@ -131,7 +121,8 @@ const Cobros = ({ id }) => {
           >
             <option value="">Filtrar por Estado de Pago</option>
             <option value="Pendiente">Pendiente</option>
-            <option value="Pagado">Pagado</option>
+            <option value="Abonada">Abonada</option>
+            <option value="Vencida">Vencida</option>
           </Form.Control>
         </Col>
       </Row>
@@ -150,9 +141,9 @@ const Cobros = ({ id }) => {
           </tr>
         </thead>
         <tbody>
-          {students.map(([student, cuotas]) => (
-             cuotas.map( (cuota) => ( 
-            <tr key={student.id}>
+          {filteredCuotas.map(([student, cuotasStudent]) => (
+             cuotasStudent.map( (cuota) => ( 
+            <tr key={cuota.id}>
               <td>{student.usuario.nombre}</td>
               <td>{student.usuario.apellido}</td>
               <td>
@@ -163,7 +154,7 @@ const Cobros = ({ id }) => {
               <td>{cuota.pago?.metodoPago.nombre || "N/A"}</td>
               <td>
                 {cuota.pago
-                  ? formatDate(cuota.pago.fecha)
+                  ? formatDate(cuota.pago.fechaPago)
                   : "N/A"}
               </td>
               <td>
@@ -173,13 +164,16 @@ const Cobros = ({ id }) => {
                 >
                   Ver Historial de Pagos
                 </Button>
+                {cuota.cambiosEstado[0].estadoCuota === "Pendiente" &&
                 <Button
-                  variant="success"
-                  className="ms-2"
-                  onClick={() => handleAddPayment(student, cuota)}
-                >
-                  Registrar Pago
-                </Button>
+                variant="success"
+                className="ms-2"
+                onClick={() => handleAddPayment(student, cuota)}
+              >
+                Registrar Pago
+              </Button>  
+              }
+                
               </td>
             </tr>
           ) )))}
@@ -238,7 +232,7 @@ const Cobros = ({ id }) => {
         </Button>
         <Button
           variant="primary"
-          onClick={() => onSave(paymentMethod, paymentDate)}
+          onClick={handleSavePayment}
           disabled={!paymentMethod || !paymentDate}
         >
           Guardar Pago
@@ -246,7 +240,7 @@ const Cobros = ({ id }) => {
       </Modal.Footer>
     </Modal>
     </div>
-  );
-};
+)};
+
 
 export default Cobros;

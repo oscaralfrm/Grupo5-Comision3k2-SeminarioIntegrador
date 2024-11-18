@@ -14,3 +14,12 @@ export const traerUltimasCuotasDeServicio = async (idServicio) => {
 };
 
 // hacer el pagar, y el anular
+export const pagarCuota = async (idServicio, nombre, idCuota) => {
+  try {
+    const response = await axios.put(`${baseUrl}/${idServicio}/cuotas/${idCuota}/pagar`, {nombre});
+    return response.data;
+  } catch (error) {
+    console.error("Error al pagar la cuota:", error);
+    throw error;
+  }
+};

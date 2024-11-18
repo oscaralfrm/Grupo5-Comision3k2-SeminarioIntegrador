@@ -26,6 +26,19 @@ export const getInscripcionesDeServicio = async (idServicio, vigentes, pendiente
     }
 };
 
+// Función para obtener las inscripciones de un servicio
+export const getInscripcionesDeGrupo = async (idServicio, idGrupo, vigentes, pendientes) => {
+  try {
+      const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/inscripciones`, {
+          params: { vigentes, pendientes },
+      });
+      return response.data;
+  } catch (error) {
+      console.error('Error al obtener inscripciones del grupo', error);
+      throw error;
+  }
+};
+
 // Obtener una inscripción por su ID
 export const traerUnaInscripcion = async (idInscripcion) => {
     try {

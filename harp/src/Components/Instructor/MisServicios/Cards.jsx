@@ -1,27 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Adicional from "./Adicional"; // Componente de gráficos
 import Statistics from "./Estadisticas"; // Otro componente de gráficos
 import SearchFilter from "./Busqueda"; // Otro componente de gráficos
 import GraficoDeTorta from "./GráficoPastel";
+import { getInstructorById } from "../../../services/Instructor";
+import { useParams } from "react-router-dom";
 
-const CourseCards = ({ courses }) => {
+const CourseCards = ({ servicios , idInstructor}) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const coursesPerPage = 6;
-  const [selectedCourse, setSelectedCourse] = useState(null);
+  const serviciosPerPage = 6;
+  const [selectedServicio, setSelectedServicio] = useState(null);
   const [highlightedCourseId, setHighlightedCourseId] = useState(null);
+  const [instructor, setInstructor] = useState(null);
 
-  const indexOfLastCourse = currentPage * coursesPerPage;
-  const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
-  const currentCourses = courses.slice(indexOfFirstCourse, indexOfLastCourse);
+  useEffect(() => {
+    const fetchInstructor = async () => {
+      try {
+        const data = await getInstructorById(idInstructor);
+        setInstructor(data);
+      } catch (error) {
+        console.error('Error al traer el instructor:', error);
+      }
+    };
+    fetchInstructor();
+  }, []);
+
+  const indexOfLastCourse = currentPage * serviciosPerPage;
+  const indexOfFirstCourse = indexOfLastCourse - serviciosPerPage;
+  const currentServicios = servicios.slice(indexOfFirstCourse, indexOfLastCourse);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleMoreInfo = (courseId) => {
-    const course = courses.find((c) => c.id === courseId);
-    setSelectedCourse(course);
+  const handleMoreInfo = (servicioId) => {
+    const servicio = servicios.find((s) => s.id === servicioId);
+    setSelectedServicio(servicio);
   };
 
-  const closeDetails = () => setSelectedCourse(null);
+  const closeDetails = () => setSelectedServicio(null);
 
   const toggleGraphics = (courseId) => {
     setHighlightedCourseId((prevId) => (prevId === courseId ? null : courseId));
@@ -31,13 +46,13 @@ const CourseCards = ({ courses }) => {
   return (
     <div className="container" style={{ marginTop: "20px", fontFamily: "Roboto" }}>
       <div className="row">
-        {currentCourses.map((course) => (
-          <div className="col-md-4" key={course.id}>
+        {currentServicios.map((servicio) => (
+          <div className="col-md-4" key={servicio.id}>
             <div
               className="card mb-4"
               style={{
                 padding: "15px",
-                backgroundColor: highlightedCourseId === course.id ? "#A5B4FC" : "#fff",
+                backgroundColor: highlightedCourseId === servicio.id ? "#A5B4FC" : "#fff",
                 borderRadius: "20px",
                 boxShadow: "0px 4px 18px rgba(0, 0, 0, 0.5)",
                 textAlign: "center",
@@ -58,8 +73,8 @@ const CourseCards = ({ courses }) => {
                 }}
               >
                 <img
-                  src={course.image}
-                  alt={course.name}
+                  src={servicio.logoURL}
+                  alt={servicio.nombre}
                   style={{
                     width: "50px",
                     height: "50px",
@@ -68,17 +83,17 @@ const CourseCards = ({ courses }) => {
                 />
               </div>
               <h4 className="card-title" style={{ fontSize: "1.15rem", color: "#333", fontWeight: "bold" }}>
-                {course.name}
+                {servicio.nombre}
               </h4>
               <p className="card-text" style={{ fontSize: "1em", color: "#666", marginBottom: "10px" }}>
-                Instructor: {course.instructor}
+                Instructor: {instructor.usuario.nombre}
               </p>
               <p style={{ fontSize: "0.9em", color: "#333", lineHeight: "1.4" }}>
-                {course.description}
+                {servicio.descripcion}
               </p>
               <div className="d-flex justify-content-around">
                 <button
-                  onClick={() => handleMoreInfo(course.id)}
+                  onClick={() => handleMoreInfo(servicio.id)}
                   className="btn btn-primary"
                 >
                   Ver Más
@@ -99,7 +114,7 @@ const CourseCards = ({ courses }) => {
         >
           &#8592;
         </button>
-        {[...Array(Math.ceil(courses.length / coursesPerPage))].map((_, index) => (
+        {[...Array(Math.ceil(servicios.length / serviciosPerPage))].map((_, index) => (
           <button
             key={index + 1}
             onClick={() => paginate(index + 1)}
@@ -111,7 +126,7 @@ const CourseCards = ({ courses }) => {
         ))}
         <button
           onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage === Math.ceil(courses.length / coursesPerPage)}
+          disabled={currentPage === Math.ceil(servicios.length / serviciosPerPage)}
           className="btn btn-light"
           style={paginationButtonStyles}
         >
@@ -119,7 +134,7 @@ const CourseCards = ({ courses }) => {
         </button>
       </div>
 
-      {selectedCourse && (
+      {selectedServicio && (
         <div
           style={{
             position: "fixed",
@@ -135,14 +150,14 @@ const CourseCards = ({ courses }) => {
             maxWidth: "500px",
           }}
         >
-          <h3>{selectedCourse.name}</h3>
-          <p><strong>Ubicación:</strong> {selectedCourse.location}</p>
-          <p><strong>Descripción:</strong> {selectedCourse.description}</p>
-          <p><strong>Tipo de Servicio:</strong> {selectedCourse.serviceType}</p>
-          <p><strong>Modalidad de Cobro:</strong> {selectedCourse.paymentMethod}</p>
-          <p><strong>Asistencias:</strong> {selectedCourse.attendance ? "Sí" : "No"}</p>
-          <p><strong>Pase Libre:</strong> {selectedCourse.freePass ? "Sí" : "No"}</p>
-          <p><strong>Publicado:</strong> {selectedCourse.published ? "Sí" : "No"}</p>
+          <h3>{selectedServicio.nombre}</h3>
+          <p><strong>Ubicación:</strong> {selectedServicio.ubicacion}</p>
+          <p><strong>Descripción:</strong> {selectedServicio.descripcion}</p>
+          <p><strong>Tipo de Servicio:</strong> {selectedServicio.categoria.nombre}</p>
+          <p><strong>Modalidad de Cobro:</strong> {selectedServicio.nombre}</p>
+          <p><strong>Asistencias:</strong> {selectedServicio.asistenciasActivas ? "Sí" : "No"}</p>
+          <p><strong>Clase de prueba:</strong> {selectedServicio.claseDePrueba ? "Sí" : "No"}</p>
+          <p><strong>Inscripciones:</strong> {selectedServicio.inscripcionesAbiertas ? "Habilitadas" : "Deshabilitadas"}</p>
           <button onClick={closeDetails} className="btn btn-danger">
             Cerrar
           </button>

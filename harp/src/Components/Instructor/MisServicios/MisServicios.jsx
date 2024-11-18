@@ -1,26 +1,41 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import SearchFilter from "./Busqueda";
 import CourseCards from "./Cards";
 import Adicional from "./Adicional";
 import Statistics from "./Estadisticas";
 import GraficoDeTorta from "./GráficoPastel"
+import { getServiciosDeInstructor } from "../../../services/Instructor";
+import { useParams } from "react-router-dom";
 const Dashboard = () => {
-  const [courses, setCourses] = useState([
-    { id: 1, name: "Introduction to Programming", instructor: "Jane Smith", image: "path/to/image1.jpg", category: "programming" },
-    { id: 2, name: "Entrepreneurship 101", instructor: "Jane Smith", image: "path/to/image2.jpg", category: "business" },
-    { id: 3, name: "Creative Painting", instructor: "Jane Smith", image: "path/to/image3.jpg", category: "art" },
-    // Agrega más cursos según sea necesario
-  ]);
+  const [servicios, setServicios] = useState([]);
+  const [filteredServicios, setFilteredServicios] = useState(servicios);
+  const {idServicio} = useParams();
+  const {idInstructor} = useParams();
 
-  const [filteredCourses, setFilteredCourses] = useState(courses);
+  
+  useEffect(() => {
+    const fetchServicios = async () => {
+      try {
+        const data = await getServiciosDeInstructor(idInstructor);
+        setServicios(data);
+        setFilteredServicios(data);
+      } catch (error) {
+        console.error('Error al traer los servicios del instructor:', error);
+      }
+    };
+    fetchServicios();
+    console.log(servicios);
+  }, []);
+
 
   const handleSearch = (searchTerm) => {
-    setFilteredCourses(courses.filter((course) => course.name.toLowerCase().includes(searchTerm.toLowerCase())));
+    setFilteredServicios(servicios.filter((servicio) => servicio.nombre.toLowerCase().includes(searchTerm.toLowerCase())));
   };
 
   const handleFilter = (category) => {
-    setFilteredCourses(courses.filter((course) => (category ? course.category === category : true)));
+    setFilteredServicios(servicios.filter((servicio) => (category ? servicio.categoria.nombre === category : true)));
   };
+
   const handleNavigate = () => {
     navigate("/instructor/1/servicios");
   };
@@ -60,7 +75,7 @@ const Dashboard = () => {
         {/* Cards de Cursos */}
         <div style={{ flex: "1 1 60%", minWidth: "300px" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
-            <CourseCards courses={filteredCourses} />
+            <CourseCards servicios={filteredServicios} idInstructor={idInstructor}/>
           </div>
         </div>
         

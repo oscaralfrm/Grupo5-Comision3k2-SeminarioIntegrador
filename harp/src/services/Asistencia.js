@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = 'http://localhost:9001/api/servicios/grupos/clases'; // Ajusta según tu configuración de backend
+const API_URL = '/servicios/grupos/clases'; // Ajusta según tu configuración de backend
 
 // Servicio para obtener todas las asistencias
 export const getAllAsistencias = async () => {
@@ -21,17 +21,6 @@ export const getAsistenciaById = async (idAsistencia) => {
         return response.data;  // Suponiendo que la respuesta es una asistencia
     } catch (error) {
         console.error("Error fetching asistencia by ID: ", error);
-        throw error;
-    }
-};
-
-// Servicio para crear una nueva asistencia
-export const createAsistencia = async (idClase, asistenciaDTO) => {
-    try {
-        const response = await axios.post(`${API_URL}/${idClase}/asistencias`, asistenciaDTO);
-        return response.data;  // Suponiendo que la respuesta es la asistencia creada
-    } catch (error) {
-        console.error("Error creating asistencia: ", error);
         throw error;
     }
 };

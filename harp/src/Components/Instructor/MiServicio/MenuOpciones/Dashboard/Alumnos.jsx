@@ -62,7 +62,7 @@ const StudentsCard = () => {
         
         {/* Botón Ir a Alumnos */}
         <Link
-          to="/instructor/1/servicio/1/alumnos"
+          to={`/instructor/1/servicio/${idServicio}/alumnos`}
           style={{
             backgroundColor: "#4F46E5",
             color: "white",
