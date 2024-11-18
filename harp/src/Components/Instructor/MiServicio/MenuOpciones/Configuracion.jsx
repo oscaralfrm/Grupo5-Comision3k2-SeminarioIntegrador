@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { getGruposDeServicio } from '../../../../services/Grupo.js'; // Importa tu servicio aquí
+import { getGruposDeServicio } from '../../../../services/Grupo.js';
 import { Tab, Tabs, Card, Form, Button, Spinner } from 'react-bootstrap';
-import { BsQuestionCircle } from 'react-icons/bs'; // Asegúrate de tener react-icons instalado
-import MaiaOne from '../../../../Image/Maia1.png'; // Asegúrate de importar tu imagen
-import MaiaTwo from '../../../../Image/Maia2.png'; // Asegúrate de importar tu imagen
-import MaiaThree from '../../../../Image/Maia3.png'; // Asegúrate de importar tu imagen
-import MaiaFour from '../../../../Image/Maia4.png'; // Asegúrate de importar tu imagen
+import { BsQuestionCircle } from 'react-icons/bs';
+import MaiaOne from '../../../../Image/Maia1.png'; 
+import MaiaTwo from '../../../../Image/Maia2.png'; 
+import MaiaThree from '../../../../Image/Maia3.png'; 
+import MaiaFour from '../../../../Image/Maia4.png'; 
 
 const Configuracion = () => {
   const [grupos, setGrupos] = useState([]);
@@ -15,7 +15,20 @@ const Configuracion = () => {
     numeroGrupo: 1,
     cantMaxAlumnos: 1,
     horarios: [],
+    categoria: '',
+    descripcion: '',
+    ubicacion: '',
+    logo: null,
   });
+
+  // Estados para configuración de cobros
+  const [frecuenciaCobro, setFrecuenciaCobro] = useState('');
+  const [abonoFechas, setAbonoFechas] = useState('');
+  const [diaLimitePago, setDiaLimitePago] = useState('');
+  const [montoInscripcion, setMontoInscripcion] = useState('');
+  const [montoInscripcionValue, setMontoInscripcionValue] = useState(''); // Estado para el monto de inscripción
+  const [montoServicio, setMontoServicio] = useState('');
+
   const [validationError, setValidationError] = useState('');
   const [activeTab, setActiveTab] = useState('general');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,10 +40,13 @@ const Configuracion = () => {
   const [showRecorridoMessage, setShowRecorridoMessage] = useState(false);
   const [showYesResponse, setShowYesResponse] = useState(false);
   const [showNoResponse, setShowNoResponse] = useState(false);
-  const [recorridoIniciado, setRecorridoIniciado] = useState(false); // Estado para manejar el recorrido iniciado
-  const [showWelcomeImage, setShowWelcomeImage] = useState(true); // Estado para mostrar la imagen de bienvenida
-  const [registroAsistencias, setRegistroAsistencias] = useState('automáticamente'); // Estado para el método de registro de asistencias
-  const [estadoInscripciones, setEstadoInscripciones] = useState('abiertas'); // Estado para el estado de las inscripciones
+  const [recorridoIniciado, setRecorridoIniciado] = useState(false);
+  const [showWelcomeImage, setShowWelcomeImage] = useState(true);
+  const [registroAsistencias, setRegistroAsistencias] = useState('automáticamente');
+  const [estadoInscripciones, setEstadoInscripciones] = useState('abiertas');
+  const [modalidad, setModalidad] = useState('');
+  const [clasePrueba, setClasePrueba] = useState('no');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const maiaDialogues = [
     "¡Hola! Soy Maia. Tu asistente robótico personal, encantada de conocerte. Próximamente te ayudaré con tus servicios y alumnos.",
@@ -54,7 +70,6 @@ const Configuracion = () => {
     fetchGrupos();
   }, []);
 
-  // Manejadores de grupo y horarios
   const handleAgregarGrupo = () => {
     setIsLoading(true);
     setShowFormularioGrupo(true);
@@ -66,17 +81,15 @@ const Configuracion = () => {
       ...prev,
       horarios: [...prev.horarios, nuevoHorario],
     }));
-    setCurrentHorarioIndex(nuevoGrupo.horarios.length); // Actualiza correctamente el índice para el nuevo horario
+    setCurrentHorarioIndex(nuevoGrupo.horarios.length);
   };
 
   const handleQuitarHorario = () => {
     if (nuevoGrupo.horarios.length > 0) {
       setNuevoGrupo((prev) => {
-        const updatedHorarios = prev.horarios.slice(0, -1); // Elimina el último horario
+        const updatedHorarios = prev.horarios.slice(0, -1);
         return { ...prev, horarios: updatedHorarios };
       });
-
-      // Ajusta el índice actual al eliminar un horario
       setCurrentHorarioIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
     }
   };
@@ -92,8 +105,6 @@ const Configuracion = () => {
   const handleHorarioChange = (e) => {
     const { name, value } = e.target;
     const updatedHorarios = [...nuevoGrupo.horarios];
-
-    // Asegúrate de que el índice actual no sobrepase el número de horarios
     if (currentHorarioIndex < updatedHorarios.length) {
       updatedHorarios[currentHorarioIndex] = {
         ...updatedHorarios[currentHorarioIndex],
@@ -128,10 +139,9 @@ const Configuracion = () => {
     }
   };
 
-  const handleCancelGrupo = () => {
-    setShowFormularioGrupo(false);
-    setIsLoading(false);
-    setNuevoGrupo({ nombre: '', numeroGrupo: 1, cantMaxAlumnos: 1, horarios: [] });
+  const handleResetGrupo = () => {
+    setNuevoGrupo({ nombre: '', numeroGrupo: 1, cantMaxAlumnos: 1, horarios: [], categoria: '', descripcion: '', ubicacion: '', logo: null });
+    setValidationError('');
   };
 
   const validarSuperposicionHorarios = (horarios) => {
@@ -142,10 +152,7 @@ const Configuracion = () => {
         const h2Inicio = new Date(`1970-01-01T${horarios[j].horaInicio}`);
         const h2Fin = new Date(`1970-01-01T${horarios[j].horaFin}`);
 
-        if (
-          (h1Inicio < h2Fin && h1Fin > h2Inicio) ||
-          (h2Inicio < h1Fin && h2Fin > h1Inicio)
-        ) {
+        if ((h1Inicio < h2Fin && h1Fin > h2Inicio) || (h2Inicio < h1Fin && h2Fin > h1Inicio)) {
           return false;
         }
       }
@@ -158,9 +165,9 @@ const Configuracion = () => {
 
   const handleConfigChange = (config) => {
     setActiveConfig(config);
-    setShowWelcomeImage(false); // Oculta la imagen de bienvenida al seleccionar una configuración
-    setShowMaia(false); // Oculta la robot Maia
-    setShowChatBubble(false); // Oculta la burbuja de chat de Maia
+    setShowWelcomeImage(false);
+    setShowMaia(false);
+    setShowChatBubble(false);
   };
 
   const buttonStyles = {
@@ -175,8 +182,6 @@ const Configuracion = () => {
   const handleNextDialogue = () => {
     if (dialogueIndex < maiaDialogues.length - 1) {
       setDialogueIndex((prev) => prev + 1);
-      
-      // Activar el mensaje de recorrido solo cuando se muestre el último diálogo
       if (dialogueIndex === maiaDialogues.length - 2) {
         setShowRecorridoMessage(true);
       }
@@ -192,7 +197,7 @@ const Configuracion = () => {
   };
 
   const handleCloseDialogue = () => {
-    resetDialogue(); // Se resetea el diálogo al cerrar
+    resetDialogue();
   };
 
   const handleConfirmationYes = () => {
@@ -208,26 +213,29 @@ const Configuracion = () => {
 
   const handleIniciarRecorrido = () => {
     setRecorridoIniciado(true);
-    alert('El recorrido ha comenzado.'); // Esto es un ejemplo, cámbialo por tu lógica
+    alert('El recorrido ha comenzado.');
   };
 
   const toggleMaia = () => {
     if (showMaia) {
-      handleCloseDialogue(); // Reinicia el diálogo si Maia se cierra
+      handleCloseDialogue();
     } else {
-      setShowChatBubble(true); // Mostrar la burbuja de diálogo si Maia se muestra por primera vez
+      setShowChatBubble(true);
     }
     setShowMaia((prev) => !prev);
   };
 
   const handleConfirmarCambiosAsistencias = () => {
-    // Aquí iría la lógica para guardar los cambios de asistencias
     alert(`Cambios de Asistencias guardados: ${registroAsistencias}`);
   };
 
   const handleConfirmarCambiosInscripciones = () => {
-    // Aquí iría la lógica para guardar los cambios de inscripciones
     alert(`Cambios de Inscripciones guardados: ${estadoInscripciones}`);
+  };
+
+  const handleGuardarCambiosCobros = () => {
+    // Aquí puedes agregar la lógica para guardar los cambios de cobros a donde sea necesario
+    alert('Cambios de cobros guardados.');
   };
 
   const resetDialogue = () => {
@@ -238,6 +246,294 @@ const Configuracion = () => {
     setShowMaia(false);
     setRecorridoIniciado(false);
   };
+
+  const renderPageContent = () => {
+    return (
+      <div>
+        <h2 className="text-center mb-4">Configuración del Servicio</h2>
+        <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-4">
+          <Tab eventKey="general" title="Información del Servicio">
+            <Card style={{ borderRadius: '20px' }}>
+              <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
+                Información del Servicio
+              </Card.Header>
+              <Card.Body>
+                {/* Primera página */}
+                <div style={{ display: currentPage === 1 ? 'block' : 'none' }}>
+                  <Form.Group controlId="categoria" className="mb-3">
+                    <Form.Label>Categoría</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Categoría del servicio"
+                      onChange={(e) => setNuevoGrupo({ ...nuevoGrupo, categoria: e.target.value })}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="nombreServicio" className="mb-3">
+                    <Form.Label>Nombre del Servicio</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Nombre del servicio"
+                      onChange={(e) => setNuevoGrupo({ ...nuevoGrupo, nombre: e.target.value })}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="descripcion" className="mb-3">
+                    <Form.Label>Descripción</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      placeholder="Descripción del servicio"
+                      onChange={(e) => setNuevoGrupo({ ...nuevoGrupo, descripcion: e.target.value })}
+                    />
+                  </Form.Group>
+                </div>
+
+                {/* Segunda página */}
+                <div style={{ display: currentPage === 2 ? 'block' : 'none' }}>
+                  <Form.Group controlId="ubicacion" className="mb-3">
+                    <Form.Label>Ubicación</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Ubicación del servicio"
+                      onChange={(e) => setNuevoGrupo({ ...nuevoGrupo, ubicacion: e.target.value })}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="logo" className="mb-3">
+                    <Form.Label>Logo</Form.Label>
+                    <Form.Control
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setNuevoGrupo({ ...nuevoGrupo, logo: e.target.files[0] })}
+                    />
+                  </Form.Group>
+                </div>
+
+                {/* Botones de navegación */}
+                {currentPage === 1 && (
+                  <div className="d-flex justify-content-between mt-4">
+                    <Button onClick={() => setCurrentPage(2)} disabled={currentPage === 2}>
+                      Siguiente
+                    </Button>
+                  </div>
+                )}
+                {currentPage === 2 && (
+                  <div className="d-flex justify-content-between mt-4">
+                    <Button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
+                      Anterior
+                    </Button>
+                  </div>
+                )}
+              </Card.Body>
+            </Card>
+          </Tab>
+
+          <Tab eventKey="modalidad" title="Modalidad">
+            <Card style={{ borderRadius: '20px' }}>
+              <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
+                Modalidad
+              </Card.Header>
+              <Card.Body>
+                <Form.Group controlId="modalidad" className="mb-3">
+                  <Form.Label>¿Cómo son tus clases?</Form.Label>
+                  <Form.Control as="select" value={modalidad} onChange={(e) => setModalidad(e.target.value)}>
+                    <option value="">Selecciona modalidad</option>
+                    <option value="individuales">Individuales</option>
+                    <option value="grupales">Grupales</option>
+                    <option value="individuales y grupales">Individuales y grupales</option>
+                    <option value="no doy clases">No doy clases</option>
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group controlId="clasePrueba" className="mb-3">
+                  <Form.Label>¿Ofreces clase de prueba gratuita?</Form.Label>
+                  <Form.Control as="select" value={clasePrueba} onChange={(e) => setClasePrueba(e.target.value)}>
+                    <option value="sí">Sí</option>
+                    <option value="no">No</option>
+                  </Form.Control>
+                </Form.Group>
+              </Card.Body>
+            </Card>
+          </Tab>
+
+          <Tab eventKey="asistencias" title="Asistencias">
+            <Card style={{ borderRadius: '20px' }}>
+              <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
+                Configuración de Asistencias
+              </Card.Header>
+              <Card.Body>
+                <Form.Group controlId="registroAsistencias" className="mb-3">
+                  <Form.Label>¿Cómo quieres registrar las asistencias?</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={registroAsistencias}
+                    onChange={(e) => setRegistroAsistencias(e.target.value)}
+                  >
+                    <option value="automáticamente">Automáticamente</option>
+                    <option value="manualmente">Manualmente</option>
+                  </Form.Control>
+                </Form.Group>
+              </Card.Body>
+            </Card>
+          </Tab>
+
+          <Tab eventKey="inscripciones" title="Inscripciones">
+            <Card style={{ borderRadius: '20px' }}>
+              <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
+                Configuración de Inscripciones
+              </Card.Header>
+              <Card.Body>
+                <Form.Group controlId="estadoInscripciones" className="mb-3">
+                  <Form.Label>¿Las inscripciones a tu servicio cómo deben estar?</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={estadoInscripciones}
+                    onChange={(e) => setEstadoInscripciones(e.target.value)}
+                  >
+                    <option value="abiertas">Abiertas</option>
+                    <option value="cerradas">Cerradas</option>
+                  </Form.Control>
+                </Form.Group>
+              </Card.Body>
+            </Card>
+          </Tab>
+        </Tabs>
+
+        <div className="d-flex justify-content-center mt-4">
+          <Button style={{ marginRight: '10px', ...buttonStyles }} onClick={handleResetGrupo}>
+            Reiniciar
+          </Button>
+          <Button onClick={handleSaveGrupo}>
+            Guardar Servicio
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCobrosContent = () => (
+    <div className="row mt-4">
+      <div className="col-md-8">
+        <Card style={{ borderRadius: '20px' }}>
+          <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
+            Configuración de Cobros
+          </Card.Header>
+          <Card.Body>
+            <Form>
+              <Form.Group controlId="frecuenciaCobro" className="mb-3">
+                <Form.Label>¿Con qué frecuencia se realizará el cobro?</Form.Label>
+                <Form.Control as="select" value={frecuenciaCobro} onChange={(e) => setFrecuenciaCobro(e.target.value)}>
+                  <option value="">Selecciona frecuencia</option>
+                  <option value="diaria">Diaria</option>
+                  <option value="semanal">Semanal</option>
+                  <option value="mensual">Mensual</option>
+                  <option value="otros">Otros</option>
+                </Form.Control>
+              </Form.Group>
+
+              <Form.Group controlId="abonoFechas" className="mb-3">
+                <Form.Label>¿Tus alumnos podrán abonar en las mismas fechas o según su inscripción?</Form.Label>
+                <Form.Control as="select" value={abonoFechas} onChange={(e) => setAbonoFechas(e.target.value)}>
+                  <option value="">Selecciona opción</option>
+                  <option value="mismas_fechas">Mismas Fechas</option>
+                  <option value="segun_inscripcion">Según Inscripción</option>
+                </Form.Control>
+              </Form.Group>
+
+              <Form.Group controlId="diaLimitePago" className="mb-3">
+                <Form.Label>Día límite de pago (X días desde el inicio del ciclo)</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="Días límite"
+                  value={diaLimitePago}
+                  onChange={(e) => setDiaLimitePago(e.target.value)}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="montoInscripcion" className="mb-3">
+                <Form.Label>¿Incluye un monto de inscripción?</Form.Label>
+                <Form.Control as="select" value={montoInscripcion} onChange={(e) => {
+                  setMontoInscripcion(e.target.value);
+                  // Resetear el monto de inscripción si se ha cambiado a "no incluye"
+                  if (e.target.value !== "incluye") {
+                    setMontoInscripcionValue('');
+                  }
+                }}>
+                  <option value="">Selecciona opción</option>
+                  <option value="no incluye">No incluye</option>
+                  <option value="incluye">Incluye</option>
+                </Form.Control>
+              </Form.Group>
+
+              {montoInscripcion === "incluye" && (
+                <Form.Group controlId="montoInscripcionValue" className="mb-3">
+                  <Form.Label>Monto de Inscripción</Form.Label>
+                  <Form.Control
+                    type="number"
+                    value={montoInscripcionValue}
+                    onChange={(e) => setMontoInscripcionValue(e.target.value)}
+                    placeholder="Monto de inscripción"
+                  />
+                </Form.Group>
+              )}
+
+              <Form.Group controlId="montoServicio" className="mb-3">
+                <Form.Label>Monto del Servicio</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={montoServicio}
+                  onChange={(e) => setMontoServicio(e.target.value)}
+                  placeholder="Monto del servicio"
+                />
+              </Form.Group>
+
+              <Button variant="primary" onClick={handleGuardarCambiosCobros} style={{ marginTop: '10px' }}>
+                Guardar Cambios
+              </Button>
+            </Form>
+          </Card.Body>
+        </Card>
+      </div>
+
+      <div className="col-md-4">
+        <Card style={{ borderRadius: '20px' }}>
+          <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
+            Resumen de Cobros
+          </Card.Header>
+          <Card.Body>
+            <h5 className="text-center">Información Detallada</h5>
+            <ul>
+              <li><strong>Frecuencia de Cobro:</strong> {frecuenciaCobro}</li>
+              <li><strong>Esquema de Pago:</strong> {abonoFechas}</li>
+              <li><strong>Día Límite de Pago:</strong> {diaLimitePago} días</li>
+              {montoInscripcion === "incluye" && (
+                <li><strong>Monto de Inscripción:</strong> {montoInscripcionValue}</li>
+              )}
+              <li><strong>Monto del Servicio:</strong> ${montoServicio}</li>
+            </ul>
+          </Card.Body>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const renderSummary = () => (
+    <Card style={{ borderRadius: '20px', height: '400px', marginTop: '20px' }}>
+      <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
+        Resumen del Servicio
+      </Card.Header>
+      <Card.Body>
+        <h5 className="text-center">Información Detallada</h5>
+        <ul>
+          <li><strong>Nombre del Servicio:</strong> {nuevoGrupo.nombre}</li>
+          <li><strong>Categoría:</strong> {nuevoGrupo.categoria}</li>
+          <li><strong>Descripción:</strong> {nuevoGrupo.descripcion}</li>
+          <li><strong>Ubicación:</strong> {nuevoGrupo.ubicacion}</li>
+          <li><strong>Modalidad:</strong> {modalidad}</li>
+          <li><strong>Registro de Asistencias:</strong> {registroAsistencias}</li>
+          <li><strong>Clase de Prueba:</strong> {clasePrueba}</li>
+          <li><strong>Estado de Inscripciones:</strong> {estadoInscripciones}</li>
+          {/* Eliminado grupos agregados, como se solicitó */}
+        </ul>
+      </Card.Body>
+    </Card>
+  );
 
   return (
     <div className="container mt-4">
@@ -250,7 +546,7 @@ const Configuracion = () => {
         </div>
       )}
 
-      <h1 className="text-center mb-4">Configuración del Sistema</h1>
+      <h1 className="text-center mb-4">Configuración del Servicio</h1>
       <div className="d-flex justify-content-center mb-4">
         <Button variant="outline-primary" className="me-2" onClick={() => handleConfigChange('servicios')}>
           Configuración de Servicios
@@ -258,61 +554,25 @@ const Configuracion = () => {
         <Button variant="outline-primary" className="me-2" onClick={() => handleConfigChange('grupos')}>
           Configuración de Grupos
         </Button>
-        <Button variant="outline-primary" className="me-2" onClick={() => handleConfigChange('asistencias')}>
-          Configuración de Asistencias
-        </Button>
-        <Button variant="outline-primary" onClick={() => handleConfigChange('inscripciones')}>
-          Configuración de Inscripciones
+        <Button variant="outline-primary" className="me-2" onClick={() => handleConfigChange('cobros')}>
+          Configuración de Cobros
         </Button>
       </div>
 
-      {activeConfig === 'servicios' && <h2 className="text-center mb-4">Configuración de Servicios</h2>}
+      {/* Renderiza la configuración de cobros cuando está activa */}
+      {activeConfig === 'cobros' && renderCobrosContent()}
 
-      {activeConfig === 'asistencias' && (
-        <>
-          <h2 className="text-center mb-4">Configuración de Asistencias</h2>
-          <div className="row">
-            <div className="col-md-8">
-              <Card style={{ borderRadius: '20px' }}>
-                <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }}>
-                  Configuración de Registro de Asistencias
-                </Card.Header>
-                <Card.Body>
-                  <Form.Group controlId="registroAsistencias" className="mb-3">
-                    <Form.Label>¿Cómo quieres registrar las asistencias?</Form.Label>
-                    <Form.Control
-                      as="select"
-                      value={registroAsistencias}
-                      onChange={(e) => setRegistroAsistencias(e.target.value)}
-                    >
-                      <option value="automáticamente">Automáticamente</option>
-                      <option value="manualmente">Manualmente</option>
-                    </Form.Control>
-                  </Form.Group>
-                  
-                  <div className="d-flex justify-content-end">
-                    <Button onClick={handleConfirmarCambiosAsistencias} style={{ ...buttonStyles }}>
-                      Confirmar Cambios
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
+      {activeConfig === 'servicios' && (
+        <div>
+          <div className="d-flex justify-content-between">
+            <div style={{ flex: 2 }}>
+              {renderPageContent()}
             </div>
-            <div className="col-md-4" style={{ marginBottom: '20px' }}>
-              <Card className="sticky-top" style={{ borderRadius: '20px' }}>
-                <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }}>
-                  Resumen de Asistencias
-                </Card.Header>
-                <Card.Body>
-                  <h5 className="text-center">Información Detallada</h5>
-                  <ul>
-                    <li><strong>Método de Registro:</strong> {registroAsistencias}</li>
-                  </ul>
-                </Card.Body>
-              </Card>
+            <div style={{ flex: 1, marginLeft: '20px' }}>
+              {renderSummary()}
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {activeConfig === 'grupos' && (
@@ -472,7 +732,10 @@ const Configuracion = () => {
                     </Tabs>
 
                     <div className="d-flex justify-content-between mt-3">
-                      <Button style={{ ...buttonStyles }} variant="secondary" onClick={handleCancelGrupo}>
+                      <Button style={{ ...buttonStyles }} variant="secondary" onClick={() => {
+                        setShowFormularioGrupo(false);
+                        setIsLoading(false); // Cambiado aquí para que el spinner sea inactivo
+                      }}>
                         Cancelar
                       </Button>
                       <Button style={{ ...buttonStyles }} variant="primary" onClick={handleSaveGrupo}>
@@ -556,53 +819,6 @@ const Configuracion = () => {
         </>
       )}
 
-      {activeConfig === 'inscripciones' && (
-        <>
-          <h2 className="text-center mb-4">Configuración de Inscripciones</h2>
-          <div className="row">
-            <div className="col-md-8">
-              <Card style={{ borderRadius: '20px' }}>
-                <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }}>
-                  Configuración de Inscripciones
-                </Card.Header>
-                <Card.Body>
-                  <Form.Group controlId="estadoInscripciones" className="mb-3">
-                    <Form.Label>¿Las inscripciones a tu servicio cómo deben estar?</Form.Label>
-                    <Form.Control
-                      as="select"
-                      value={estadoInscripciones}
-                      onChange={(e) => setEstadoInscripciones(e.target.value)}
-                    >
-                      <option value="abiertas">Abiertas</option>
-                      <option value="cerradas">Cerradas</option>
-                    </Form.Control>
-                  </Form.Group>
-                  <div className="d-flex justify-content-end">
-                    <Button onClick={handleConfirmarCambiosInscripciones} style={{ ...buttonStyles }}>
-                      Confirmar Cambios
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
-            </div>
-            <div className="col-md-4" style={{ marginBottom: '20px' }}>
-              <Card className="sticky-top" style={{ borderRadius: '20px' }}>
-                <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }}>
-                  Resumen de Inscripciones
-                </Card.Header>
-                <Card.Body>
-                  <h5 className="text-center">Información Detallada</h5>
-                  <ul>
-                    <li><strong>Estado de Inscripciones:</strong> {estadoInscripciones}</li>
-                  </ul>
-                </Card.Body>
-              </Card>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Contenedor para Maia y el botón de ayuda */}
       <div style={{
         position: 'fixed',
         bottom: '20px',
@@ -611,7 +827,6 @@ const Configuracion = () => {
         alignItems: 'flex-end',
         zIndex: 1000,
       }}>
-        
         {showMaia && (
           <div style={{ marginRight: '10px', position: 'relative' }}>
             <img 
@@ -673,7 +888,6 @@ const Configuracion = () => {
                   </Button>
                 </div>
 
-                {/* Respuesta de Maia */}
                 {showYesResponse && dialogueIndex === 3 && (
                   <div className="text-center">
                     <p style={{ margin: '10px 0', fontStyle: 'italic', color: '#4F46E5' }}>
