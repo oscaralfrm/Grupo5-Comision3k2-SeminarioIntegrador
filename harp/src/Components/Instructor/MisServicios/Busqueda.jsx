@@ -29,21 +29,6 @@ const SearchFilter = ({ onSearch, onFilter }) => {
           width: "30vw",  // Aumenta el ancho al 30% del ancho de la ventana
         }}
       />
-      <select
-        value={category}
-        onChange={handleCategoryChange}
-        style={{
-          padding: "10px",
-          borderRadius: "4px",
-          border: "1px solid #ccc"
-        }}
-      >
-        <option value="">Categorias</option>
-        <option value="programming">Programming</option>
-        <option value="business">Business</option>
-        <option value="art">Art</option>
-        {/* Agrega más categorías según tus necesidades */}
-      </select>
     </div>
   );
 };

@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios from './axiosConfig.js';
 
 // Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = 'http://localhost:9001/api'; // Ajusta según tu configuración de backend
+const API_URL = ''; // Ajusta según tu configuración de backend
 
 // Servicio para obtener todos los alumnos
 export const getAllAlumnos = async () => {
@@ -27,10 +27,10 @@ export const getAlumnoById = async (idAlumno) => {
 
 export const getAlumnosDeServicio = async (idServicio) => {
     try {
-        const response = await axios.get(`${API_URL}/${idServicio}/alumnos`);
-        return response.data;  // Suponiendo que la respuesta es un alumno
+        const response = await axios.get(`${API_URL}/servicios/${idServicio}/alumnos`);
+        return response.data;
     } catch (error) {
-        console.error("Error fetching alumno by ID: ", error);
+        console.error("Error fetching alumnos de servicio: ", error);
         throw error;
     }
 };
@@ -40,7 +40,7 @@ export const getAlumnosDeGrupo = async (idServicio, idGrupo) => {
         const response = await axios.get(`${API_URL}/servicios/${idServicio}/grupos/${idGrupo}/alumnos`);
         return response.data;  // Suponiendo que la respuesta es un alumno
     } catch (error) {
-        console.error("Error fetching alumno by ID: ", error);
+        console.error("Error fetching alumnos de grupo: ", error);
         throw error;
     }
 };

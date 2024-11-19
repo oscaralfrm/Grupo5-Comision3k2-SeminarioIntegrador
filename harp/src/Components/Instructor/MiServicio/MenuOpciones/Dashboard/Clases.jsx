@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getClasesDeServicio } from "../../../../../services/Clase";
+import { getClasesDeServicio } from "../../../../../services/Clase.js";
 
 const ClassesCard = () => {
   const [classes, setClasses] = useState([]); // Contendrá todas las clases
   const [expanded, setExpanded] = useState(false);
   const {idServicio} = useParams();
 
-  // Datos de clases simulados
-  const allClasses = getClasesDeServicio(idServicio) ;
+  const allClasses = getClasesDeServicio(idServicio);
 
-  // Setear las clases simuladas
   useEffect(() => {
-    setClasses(allClasses);
-  }, []); // Esto solo se ejecuta una vez cuando el componente se monta
+    const fetchClases = async () => {
+      try {
+        const data = await getClasesDeServicio(idServicio);
+        setClasses(data);
+      } catch (error) {
+        console.error('Error al traer las clases:', error);
+      }
+    };
+    fetchClases();
+  }, [idServicio]);
 
   const handleExpandToggle = () => {
     setExpanded(!expanded);
@@ -32,8 +38,8 @@ const ClassesCard = () => {
       {classes.length > 0 ? (
         <>
           <div className="mt-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>Clase</span>
-            <span>Grupo</span>
+            <span>Fecha</span>
+            <span>Dia</span>
             <span>Hora</span>
           </div>
           <hr />
@@ -52,9 +58,10 @@ const ClassesCard = () => {
                 borderBottom: "1px solid #ccc",
               }}
             >
-              <span>{cls.name}</span>
-              <span>{cls.group}</span>
-              <span>{cls.time}</span>
+              <span>{cls.fecha}</span>
+              <span>{cls.observaciones}</span>
+              <span>{cls.horario.diaSemana.nombre}</span>
+              <span>{cls.horario.horaInicio}</span>
             </div>
           ))}
 

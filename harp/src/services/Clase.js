@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios from './axiosConfig.js';
 
 // Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = 'http://localhost:9001/api'; // Ajusta según tu configuración de backend
+const API_URL = ''; // Ajusta según tu configuración de backend
 
 // Servicio para obtener una clase por su ID
 export const getClaseById = async (idClase) => {
@@ -68,9 +68,9 @@ export const cambiarClaseANoFueDada = async (idClase) => {
     }
 };
 
-export const getClasesDeServicio = async (idServicio) => {
+export const getClaseHoyDeServicio = async (idServicio) => {
     try {
-        const response = await axios.get(`${API_URL}/servicios//${idServicio}/clases`);
+        const response = await axios.get(`${API_URL}/servicios/${idServicio}/clases-hoy`);
         return response.data;  // Suponiendo que la respuesta es un array de clases
     } catch (error) {
         console.error("Error fetching clases de grupo: ", error);
@@ -78,3 +78,12 @@ export const getClasesDeServicio = async (idServicio) => {
     }
 };
 
+export const getClasesDeServicio = async (idServicio) => {
+    try {
+        const response = await axios.get(`${API_URL}/servicios/${idServicio}/clases`);
+        return response.data;  // Suponiendo que la respuesta es un array de clases
+    } catch (error) {
+        console.error("Error fetching clases de grupo: ", error);
+        throw error;
+    }
+};
