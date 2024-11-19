@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { getGruposDeServicio } from '../../../../services/Grupo.js';
 import { Tab, Tabs, Card, Form, Button, Spinner } from 'react-bootstrap';
 import { BsQuestionCircle } from 'react-icons/bs';
-import MaiaOne from '../../../../Image/Maia1.png'; 
-import MaiaTwo from '../../../../Image/Maia2.png'; 
-import MaiaThree from '../../../../Image/Maia3.png'; 
-import MaiaFour from '../../../../Image/Maia4.png'; 
+import MaiaOne from '../../../../Image/Maia1.png';
+import MaiaTwo from '../../../../Image/Maia2.png';
+import MaiaThree from '../../../../Image/Maia3.png';
+import MaiaFour from '../../../../Image/Maia4.png';
 
 const Configuracion = () => {
   const [grupos, setGrupos] = useState([]);
   const [showFormularioGrupo, setShowFormularioGrupo] = useState(false);
+  
+  const [nombreServicio, setNombreServicio] = useState('');
+  
   const [nuevoGrupo, setNuevoGrupo] = useState({
     nombre: '',
     numeroGrupo: 1,
@@ -19,17 +22,18 @@ const Configuracion = () => {
     descripcion: '',
     ubicacion: '',
     logo: null,
+    tipoGrupo: 'individual',
   });
 
-  // Estados para configuración de cobros
   const [frecuenciaCobro, setFrecuenciaCobro] = useState('');
   const [abonoFechas, setAbonoFechas] = useState('');
   const [diaLimitePago, setDiaLimitePago] = useState('');
   const [montoInscripcion, setMontoInscripcion] = useState('');
-  const [montoInscripcionValue, setMontoInscripcionValue] = useState(''); // Estado para el monto de inscripción
+  const [montoInscripcionValue, setMontoInscripcionValue] = useState('');
   const [montoServicio, setMontoServicio] = useState('');
 
   const [validationError, setValidationError] = useState('');
+  const [submissionMessage, setSubmissionMessage] = useState('');
   const [activeTab, setActiveTab] = useState('general');
   const [isLoading, setIsLoading] = useState(false);
   const [activeConfig, setActiveConfig] = useState('');
@@ -47,6 +51,7 @@ const Configuracion = () => {
   const [modalidad, setModalidad] = useState('');
   const [clasePrueba, setClasePrueba] = useState('no');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isAddingHorario, setIsAddingHorario] = useState(false);
 
   const maiaDialogues = [
     "¡Hola! Soy Maia. Tu asistente robótico personal, encantada de conocerte. Próximamente te ayudaré con tus servicios y alumnos.",
@@ -73,6 +78,7 @@ const Configuracion = () => {
   const handleAgregarGrupo = () => {
     setIsLoading(true);
     setShowFormularioGrupo(true);
+    setSubmissionMessage('');
   };
 
   const handleAgregarHorario = () => {
@@ -82,6 +88,7 @@ const Configuracion = () => {
       horarios: [...prev.horarios, nuevoHorario],
     }));
     setCurrentHorarioIndex(nuevoGrupo.horarios.length);
+    setIsAddingHorario(true);
   };
 
   const handleQuitarHorario = () => {
@@ -114,24 +121,84 @@ const Configuracion = () => {
     }
   };
 
-  const handleSaveGrupo = async () => {
-    if (nuevoGrupo.nombre === '') {
-      setValidationError("El nombre del grupo es obligatorio.");
-      return;
+  const validarSuperposisionHorarios = (nuevoHorario, horarios) => {
+    const h1Inicio = new Date(`1970-01-01T${nuevoHorario.horaInicio}`);
+    const h1Fin = new Date(`1970-01-01T${nuevoHorario.horaFin}`);
+    
+    for (let horario of horarios) {
+      if (horario.nombreDiaSemana === nuevoHorario.nombreDiaSemana) {
+        const h2Inicio = new Date(`1970-01-01T${horario.horaInicio}`);
+        const h2Fin = new Date(`1970-01-01T${horario.horaFin}`);
+        
+        // Verificar si hay superposición
+        if (h1Inicio < h2Fin && h1Fin > h2Inicio) {
+          return true; // Existe una superposición
+        }
+      }
     }
+    return false; // No hay superposición
+  };
 
-    const horariosValidos = validarSuperposicionHorarios(nuevoGrupo.horarios);
+  const tieneDuplicado = (nuevoHorario) => {
+    return nuevoGrupo.horarios.some(horario => 
+      horario.horaInicio === nuevoHorario.horaInicio &&
+      horario.horaFin === nuevoHorario.horaFin &&
+      horario.nombreDiaSemana === nuevoHorario.nombreDiaSemana
+    );
+  };
+
+  const handleConfirmarAgregarHorario = () => {
+    const nuevoHorario = nuevoGrupo.horarios[currentHorarioIndex];
+    if (nuevoHorario.horaInicio && nuevoHorario.horaFin && nuevoHorario.nombreDiaSemana) {
+      if (nuevoGrupo.horarios.length === 0 || (!validarSuperposisionHorarios(nuevoHorario, nuevoGrupo.horarios) && !tieneDuplicado(nuevoHorario))) {
+        const nuevoHorarios = [...nuevoGrupo.horarios];
+        nuevoHorarios[currentHorarioIndex] = nuevoHorario; // Guardar el nuevo horario
+        setNuevoGrupo((prev) => ({
+          ...prev,
+          horarios: nuevoHorarios,
+        }));
+        setCurrentHorarioIndex(nuevoHorarios.length); // Actualizar el índice del horario
+        setValidationError(''); // Limpiar mensaje de error
+      } else { 
+        // Si hay superposición o duplicado, no se permite agregar
+        setValidationError("¡No puedes superponer horarios en el mismo día o agregar horarios duplicados!");
+      }
+    } else {
+      setValidationError("Por favor, completa todos los campos del horario.");
+    }
+  };
+
+  const handleSaveGrupo = async () => {
+    // Validación de horarios antes de guardar el grupo
+    const horariosValidos = nuevoGrupo.horarios.every((horario, idx) => 
+      idx === 0 || (!validarSuperposisionHorarios(horario, nuevoGrupo.horarios.slice(0, idx)) && !tieneDuplicado(horario))
+    );
+
     if (!horariosValidos) {
-      setValidationError("¡No puedes superponer horarios!");
+      setValidationError("¡No puedes superponer horarios o tener duplicados!");
       return;
     } else {
       setValidationError('');
     }
 
+    // Eliminar duplicados
+    const horariosUnicos = Array.from(new Set(nuevoGrupo.horarios.map(h => `${h.horaInicio}-${h.horaFin}-${h.nombreDiaSemana}`)))
+      .map(h => {
+        const [horaInicio, horaFin, nombreDiaSemana] = h.split('-');
+        return { horaInicio, horaFin, nombreDiaSemana };
+      });
+
     try {
-      setGrupos([...grupos, nuevoGrupo]);
+      const nuevoGrupoConTipo = {
+        ...nuevoGrupo,
+        horarios: horariosUnicos, // Guardar sólo horarios únicos
+        tipoGrupo: nuevoGrupo.cantMaxAlumnos === 1 ? 'individual' : 'grupal',
+      };
+
+      setGrupos([...grupos, nuevoGrupoConTipo]);
       setShowFormularioGrupo(false);
-      setNuevoGrupo({ nombre: '', numeroGrupo: 1, cantMaxAlumnos: 1, horarios: [] });
+      setSubmissionMessage('Grupo guardado exitosamente.'); 
+      setNuevoGrupo({ nombre: '', numeroGrupo: 1, cantMaxAlumnos: 1, horarios: [], categoria: '', descripcion: '', ubicacion: '', logo: null });
       setIsLoading(false);
     } catch (error) {
       console.error("Error al guardar el grupo:", error);
@@ -142,22 +209,7 @@ const Configuracion = () => {
   const handleResetGrupo = () => {
     setNuevoGrupo({ nombre: '', numeroGrupo: 1, cantMaxAlumnos: 1, horarios: [], categoria: '', descripcion: '', ubicacion: '', logo: null });
     setValidationError('');
-  };
-
-  const validarSuperposicionHorarios = (horarios) => {
-    for (let i = 0; i < horarios.length; i++) {
-      for (let j = i + 1; j < horarios.length; j++) {
-        const h1Inicio = new Date(`1970-01-01T${horarios[i].horaInicio}`);
-        const h1Fin = new Date(`1970-01-01T${horarios[i].horaFin}`);
-        const h2Inicio = new Date(`1970-01-01T${horarios[j].horaInicio}`);
-        const h2Fin = new Date(`1970-01-01T${horarios[j].horaFin}`);
-
-        if ((h1Inicio < h2Fin && h1Fin > h2Inicio) || (h2Inicio < h1Fin && h2Fin > h1Inicio)) {
-          return false;
-        }
-      }
-    }
-    return true;
+    setSubmissionMessage(''); 
   };
 
   const gruposIndividuales = grupos.filter((grupo) => grupo.cantMaxAlumnos === 1);
@@ -175,8 +227,9 @@ const Configuracion = () => {
     color: '#FFF',
     border: 'none',
     borderRadius: '5px',
-    padding: '5px 10px',
+    padding: '10px 20px',  // Aumentando el tamaño de los botones
     cursor: 'pointer',
+    fontSize: '16px', // Aumentando el tamaño de la fuente
   };
 
   const handleNextDialogue = () => {
@@ -234,9 +287,43 @@ const Configuracion = () => {
   };
 
   const handleGuardarCambiosCobros = () => {
-    // Aquí puedes agregar la lógica para guardar los cambios de cobros a donde sea necesario
-    alert('Cambios de cobros guardados.');
+    // Validaciones de campos obligatorios
+    if (!frecuenciaCobro || !abonoFechas || !diaLimitePago || !montoServicio) {
+      alert('Por favor, completa todos los campos obligatorios de la configuración de cobros.');
+      return;
+    }
+  
+    // Si todas las validaciones pasan
+    alert('Cambios en la configuración de cobros guardados correctamente.');
+    setSubmissionMessage('Los cambios se han guardado con éxito.');
+    setValidationError('');
   };
+  
+
+  const handleGuardarServicio = () => {
+    // Validaciones de campos obligatorios
+    if (
+      !nuevoGrupo.categoria ||
+      !nombreServicio ||
+      !nuevoGrupo.descripcion ||
+      !nuevoGrupo.ubicacion ||
+      !modalidad ||
+      !clasePrueba ||
+      !registroAsistencias ||
+      !estadoInscripciones
+    ) {
+      alert('Por favor, completa todos los campos obligatorios.');
+      return;
+    }
+  
+    // Si todas las validaciones pasan
+    alert('Configuración del servicio guardada correctamente.');
+    setSubmissionMessage('El servicio se ha guardado con éxito.');
+    setValidationError('');
+  };
+
+
+
 
   const resetDialogue = () => {
     setDialogueIndex(0);
@@ -251,29 +338,34 @@ const Configuracion = () => {
     return (
       <div>
         <h2 className="text-center mb-4">Configuración del Servicio</h2>
-        <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-4">
+        <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-4" mountOnEnter={true} unmountOnExit={false}>
           <Tab eventKey="general" title="Información del Servicio">
-            <Card style={{ borderRadius: '20px' }}>
+            <Card style={{ borderRadius: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
               <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
                 Información del Servicio
               </Card.Header>
               <Card.Body>
-                {/* Primera página */}
                 <div style={{ display: currentPage === 1 ? 'block' : 'none' }}>
                   <Form.Group controlId="categoria" className="mb-3">
                     <Form.Label>Categoría</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Categoría del servicio"
-                      onChange={(e) => setNuevoGrupo({ ...nuevoGrupo, categoria: e.target.value })}
-                    />
+                    <Form.Control as="select" 
+                      value={nuevoGrupo.categoria} 
+                      onChange={(e) => setNuevoGrupo({ ...nuevoGrupo, categoria: e.target.value })}>
+                      <option value="" disabled>Selecciona una categoría</option>
+                      <option value="fitness">Fitness</option>
+                      <option value="arte">Arte</option>
+                      <option value="tecnología">Tecnología</option>
+                      <option value="música">Música</option>
+                      <option value="idiomas">Idiomas</option>
+                    </Form.Control>
                   </Form.Group>
                   <Form.Group controlId="nombreServicio" className="mb-3">
                     <Form.Label>Nombre del Servicio</Form.Label>
                     <Form.Control
                       type="text"
                       placeholder="Nombre del servicio"
-                      onChange={(e) => setNuevoGrupo({ ...nuevoGrupo, nombre: e.target.value })}
+                      value={nombreServicio}
+                      onChange={(e) => setNombreServicio(e.target.value)}
                     />
                   </Form.Group>
                   <Form.Group controlId="descripcion" className="mb-3">
@@ -286,7 +378,6 @@ const Configuracion = () => {
                   </Form.Group>
                 </div>
 
-                {/* Segunda página */}
                 <div style={{ display: currentPage === 2 ? 'block' : 'none' }}>
                   <Form.Group controlId="ubicacion" className="mb-3">
                     <Form.Label>Ubicación</Form.Label>
@@ -306,7 +397,6 @@ const Configuracion = () => {
                   </Form.Group>
                 </div>
 
-                {/* Botones de navegación */}
                 {currentPage === 1 && (
                   <div className="d-flex justify-content-between mt-4">
                     <Button onClick={() => setCurrentPage(2)} disabled={currentPage === 2}>
@@ -326,7 +416,7 @@ const Configuracion = () => {
           </Tab>
 
           <Tab eventKey="modalidad" title="Modalidad">
-            <Card style={{ borderRadius: '20px' }}>
+            <Card style={{ borderRadius: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
               <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
                 Modalidad
               </Card.Header>
@@ -353,7 +443,7 @@ const Configuracion = () => {
           </Tab>
 
           <Tab eventKey="asistencias" title="Asistencias">
-            <Card style={{ borderRadius: '20px' }}>
+            <Card style={{ borderRadius: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
               <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
                 Configuración de Asistencias
               </Card.Header>
@@ -374,7 +464,7 @@ const Configuracion = () => {
           </Tab>
 
           <Tab eventKey="inscripciones" title="Inscripciones">
-            <Card style={{ borderRadius: '20px' }}>
+            <Card style={{ borderRadius: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
               <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
                 Configuración de Inscripciones
               </Card.Header>
@@ -395,11 +485,11 @@ const Configuracion = () => {
           </Tab>
         </Tabs>
 
-        <div className="d-flex justify-content-center mt-4">
+        <div className="d-flex justify-content-center mb-4" style={{ marginTop: '20px' }}>
           <Button style={{ marginRight: '10px', ...buttonStyles }} onClick={handleResetGrupo}>
             Reiniciar
           </Button>
-          <Button onClick={handleSaveGrupo}>
+          <Button style={{ ...buttonStyles }} onClick={handleGuardarServicio}>
             Guardar Servicio
           </Button>
         </div>
@@ -409,8 +499,9 @@ const Configuracion = () => {
 
   const renderCobrosContent = () => (
     <div className="row mt-4">
+      <h2 className="text-center mb-4">Configuración de Cobros</h2>
       <div className="col-md-8">
-        <Card style={{ borderRadius: '20px' }}>
+        <Card style={{ borderRadius: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
           <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
             Configuración de Cobros
           </Card.Header>
@@ -418,7 +509,9 @@ const Configuracion = () => {
             <Form>
               <Form.Group controlId="frecuenciaCobro" className="mb-3">
                 <Form.Label>¿Con qué frecuencia se realizará el cobro?</Form.Label>
-                <Form.Control as="select" value={frecuenciaCobro} onChange={(e) => setFrecuenciaCobro(e.target.value)}>
+                <Form.Control as="select" 
+                  value={frecuenciaCobro} 
+                  onChange={(e) => setFrecuenciaCobro(e.target.value)}>
                   <option value="">Selecciona frecuencia</option>
                   <option value="diaria">Diaria</option>
                   <option value="semanal">Semanal</option>
@@ -429,10 +522,12 @@ const Configuracion = () => {
 
               <Form.Group controlId="abonoFechas" className="mb-3">
                 <Form.Label>¿Tus alumnos podrán abonar en las mismas fechas o según su inscripción?</Form.Label>
-                <Form.Control as="select" value={abonoFechas} onChange={(e) => setAbonoFechas(e.target.value)}>
+                <Form.Control as="select" 
+                  value={abonoFechas} 
+                  onChange={(e) => setAbonoFechas(e.target.value)}>
                   <option value="">Selecciona opción</option>
-                  <option value="mismas_fechas">Mismas Fechas</option>
-                  <option value="segun_inscripcion">Según Inscripción</option>
+                  <option value="mismas fechas">Mismas Fechas</option>
+                  <option value="segun inscripcion">Según Inscripción</option>
                 </Form.Control>
               </Form.Group>
 
@@ -450,7 +545,6 @@ const Configuracion = () => {
                 <Form.Label>¿Incluye un monto de inscripción?</Form.Label>
                 <Form.Control as="select" value={montoInscripcion} onChange={(e) => {
                   setMontoInscripcion(e.target.value);
-                  // Resetear el monto de inscripción si se ha cambiado a "no incluye"
                   if (e.target.value !== "incluye") {
                     setMontoInscripcionValue('');
                   }
@@ -492,7 +586,7 @@ const Configuracion = () => {
       </div>
 
       <div className="col-md-4">
-        <Card style={{ borderRadius: '20px' }}>
+        <Card style={{ borderRadius: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
           <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
             Resumen de Cobros
           </Card.Header>
@@ -503,7 +597,7 @@ const Configuracion = () => {
               <li><strong>Esquema de Pago:</strong> {abonoFechas}</li>
               <li><strong>Día Límite de Pago:</strong> {diaLimitePago} días</li>
               {montoInscripcion === "incluye" && (
-                <li><strong>Monto de Inscripción:</strong> {montoInscripcionValue}</li>
+                <li><strong>Monto de Inscripción:</strong> ${montoInscripcionValue}</li>
               )}
               <li><strong>Monto del Servicio:</strong> ${montoServicio}</li>
             </ul>
@@ -514,14 +608,14 @@ const Configuracion = () => {
   );
 
   const renderSummary = () => (
-    <Card style={{ borderRadius: '20px', height: '400px', marginTop: '20px' }}>
+    <Card style={{ borderRadius: '20px', height: '375px', marginTop: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
       <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
         Resumen del Servicio
       </Card.Header>
       <Card.Body>
         <h5 className="text-center">Información Detallada</h5>
         <ul>
-          <li><strong>Nombre del Servicio:</strong> {nuevoGrupo.nombre}</li>
+          <li><strong>Nombre del Servicio:</strong> {nombreServicio}</li>
           <li><strong>Categoría:</strong> {nuevoGrupo.categoria}</li>
           <li><strong>Descripción:</strong> {nuevoGrupo.descripcion}</li>
           <li><strong>Ubicación:</strong> {nuevoGrupo.ubicacion}</li>
@@ -529,7 +623,9 @@ const Configuracion = () => {
           <li><strong>Registro de Asistencias:</strong> {registroAsistencias}</li>
           <li><strong>Clase de Prueba:</strong> {clasePrueba}</li>
           <li><strong>Estado de Inscripciones:</strong> {estadoInscripciones}</li>
-          {/* Eliminado grupos agregados, como se solicitó */}
+          {nuevoGrupo.logo && (
+            <li><strong>Logo:</strong> <img src={URL.createObjectURL(nuevoGrupo.logo)} alt="Logo" style={{ width: '50px', height: '50px' }} /></li>
+          )}
         </ul>
       </Card.Body>
     </Card>
@@ -548,18 +644,17 @@ const Configuracion = () => {
 
       <h1 className="text-center mb-4">Configuración del Servicio</h1>
       <div className="d-flex justify-content-center mb-4">
-        <Button variant="outline-primary" className="me-2" onClick={() => handleConfigChange('servicios')}>
+        <Button variant="outline-primary" className="me-2" style={{ ...buttonStyles }} onClick={() => handleConfigChange('servicios')}>
           Configuración de Servicios
         </Button>
-        <Button variant="outline-primary" className="me-2" onClick={() => handleConfigChange('grupos')}>
+        <Button variant="outline-primary" className="me-2" style={{ ...buttonStyles }} onClick={() => handleConfigChange('grupos')}>
           Configuración de Grupos
         </Button>
-        <Button variant="outline-primary" className="me-2" onClick={() => handleConfigChange('cobros')}>
+        <Button variant="outline-primary" className="me-2" style={{ ...buttonStyles }} onClick={() => handleConfigChange('cobros')}>
           Configuración de Cobros
         </Button>
       </div>
 
-      {/* Renderiza la configuración de cobros cuando está activa */}
       {activeConfig === 'cobros' && renderCobrosContent()}
 
       {activeConfig === 'servicios' && (
@@ -578,7 +673,6 @@ const Configuracion = () => {
       {activeConfig === 'grupos' && (
         <>
           <h2 className="text-center mb-4">Configuración de Grupos</h2>
-
           <div className="row mt-4">
             <div className="col-md-4 offset-md-4">
               <div
@@ -607,8 +701,8 @@ const Configuracion = () => {
           {showFormularioGrupo && (
             <div className="row mt-4">
               <div className="col-md-8">
-                <Card style={{ borderRadius: '20px' }}>
-                  <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }}>
+                <Card style={{ borderRadius: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
+                  <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
                     Crear Nuevo Grupo
                   </Card.Header>
                   <Card.Body>
@@ -623,6 +717,17 @@ const Configuracion = () => {
                             value={nuevoGrupo.nombre}
                             onChange={handleFormularioChange}
                           />
+                        </Form.Group>
+
+                        <Form.Group controlId="tipoGrupo" className="mb-3">
+                          <Form.Label>Tipo de Grupo</Form.Label>
+                          <Form.Control as="select" onChange={(e) => {
+                            const value = e.target.value;
+                            setNuevoGrupo({ ...nuevoGrupo, cantMaxAlumnos: value === 'individual' ? 1 : 2, tipoGrupo: value });
+                          }}>
+                            <option value="individual">Individual</option>
+                            <option value="grupal">Grupal</option>
+                          </Form.Control>
                         </Form.Group>
 
                         <Form.Group controlId="numeroGrupo" className="mb-3">
@@ -646,56 +751,59 @@ const Configuracion = () => {
                             min="1"
                           />
                         </Form.Group>
-                        {validationError && <p className="text-danger">{validationError}</p>}
+
                       </Tab>
 
                       <Tab eventKey="horario" title="Horarios">
                         <>
-                          {nuevoGrupo.horarios.length > 0 ? (
-                            <div className="mb-3">
-                              <Form.Group controlId={`horaInicio-${currentHorarioIndex}`}>
-                                <Form.Label>Hora de Inicio</Form.Label>
-                                <Form.Control
-                                  type="time"
-                                  name="horaInicio"
-                                  value={nuevoGrupo.horarios[currentHorarioIndex]?.horaInicio || ''}
-                                  onChange={handleHorarioChange}
-                                />
-                              </Form.Group>
-                              <Form.Group controlId={`horaFin-${currentHorarioIndex}`}>
-                                <Form.Label>Hora de Fin</Form.Label>
-                                <Form.Control
-                                  type="time"
-                                  name="horaFin"
-                                  value={nuevoGrupo.horarios[currentHorarioIndex]?.horaFin || ''}
-                                  onChange={handleHorarioChange}
-                                />
-                              </Form.Group>
-                              <Form.Group controlId={`nombreDiaSemana-${currentHorarioIndex}`}>
-                                <Form.Label>Día de la Semana</Form.Label>
-                                <Form.Control
-                                  as="select"
-                                  name="nombreDiaSemana"
-                                  value={nuevoGrupo.horarios[currentHorarioIndex]?.nombreDiaSemana || ''}
-                                  onChange={handleHorarioChange}
-                                >
-                                  <option value="">Selecciona un día</option>
-                                  <option value="lunes">Lunes</option>
-                                  <option value="martes">Martes</option>
-                                  <option value="miércoles">Miércoles</option>
-                                  <option value="jueves">Jueves</option>
-                                  <option value="viernes">Viernes</option>
-                                  <option value="sábado">Sábado</option>
-                                  <option value="domingo">Domingo</option>
-                                </Form.Control>
-                              </Form.Group>
-                            </div>
-                          ) : (
-                            <p className="text-center">No hay horarios agregados.</p>
-                          )}
+                          <div className="mb-3">
+                            <Form.Group controlId={`horaInicio-${currentHorarioIndex}`}>
+                              <Form.Label>Hora de Inicio</Form.Label>
+                              <Form.Control
+                                type="time"
+                                name="horaInicio"
+                                value={nuevoGrupo.horarios[currentHorarioIndex]?.horaInicio || ''}
+                                onChange={handleHorarioChange}
+                                disabled={!isAddingHorario}
+                              />
+                            </Form.Group>
+                            <Form.Group controlId={`horaFin-${currentHorarioIndex}`}>
+                              <Form.Label>Hora de Fin</Form.Label>
+                              <Form.Control
+                                type="time"
+                                name="horaFin"
+                                value={nuevoGrupo.horarios[currentHorarioIndex]?.horaFin || ''}
+                                onChange={handleHorarioChange}
+                                disabled={!isAddingHorario}
+                              />
+                            </Form.Group>
+                            <Form.Group controlId={`nombreDiaSemana-${currentHorarioIndex}`}>
+                              <Form.Label>Día de la Semana</Form.Label>
+                              <Form.Control
+                                as="select"
+                                name="nombreDiaSemana"
+                                value={nuevoGrupo.horarios[currentHorarioIndex]?.nombreDiaSemana || ''}
+                                onChange={handleHorarioChange}
+                                disabled={!isAddingHorario}
+                              >
+                                <option value="">Selecciona un día</option>
+                                <option value="lunes">Lunes</option>
+                                <option value="martes">Martes</option>
+                                <option value="miércoles">Miércoles</option>
+                                <option value="jueves">Jueves</option>
+                                <option value="viernes">Viernes</option>
+                                <option value="sábado">Sábado</option>
+                                <option value="domingo">Domingo</option>
+                              </Form.Control>
+                            </Form.Group>
+                          </div>
+
                           <div className="d-flex justify-content-center mb-3">
                             <Button style={{ margin: '0 10px', ...buttonStyles }} onClick={handleAgregarHorario}>
                               <i className="bi bi-plus-circle"></i> Agregar Horario
+                            </Button>
+                            <Button style={{ margin: '0 10px', ...buttonStyles }} onClick={handleConfirmarAgregarHorario}>
+                              <i className="bi bi-check-circle"></i> Confirmar
                             </Button>
                             <Button
                               style={{ margin: '0 10px', ...buttonStyles }}
@@ -734,7 +842,7 @@ const Configuracion = () => {
                     <div className="d-flex justify-content-between mt-3">
                       <Button style={{ ...buttonStyles }} variant="secondary" onClick={() => {
                         setShowFormularioGrupo(false);
-                        setIsLoading(false); // Cambiado aquí para que el spinner sea inactivo
+                        setIsLoading(false);
                       }}>
                         Cancelar
                       </Button>
@@ -746,8 +854,8 @@ const Configuracion = () => {
                 </Card>
               </div>
               <div className="col-md-4" style={{ marginBottom: '20px' }}>
-                <Card className="sticky-top" style={{ borderRadius: '20px' }}>
-                  <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }}>
+                <Card className="sticky-top" style={{ borderRadius: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
+                  <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
                     Resumen del Grupo
                   </Card.Header>
                   <Card.Body>
@@ -758,6 +866,7 @@ const Configuracion = () => {
                         <li><strong>Nombre del Grupo:</strong> {nuevoGrupo.nombre}</li>
                         <li><strong>Número del Grupo:</strong> {nuevoGrupo.numeroGrupo}</li>
                         <li><strong>Cantidad máxima de alumnos:</strong> {nuevoGrupo.cantMaxAlumnos}</li>
+                        <li><strong>Tipo de Grupo:</strong> {nuevoGrupo.tipoGrupo === 'individual' ? 'Individual' : 'Grupal'}</li>
                         <li><strong>Horarios:</strong>
                           <ul>
                             {nuevoGrupo.horarios.map((horario, idx) => (
@@ -779,8 +888,8 @@ const Configuracion = () => {
 
           <div className="row mt-4">
             <div className="col-md-6">
-              <Card className="border-primary" style={{ borderRadius: '20px', marginBottom: '20px' }}>
-                <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }}>
+              <Card className="border-primary" style={{ borderRadius: '20px', marginBottom: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
+                <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
                   Individuales
                 </Card.Header>
                 <Card.Body>
@@ -798,8 +907,8 @@ const Configuracion = () => {
             </div>
 
             <div className="col-md-6">
-              <Card className="border-primary" style={{ borderRadius: '20px', marginBottom: '20px' }}>
-                <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }}>
+              <Card className="border-primary" style={{ borderRadius: '20px', marginBottom: '20px', boxShadow: '0px 4px 18px rgba(0, 0, 0, 0.5)' }}>
+                <Card.Header className="fs-4 text-center text-white" style={{ backgroundColor: '#1E1B4B' }}>
                   Grupales
                 </Card.Header>
                 <Card.Body>
