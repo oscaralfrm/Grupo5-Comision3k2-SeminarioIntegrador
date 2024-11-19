@@ -13,5 +13,5 @@ public interface IInstructorService {
     Instructor createInstructor(InstructorDTO instructorDTO);
     List<Servicio> findServiciosDeInstructor(Long idInstructor);
     double[] calcularIngresosPorMesDeServiciosDeInstructor(Long idInstructor);
-    Long validarInicioSesion(String nombreUsuario, String contrasena);
+    Long validarInicioSesion(String email, String contrasena);
 }

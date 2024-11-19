@@ -93,15 +93,16 @@ public class InstructorService implements IInstructorService {
         return instructor.calcularTotalIngresoServicioPorMes();
     }
 
-    public Long validarInicioSesion(String nombreUsuario, String contrasena) {
+    public Long validarInicioSesion(String email, String contrasena) {
         List<Instructor> instructores = this.getAllInstructores();
         for (Instructor instructor : instructores) {
-            if (instructor.getUsuario().getContrasena().equals(contrasena) &&
-                    instructor.getUsuario().getNombreUsuario().equals(nombreUsuario)) {
-                return instructor.getId();
+            if (instructor.getUsuario().getEmail().equals(email)) {
+                if (instructor.getUsuario().getContrasena().equals(contrasena) ) {
+                    return instructor.getId();
+                }
             }
         }
-        return null;
+        throw new UnsupportedOperationException("El usuario o la contraseña es incorrecto.");
     }
 
 }

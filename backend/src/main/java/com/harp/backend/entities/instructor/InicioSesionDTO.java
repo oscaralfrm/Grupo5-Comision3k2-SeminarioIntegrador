@@ -9,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InicioSesionDTO {
-    private String nombreUsuario;
+    private String email;
     private String contrasena;
 }

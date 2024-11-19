@@ -47,8 +47,8 @@ public class InstructorController {
 
     // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
     @GetMapping("/iniciar-sesion")
-    public ResponseEntity<Long> iniciarSesion(@PathVariable InicioSesionDTO inicioSesionDTO) {
-        Long idInstructor = instructorService.validarInicioSesion(inicioSesionDTO.getNombreUsuario(), inicioSesionDTO.getContrasena());
+    public ResponseEntity<Long> iniciarSesion(@RequestBody InicioSesionDTO inicioSesionDTO) {
+        Long idInstructor = instructorService.validarInicioSesion(inicioSesionDTO.getEmail(), inicioSesionDTO.getContrasena());
         return ResponseEntity.status(HttpStatus.OK).body(idInstructor);
     };
 
