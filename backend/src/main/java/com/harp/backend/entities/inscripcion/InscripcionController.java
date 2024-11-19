@@ -27,6 +27,9 @@ public class InscripcionController {
     @Autowired
     private IServicioService servicioService;
 
+    @Autowired
+    private IGrupoService grupoService;
+
 //    // No tiene mucho sentido, siempre buscamos las inscripciones de un servicio o de un alumno
 //    @GetMapping("/inscripciones")
 //    public ResponseEntity<List<Inscripcion>> getAllInscripciones() {
@@ -58,12 +61,22 @@ public class InscripcionController {
         return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
     };
 
+    // GET TODAS LAS DE UN SERVICIO
+    @GetMapping("/{idServicio}/grupos/{idGrupo}/inscripciones")
+    public ResponseEntity<List<Inscripcion>> traerInscripcionesDeGrupo(@PathVariable @Min(1) Long idServicio,
+                                                                       @PathVariable @Min(1) Long idGrupo,
+                                                                          @RequestParam boolean vigentes,
+                                                                          @RequestParam boolean pendientes) {
+        List<Inscripcion> inscripciones = grupoService.findInscripcionesDeGrupo(idServicio, idGrupo, vigentes, pendientes);
+        return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
+    };
+
     // POST
     @PostMapping("/{idServicio}/inscribir")
     public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio,
                                                         @RequestBody InscripcionDTO inscripcionDTO) {
         // REVISAR: Obtener el id del servicio de headers
-        Long idAlumno = Long.valueOf(1);
+        Long idAlumno = Long.valueOf(2);
         Long idGrupo = inscripcionDTO.getIdGrupo();
         List<Long> idsHorarios = inscripcionDTO.getIdsHorarios();
         Inscripcion nuevaInscripcion = inscripcionService.createInscripcion(idAlumno, idServicio, idGrupo, idsHorarios);
@@ -83,7 +96,7 @@ public class InscripcionController {
                                                      @PathVariable Long idServicio,
                                                      @RequestBody LocalDate fechaInicioActividad) {
         // REVISAR: Obtener el id del usuario de headers
-        Long idInstructor = Long.valueOf(14);
+        Long idInstructor = Long.valueOf(1);
         inscripcionService.aceptarInscripcion(idInstructor, idServicio, idInscripcion, fechaInicioActividad);
         return ResponseEntity.ok("Se aceptó la inscripción correctamente.");
     };

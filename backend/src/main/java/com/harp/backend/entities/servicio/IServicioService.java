@@ -2,6 +2,7 @@ package com.harp.backend.entities.servicio;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
+import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
@@ -37,4 +38,7 @@ public interface IServicioService {
     Set<MontoServicio> obtenerHistorialMontosDeServicio(Long idServicio);
     void setFechaInicioServicio(Long idServicio, LocalDate fechaInicio);
     double[] calcularIngresosPorMesDeServicio(Long idServicio);
+    void activarAsistencias(Long idServicio);
+    List<Clase> findClasesFechaDeServicio(Long idServicio, LocalDate fecha);
+    List<Clase> findClasesDeServicio(Long idServicio);
 }

@@ -50,7 +50,7 @@ public class Cuota {
     @JoinColumn(name = "cuota_id")
     private List<CambioEstadoCuota> cambiosEstado = new ArrayList<>();
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "cuota_id")
     private Pago pago;
 

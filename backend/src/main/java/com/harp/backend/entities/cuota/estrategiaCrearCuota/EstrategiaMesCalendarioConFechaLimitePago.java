@@ -34,7 +34,7 @@ public class EstrategiaMesCalendarioConFechaLimitePago implements  IEstrategiaCr
 
     @Override
     public FechasCuota calcularFechasPrimeraCuota(Inscripcion inscripcion,
-                                                  int diaLimitePagoServicio,
+                                                  Integer diaLimitePagoServicio,
                                                   boolean pagoAnticipadoMontoInscripcion,
                                                   boolean pagoAnticipadoPrimeraCuota) {
         // Segun cada cado vamos a darle distintos valores a:

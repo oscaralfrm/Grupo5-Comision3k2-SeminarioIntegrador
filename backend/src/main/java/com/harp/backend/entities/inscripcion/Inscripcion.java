@@ -33,7 +33,7 @@ public class Inscripcion {
 
     @ManyToOne
     @JoinColumn(name = "alumno_id", nullable = false)
-    @JsonIgnore
+    //@JsonIgnore
     private Alumno alumno;
 
     //AGREGAR EN LA BASE DE DATOS
@@ -85,22 +85,25 @@ public class Inscripcion {
     @JsonIgnore
     private List<Cuota> cuotas = new ArrayList<>();
 
-    public Inscripcion(Servicio servicio, Grupo grupo, List<Horario> horarios) {
+    public Inscripcion(Servicio servicio, Grupo grupo, List<Horario> horarios, Alumno alumno) {
         this.servicio = servicio;
         this.grupo = grupo;
         this.horarios = horarios;
         this.cantVecesSemanales = horarios.size();
+        this.alumno = alumno;
     }
 
-    public Inscripcion(Servicio servicio, Grupo grupo) {
+    public Inscripcion(Servicio servicio, Grupo grupo, Alumno alumno) {
         this.servicio = servicio;
         this.grupo = grupo;
         // definimos la cantidad de veces semanales como la cantidad de horarios que tiene el grupo
         this.cantVecesSemanales = grupo.getHorarios().size();
+        this.alumno = alumno;
     }
 
-    public Inscripcion(Servicio servicio) {
+    public Inscripcion(Servicio servicio, Alumno alumno) {
         this.servicio = servicio;
+        this.alumno = alumno;
     }
 
     public void agregarCuota(Cuota cuota) {
@@ -156,7 +159,7 @@ public class Inscripcion {
         this.estado = EstadoInscripcion.EnCurso;
     }
 
-    public void aceptar(LocalDate fechaInicio, LocalDate fechaFin) {
+    public void aceptar(LocalDate fechaInicioNueva, LocalDate fechaFin) {
         // La puedo aceptar solo cuando esta en pendiente
         if (! estaPendiente()) {
             throw new UnsupportedOperationException("La inscripción no puede ser aceptada");
@@ -168,14 +171,17 @@ public class Inscripcion {
         //pero si es modalidad duracion indefinida la fecha inscripcion no se settea, queda en null
 
         // Siempre vamos a tener fecha inicio, solo algunas veces fecha fin
-        this.fechaInicio = fechaInicio;
+        this.fechaInicio = fechaInicioNueva;
         this.fechaFin = fechaFin;
+
+        System.out.println(this.fechaInicio);
+        System.out.println(fechaInicioNueva);
 
         //cambiar el estado a Aceptada
         this.estado = EstadoInscripcion.Aceptada;
 
         // En caso que la fecha inicio sea igual a la actual se inicia la inscripcion
-        if (fechaInicio.isEqual(LocalDate.now())) {
+        if (this.fechaInicio.isEqual(LocalDate.now())) {
             this.iniciar();
         }
     }

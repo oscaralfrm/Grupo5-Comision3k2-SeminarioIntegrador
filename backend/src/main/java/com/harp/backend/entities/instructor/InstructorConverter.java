@@ -21,7 +21,7 @@ public class InstructorConverter {
         //Instructor instructor = modelMapper.map(dto, Instructor.class);
         Instructor instructor = new Instructor();
 
-        instructor.setDescripcion(dto.getDescripcion());
+        //instructor.setDescripcion(dto.getDescripcion());
         //Dependiendo de si hacemos herencia entre instructor y usuario
         //instructor.setNombre(dto.getNombre());
         //instructor.setEmail(dto.getEmail());

@@ -30,7 +30,7 @@ public class EstrategiaMesCalendario implements IEstrategiaCrearCuota {
 
     @Override
     public FechasCuota calcularFechasPrimeraCuota(Inscripcion inscripcion,
-                                                  int diaLimitePagoServicio,
+                                                  Integer diaLimitePagoServicio,
                                                   boolean pagoAnticipadoMontoInscripcion,
                                                   boolean pagoAnticipadoPrimeraCuota) {
         // La primera cuota a mes calendario no depende de cuando te inscribiste

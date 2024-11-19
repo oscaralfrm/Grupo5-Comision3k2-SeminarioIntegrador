@@ -36,4 +36,8 @@ public class Clase {
     public boolean esFutura() {
         return (fecha.isAfter(LocalDate.now())  || fecha.isEqual(LocalDate.now()));
     }
+
+    public boolean esEn(LocalDate fecha) {
+        return ( this.fecha.equals(fecha));
+    }
 }

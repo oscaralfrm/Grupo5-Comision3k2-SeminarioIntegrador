@@ -1,5 +1,6 @@
 package com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion;
 
+import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.horario.Horario;
@@ -10,12 +11,12 @@ import java.util.List;
 
 public class EstrategiaAGrupos implements IEstrategiaInscripcion{
     @Override
-    public Inscripcion crearInscripcion(Servicio servicio, Long idGrupo, List<Long> idsHorarios) {
+    public Inscripcion crearInscripcion(Servicio servicio, Long idGrupo, List<Long> idsHorarios, Alumno alumno) {
         Grupo grupo = servicio.obtenerGrupoConEsteId(idGrupo);
-        List<Horario> horarios = grupo.obtenerHorariosConEstosIds(idsHorarios);
+        //List<Horario> horarios = grupo.obtenerHorariosConEstosIds(idsHorarios);
 
         // Aca se podria crear la inscripcion definiendo la cantVecesSemanales por la cantidad de horarios
-        Inscripcion nuevaInscripcion = new Inscripcion(servicio, grupo);
+        Inscripcion nuevaInscripcion = new Inscripcion(servicio, grupo, alumno);
         return nuevaInscripcion;
     }
 

@@ -93,7 +93,7 @@ public class InscripcionService implements IInscripcionService {
 
         //servicio.isPagoAnticipadoDeMontoInscripcion();
 
-        Inscripcion inscripcionCreada = estrategiaInscripcion.crearInscripcion(servicio, idGrupo, idsHorarios);
+        Inscripcion inscripcionCreada = estrategiaInscripcion.crearInscripcion(servicio, idGrupo, idsHorarios, alumno);
 
         inscripcionRepository.save(inscripcionCreada);
         alumnoService.agregarInscripcionAAlumno(inscripcionCreada, alumno); // hacerlo con alumno no id
@@ -185,8 +185,12 @@ public class InscripcionService implements IInscripcionService {
                 }
             }
         } else {
-            // si el servicio no inició entonces el alumno comienza cuando comience el servicio
-            fechaInicio = servicio.getFechaInicio();
+            if (servicio.getFechaInicio() == null) {
+                fechaInicio = fechaInicioActividad;
+            } else {
+                // si el servicio no inició entonces el alumno comienza cuando comience el servicio
+                fechaInicio = servicio.getFechaInicio();
+            }
         }
 
         // CALCULAMOS FECHA FIN INSCRIPCION

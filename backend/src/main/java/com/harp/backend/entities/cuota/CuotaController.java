@@ -27,11 +27,11 @@ public class CuotaController {
     @Autowired
     private ServicioService servicioService;
 
-//    @GetMapping("/cuotas")
-//    public ResponseEntity<List<Cuota>> getCuotasDeServicio(@PathVariable @Min(1) Long idServicio) {
-//        List<Cuota> cuotas = cuotaService.findCuotasDeServicio(idServicio);
-//        return ResponseEntity.ok(cuotas);
-//    }
+    @GetMapping("/alumnos/cuotas")
+    public ResponseEntity<List<List<Object>> > getUltimasCuotasDeAlumnosDeServicio(@PathVariable @Min(1) Long idServicio) {
+        List<List<Object>> cuotas = servicioService.findAlumnosConSusUltimasCuotasDeServicio(idServicio);
+        return ResponseEntity.ok(cuotas);
+    }
 
     // UNA CUOTA ESPECIFICA
     @GetMapping("/alumnos/cuotas/{idCuota}")
@@ -42,7 +42,7 @@ public class CuotaController {
 
     // LAS CUOTAS DE UN ALUMNO
     @GetMapping("/alumnos/{idAlumno}/cuotas")
-    public ResponseEntity<List<Cuota>> getCuotasDeAlumnosYServicio(@PathVariable @Min(1) Long idAlumno,
+    public ResponseEntity<List<Cuota>> getCuotasDeAlumnoYServicio(@PathVariable @Min(1) Long idAlumno,
                                                             @PathVariable @Min(1) Long idServicio) {
         List<Cuota> cuotas = alumnoService.obtenerHistorialCuotasEsteAlumnoYServicio(idAlumno, idServicio);
         return ResponseEntity.ok(cuotas);
@@ -50,7 +50,7 @@ public class CuotaController {
 
     // LAS CUOTAS DE UN SS
     // REVISAR COMO HACER PARA QUE LAS CUOTAS TENGAN EL ALUMNO
-    @GetMapping("/alumnos/cuotas")
+    @GetMapping("/cuotas")
     public ResponseEntity<List<Cuota>> getUltimasCuotasDeServicio(@PathVariable @Min(1) Long idServicio) {
         // revisar si las cuotas llegan con el alumno o necesitan de un dto
         List<Cuota> cuotas = servicioService.findUltimasCuotasDeServicio(idServicio);

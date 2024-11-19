@@ -17,7 +17,7 @@ public class GrupoConverter {
         Grupo grupo = new Grupo();
         grupo.setNumero(dto.getNumero());
         grupo.setCantMaxAlumnos(dto.getCantMaxCupos());
-        //grupo.setNombre(dto.getNombre());
+        grupo.setNombre(dto.getNombre());
         return grupo;
     }
 

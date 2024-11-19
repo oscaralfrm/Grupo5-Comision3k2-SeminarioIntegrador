@@ -34,11 +34,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handlerMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest webRequest) {
-        ErrorResponse errorResponse = new ErrorResponse("El cuerpo no puede esta vacío o tiene valores incorrectos", webRequest.getDescription(false));
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler(HttpMessageNotReadableException.class)
+//    public ResponseEntity<ErrorResponse> handlerMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest webRequest) {
+//        ErrorResponse errorResponse = new ErrorResponse("El cuerpo no puede esta vacío o tiene valores incorrectos", webRequest.getDescription(false));
+//        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+//    }
 
     // ej. id = 0
     @ExceptionHandler(ConstraintViolationException.class)

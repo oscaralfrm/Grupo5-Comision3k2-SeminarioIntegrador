@@ -46,10 +46,10 @@ public class ServicioDTO {
     private int cantMaxAlumnosPorGrupo;
     private int cantHorariosPorGrupo;
 
-    // Modalidad: puede ser indefinido, fechaInicio-fin, segun cuando te inscribas + duracion
+    // Modalidad: puede ser AGrupo AServicio
     private String tipoModalidad;
 
-    // SI es Modalidad FechaInicio-Fin
+    //
     private LocalDate fechaInicio;
 //    private LocalDate fechaFin;
 
@@ -63,6 +63,8 @@ public class ServicioDTO {
     private boolean asistenciasActivas;
 
     private double montoInscripcion;
+    private boolean pagoAnticipadoDeMontoInscripcion;
+    //private boolean pagoAnticipadoDePrimeraCuota;
 }
 
 

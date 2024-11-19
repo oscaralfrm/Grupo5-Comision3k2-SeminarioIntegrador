@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
+import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.grupo.Grupo;
@@ -22,10 +23,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Setter
 @Getter
@@ -285,6 +283,10 @@ public class Servicio {
         return this.fechaInicio != null;
     }
 
+    public List<Inscripcion> obtenerInscripciones(Grupo grupo){
+        return inscripciones.stream().filter(i -> i.esDeEsteGrupo(grupo) ).toList();
+    }
+
     public List<Inscripcion> obtenerInscripcionesVigentes() {
         return inscripciones.stream().filter(Inscripcion::estaVigente).toList();
     }
@@ -295,6 +297,10 @@ public class Servicio {
 
     public List<Inscripcion> obtenerInscripcionesPendientes() {
         return inscripciones.stream().filter(Inscripcion::estaPendiente).toList();
+    }
+
+    public List<Inscripcion> obtenerInscripcionesPendientes(Grupo grupo){
+        return inscripciones.stream().filter(i -> i.estaPendiente() && i.esDeEsteGrupo(grupo) ).toList();
     }
 
     public boolean tieneEstaInscripcion(Inscripcion inscripcion) {
@@ -447,5 +453,25 @@ public class Servicio {
             totalIngresosPorMes[mes] += cuota.getMontoServicio().getMonto();
         }
         return totalIngresosPorMes;
+    }
+
+    public  List<Clase> findClases(LocalDate fecha) {
+        return this.grupos.stream().flatMap(g -> g.getClasesEn(fecha).stream()).toList();
+    }
+
+    public  List<Clase> findClases() {
+        return this.grupos.stream().flatMap(g -> g.getClases().stream()).toList();
+    }
+
+    public List<List<Object>> findAlumnosConSusUltimasCuotas() {
+        // tengo que en la primera lista agregar una lista que tenga Alumno cuota
+        List<List<Object>> alumnosConSusCuotas = new ArrayList<>();
+        List<Alumno> alumnosActuales =  this.obtenerAlumnosActuales();
+        for (Alumno unAlumno : alumnosActuales) {
+            List<Cuota> susCuotas = unAlumno.obtenerUltimasCuotas();
+            List<Object> unAlumnoConSusCuotas = List.of(unAlumno, susCuotas);
+            alumnosConSusCuotas.add(unAlumnoConSusCuotas);
+        }
+        return alumnosConSusCuotas;
     }
 }

@@ -16,7 +16,7 @@ public class EstrategiaPagoUnico implements  IEstrategiaCrearCuota{
 
      @Override
     public FechasCuota calcularFechasPrimeraCuota(Inscripcion inscripcion,
-                                                  int diaLimitePagoServicio,
+                                                  Integer diaLimitePagoServicio,
                                                   boolean pagoAnticipadoMontoInscripcion,
                                                   boolean pagoAnticipadoPrimeraCuota) {
 

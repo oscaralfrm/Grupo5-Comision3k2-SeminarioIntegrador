@@ -45,6 +45,13 @@ public class InstructorController {
         return ResponseEntity.status(HttpStatus.OK).body(totalesPorMes);
     };
 
+    // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
+    @GetMapping("/{idInstructor}/iniciar-sesion")
+    public ResponseEntity<Long> iniciarSesion(@PathVariable InicioSesionDTO inicioSesionDTO) {
+        Long idInstructor = instructorService.validarInicioSesion(inicioSesionDTO.getNombreUsuario(), inicioSesionDTO.getContrasena());
+        return ResponseEntity.status(HttpStatus.OK).body(idInstructor);
+    };
+
     @PostMapping
     public ResponseEntity<Instructor> saveInstructor(@RequestBody InstructorDTO instructorDTO) {
         Instructor nuevoInstructor = instructorService.createInstructor(instructorDTO);

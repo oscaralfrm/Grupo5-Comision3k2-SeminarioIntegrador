@@ -3,6 +3,7 @@ package com.harp.backend.entities.servicio;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
+import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
@@ -57,7 +58,7 @@ public class ServicioController {
     public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicioDTO) {
         //System.out.println(servicioDTO);
         // REVISAR: Obtener el id del Instructor loggeado de la manera correcta
-        Long idInstructorLoggeado = Long.valueOf(14);
+        Long idInstructorLoggeado = Long.valueOf(1);
         Servicio nuevoServicio = servicioService.createServicio(servicioDTO, idInstructorLoggeado);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio); // 201 CREATED
@@ -83,6 +84,13 @@ public class ServicioController {
     public ResponseEntity<String> habilitarInscripciones(@PathVariable @Min(1) Long idServicio) {
         servicioService.habilitarInscripciones(idServicio);
         return  ResponseEntity.ok("Se habilitaron las inscripciones");
+    }
+
+    // EDITAR
+    @PutMapping("/{idServicio}/activar-asistencias")
+    public ResponseEntity<String> activarAsistencias(@PathVariable @Min(1) Long idServicio) {
+        servicioService.activarAsistencias(idServicio);
+        return  ResponseEntity.ok("Se activaron las asistencias");
     }
 
 //    // EDITAR
@@ -123,6 +131,18 @@ public class ServicioController {
     public ResponseEntity<Set<MontoServicio>> traerHistorialMontosDeServicio(@PathVariable @Min(1) Long idServicio) {
         Set<MontoServicio> montosServicio = servicioService.obtenerHistorialMontosDeServicio(idServicio);
         return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
+    };
+
+    @GetMapping("/{idServicio}/clases-hoy")
+    public ResponseEntity<List<Clase>> traerClasesHoyDeServicio(@PathVariable @Min(1) Long idServicio) {
+        List<Clase> clasesHoy = servicioService.findClasesFechaDeServicio(idServicio, LocalDate.now());
+        return ResponseEntity.status(HttpStatus.OK).body(clasesHoy);
+    };
+
+    @GetMapping("/{idServicio}/clases")
+    public ResponseEntity<List<Clase>> traerClasesDeServicio(@PathVariable @Min(1) Long idServicio) {
+        List<Clase> clases = servicioService.findClasesDeServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(clases);
     };
 
 

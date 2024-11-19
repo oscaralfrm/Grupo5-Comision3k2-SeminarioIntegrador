@@ -8,6 +8,7 @@ import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.horario.HorarioConverter;
 import com.harp.backend.entities.horario.HorarioDTO;
 import com.harp.backend.entities.horario.IHorarioService;
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioService;
@@ -154,6 +155,20 @@ public class GrupoService implements IGrupoService {
     public List<Clase> findClasesFuturasDeGrupo(Long idGrupo) {
         Grupo grupoExistente = this.findGrupo(idGrupo);
         return grupoExistente.getClases().stream().filter(Clase::esFutura).toList();
+    }
+
+    public List<Inscripcion> findInscripcionesDeGrupo(Long idServicio, Long idGrupo,
+                                                      boolean vigentes, boolean pendientes) {
+        Servicio servicio = servicioService.findServicio(idServicio);
+        Grupo grupo = this.findGrupo(idGrupo);
+        if (vigentes) {
+            return servicio.obtenerInscripcionesVigentes(grupo);
+        } else {
+            if (pendientes) {
+                return servicio.obtenerInscripcionesPendientes(grupo);
+            }
+        }
+        return servicio.obtenerInscripciones(grupo);
     }
 
     public List<Alumno> obtenerAlumnosActualesDeGrupo(Long idServicio, Long idGrupo) {

@@ -3,6 +3,7 @@ package com.harp.backend.entities.servicio;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.categoria.CategoriaService;
+import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.ClaseService;
 import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.cuota.Cuota;
@@ -113,6 +114,9 @@ public class ServicioService implements IServicioService {
 
     public void habilitarInscripciones(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
+        if (! servicio.tieneMontoActualConfigurado()) {
+            throw new UnsupportedOperationException("Para habilitar inscripciones se debe configurar un monto de las cuotas del servicio.");
+        }
         servicio.setInscripcionesAbiertas(true);
         servicioRepository.save(servicio);
     }
@@ -291,6 +295,11 @@ public class ServicioService implements IServicioService {
         claseService.crearClasesParaSemanaSiguente(servicio, fechaInicio);
     }
 
+    public void activarAsistencias(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        servicio.setAsistenciasActivas(true);
+        servicioRepository.save(servicio);
+    }
 
     // TRASLADAMOS GENERACION DE CLASES AQUI
     // Programa la creación de clases para ejecutarse cada domingo a la medianoche
@@ -317,5 +326,20 @@ public class ServicioService implements IServicioService {
     public double[] calcularIngresosPorMesDeServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
         return servicio.calcularIngresosPorMes();
+    }
+
+    public  List<Clase> findClasesFechaDeServicio(Long idServicio, LocalDate fecha) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.findClases(fecha);
+    }
+
+    public  List<Clase> findClasesDeServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.findClases();
+    }
+
+    public  List<List<Object>> findAlumnosConSusUltimasCuotasDeServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.findAlumnosConSusUltimasCuotas();
     }
 }

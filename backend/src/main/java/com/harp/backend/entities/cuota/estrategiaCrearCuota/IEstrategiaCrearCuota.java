@@ -13,7 +13,7 @@ public interface IEstrategiaCrearCuota {
 
     FechasCuota calcularFechas(Cuota cuotaAnterior, Servicio servicio);
     FechasCuota calcularFechasPrimeraCuota(Inscripcion inscripcion,
-                                           int diaLimitePagoServicio,
+                                           Integer diaLimitePagoServicio,
                                            boolean pagoAnticipadoMontoInscripcion,
                                            boolean pagoAnticipadoPrimeraCuota);
 }

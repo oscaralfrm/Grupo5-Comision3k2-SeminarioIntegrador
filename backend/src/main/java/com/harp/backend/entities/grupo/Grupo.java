@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -33,7 +34,7 @@ public class Grupo {
 
     @Column(name = "numero")
     private Integer numero;
-    //private String nombre;
+    private String nombre;
 
     @Column(name = "cant_max_cupos")
     private Integer cantMaxAlumnos;
@@ -229,6 +230,10 @@ public class Grupo {
             }
         }
         return dias;
+    }
+
+    public List<Clase> getClasesEn(LocalDate fecha) {
+        return this.clases.stream().filter(c -> c.esEn(fecha)).toList();
     }
 }
 

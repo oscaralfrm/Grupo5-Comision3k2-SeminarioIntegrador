@@ -73,7 +73,7 @@ public class GrupoController {
         return ResponseEntity.ok(clases);
     }
 
-    @GetMapping("/{idServicio}/grupo/{idGrupo}/alumnos")
+    @GetMapping("/{idServicio}/grupos/{idGrupo}/alumnos")
     public ResponseEntity<List<Alumno>> traerAlumnosActualesGrupo(@PathVariable @Min(1) Long idServicio,
                                                                   @PathVariable @Min(1) Long idGrupo) {
         List<Alumno> alumnos = grupoService.obtenerAlumnosActualesDeGrupo(idServicio, idGrupo);

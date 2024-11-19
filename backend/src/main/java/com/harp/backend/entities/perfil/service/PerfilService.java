@@ -34,7 +34,7 @@ public class PerfilService implements IPerfilService {
     @Override
     public Perfil findPerfil(Long idPerfil) {
         return perfilRepository.findById(idPerfil)
-                .orElseThrow(() -> new NoSuchElementFoundException("Asistencia no encontrado"));
+                .orElseThrow(() -> new NoSuchElementFoundException("Perfil no encontrado"));
     }
 
     @Override

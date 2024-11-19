@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GrupoDTO {
-    //private String nombre;
+    private String nombre;
     private Integer numero;
     private Integer cantMaxCupos;
     private List<HorarioDTO> horarios;

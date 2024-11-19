@@ -20,13 +20,21 @@ public class EstrategiaCada30diasSegunFechaInscripcion implements  IEstrategiaCr
         // Calculamos la fecha fin como el ultimo dia del mes siguiente
         LocalDate fechaFinNueva = fechaInicioNueva.plusDays(30);
 
-        FechasCuota fechasCuota = new FechasCuota(fechaInicioNueva, fechaFinNueva, fechaFinNueva);
+        LocalDate fechaLimitePago;
+
+        if (servicio.getDiaLimitePago() == null) {
+            fechaLimitePago = fechaFinNueva;
+        } else {
+            fechaLimitePago = fechaInicioNueva.plusDays(servicio.getDiaLimitePago());
+        }
+
+        FechasCuota fechasCuota = new FechasCuota(fechaInicioNueva, fechaFinNueva, fechaLimitePago);
         return fechasCuota;
     }
 
     @Override
     public FechasCuota calcularFechasPrimeraCuota(Inscripcion inscripcion,
-                                                  int diaLimitePagoServicio,
+                                                  Integer diaLimitePagoServicio,
                                                   boolean pagoAnticipadoMontoInscripcion,
                                                   boolean pagoAnticipadoPrimeraCuota) {
 
@@ -60,7 +68,11 @@ public class EstrategiaCada30diasSegunFechaInscripcion implements  IEstrategiaCr
         if (! pagoAnticipadoPrimeraCuota && ! pagoAnticipadoMontoInscripcion) {
             fechaInicioCiclo = inscripcion.getFechaInicio();
             fechaFinCiclo = fechaInicioCiclo.plusDays(30);
-            fechaLimitePago = fechaFinCiclo;
+            if (diaLimitePagoServicio == null) {
+                fechaLimitePago = fechaFinCiclo;
+            } else {
+                fechaLimitePago = fechaInicioCiclo.plusDays(diaLimitePagoServicio);
+            }
         }
 
         // Esto no se puede dar, o es uno o es el otro
