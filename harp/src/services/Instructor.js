@@ -75,3 +75,13 @@ export const editInstructor = async (idInstructor, nombre, apellido, dni, nombre
     throw error;
   }
 };
+
+export const iniciarSesion = async (nombreUsuario, contrasena) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/iniciar-sesion`, {nombreUsuario, contrasena});
+    return response.data;
+  } catch (error) {
+    console.error(`Error iniciando sesion:`, error);
+    throw error;
+  }
+};

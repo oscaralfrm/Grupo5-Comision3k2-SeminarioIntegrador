@@ -19,7 +19,7 @@ const StudentsCard = () => {
       }
     };
     fetchAlumnos();
-  }, []);
+  }, [idServicio]);
 
 
   // Mostrar solo tres estudiantes si la lista no está expandida
