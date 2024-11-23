@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import img from "../../../../assets/LogoHarp420.png";
 import { getServiciosDeInstructor } from "../../../../services/Instructor";
+import {getServicioById} from "../../../../services/Servicio";
 
 function NavbarInstructor() {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ function NavbarInstructor() {
     const fetchServicios = async () => {
       try {
         const data = await getServiciosDeInstructor(idInstructor);
+        const servicioSeleccionado = await getServicioById(idServicio)
+        setSelectedService(servicioSeleccionado)
         setServicios(data);
       } catch (error) {
         console.error('Error al traer los servicios del instructor:', error);
@@ -42,6 +45,7 @@ function NavbarInstructor() {
     if (idServicio) {
       const selected = servicios.find(
         (servicio) => servicio.id === parseInt(idServicio, 10) // Convertir a número para la comparación
+      
       );
       if (selected) {
         setSelectedService(selected);
@@ -109,15 +113,6 @@ function NavbarInstructor() {
           <li className="nav-item">
             <a
               className="nav-link"
-              href={`/instructor/${idInstructor}/servicio/${idServicio}/configuracion`}
-              style={{ color: "white" }}
-            >
-              Configuracion
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className="nav-link"
               href={`/instructor/${idInstructor}/servicio/${idServicio}/alumnos`}
               style={{ color: "white" }}
             >
@@ -131,6 +126,15 @@ function NavbarInstructor() {
               style={{ color: "white" }}
             >
               Cobros
+            </a>
+          </li>
+          <li className="nav-item">
+            <a
+              className="nav-link"
+              href={`/instructor/${idInstructor}/servicio/${idServicio}/configuracion`}
+              style={{ color: "white" }}
+            >
+              Configuracion
             </a>
           </li>
           <li className="nav-item dropdown">

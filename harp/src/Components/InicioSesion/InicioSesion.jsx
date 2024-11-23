@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PanaTeacher from '../../assets/PanaLogin.png'; // Asegúrate de importar tu imagen
+import { getServiciosDeInstructor, iniciarSesion } from '../../services/Instructor';
 // import { signInWithGoogle } from '../../services/authService'; // Asegúrate de implementar esta función
 
 export const LoginForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [errorMessage, setErrorMessage] = useState('');
     const [user, setUser] = useState(null);
-
+    const navegate = useNavigate();
     useEffect(() => {
         const loggedUser = window.localStorage.getItem("loggedUser");
         if (loggedUser) {
@@ -17,10 +18,19 @@ export const LoginForm = () => {
     }, []);
 
     const onSubmit = async (data) => {
-        // Lógica de inicio de sesión
-        console.log(data);
+        try {
+            const { email, password } = data;
+            const id = await iniciarSesion(email, password);
+            const servicios = await getServiciosDeInstructor(id);
+            
+            console.log(`IdInstructor: ${id} Servicio: ${servicios[0].id} `)
+            navegate(`/instructor/${id}/servicio/${servicios[0].id}/mi-servicio`)
+            
+          } catch (error) {
+            console.error('Error al iniciar sesión:', error);
+          }
     };
-
+ 
     const handleGoogleLogin = async () => {
         try {
             const user = await signInWithGoogle();
@@ -119,6 +129,7 @@ export const LoginForm = () => {
                                         <button 
                                             type="submit" 
                                             className="btn fs-5" 
+                                        
                                             style={{ backgroundImage: "linear-gradient(135deg, #1E1B4B, #4F46E5)", color: 'white', padding: '6px 17px' }}
                                         >
                                             Iniciar Sesión

@@ -16,6 +16,19 @@ const Cobros = ({ id }) => {
   const [paymentDate, setPaymentDate] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const {idServicio} = useParams();
+  const [monto,setMonto] = useState([]);
+  useEffect(() => {
+    const fetchMonto = async () => {
+      try {
+        const data = await getMontosActualesServicio(idServicio);
+      
+        setMonto(data);
+      } catch (error) {
+        console.error('Error al traer los servicios del instructor:', error);
+      }
+    };
+    fetchMonto();
+  }, []);
 
 
   const fetchCuotas = async () => {
@@ -91,6 +104,9 @@ const Cobros = ({ id }) => {
   const formatDate = (date) => {
     return format(new Date(date), "dd/MM/yyyy");
   };
+  const handleClick = async ()=>{
+    
+  }
 
   return (
     <div
@@ -98,6 +114,24 @@ const Cobros = ({ id }) => {
       style={{ minHeight: "85vh", paddingTop: "2vh", marginTop: "2vh" }}
     >
       <h1 className="text-center mb-4">Cobros</h1>
+      {monto.map((item, index) => (
+  <Row
+    key={index}
+    className="mb-4 w-75 d-flex justify-content-between align-items-center"
+  >
+    <p className="m-0">
+      Monto actual: ${item.monto} - Cantidad de veces semanales: {item.cantVecesSemanales}
+    </p>
+    <button
+      className="btn btn-primary btn-sm ms-auto"
+      onClick={() => handleClick(item)}
+    >
+      Actualizar monto
+    </button>
+  </Row>
+))}
+
+
 
       <Row className="mb-4 w-75 justify-content-center">
         <Col md={5} className="p-0">
