@@ -2,10 +2,10 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap"; // Importamos componentes de React Bootstrap
-import Contactos from "./tabs/Contactos";
-import DatosPersonales from "./tabs/DatosPersonales";
-import InfoCard from "./tabs/InfoCard";
-import Password from "./tabs/Password";
+import Contactos from "./Tabs/Contactos";
+import DatosPersonales from "./Tabs/DatosPersonales.jsx";
+import InfoCard from "./Tabs/InfoCard";
+import Password from "./Tabs/Password";
 
 export const RegisterFormStudent = () => {
   const {
