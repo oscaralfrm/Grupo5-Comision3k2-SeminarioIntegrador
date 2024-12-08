@@ -97,7 +97,7 @@ export const RegisterFormInstructor = () => {
         className="col-12 col-md-6"
       >
         <div className="col-md-10 col-sm-12 p-4">
-          <h1 className="mb-1 text-center fs-1">Regístrate como Instructor</h1>
+          <h1 className="mb-1 text-center fs-1 text-nowrap">Regístrate como Instructor</h1>
           <p className="text-center text-muted fs-6">
             ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
           </p>
