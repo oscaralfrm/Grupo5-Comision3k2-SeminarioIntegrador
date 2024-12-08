@@ -3,30 +3,29 @@ import { useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import img from "../../../../assets/LogoHarp420.png";
 import { getServiciosDeInstructor } from "../../../../services/Instructor";
-import {getServicioById} from "../../../../services/Servicio";
+import { getServicioById } from "../../../../services/Servicio";
 
 function NavbarInstructor() {
   const navigate = useNavigate();
   const [servicios, setServicios] = useState([]);
   const { idInstructor, idServicio } = useParams();
-  
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
-  
+
   useEffect(() => {
     const fetchServicios = async () => {
       try {
         const data = await getServiciosDeInstructor(idInstructor);
-        const servicioSeleccionado = await getServicioById(idServicio)
-        setSelectedService(servicioSeleccionado)
+        const servicioSeleccionado = await getServicioById(idServicio);
+        setSelectedService(servicioSeleccionado);
         setServicios(data);
       } catch (error) {
-        console.error('Error al traer los servicios del instructor:', error);
+        console.error("Error al traer los servicios del instructor:", error);
       }
     };
     fetchServicios();
   }, []);
-
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -45,7 +44,6 @@ function NavbarInstructor() {
     if (idServicio) {
       const selected = servicios.find(
         (servicio) => servicio.id === parseInt(idServicio, 10) // Convertir a número para la comparación
-      
       );
       if (selected) {
         setSelectedService(selected);
@@ -69,32 +67,44 @@ function NavbarInstructor() {
         fontSize: "1.2rem",
       }}
     >
-      <button
-        className="navbar-toggler"
-        type="button"
-        onClick={toggleDropdown}
-        style={{ borderColor: "white" }}
-      >
-        <span
-          className="navbar-toggler-icon"
-          style={{ filter: "invert(1)" }}
-        ></span>
-      </button>
+      <div className="d-flex justify-content-between align-items-center w-100">
+        <a className="navbar-brand d-lg-none" href="/">
+          <img src={img} alt="Harp Logo" width="100" />
+        </a>
 
-      <a className="navbar-brand d-lg-none" href="/" >
-        <img src={img} alt="Harp Logo" width="100" />
-      </a>
+        <button
+          className="navbar-toggler"
+          type="button"
+          onClick={toggleDropdown}
+          style={{
+            borderColor: "white",
+            padding: "0", // Elimina el padding para que el botón sea solo del tamaño del ícono
+            width: "auto", // Asegura que el ancho sea ajustado al ícono
+            height: "auto", // Asegura que el alto sea ajustado al ícono
+            position:"relative"
+          }}
+        >
+          <span
+            className="navbar-toggler-icon"
+            style={{ filter: "invert(1)" }}
+          ></span>
+        </button>
+      </div>
+
+      <div
+        className={`collapse ${dropdownOpen ? "show" : ""} navbar-collapse`}
+        id="navbarNavDropdown"
+      >
+        {/* Contenido del menú */}
+      </div>
+
       <div
         className={`collapse navbar-collapse ${dropdownOpen ? "show" : ""}`}
         id="navbarNavDropdown"
       >
         <ul className="nav">
           <li className="nav-item d-none d-lg-block">
-            <a
-              className="nav-link"
-              href={`/`}
-              style={{ paddingLeft: "1vw" }}
-            >
+            <a className="nav-link" href={`/`} style={{ paddingLeft: "1vw" }}>
               <img src={img} alt="Harp Logo" width="130" />
             </a>
           </li>
@@ -148,7 +158,9 @@ function NavbarInstructor() {
               onClick={toggleDropdown}
               style={{ color: "white" }}
             >
-              {selectedService ? selectedService.nombre : "Selecciona un servicio"}
+              {selectedService
+                ? selectedService.nombre
+                : "Selecciona un servicio"}
             </a>
             <div
               className={`dropdown-menu ${dropdownOpen ? "show" : ""}`}
@@ -170,7 +182,12 @@ function NavbarInstructor() {
 
         <ul className="navbar-nav">
           <li className="nav-item">
-            <a className="nav-link" href="/" style={{ color: "white" }} onClick={handleClick}>
+            <a
+              className="nav-link"
+              href="/"
+              style={{ color: "white" }}
+              onClick={handleClick}
+            >
               Cerrar Sesión
             </a>
           </li>
