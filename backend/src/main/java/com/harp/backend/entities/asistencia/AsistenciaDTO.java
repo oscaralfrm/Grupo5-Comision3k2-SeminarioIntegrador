@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class AsistenciaDTO {
 
     private boolean asistio;
-
+    // Acá Juli te faltó poner el ID del Alumno, ya que con ésto es que sabremos como creamos la asistencia p/ c/ alumno.
+    private Long idAlumno;
     private String observaciones;
 }
