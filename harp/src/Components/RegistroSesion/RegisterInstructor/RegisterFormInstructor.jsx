@@ -33,16 +33,19 @@ export const RegisterFormInstructor = () => {
 
   const onSubmit = async (data) => {
     console.log(data);
-
+ //(nombre, apellido, dni, nombreUsuario, contrasena, email, telefono, direccion, fechaNacimiento)
     try {
       const instructorCreado = await createInstructor(
+        null,
         data.nombre,
         data.apellido,
         data.dni,
-        data.username,
+        data.nombreUsuario,
         data.password,
-        data.mail,
-        data.telefono
+        data.email,
+        data.telefono,
+        data.direccion,
+        data.fechaNacimiento
       );
 
       navigate(`/instructor/${instructorCreado.id}/crear-servicio`);
