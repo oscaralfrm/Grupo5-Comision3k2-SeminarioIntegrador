@@ -17,31 +17,19 @@ export const RegisterFormInstructor = () => {
   } = useForm({ mode: "onChange" });
 
   const contrasena = watch("contrasena");
-
-  const [formData, setFormData] = useState({
-    nombre: "",
-    apellido: "",
-    dni: "",
-    username: "",
-    mail: "",
-    telefono: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [activeTab, setActiveTab] = useState("datosPersonales");
   const navigate = useNavigate();
+
+  const [activeTab, setActiveTab] = useState("datosPersonales");
 
   const onSubmit = async (data) => {
     console.log(data);
- //(nombre, apellido, dni, nombreUsuario, contrasena, email, telefono, direccion, fechaNacimiento)
     try {
       const instructorCreado = await createInstructor(
-        null,
         data.nombre,
         data.apellido,
         data.dni,
-        data.nombreUsuario,
-        data.password,
+        data.username,         // Consistencia: `username` en lugar de `nombreUsuario`
+        data.password,         // Consistencia: `password` en lugar de `contrasena`
         data.email,
         data.telefono,
         data.direccion,
@@ -51,15 +39,8 @@ export const RegisterFormInstructor = () => {
       navigate(`/instructor/${instructorCreado.id}/crear-servicio`);
     } catch (error) {
       console.error("Error:", error);
+      alert("Hubo un problema al registrar al instructor. Por favor, inténtalo nuevamente.");
     }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
   };
 
   const goToNextTab = () => {
@@ -108,6 +89,7 @@ export const RegisterFormInstructor = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="card shadow-lg rounded-3 bg-light p-4"
           >
+            {/* Tabs siempre visibles */}
             <Tabs
               id="register-tabs"
               activeKey={activeTab}
@@ -118,7 +100,6 @@ export const RegisterFormInstructor = () => {
                 <DatosPersonales
                   register={register}
                   errors={errors}
-                  handleInputChange={handleInputChange}
                   goToNextTab={goToNextTab}
                 />
               </Tab>
@@ -127,7 +108,6 @@ export const RegisterFormInstructor = () => {
                 <Contacto
                   register={register}
                   errors={errors}
-                  handleInputChange={handleInputChange}
                   goToNextTab={goToNextTab}
                   goToPreviousTab={goToPreviousTab}
                 />
@@ -137,7 +117,6 @@ export const RegisterFormInstructor = () => {
                 <Password
                   register={register}
                   errors={errors}
-                  handleInputChange={handleInputChange}
                   goToPreviousTab={goToPreviousTab}
                   contrasena={contrasena}
                   isValid={isValid}
@@ -160,7 +139,22 @@ export const RegisterFormInstructor = () => {
         }}
         className="col-12 col-md-6 col-lg-12 mt-4 mt-md-0 mb-3"
       >
-        <InfoCard formData={formData} />
+        <InfoCard formData={watch()} />
+      </div>
+
+      {/* Botón siempre visible */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 10,
+        }}
+      >
+        <button type="submit" className="btn btn-primary">
+          Registrar
+        </button>
       </div>
     </div>
   );
