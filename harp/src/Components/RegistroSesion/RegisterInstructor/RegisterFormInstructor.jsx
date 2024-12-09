@@ -18,18 +18,17 @@ export const RegisterFormInstructor = () => {
 
   const contrasena = watch("contrasena");
   const navigate = useNavigate();
-
   const [activeTab, setActiveTab] = useState("datosPersonales");
 
   const onSubmit = async (data) => {
-    console.log(data);
     try {
+      console.log(data)
       const instructorCreado = await createInstructor(
         data.nombre,
         data.apellido,
         data.dni,
-        data.username,         // Consistencia: `username` en lugar de `nombreUsuario`
-        data.password,         // Consistencia: `password` en lugar de `contrasena`
+        data.nombreUsuario,
+        data.contrasena,
         data.email,
         data.telefono,
         data.direccion,
@@ -44,52 +43,56 @@ export const RegisterFormInstructor = () => {
   };
 
   const goToNextTab = () => {
-    if (activeTab === "datosPersonales") {
-      setActiveTab("contacto");
-    } else if (activeTab === "contacto") {
-      setActiveTab("contraseña");
-    }
+    if (activeTab === "datosPersonales") setActiveTab("contacto");
+    else if (activeTab === "contacto") setActiveTab("contraseña");
   };
 
   const goToPreviousTab = () => {
-    if (activeTab === "contraseña") {
-      setActiveTab("contacto");
-    } else if (activeTab === "contacto") {
-      setActiveTab("datosPersonales");
-    }
+    if (activeTab === "contraseña") setActiveTab("contacto");
+    else if (activeTab === "contacto") setActiveTab("datosPersonales");
   };
 
   return (
     <div
       style={{
         display: "flex",
-        flexDirection: "row",
-        height: "100vh",
-        fontFamily: "Roboto",
         flexWrap: "wrap",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+        minHeight: "100vh",
+        fontFamily: "Roboto",
+        overflow: "hidden",
+        padding: "20px",
       }}
     >
       {/* Columna Izquierda (Formulario) */}
       <div
         style={{
-          flex: 1,
-          padding: "20px",
+          flex: "1 1 auto",
+          maxWidth: "600px",
+          width: "100%",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          justifyContent: "center",
+          padding: "20px",
         }}
         className="col-12 col-md-6"
       >
-        <div className="col-md-10 col-sm-12 p-4">
-          <h1 className="mb-1 text-center fs-1 text-nowrap">Regístrate como Instructor</h1>
+        <div style={{ width: "100%" }}>
+          <h1 className="mb-1 text-center fs-1">Regístrate como Instructor</h1>
           <p className="text-center text-muted fs-6">
             ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
           </p>
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="card shadow-lg rounded-3 bg-light p-4"
+            style={{
+              width: "100%",
+              maxWidth: "600px",
+              margin: "0 auto",
+            }}
           >
-            {/* Tabs siempre visibles */}
             <Tabs
               id="register-tabs"
               activeKey={activeTab}
@@ -130,31 +133,17 @@ export const RegisterFormInstructor = () => {
       {/* Columna Derecha (InfoCard) */}
       <div
         style={{
-          flex: 1,
+          flex: "1 1 100%",
+          maxWidth: "600px",
+          width: "100%",
           padding: "20px",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          minHeight: "calc(100vh - 290px)",
+          justifyContent: "center",
         }}
-        className="col-12 col-md-6 col-lg-12 mt-4 mt-md-0 mb-3"
+        className="col-12 col-md-6 mt-4 mt-md-0 mb-3"
       >
         <InfoCard formData={watch()} />
-      </div>
-
-      {/* Botón siempre visible */}
-      <div
-        style={{
-          position: "fixed",
-          bottom: "20px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 10,
-        }}
-      >
-        <button type="submit" className="btn btn-primary">
-          Registrar
-        </button>
       </div>
     </div>
   );

@@ -58,7 +58,7 @@ export default function InfoCard({ formData }) {
                 Nombre de usuario:{" "}
               </strong>
               <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {formData.username}
+                {formData.nombreUsuario}
               </span>
             </div>
             <div className="mb-3">
@@ -72,7 +72,7 @@ export default function InfoCard({ formData }) {
             <div className="mb-3">
               <strong style={{ fontSize: "1.2rem" }}>Email: </strong>
               <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {formData.mail}
+                {formData.email}
               </span>
             </div>
             <div className="mb-3">
