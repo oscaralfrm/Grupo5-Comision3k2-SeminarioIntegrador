@@ -25,7 +25,7 @@ function NavbarInstructor() {
       }
     };
     fetchServicios();
-  }, []);
+  }, [idInstructor, idServicio]);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -43,16 +43,16 @@ function NavbarInstructor() {
   useEffect(() => {
     if (idServicio) {
       const selected = servicios.find(
-        (servicio) => servicio.id === parseInt(idServicio, 10) // Convertir a número para la comparación
+        (servicio) => servicio.id === parseInt(idServicio, 10)
       );
       if (selected) {
         setSelectedService(selected);
       }
     }
-  }, [idServicio]);
+  }, [idServicio, servicios]);
 
   const handleClick = () => {
-    navigate("/login"); // Redirige a /login
+    navigate("/login");
   };
 
   return (
@@ -67,125 +67,103 @@ function NavbarInstructor() {
         fontSize: "1.2rem",
       }}
     >
-      <div className="d-flex justify-content-between align-items-center w-100">
+      <div className="container-fluid d-flex justify-content-between align-items-center">
+        {/* Logo en pantallas grandes */}
+        <a className="navbar-brand d-none d-lg-block" href="/">
+          <img src={img} alt="Harp Logo" width="130" />
+        </a>
+
+        {/* Logo en pantallas pequeñas */}
         <a className="navbar-brand d-lg-none" href="/">
           <img src={img} alt="Harp Logo" width="100" />
         </a>
 
-        <button
-          className="navbar-toggler"
-          type="button"
-          onClick={toggleDropdown}
-          style={{
-            borderColor: "white",
-            padding: "0", // Elimina el padding para que el botón sea solo del tamaño del ícono
-            width: "auto", // Asegura que el ancho sea ajustado al ícono
-            height: "auto", // Asegura que el alto sea ajustado al ícono
-            position:"relative"
-          }}
-        >
-          <span
-            className="navbar-toggler-icon"
-            style={{ filter: "invert(1)" }}
-          ></span>
-        </button>
-      </div>
+        {/* Contenedor para los elementos centrados */}
+        <div className="d-flex justify-content-center w-100 mx-4">
+          <ul className="navbar-nav">
+            {/* Mi Servicio */}
+            <li className="nav-item">
+              <a
+                className="nav-link"
+                href={`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`}
+                style={{ color: "white" }}
+              >
+                Mi Servicio
+              </a>
+            </li>
+            {/* Alumnos */}
+            <li className="nav-item">
+              <a
+                className="nav-link"
+                href={`/instructor/${idInstructor}/servicio/${idServicio}/alumnos`}
+                style={{ color: "white" }}
+              >
+                Alumnos
+              </a>
+            </li>
+            {/* Cobros */}
+            <li className="nav-item">
+              <a
+                className="nav-link"
+                href={`/instructor/${idInstructor}/servicio/${idServicio}/cobros`}
+                style={{ color: "white" }}
+              >
+                Cobros
+              </a>
+            </li>
+            {/* Configuración */}
+            <li className="nav-item">
+              <a
+                className="nav-link"
+                href={`/instructor/${idInstructor}/servicio/${idServicio}/configuracion`}
+                style={{ color: "white" }}
+              >
+                Configuración
+              </a>
+            </li>
+            {/* Selector de servicio */}
+            <li className="nav-item dropdown">
+              <a
+                className="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdownMenuLink"
+                role="button"
+                aria-haspopup="true"
+                aria-expanded={dropdownOpen ? "true" : "false"}
+                onClick={toggleDropdown}
+                style={{ color: "white" }}
+              >
+                {selectedService
+                  ? selectedService.nombre
+                  : "Selecciona un servicio"}
+              </a>
+              <div
+                className={`dropdown-menu ${dropdownOpen ? "show" : ""}`}
+                aria-labelledby="navbarDropdownMenuLink"
+              >
+                {servicios.map((servicio) => (
+                  <button
+                    key={servicio.id}
+                    className="dropdown-item"
+                    onClick={() => handleSelectService(servicio.id)}
+                    style={{ color: "#1E1B4B" }}
+                  >
+                    {servicio.nombre}
+                  </button>
+                ))}
+              </div>
+            </li>
+          </ul>
+        </div>
 
-      <div
-        className={`collapse ${dropdownOpen ? "show" : ""} navbar-collapse`}
-        id="navbarNavDropdown"
-      >
-        {/* Contenido del menú */}
-      </div>
-
-      <div
-        className={`collapse navbar-collapse ${dropdownOpen ? "show" : ""}`}
-        id="navbarNavDropdown"
-      >
-        <ul className="nav">
-          <li className="nav-item d-none d-lg-block">
-            <a className="nav-link" href={`/`} style={{ paddingLeft: "1vw" }}>
-              <img src={img} alt="Harp Logo" width="130" />
-            </a>
-          </li>
-        </ul>
-
-        <ul className="navbar-nav mx-auto">
-          <li className="nav-item">
-            <a
-              className="nav-link"
-              href={`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`}
-              style={{ color: "white" }}
-            >
-              Mi Servicio
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className="nav-link"
-              href={`/instructor/${idInstructor}/servicio/${idServicio}/alumnos`}
-              style={{ color: "white" }}
-            >
-              Alumnos
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className="nav-link"
-              href={`/instructor/${idInstructor}/servicio/${idServicio}/cobros`}
-              style={{ color: "white" }}
-            >
-              Cobros
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className="nav-link"
-              href={`/instructor/${idInstructor}/servicio/${idServicio}/configuracion`}
-              style={{ color: "white" }}
-            >
-              Configuracion
-            </a>
-          </li>
-          <li className="nav-item dropdown">
-            <a
-              className="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdownMenuLink"
-              role="button"
-              aria-haspopup="true"
-              aria-expanded={dropdownOpen ? "true" : "false"}
-              onClick={toggleDropdown}
-              style={{ color: "white" }}
-            >
-              {selectedService
-                ? selectedService.nombre
-                : "Selecciona un servicio"}
-            </a>
-            <div
-              className={`dropdown-menu ${dropdownOpen ? "show" : ""}`}
-              aria-labelledby="navbarDropdownMenuLink"
-            >
-              {servicios.map((servicio) => (
-                <button
-                  key={servicio.id}
-                  className="dropdown-item"
-                  onClick={() => handleSelectService(servicio.id)}
-                  style={{ color: "#1E1B4B" }}
-                >
-                  {servicio.nombre}
-                </button>
-              ))}
-            </div>
-          </li>
-        </ul>
-
-        <ul className="navbar-nav">
+        {/* Cerrar sesión en la misma fila */}
+        <ul className="navbar-nav ml-auto">
+          {/* Cerrar sesión */}
           <li className="nav-item">
             <a
               className="nav-link"
               href="/"
-              style={{ color: "white" }}
+              style={{ color: "white", whiteSpace: "nowrap" }} // Evita el salto de línea
               onClick={handleClick}
             >
               Cerrar Sesión
