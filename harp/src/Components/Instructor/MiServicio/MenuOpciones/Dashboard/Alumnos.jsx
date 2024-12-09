@@ -40,6 +40,7 @@ const StudentsCard = () => {
         maxWidth: "90%",
         width: "90%",
         marginTop: "3vh",
+         margin: "4vh auto"
       }}
     >
       <div
