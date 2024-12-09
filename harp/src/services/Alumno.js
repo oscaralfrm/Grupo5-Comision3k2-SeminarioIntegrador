@@ -1,12 +1,12 @@
 import axios from './axiosConfig.js';
 
 // Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = ''; // Ajusta según tu configuración de backend
+const API_URL = 'http://localhost:9001/api/alumnos'; // Ajusta según tu configuración de backend
 
 // Servicio para obtener todos los alumnos
 export const getAllAlumnos = async () => {
     try {
-        const response = await axios.get(`${API_URL}/alumnos`);
+        const response = await axios.get(`${API_URL}`);
         return response.data;  // Suponiendo que la respuesta es un array de alumnos
     } catch (error) {
         console.error("Error fetching alumnos: ", error);
@@ -50,7 +50,7 @@ export const getAlumnosDeGrupo = async (idServicio, idGrupo) => {
 export const createAlumno = async (nombre, apellido, dni, nombreUsuario, contrasena, 
     email, telefono, direccion, fechaNacimiento) => {
     try {
-        const response = await axios.post(`${API_URL}/alumnos`, {ombre, apellido, dni, nombreUsuario, contrasena, 
+        const response = await axios.post(`${API_URL}/alumnos`, {nombre, apellido, dni, nombreUsuario, contrasena, 
             email, telefono, direccion, fechaNacimiento});
         return response.data;  // Suponiendo que la respuesta es el alumno creado
     } catch (error) {

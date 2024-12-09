@@ -1,7 +1,7 @@
 import axios from './axiosConfig.js';
 
 // Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = ''; // Ajusta según tu configuración de backend
+const API_URL = 'http://localhost:9001/api/servicios/grupos'; // ESTE ES EL DEL SERVICIO DE CLASES...
 
 // Servicio para obtener una clase por su ID
 export const getClaseById = async (idClase) => {

@@ -1,13 +1,22 @@
 import axios from 'axios';
 
-// Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = '/servicios/grupos/clases'; // Ajusta según tu configuración de backend
+// Éstos son los servicios de asistencias...
+
+/* Hay que pensar, que en el componente de Asistencias.jsx tienen que funcionar los siguientes servicios:
+
+Asistencia.js
+Alumno.js
+Clase.js
+
+*/
+
+const API_URL = 'http://localhost:9001/api/servicios/grupos/clases'; // Esta es la configuración base para las Asistencias en el Backend
 
 // Servicio para obtener todas las asistencias
 export const getAllAsistencias = async () => {
     try {
         const response = await axios.get(`${API_URL}/asistencias`);
-        return response.data;  // Suponiendo que la respuesta es un array de asistencias
+        return response.data; 
     } catch (error) {
         console.error("Error fetching asistencias: ", error);
         throw error;
@@ -24,6 +33,21 @@ export const getAsistenciaById = async (idAsistencia) => {
         throw error;
     }
 };
+
+// POST... ESTO ES NUEVO JULI, ES EL POST PARA CREAR UNA ASISTENCIA, tiene que funcionar cuando el Instructor apriete el botón de "Guardar"
+// OJO ESTE MÉTODO ES NUEVO...
+export const createAsistencia = async (idClase) => {
+    try {
+
+        const response = await axios.post(`${API_URL}/asistencias/${idClase}`);
+        return response.data; // 
+
+    } catch (error) {
+        console.error("Error fetching asistencia by ID: ", error);
+        throw error;
+    }
+}
+
 
 // Servicio para editar una asistencia existente
 export const editAsistencia = async (idAsistencia, asistio, observaciones) => {
