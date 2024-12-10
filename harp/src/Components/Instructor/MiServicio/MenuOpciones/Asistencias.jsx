@@ -104,7 +104,6 @@ const Asistencias = () => {
         }));
     };
 
-    // Función para calcular la distancia de Levenshtein
     const calcularDistanciaLevenshtein = (a, b) => {
         const arr = Array.from;
         const alen = arr(a).length;
@@ -141,7 +140,6 @@ const Asistencias = () => {
             [id]: value,
         }));
 
-        // Verificar malas palabras
         const tieneMalaPalabra = detectarMalasPalabras(value);
         setErrorObservaciones((prev) => ({ ...prev, [id]: tieneMalaPalabra }));
     };
@@ -165,7 +163,7 @@ const Asistencias = () => {
     };
 
     const handleRegistrarAsistencia = () => {
-        const asistenciaSeleccionada = Object.values(asistencia).some(value => value === false); // Cambiado a false para reflejar ausentes
+        const asistenciaSeleccionada = Object.values(asistencia).some(value => value === false);
         
         if (!asistenciaSeleccionada) {
             const confirmacion = window.confirm(
@@ -176,7 +174,6 @@ const Asistencias = () => {
             }
         }
 
-        // Verificar que no haya malas palabras en las observaciones
         const hayErrores = Object.keys(observaciones).some((id) => {
             return errorObservaciones[id] || detectarMalasPalabras(observaciones[id]);
         });
@@ -188,7 +185,7 @@ const Asistencias = () => {
 
         const asistenciaFinal = Object.keys(asistencia).map((id) => ({
             alumnoId: id,
-            asistio: asistencia[id], // Registramos como true o false dependiendo del checkbox
+            asistio: asistencia[id],
             observacion: observaciones[id] || '',
         }));
 
@@ -287,7 +284,12 @@ const Asistencias = () => {
                                     alumnosFiltrados.slice(startIndex, endIndex).map((alumno) => (
                                         <tr key={alumno.id}>
                                             <td style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>
-                                                {alumno.nombre}
+                                                {
+                                                    (() => {
+                                                        const [nombre, apellido] = alumno.nombre.split(' '); // Separa el nombre y apellido
+                                                        return `${nombre} ${apellido.charAt(0)}.`; // Retorna el formato deseado
+                                                    })()
+                                                }
                                             </td>
                                             <td style={{ padding: '10px', borderBottom: '1px solid #ddd', textAlign: 'center' }}>
                                                 <input
