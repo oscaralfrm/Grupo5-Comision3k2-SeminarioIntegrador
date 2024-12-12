@@ -1,6 +1,12 @@
 import React from "react";
 
 export default function ResumenServicio({ formData }) {
+  // Función para convertir a mayúsculas el primer carácter
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   return (
     <div className="d-flex justify-content-center align-items-center">
       <div className="col-sm-12 p-4">
@@ -38,39 +44,60 @@ export default function ResumenServicio({ formData }) {
             <div className="mb-3">
               <strong style={{ fontSize: "1.2rem" }}>Categoría: </strong>
               <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {formData.categoria}
+                {capitalizeFirstLetter(formData.categoria)}
               </span>
             </div>
             <div className="mb-3">
               <strong style={{ fontSize: "1.2rem" }}>Nombre: </strong>
               <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {formData.nombreServicio}
+                {capitalizeFirstLetter(formData.nombreServicio)}
               </span>
             </div>
             <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>Frecuencia de cobro: </strong>
+              <strong style={{ fontSize: "1.2rem" }}>
+                Frecuencia de cobro:{" "}
+              </strong>
               <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {formData.frecuenciaCuotas}
+                {capitalizeFirstLetter(formData.frecuenciaCuotas)}
               </span>
             </div>
+
+            {formData.frecuenciaCuotas === "otros" && (
+              <div className="mb-3">
+                <strong style={{ fontSize: "1.2rem" }}>
+                  Frecuencia de cobro en días:{" "}
+                </strong>
+                <span style={{ fontSize: "1.1rem", color: "#333" }}>
+                  {formData.duracionCuotasPersonalizada} días
+                </span>
+              </div>
+            )}
+
             <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>Ciclos de alumnos: </strong>
+              <strong style={{ fontSize: "1.2rem" }}>Tipo de cobro: </strong>
               <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {formData.ciclos}
+                {capitalizeFirstLetter(formData.ciclos)}
               </span>
             </div>
-            <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>Día límite de pago: </strong>
-              <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {formData.fechaLimitePago}
-              </span>
-            </div>
+            {formData.frecuenciaCuotas === "mensual" ||
+            formData.frecuenciaCuotas === "semanal" ||
+            formData.frecuenciaCuotas === "otros" ? (
+              <div className="mb-3">
+                <strong style={{ fontSize: "1.2rem" }}>
+                  Día límite de cobro:{" "}
+                </strong>
+                <span style={{ fontSize: "1.1rem", color: "#333" }}>
+                  {capitalizeFirstLetter(formData.fechaLimitePago)}
+                </span>
+              </div>
+            ) : null}
+
             <div className="mb-3">
               <strong style={{ fontSize: "1.2rem" }}>
                 Incluye cobro de inscripción:{" "}
               </strong>
               <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {formData.incluyeInscripcion}
+                {capitalizeFirstLetter(formData.incluyeInscripcion)}
               </span>
             </div>
 
@@ -78,18 +105,18 @@ export default function ResumenServicio({ formData }) {
               <>
                 <div className="mb-3">
                   <strong style={{ fontSize: "1.2rem" }}>
-                    Monto por la inscripción:{" "}
+                    Cobro de inscripción:{" "}
                   </strong>
                   <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                    {formData.montoInscripcion}
+                    {capitalizeFirstLetter(formData.pagoInscripcion)}
                   </span>
                 </div>
                 <div className="mb-3">
                   <strong style={{ fontSize: "1.2rem" }}>
-                    La inscripción se paga:{" "}
+                    Monto por la inscripción:{" "}
                   </strong>
                   <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                    {formData.pagoInscripcion}
+                    {"$" + formData.montoInscripcion}
                   </span>
                 </div>
               </>
@@ -98,7 +125,7 @@ export default function ResumenServicio({ formData }) {
             <div className="mb-3">
               <strong style={{ fontSize: "1.2rem" }}>Clases: </strong>
               <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {formData.divideEnGrupos}
+                {capitalizeFirstLetter(formData.divideEnGrupos)}
               </span>
             </div>
 
@@ -119,7 +146,7 @@ export default function ResumenServicio({ formData }) {
                 <div className="mb-3">
                   <strong style={{ fontSize: "1.2rem" }}>Asistencias: </strong>
                   <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                    {formData.asistencias}
+                    {capitalizeFirstLetter(formData.asistencias)}
                   </span>
                 </div>
                 <div className="mb-3">
@@ -127,7 +154,7 @@ export default function ResumenServicio({ formData }) {
                     Clase prueba gratuita:{" "}
                   </strong>
                   <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                    {formData.clasePrueba}
+                    {capitalizeFirstLetter(formData.clasePrueba)}
                   </span>
                 </div>
               </>
