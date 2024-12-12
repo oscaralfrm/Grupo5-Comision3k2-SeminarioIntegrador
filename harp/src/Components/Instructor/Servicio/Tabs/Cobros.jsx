@@ -15,14 +15,17 @@ export default function Cobros({
         <div className="row">
           {["Diaria", "Semanal", "Mensual", "Otros"].map((freq) => (
             <div className="col-md-6" key={freq}>
-              <Form.Check
-                type="radio"
-                label={freq}
-                value={freq.toLowerCase()}
-                {...register("frecuenciaCuotas", {
-                  required: "Debes seleccionar una opción.",
-                })}
-              />
+              <label className="d-flex align-items-center">
+                <Form.Check
+                  type="radio"
+                  value={freq.toLowerCase()}
+                  {...register("frecuenciaCuotas", {
+                    required: "Debes seleccionar una opción.",
+                  })}
+                  className="me-2"
+                />
+                {freq}
+              </label>
             </div>
           ))}
         </div>
@@ -39,7 +42,7 @@ export default function Cobros({
               {...register("duracionCuotasPersonalizada", {
                 required: "Debes ingresar una cantidad de días.",
                 validate: (value) => {
-                  const diasInvalidos = [1, 7, 28, 29, 30, 31]; // Días predefinidos excluidos
+                  const diasInvalidos = [1, 7, 28, 29, 30, 31];
                   if (diasInvalidos.includes(Number(value))) {
                     return "El número de días no puede ser 1, 7, 28, 29, 30 o 31.";
                   }
@@ -91,7 +94,7 @@ export default function Cobros({
       <Form.Group controlId="fechaLimitePago" className="mt-3">
         <Form.Label>Día límite de pago</Form.Label>
         <Form.Control
-        placeholder="Ej: 3 de cada mes"
+          placeholder="Ej: 3 de cada mes"
           type="number"
           {...register("fechaLimitePago", {
             validate: (value) =>

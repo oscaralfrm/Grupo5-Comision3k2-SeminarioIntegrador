@@ -48,7 +48,7 @@ export default function ResumenServicio({ formData }) {
               </span>
             </div>
             <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>Frecuencia de pago: </strong>
+              <strong style={{ fontSize: "1.2rem" }}>Frecuencia de cobro: </strong>
               <span style={{ fontSize: "1.1rem", color: "#333" }}>
                 {formData.frecuenciaCuotas}
               </span>
