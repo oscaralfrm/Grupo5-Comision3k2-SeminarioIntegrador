@@ -68,15 +68,6 @@ const Dashboard = () => {
             marginTop: "30px",
           }}
         >
-          <div>
-            <Adicional />
-          </div>
-          <div >
-            <Statistics />
-          </div>
-          <div >
-            <GraficoDeTorta />
-          </div>
 
         </div>
       </div>
