@@ -56,4 +56,18 @@ public class AsistenciaService implements IAsistenciaService{
         return asistenciaRepository.save(asistenciaExistente);
     };
 
+    public List<Asistencia> findAsistenciasDeClase(Long idClase) {
+        List<Asistencia> asistencias = asistenciaRepository.findByClaseId(idClase);
+        return asistencias;
+    }
+
+    public void editAsistencias(Long idClase, List<AsistenciaSolicitudEditar> asistenciasDto) {
+        // Validamos que las asistencias sean de esa clase
+        //ACA
+
+        asistenciasDto.forEach(asistenciaDto ->
+                this.editAsistencia(
+                        asistenciaDto.getIdAsistencia(),
+                        asistenciaDto.getAsistenciaDTO()));
+    }
 }

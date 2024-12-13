@@ -46,7 +46,7 @@ public class InstructorController {
     };
 
     // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
-    @GetMapping("/iniciar-sesion")
+    @PostMapping("/iniciar-sesion")
     public ResponseEntity<Long> iniciarSesion(@RequestBody InicioSesionDTO inicioSesionDTO) {
         Long idInstructor = instructorService.validarInicioSesion(inicioSesionDTO.getEmail(), inicioSesionDTO.getContrasena());
         return ResponseEntity.status(HttpStatus.OK).body(idInstructor);

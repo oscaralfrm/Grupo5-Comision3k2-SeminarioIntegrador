@@ -82,6 +82,7 @@ public class Usuario {
         this.nombre = instructorDTO.getNombre();
         this.apellido = instructorDTO.getApellido();
         this.email = instructorDTO.getEmail();
+        this.dni = instructorDTO.getDni();
         this.nombreUsuario = instructorDTO.getNombreUsuario();
         this.contrasena = instructorDTO.getContrasena();
         this.telefono = instructorDTO.getTelefono();

@@ -29,7 +29,7 @@ public class ServicioConverter {
         servicio.setCantMaxAlumnosPorGrupo(dto.getCantMaxAlumnosPorGrupo());
         //servicio.setCantHorariosPorGrupo(dto.getCantHorariosPorGrupo());
         servicio.setDuracionTotalMeses(dto.getDuracionTotalMeses());
-        servicio.setFechaInicio(dto.getFechaInicio());
+        //servicio.setFechaInicio(dto.getFechaInicio());
         //servicio.setFechaFin(dto.getFechaFin());
         servicio.setPublico(dto.isPublico());
         servicio.setCantDiasCiclo(dto.getCantDiasCiclo());

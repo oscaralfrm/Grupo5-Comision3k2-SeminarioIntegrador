@@ -41,6 +41,13 @@ public class AsistenciaController {
         return ResponseEntity.status(HttpStatus.OK).body(asistencia);
     };
 
+    @GetMapping
+    public ResponseEntity<List<Asistencia>> getAsistenciasDeClase(@PathVariable @Min(1) Long idClase) {
+        List<Asistencia> asistencias = asistenciaService.findAsistenciasDeClase(idClase);
+        return ResponseEntity.status(HttpStatus.OK).body(asistencias);
+    };
+
+    /*
     // POST
     @PostMapping("/{idClase}/asistencias/")
     public ResponseEntity<Asistencia> crearAsistencia(@PathVariable @Min(1) Long idClase, @RequestBody AsistenciaDTO asistenciaDTO) {
@@ -56,6 +63,7 @@ public class AsistenciaController {
         Asistencia nuevaAsistencia = asistenciaService.createAsistencia(alumnoAsistente, claseARegistrarAsistencia);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaAsistencia); // 201 CREATED
     }
+    */
 
     // ELIMINAR
     @DeleteMapping("/asistencias/{idAsistencia}")
@@ -69,6 +77,13 @@ public class AsistenciaController {
     public ResponseEntity<Asistencia> editarAsistencia(@PathVariable @Min(1) Long idAsistencia, @RequestBody AsistenciaDTO asistenciaDTO) {
         Asistencia asistenciaEditada = asistenciaService.editAsistencia(idAsistencia, asistenciaDTO);
         return  ResponseEntity.status(HttpStatus.OK).body(asistenciaEditada);
+    }
+
+    // EDITAR
+    @PutMapping("/{idClase}/asistencias")
+    public ResponseEntity<String> editarAsistencias(@PathVariable @Min(1) Long idClase, @RequestBody List<AsistenciaSolicitudEditar> asistencias) {
+       asistenciaService.editAsistencias(idClase, asistencias);
+       return  ResponseEntity.status(HttpStatus.OK).body("Se han modificado las asistencias correctamente.");
     }
 
 }

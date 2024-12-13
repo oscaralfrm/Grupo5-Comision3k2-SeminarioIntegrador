@@ -17,9 +17,12 @@ import java.util.List;
 public class ClaseDTO {
     private String observaciones;
     private boolean noFueDada;
+
     // Le agrego más cosas Juli para poder probar la creación de una clase...
-    private LocalDate fecha;             // Fecha de la clase
-    private List<Long> alumnos; // Cambiar a List<Long> para recibir IDs
+    //las clases se crean automaticamente
+    //private LocalDate fecha;             // Fecha de la clase
+    //private List<Long> alumnos; // Cambiar a List<Long> para recibir IDs
+
 
     // Juli por favor revisa este DTO, para poder crear una clase de prueba. Ya lo de Asistencias estaría...
 

@@ -58,7 +58,8 @@ public class ServicioController {
     public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicioDTO) {
         //System.out.println(servicioDTO);
         // REVISAR: Obtener el id del Instructor loggeado de la manera correcta
-        Long idInstructorLoggeado = Long.valueOf(1);
+        //Long idInstructorLoggeado = Long.valueOf(1);
+        Long idInstructorLoggeado = servicioDTO.getIdInstructor(); // cambiar en el front
         Servicio nuevoServicio = servicioService.createServicio(servicioDTO, idInstructorLoggeado);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio); // 201 CREATED

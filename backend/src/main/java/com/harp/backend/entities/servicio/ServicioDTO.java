@@ -30,6 +30,9 @@ public class ServicioDTO {
 
     private String ubicacion;
 
+    // Instructor loggeado
+    private Long idInstructor;
+
     // Tambien podria ser el id
     private String categoria;
 

@@ -12,4 +12,6 @@ public interface IAsistenciaService {
     public void deleteAsistencia(Long idAsistencia);
     public Asistencia findAsistencia(Long idAsistencia);
     public Asistencia editAsistencia(Long idAsistencia, AsistenciaDTO asistenciaDTO);
+    public List<Asistencia> findAsistenciasDeClase(Long idClase);
+    public void editAsistencias(Long idClase, List<AsistenciaSolicitudEditar> asistenciasDto);
 }

@@ -40,7 +40,7 @@ public class ClaseController {
     // Acá dejo un método POST Juli, necesitamos tenerlo para poder probar que las asistencias se carguen...
 
     // Juli por favor revisa este método, para poder crear una clase de prueba. Ya lo de Asistencias estaría...
-
+/*
     @PostMapping("/clases")
     public ResponseEntity<String> crearClaseConAsistencias(@RequestBody ClaseDTO claseDTO) {
         // Crear instancia de Clase con los datos del DTO
@@ -68,5 +68,5 @@ public class ClaseController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Clase creada exitosamente junto con sus asistencias.");
     }
-
+*/
 }
