@@ -37,30 +37,9 @@ const Dashboard = () => {
     setFilteredServicios(servicios.filter((servicio) => (category ? servicio.categoria.nombre === category : true)));
   };
 
-  const handleNavigate = () => {
-    navigate("/instructor/1/servicios");
-  };
-
   return (
     <div style={{ marginTop: "2vh", padding: "20px" }}>
       {/* Título "Mis Servicios" */}
-      <button
-        onClick={handleNavigate}
-        style={{
-          position: "absolute",
-          top: "17vh",
-          right: "20px",
-          padding: "10px 15px",
-          fontSize: "16px",
-          backgroundColor: "#1E1B4B",
-          color: "#ffffff",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer"
-        }}
-      >
-        Mis Servicios
-      </button>
 
       <h2 style={{ textAlign: "center", marginLeft: "20px", color: "#1E1B4B" }}>
         Mis Servicios

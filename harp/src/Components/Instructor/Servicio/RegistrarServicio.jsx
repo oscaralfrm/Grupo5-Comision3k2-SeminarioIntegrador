@@ -76,7 +76,7 @@ export default function ServicioForm() {
           : null,
       tipoModalidad:
         data.divideEnGrupos === "Sin clases" ? "AServicio" : "AGrupo",
-      claseDePrueba: data.clasePrueba === "Si",
+      claseDePrueba: data.clasePrueba === "Si" ? true : false,
       asistenciasActivas: data.asistencias === "Si",
       montoInscripcion: data.montoInscripcion || 0,
       pagoAnticipadoDeMontoInscripcion:
