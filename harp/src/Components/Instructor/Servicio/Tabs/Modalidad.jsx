@@ -17,8 +17,9 @@ export default function Modalidad({
           {["Individuales", "Grupales"].map((opcion) => (
             <Col key={opcion} md={6}>
               <Form.Check
-              className="primary"
+                className="primary"
                 type="radio"
+                id={`clases-${opcion}`}
                 label={opcion}
                 value={opcion}
                 {...register("divideEnGrupos", {
@@ -59,53 +60,51 @@ export default function Modalidad({
         </Form.Group>
       )}
 
-      {/* Asistencias */}
-      {formData.divideEnGrupos !== "No doy clases" && (
-        <Form.Group controlId="asistencias" className="mt-3">
-          <Form.Label>Registrar asistencias?</Form.Label>
-          <Row>
-            {["Sí", "No"].map((opcion) => (
-              <Col key={opcion} md={6}>
-                <Form.Check
-                  type="radio"
-                  label={opcion}
-                  value={opcion.toLowerCase()}
-                  {...register("asistencias", {
-                    required: "Debes seleccionar una opción.",
-                  })}
-                />
-              </Col>
-            ))}
-          </Row>
-          {errors.asistencias && (
-            <p className="text-danger">{errors.asistencias.message}</p>
-          )}
-        </Form.Group>
-      )}
+      <Form.Group controlId="asistencias" className="mt-3">
+        <Form.Label>¿Se registran las asistencias?</Form.Label>
+        <Row>
+          {["Sí", "No"].map((opcion) => (
+            <Col key={opcion} md={6}>
+              <Form.Check
+                type="radio"
+                id={`asistencia-${opcion}`}
+                label={opcion}
+                value={opcion.toLowerCase()}
+                {...register("asistencias", {
+                  required: "Debes seleccionar una opción.",
+                })}
+              />
+            </Col>
+          ))}
+        </Row>
+        {errors.asistencias && (
+          <p className="text-danger">{errors.asistencias.message}</p>
+        )}
+      </Form.Group>
 
       {/* Clase de prueba */}
-      {formData.divideEnGrupos !== "No doy clases" && (
-        <Form.Group controlId="clasePrueba" className="mt-3">
-          <Form.Label >¿Clase de prueba gratuita?</Form.Label>
-          <Row>
-            {["Sí", "No"].map((opcion) => (
-              <Col key={opcion} md={6}>
-                <Form.Check
-                  type="radio"
-                  label={opcion}
-                  value={opcion.toLowerCase()}
-                  {...register("clasePrueba", {
-                    required: "Debes seleccionar una opción.",
-                  })}
-                />
-              </Col>
-            ))}
-          </Row>
-          {errors.clasePrueba && (
-            <p className="text-danger">{errors.clasePrueba.message}</p>
-          )}
-        </Form.Group>
-      )}
+
+      <Form.Group controlId="clasePrueba" className="mt-3">
+        <Form.Label>¿Clase de prueba gratuita?</Form.Label>
+        <Row>
+          {["Sí", "No"].map((opcion) => (
+            <Col key={opcion} md={6}>
+              <Form.Check
+                type="radio"
+                id={`clasePrueba-${opcion}`}
+                label={opcion}
+                value={opcion.toLowerCase()}
+                {...register("clasePrueba", {
+                  required: "Debes seleccionar una opción.",
+                })}
+              />
+            </Col>
+          ))}
+        </Row>
+        {errors.clasePrueba && (
+          <p className="text-danger">{errors.clasePrueba.message}</p>
+        )}
+      </Form.Group>
 
       {/* Navegación */}
       <div className="d-flex justify-content-between mt-4 position-relative">
