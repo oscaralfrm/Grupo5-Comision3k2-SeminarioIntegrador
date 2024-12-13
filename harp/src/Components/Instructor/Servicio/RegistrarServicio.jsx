@@ -51,6 +51,7 @@ export default function ServicioForm() {
   const onSubmit = async (data) => {
     const servicioDTO = {
       nombre: data.nombreServicio,
+      idInstructor: idInstructor,
       descripcion: data.descripcion,
       ubicacion: data.ubicacion,
       categoria: data.categoria,

@@ -34,8 +34,8 @@ export const RegisterFormInstructor = () => {
         data.direccion,
         data.fechaNacimiento
       );
-
-      navigate(`/instructor/${instructorCreado.id}/crear-servicio`);
+      navigate(`/instructor/${instructorCreado.id}/servicios`);
+      //navigate(`/instructor/${instructorCreado.id}/crear-servicio`);
     } catch (error) {
       console.error("Error:", error);
       alert("Hubo un problema al registrar al instructor. Por favor, inténtalo nuevamente.");

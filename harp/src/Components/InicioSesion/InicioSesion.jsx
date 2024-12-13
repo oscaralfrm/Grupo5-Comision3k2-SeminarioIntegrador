@@ -20,12 +20,14 @@ export const LoginForm = () => {
     const onSubmit = async (data) => {
         try {
             const { email, password } = data;
+            console.log(email, password);
             const id = await iniciarSesion(email, password);
+            console.log(id);
             const servicios = await getServiciosDeInstructor(id);
             
-            console.log(`IdInstructor: ${id} Servicio: ${servicios[0].id} `)
-            navegate(`/instructor/${id}/servicio/${servicios[0].id}/mi-servicio`)
-            
+            //navegate(`/instructor/${id}/servicio/${servicios[0].id}/mi-servicio`)
+            navegate(`/instructor/${id}/servicios`);     
+
           } catch (error) {
             console.error('Error al iniciar sesión:', error);
           }

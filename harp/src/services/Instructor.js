@@ -78,9 +78,9 @@ export const editInstructor = async (idInstructor, nombre, apellido, dni, nombre
 
 export const iniciarSesion = async (email, contrasena) => {
   try {
-    const response = await axios.get(`${BASE_URL}/iniciar-sesion`, {
-      params: { email, contrasena },
-    });
+    const response = await axios.post(`${BASE_URL}/iniciar-sesion`,
+      { email, contrasena },
+    );
     return response.data;
   } catch (error) {
     console.error(`Error iniciando sesión:`, error);
