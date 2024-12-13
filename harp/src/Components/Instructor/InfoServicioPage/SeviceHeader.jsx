@@ -1,0 +1,121 @@
+// components/ServiceHeader.js
+import React, { useState, useEffect } from 'react';
+import { Card, Row, Col, Form, Button } from 'react-bootstrap';
+import { FaStar, FaRegStar, FaCog } from 'react-icons/fa';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getServicioById } from '../../../services/Servicio';
+import { deshabilitarInscripcionesDeServicio, habilitarInscripcionesDeServicio } from '../../../services/Inscripcion';
+
+function ServiceHeader() {
+  const { idServicio } = useParams();
+  const [serviceData, setServiceData] = useState(null);
+  const navigate = useNavigate();
+
+  const toggleInscriptions = async () => {
+    const newStatus = !serviceData?.inscripcionesAbiertas;
+    const confirmationMessage = newStatus
+      ? '¿Está seguro de que desea habilitar las inscripciones?'
+      : '¿Está seguro de que desea deshabilitar las inscripciones?';
+
+    if (window.confirm(confirmationMessage)) {
+      try {
+        newStatus ? await habilitarInscripcionesDeServicio(idServicio) : await deshabilitarInscripcionesDeServicio(idServicio);
+        setServiceData((prevState) => ({
+          ...prevState,
+          inscripcionesAbiertas: newStatus,
+        }));
+      } catch (error) {
+        console.error('Error al cambiar el estado de las inscripciones:', error.message);
+        alert(error.message); // El componente decide cómo manejar el error
+      }
+    }
+  };
+
+  const handleEditClick = () => {
+    navigate('/edit-service'); // Navigate to edit service page
+  };
+
+  useEffect(() => {
+    const fetchServicio = async () => {
+      try {
+        const data = await getServicioById(idServicio);
+        setServiceData(data);
+      } catch (error) {
+        console.error('Error al traer el servicio:', error);
+      }
+    };
+    fetchServicio();
+  }, [idServicio]);
+
+  return (
+    <Card className="mb-4 p-4 position-relative" style={{ backgroundColor: '#f3e5f5', borderRadius: '20px', border: 'none' }}>
+      {/* Edit Button */}
+      <Button
+        variant="light"
+        className="rounded-circle p-2 position-absolute"
+        onClick={handleEditClick}
+        style={{ backgroundColor: '#d1c4e9', border: 'none', top: '10px', right: '10px' }}
+      >
+        <FaCog color="#6a1b9a" size={20} />
+      </Button>
+
+      <Row className="align-items-center text-center text-md-start g-3">
+        {/* Service Logo */}
+        <Col md="3" className="d-flex justify-content-center justify-content-md-start">
+          <img
+            src="https://via.placeholder.com/120"
+            alt="Logo del servicio"
+            className="rounded-circle"
+            width="120"
+            height="120"
+          />
+        </Col>
+
+        {/* Service Info */}
+        <Col md="8">
+          <h3 className="fw-bold">{serviceData?.nombre}</h3>
+          <p className="mb-1">
+            <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
+          </p>
+          <p className="mb-1">
+            <strong>Instructor:</strong> Nombre del Instructor
+          </p>
+          <p className="mb-3">
+            <strong>Descripción:</strong> {serviceData?.descripcion}
+          </p>
+
+          <Row>
+            <Col md="6" className="mb-2">
+              <strong>Calificación:</strong>
+              <span className="ms-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  star <= 4 ? <FaStar key={star} color="gold" /> : <FaRegStar key={star} />
+                ))}
+              </span>
+              <span className="ms-2">({4.9})</span>
+            </Col>
+
+            <Col md="6" className="mb-2">
+              <strong className="me-2">Inscripciones:</strong>
+              <Form>
+                <Form.Check 
+                  type="switch"
+                  id="inscriptions-switch"
+                  label={
+                    <span className={serviceData?.inscripcionesAbiertas ? "text-success" : "text-secondary"}>
+                      {serviceData?.inscripcionesAbiertas ? 'Habilitadas' : 'Deshabilitadas'}
+                    </span>
+                  }
+                  checked={serviceData?.inscripcionesAbiertas}
+                  onChange={toggleInscriptions}
+                />
+              </Form>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+    </Card>
+  );
+}
+
+export default ServiceHeader;

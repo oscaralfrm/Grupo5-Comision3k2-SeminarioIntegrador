@@ -5,12 +5,21 @@ const API_URL = '/servicios'; // Cambiar a la URL de tu API
 
 export const habilitarInscripcionesDeServicio = async (idServicio) => {
     try {
-        const response = await axios.put(`${API_URL}/${idServicio}/inscripciones/habilitar`);
-        return response.data;
+        await axios.put(`${API_URL}/${idServicio}/inscripciones/habilitar`);
     } catch (error) {
-        console.error('Error al obtener el servicio', error);
-        throw error;
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
+};
+
+export const deshabilitarInscripcionesDeServicio = async (idServicio) => {
+  try {
+      await axios.put(`${API_URL}/${idServicio}/inscripciones/deshabilitar`);
+  } catch (error) {
+      console.error('Error al obtener el servicio', error);
+      throw error;
+  }
 };
 
 // Función para obtener las inscripciones de un servicio

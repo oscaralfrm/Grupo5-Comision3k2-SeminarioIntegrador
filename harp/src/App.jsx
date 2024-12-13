@@ -17,6 +17,7 @@ import Asistencias from "./Components/Instructor/MiServicio/MenuOpciones/Asisten
 import Dashboard from "./Components/Instructor/MisServicios/MisServicios.jsx";
 import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/Grupos.jsx";
 import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Configuracion.jsx";
+import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
 
 function App() {
   return (
@@ -56,7 +57,13 @@ function App() {
             path="instructor/:idInstructor/servicio/:idServicio/mi-servicio/clase/:idClase/asistencias"
             element={<><AppNavbar /><Asistencias /></>}
           />
-          <Route path= "instructor/:idInstructor/servicios" element={<><AppNavbar /><Dashboard /></>}
+          <Route 
+            path= "instructor/:idInstructor/servicios" 
+            element={<><AppNavbar /><Dashboard /></>}
+          />
+          <Route 
+            path= "instructor/:idInstructor/servicio/:idServicio/info-servicio" 
+            element={<><AppNavbar /><InfoServicioPage /></>}
           />
 
           /* Componente de Creación de Grupos. Observar que se puede llegar al mismo por varias rutas. Una desde la creación del servicio y otra 

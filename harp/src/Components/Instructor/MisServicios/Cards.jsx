@@ -37,8 +37,8 @@ const CourseCards = ({ servicios, Instructorid }) => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleMoreInfo = (servicioId) => {
-    const servicio = servicios.find((s) => s.id === servicioId);
-    setSelectedServicio(servicio);
+    navegate(`/instructor/${idInstructor}/servicio/${servicioId}/info-servicio`);
+    //setSelectedServicio(servicio);
   };
 
   const closeDetails = () => setSelectedServicio(null);
