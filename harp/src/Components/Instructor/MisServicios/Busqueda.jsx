@@ -18,7 +18,7 @@ const SearchFilter = ({ onSearch, onFilter }) => {
     <div style={{ display: "flex", gap: "10px", padding: "10px 0", alignItems: "center" }}>
       <input
         type="text"
-        placeholder="Buscar por nombre de grupo..."
+        placeholder="Buscar por nombre..."
         value={searchTerm}
         onChange={handleSearchChange}
         style={{

@@ -6,7 +6,7 @@ import GraficoDeTorta from "./GráficoPastel";
 import { getInstructorById } from "../../../services/Instructor";
 import { useNavigate, useParams } from "react-router-dom";
 
-const CourseCards = ({ servicios, idInstructor }) => {
+const CourseCards = ({ servicios, Instructorid }) => {
   
   const [currentPage, setCurrentPage] = useState(1);
   const serviciosPerPage = 6;
@@ -14,17 +14,18 @@ const CourseCards = ({ servicios, idInstructor }) => {
   const [highlightedCourseId, setHighlightedCourseId] = useState(null);
   const [instructor, setInstructor] = useState(null);
   const navegate = useNavigate();
-  useEffect(() => {
-    const fetchInstructor = async () => {
-      try {
-        const data = await getInstructorById(idInstructor);
-        setInstructor(data);
-      } catch (error) {
-        console.error("Error al traer el instructor:", error);
-      }
-    };
-    fetchInstructor();
-  }, []);
+
+  // useEffect(() => {
+  //   const fetchInstructor = async () => {
+  //     try {
+  //       const data = await getInstructorById(idInstructor);
+  //       setInstructor(data);
+  //     } catch (error) {
+  //       console.error("Error al traer el instructor:", error);
+  //     }
+  //   };
+  //   fetchInstructor();
+  // }, []);
 
   const indexOfLastCourse = currentPage * serviciosPerPage;
   const indexOfFirstCourse = indexOfLastCourse - serviciosPerPage;
@@ -42,14 +43,14 @@ const CourseCards = ({ servicios, idInstructor }) => {
 
   const closeDetails = () => setSelectedServicio(null);
 
-  const toggleGraphics = (courseId) => {
-    setHighlightedCourseId((prevId) => (prevId === courseId ? null : courseId));
-    toggleGra();
-  };
-  const handleAddNewService = () => {
-    navegate(`/instructor/${idInstructor}/crear-servicio`);
-  };
-  
+  const { idInstructor } = useParams(); // Capturar el idInstructor de la ruta
+
+const handleGoToService = (servicioId) => {
+  navegate(`/instructor/${idInstructor}/servicio/${servicioId}/mi-servicio`);
+};
+
+
+  const totalPages = Math.ceil(servicios.length / serviciosPerPage);
 
   return (
     <div
@@ -68,8 +69,7 @@ const CourseCards = ({ servicios, idInstructor }) => {
                 borderRadius: "20px",
                 boxShadow: "0px 4px 18px rgba(0, 0, 0, 0.5)",
                 textAlign: "center",
-                transition:
-                  "transform 0.3s, box-shadow 0.3s, background-color 0.3s",
+                transition: "transform 0.3s, box-shadow 0.3s, background-color 0.3s",
               }}
             >
               <div
@@ -77,7 +77,8 @@ const CourseCards = ({ servicios, idInstructor }) => {
                   width: "70px",
                   height: "70px",
                   borderRadius: "50%",
-                  backgroundColor: "#4a47a3",
+                  backgroundColor: "#fff",
+                  border: "2px solid violet",
                   marginBottom: "15px",
                   display: "flex",
                   justifyContent: "center",
@@ -85,206 +86,82 @@ const CourseCards = ({ servicios, idInstructor }) => {
                   margin: "0 auto",
                 }}
               >
-                <img
-                  src={servicio.logoURL}
-                  alt={servicio.nombre}
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                  }}
-                />
+                {servicio.logoURL ? (
+                  <img
+                    src={servicio.logoURL}
+                    alt={servicio.nombre}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                    }}
+                  />
+                ) : (
+                  <i className="fa fa-camera" style={{ color: "gray", fontSize: "24px" }}></i>
+                )}
               </div>
-              <h4
-                className="card-title"
-                style={{
-                  fontSize: "1.15rem",
-                  color: "#333",
-                  fontWeight: "bold",
-                }}
-              >
+              <h4 className="card-title" style={{ fontSize: "1.15rem", color: "#333", fontWeight: "bold" }}>
                 {servicio.nombre}
               </h4>
-              <p
-                className="card-text"
-                style={{ fontSize: "1em", color: "#666", marginBottom: "10px" }}
-              >
-                Instructor: {instructor.usuario.nombre}
-              </p>
-              <p
-                style={{ fontSize: "0.9em", color: "#333", lineHeight: "1.4" }}
-              >
+              <p className="card-text" style={{ fontSize: "0.9em", color: "#333", lineHeight: "1.4" }}>
                 {servicio.descripcion}
               </p>
-              <div className="d-flex justify-content-around">
+              <div className="d-flex justify-content-around" style={{ marginTop: "10px" }}>
                 <button
                   onClick={() => handleMoreInfo(servicio.id)}
                   className="btn btn-primary"
                 >
-                  Ver Más
+                  Ver Servicio
+                </button>
+                <button
+                  onClick={() => handleGoToService(servicio.id)}
+                  className="btn btn-secondary"
+                >
+                  Ir al Servicio
                 </button>
               </div>
             </div>
           </div>
         ))}
+      </div>
 
-        {/* Nueva Card con el signo "+" */}
-        <div className="col-md-4">
-          <div
-            className="card mb-4"
-            style={{
-              padding: "15px",
-              backgroundColor: "#A5B4FC",
-              borderRadius: "20px",
-              minHeight: "70px",
-              boxShadow: "0px 4px 18px rgba(0, 0, 0, 0.5)",
-              textAlign: "center",
-              transition:
-                "transform 0.3s, box-shadow 0.3s, background-color 0.3s",
-              cursor: "pointer",
-            }}
-            onClick={handleAddNewService} // Función que manejará el clic en la card
-          >
-            <div
-              style={{
-                width: "70px",
-                height: "70px",
-                borderRadius: "50%",
-                backgroundColor: "#4a47a3",
-                marginBottom: "15px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                margin: "0 auto",
-              }}
-            >
-              <span
-                style={{ fontSize: "2rem", color: "#fff", fontWeight: "bold" }}
+      {/* Sección de Paginación */}
+      <div className="d-flex justify-content-center mt-3">
+        <nav>
+          <ul className="pagination">
+            {/* Botón para retroceder */}
+            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                &lt;
+              </button>
+            </li>
+
+            {/* Botones de número de página dinámicos */}
+            {Array.from({ length: totalPages }, (_, index) => (
+              <li
+                key={index + 1}
+                className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
               >
-                +
-              </span>
-            </div>
-            <h4
-              className="card-title"
-              style={{ fontSize: "1.15rem", color: "#333", fontWeight: "bold" }}
-            >
-              Nuevo Servicio
-            </h4>
-          </div>
-        </div>
-      </div>
+                <button
+                  className="page-link"
+                  onClick={() => paginate(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
 
-      <div style={{ marginTop: "20px", textAlign: "center" }}>
-        {/* Botones de paginación */}
-        <button
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="btn btn-light"
-          style={paginationButtonStyles}
-        >
-          &#8592;
-        </button>
-        {[...Array(Math.ceil(servicios.length / serviciosPerPage))].map(
-          (_, index) => (
-            <button
-              key={index + 1}
-              onClick={() => paginate(index + 1)}
-              className="btn btn-light"
-              style={paginationButtonStyles}
-            >
-              {index + 1}
-            </button>
-          )
-        )}
-        <button
-          onClick={() => paginate(currentPage + 1)}
-          disabled={
-            currentPage === Math.ceil(servicios.length / serviciosPerPage)
-          }
-          className="btn btn-light"
-          style={paginationButtonStyles}
-        >
-          &#8594;
-        </button>
+            {/* Botón para avanzar */}
+            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                &gt;
+              </button>
+            </li>
+          </ul>
+        </nav>
       </div>
-
-      {selectedServicio && (
-        <div
-          style={{
-            position: "fixed",
-            top: "20%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "#fff",
-            padding: "20px",
-            borderRadius: "10px",
-            boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
-            zIndex: "1000",
-            width: "80%",
-            maxWidth: "500px",
-          }}
-        >
-          <h3>{selectedServicio.nombre}</h3>
-          <p>
-            <strong>Ubicación:</strong> {selectedServicio.ubicacion}
-          </p>
-          <p>
-            <strong>Descripción:</strong> {selectedServicio.descripcion}
-          </p>
-          <p>
-            <strong>Tipo de Servicio:</strong>{" "}
-            {selectedServicio.categoria.nombre}
-          </p>
-          <p>
-            <strong>Modalidad de Cobro:</strong> {selectedServicio.nombre}
-          </p>
-          <p>
-            <strong>Asistencias:</strong>{" "}
-            {selectedServicio.asistenciasActivas ? "Sí" : "No"}
-          </p>
-          <p>
-            <strong>Clase de prueba:</strong>{" "}
-            {selectedServicio.claseDePrueba ? "Sí" : "No"}
-          </p>
-          <p>
-            <strong>Inscripciones:</strong>{" "}
-            {selectedServicio.inscripcionesAbiertas
-              ? "Habilitadas"
-              : "Deshabilitadas"}
-          </p>
-          <button onClick={closeDetails} className="btn btn-danger">
-            Cerrar
-          </button>
-        </div>
-      )}
     </div>
   );
-};
-
-const paginationButtonStyles = {
-  color: "#888",
-  padding: "10px",
-  borderRadius: "4px",
-  fontSize: "14px",
-  fontFamily: "Roboto",
-  margin: "0 5px",
-};
-
-const chartContainerStyles = {
-  flexBasis: "30%",
-  flexGrow: 1,
-  minWidth: "200px",
-  maxWidth: "300px",
-  padding: "20px",
-  backgroundColor: "#f5f5f5",
-  borderRadius: "10px",
-  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-  transition: "transform 0.3s",
-  cursor: "pointer",
-  textAlign: "center",
-  ":hover": {
-    transform: "scale(1.05)",
-  },
 };
 
 export default CourseCards;
