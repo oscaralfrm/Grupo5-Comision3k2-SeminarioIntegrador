@@ -5,10 +5,11 @@ import { FaStar, FaRegStar, FaCog } from 'react-icons/fa';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getServicioById } from '../../../services/Servicio';
 import { deshabilitarInscripcionesDeServicio, habilitarInscripcionesDeServicio } from '../../../services/Inscripcion';
+import BarraResumen from './BarraResumen';
 
-function ServiceHeader() {
+function ServiceHeader({ serviceData }) {
+    console.log("Service data en Service Header", serviceData);
   const { idServicio } = useParams();
-  const [serviceData, setServiceData] = useState(null);
   const navigate = useNavigate();
 
   const toggleInscriptions = async () => {
@@ -35,17 +36,6 @@ function ServiceHeader() {
     navigate('/edit-service'); // Navigate to edit service page
   };
 
-  useEffect(() => {
-    const fetchServicio = async () => {
-      try {
-        const data = await getServicioById(idServicio);
-        setServiceData(data);
-      } catch (error) {
-        console.error('Error al traer el servicio:', error);
-      }
-    };
-    fetchServicio();
-  }, [idServicio]);
 
   return (
     <Card className="mb-4 p-4 position-relative" style={{ backgroundColor: '#f3e5f5', borderRadius: '20px', border: 'none' }}>
@@ -114,6 +104,7 @@ function ServiceHeader() {
           </Row>
         </Col>
       </Row>
+      <BarraResumen/>
     </Card>
   );
 }
