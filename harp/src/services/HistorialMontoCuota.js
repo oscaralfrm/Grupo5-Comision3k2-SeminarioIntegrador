@@ -12,8 +12,9 @@ export const addMontoToServicio = async (monto, cantVecesSemanales, fechaInicio,
             });
         return response.data;
     } catch (error) {
-        console.error('Error al agregar monto al servicio', error);
-        throw error;
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 

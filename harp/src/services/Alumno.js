@@ -1,12 +1,10 @@
 import axios from './axiosConfig.js';
 
-// Asegúrate de que la URL base de tu backend esté configurada correctamente.
-const API_URL = 'http://localhost:9001/api/alumnos'; // Ajusta según tu configuración de backend
 
 // Servicio para obtener todos los alumnos
 export const getAllAlumnos = async () => {
     try {
-        const response = await axios.get(`${API_URL}`);
+        const response = await axios.get(`/alumnos`);
         return response.data;  // Suponiendo que la respuesta es un array de alumnos
     } catch (error) {
         console.error("Error fetching alumnos: ", error);
@@ -17,7 +15,7 @@ export const getAllAlumnos = async () => {
 // Servicio para obtener un alumno por su ID
 export const getAlumnoById = async (idAlumno) => {
     try {
-        const response = await axios.get(`${API_URL}/alumnos/${idAlumno}`);
+        const response = await axios.get(`/alumnos/${idAlumno}`);
         return response.data;  // Suponiendo que la respuesta es un alumno
     } catch (error) {
         console.error("Error fetching alumno by ID: ", error);
@@ -27,7 +25,7 @@ export const getAlumnoById = async (idAlumno) => {
 
 export const getAlumnosDeServicio = async (idServicio) => {
     try {
-        const response = await axios.get(`${API_URL}/servicios/${idServicio}/alumnos`);
+        const response = await axios.get(`/servicios/${idServicio}/alumnos`);
         return response.data;
     } catch (error) {
         console.error("Error fetching alumnos de servicio: ", error);
@@ -37,7 +35,7 @@ export const getAlumnosDeServicio = async (idServicio) => {
 
 export const getAlumnosDeGrupo = async (idServicio, idGrupo) => {
     try {
-        const response = await axios.get(`${API_URL}/servicios/${idServicio}/grupos/${idGrupo}/alumnos`);
+        const response = await axios.get(`/servicios/${idServicio}/grupos/${idGrupo}/alumnos`);
         return response.data;  // Suponiendo que la respuesta es un alumno
     } catch (error) {
         console.error("Error fetching alumnos de grupo: ", error);
@@ -50,7 +48,7 @@ export const getAlumnosDeGrupo = async (idServicio, idGrupo) => {
 export const createAlumno = async (nombre, apellido, dni, nombreUsuario, contrasena, 
     email, telefono, direccion, fechaNacimiento) => {
     try {
-        const response = await axios.post(`${API_URL}/alumnos`, {nombre, apellido, dni, nombreUsuario, contrasena, 
+        const response = await axios.post(`/alumnos`, {nombre, apellido, dni, nombreUsuario, contrasena, 
             email, telefono, direccion, fechaNacimiento});
         return response.data;  // Suponiendo que la respuesta es el alumno creado
     } catch (error) {
@@ -63,7 +61,7 @@ export const createAlumno = async (nombre, apellido, dni, nombreUsuario, contras
 export const editAlumno = async (alumnoId, nombre, apellido, dni, nombreUsuario, contrasena, 
     email, telefono, direccion, fechaNacimiento) => {
     try {
-        const response = await axios.put(`${API_URL}/alumnos/${alumnoId}`, {nombre, apellido, dni, nombreUsuario, contrasena, 
+        const response = await axios.put(`/alumnos/${alumnoId}`, {nombre, apellido, dni, nombreUsuario, contrasena, 
             email, telefono, direccion, fechaNacimiento});
         return response.data;  // Suponiendo que la respuesta es el alumno actualizado
     } catch (error) {
@@ -75,7 +73,7 @@ export const editAlumno = async (alumnoId, nombre, apellido, dni, nombreUsuario,
 // Servicio para eliminar un alumno
 export const deleteAlumno = async (idAlumno) => {
     try {
-        await axios.delete(`${API_URL}/alumnos/${idAlumno}`);
+        await axios.delete(`/alumnos/${idAlumno}`);
     } catch (error) {
         console.error("Error deleting alumno: ", error);
         throw error;
@@ -84,7 +82,7 @@ export const deleteAlumno = async (idAlumno) => {
 
 export const getInscripcionesDeAlumno = async (idAlumno) => {
     try {
-        const response = await axios.get(`${API_URL}/alumnos/${idAlumno}/inscripciones`);
+        const response = await axios.get(`/alumnos/${idAlumno}/inscripciones`);
         return response.data;  
     } catch (error) {
         console.error("Error fetching inscripciones: ", error);
@@ -92,21 +90,11 @@ export const getInscripcionesDeAlumno = async (idAlumno) => {
     }
 };
 
-// Servicio para agregar una inscripción a un alumno
-export const agregarInscripcionAAlumno = async (idAlumno, inscripcion) => {
-    try {
-        const response = await axios.post(`${API_URL}/alumnos/${idAlumno}/inscripciones`, inscripcion);
-        return response.data;  // Suponiendo que la respuesta es la inscripción agregada
-    } catch (error) {
-        console.error("Error adding inscripcion: ", error);
-        throw error;
-    }
-};
 
 // Servicio para obtener el historial de cuotas de un alumno para un servicio específico
 export const getHistorialCuotasDeAlumno = async (idAlumno, idServicio) => {
     try {
-        const response = await axios.get(`${API_URL}/alumnos/${idAlumno}/cuotas/${idServicio}`);
+        const response = await axios.get(`/alumnos/${idAlumno}/cuotas/${idServicio}`);
         return response.data;  // Suponiendo que la respuesta es el historial de cuotas
     } catch (error) {
         console.error("Error fetching historial de cuotas: ", error);
