@@ -7,7 +7,7 @@ import { getServicioById } from '../../../services/Servicio';
 import { deshabilitarInscripcionesDeServicio, habilitarInscripcionesDeServicio } from '../../../services/Inscripcion';
 import BarraResumen from './BarraResumen';
 
-function ServiceHeader({ serviceData }) {
+function ServiceHeader({ serviceData, setServiceData }) {
     console.log("Service data en Service Header", serviceData);
   const { idServicio } = useParams();
   const navigate = useNavigate();

@@ -28,7 +28,7 @@ const InfoServicioPage = () => {
     return (
         <div className="container mt-4">
             {/* Servicio Header */}
-            <ServiceHeader serviceData={serviceData}/>
+            <ServiceHeader serviceData={serviceData} setServiceData={setServiceData}/>
 
             {/* Acerca de las clases y Montos */}
             <Row className="mt-4">
