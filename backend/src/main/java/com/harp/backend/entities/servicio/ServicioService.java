@@ -121,6 +121,12 @@ public class ServicioService implements IServicioService {
         servicioRepository.save(servicio);
     }
 
+    public void deshabilitarInscripciones(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        servicio.setInscripcionesAbiertas(false);
+        servicioRepository.save(servicio);
+    }
+
     @Override
     public Servicio editServicio(Long idServicio, ServicioDTO servicioDTO) {
         // VALIDAR: si cambio frecuencia de pago, u otros campos
@@ -245,6 +251,11 @@ public class ServicioService implements IServicioService {
     public List<MontoServicio> obtenerMontosActualesServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
         return servicio.obtenerMontosActuales();
+    }
+
+    public List<MontoServicio> obtenerMontosProgramadosFuturoServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.obtenerMontosFuturos();
     }
 
     public Set<MontoServicio> obtenerHistorialMontosDeServicio(Long idServicio) {

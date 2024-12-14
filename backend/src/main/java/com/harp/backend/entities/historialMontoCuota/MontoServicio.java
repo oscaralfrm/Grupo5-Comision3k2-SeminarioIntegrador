@@ -51,11 +51,12 @@ public class MontoServicio {
      public boolean esMontoActual() {
           // Es el monto actual si todavia no finalizó y no está programado a futuro
           // La fecha fin se actualiza al crear el proximo monto, si es el primer monto del servicio tendrá valor null
-          // Si se creó un proximo monto pero programado para futuro, la fecha fin del monto actual no es null pero es mayor a la fecha actual
+          // Si se creó un proximo monto pero programado para futuro, la fecha fin del monto actual no es null pero es mayor o igual a la fecha actual
 
           LocalDate fechaActual = LocalDate.now();
-          return ( (this.fechaInicio.isBefore(LocalDate.now()) || this.fechaInicio.isEqual(fechaActual))
-                  && (this.fechaFin == null || this.fechaFin.isAfter(fechaActual)) );
+          return ( ( this.fechaInicio.isBefore(LocalDate.now()) || this.fechaInicio.isEqual(fechaActual) )
+                  && ( this.fechaFin == null || ( this.fechaFin.isAfter(fechaActual) || this.fechaFin.isEqual(fechaActual) )  )
+                 ) ;
      }
 
      public void setFechaFin(LocalDate fechaFin) {

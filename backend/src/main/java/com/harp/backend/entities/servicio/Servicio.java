@@ -245,6 +245,10 @@ public class Servicio {
         return historialMontos.stream().filter(MontoServicio::esMontoActual).toList();
     }
 
+    public List<MontoServicio> obtenerMontosFuturos() {
+        return historialMontos.stream().filter(MontoServicio::esMontoProgramadoFuturo).toList();
+    }
+
     public MontoServicio obtenerMontoActualConEstasVecesSemanales(int vecesSemanales) {
         for (MontoServicio monto : this.obtenerMontosActuales()) {
             if (monto.esDeEstasVecesSemanales(vecesSemanales)) {

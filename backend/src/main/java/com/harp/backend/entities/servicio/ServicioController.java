@@ -88,6 +88,13 @@ public class ServicioController {
     }
 
     // EDITAR
+    @PutMapping("/{idServicio}/inscripciones/deshabilitar")
+    public ResponseEntity<String> deshabilitarInscripciones(@PathVariable @Min(1) Long idServicio) {
+        servicioService.deshabilitarInscripciones(idServicio);
+        return  ResponseEntity.ok("Se deshabilitaron las inscripciones");
+    }
+
+    // EDITAR
     @PutMapping("/{idServicio}/activar-asistencias")
     public ResponseEntity<String> activarAsistencias(@PathVariable @Min(1) Long idServicio) {
         servicioService.activarAsistencias(idServicio);
@@ -123,8 +130,14 @@ public class ServicioController {
     }
 
     @GetMapping("/{idServicio}/monto-actual")
-    public ResponseEntity<List<MontoServicio>> traerUnMontosActualesDeServicio(@PathVariable @Min(1) Long idServicio) {
+    public ResponseEntity<List<MontoServicio>> traerMontosActualesDeServicio(@PathVariable @Min(1) Long idServicio) {
         List<MontoServicio> montosServicio = servicioService.obtenerMontosActualesServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
+    };
+
+    @GetMapping("/{idServicio}/montos-programados")
+    public ResponseEntity<List<MontoServicio>> traerMontosProgramadosDeServicio(@PathVariable @Min(1) Long idServicio) {
+        List<MontoServicio> montosServicio = servicioService.obtenerMontosProgramadosFuturoServicio(idServicio);
         return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
     };
 

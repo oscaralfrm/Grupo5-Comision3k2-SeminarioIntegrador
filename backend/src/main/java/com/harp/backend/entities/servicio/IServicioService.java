@@ -28,9 +28,11 @@ public interface IServicioService {
     List<Inscripcion> findInscripcionesDeServicio(Long idServicio, boolean vigentes, boolean pendientes);
     public List<Alumno> obtenerAlumnosActualesDeServicio(Long idServicio);
     public List<MontoServicio> obtenerMontosActualesServicio(Long idServicio);
+    public List<MontoServicio> obtenerMontosProgramadosFuturoServicio(Long idServicio);
     public long calcularDuracionTotalServicio(Long idServicio);
     public long calcularDuracionTotalGrupo(Long idServicio, Long idGrupo);
     void habilitarInscripciones(Long idServicio);
+    void deshabilitarInscripciones(Long idServicio);
     Integer obtenerCuposLibresServicio(Long idServicio, Long idGrupo, List<Long> idsHorarios);
     List<Servicio> findServiciosByFilter(boolean clasePrueba, Categoria categoria, boolean yaInicio);
     List<Servicio> findServicioByNombre(String nombre);
