@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Form, Button, Modal, Alert } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { getServicioById } from "../../../services/Servicio";
+import { getServicioById } from "../../../../services/Servicio";
+import ModalActualizarMontos from "./ModalActualizarMontos";
 import {
   addMontoToServicio,
   getMontosActualesServicio,
   getMontosProgramadosServicio,
-} from "../../../services/HistorialMontoCuota";
-import { getGruposDeServicio } from "../../../services/Grupo";
+} from "../../../../services/HistorialMontoCuota";
+import { getGruposDeServicio } from "../../../../services/Grupo";
+import ModalConfigurarMonto from "./ModalConfigurarMonto";
 
 function MontosServicio() {
   const { idServicio } = useParams();
@@ -16,10 +18,19 @@ function MontosServicio() {
   const [frequencies, setFrequencies] = useState([]);
   const [programados, setProgramados] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [configShowModal, setConfigShowModal] = useState(false);
   const [availableFrequencies, setAvailableFrequencies] = useState([]);
   const [selectedFrequency, setSelectedFrequency] = useState(null);
   const [hasMontoForFrequency, setHasMontoForFrequency] = useState(false);
 
+  const fetchFrequencies = async () => {
+    // Aquí deberías llamar al servicio real para obtener las frecuencias
+    return ["Mensual", "Bimensual", "Trimestral"];
+  };
+  const handleRegister = (data) => {
+    console.log("Monto y Frecuencia registrados:", data);
+    // Lógica para manejar el registro
+  };
   const {
     register,
     handleSubmit,
@@ -28,10 +39,6 @@ function MontosServicio() {
   } = useForm({
     mode: "onChange",
   });
-  const handleConfigurar = () => {
-    // Lógica para configurar el monto de inscripción
-    console.log("Configurar monto de inscripción");
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -217,6 +224,7 @@ function MontosServicio() {
           <Button
             variant="primary"
             onClick={() => {
+              console.log("hola");
               reset();
               setShowModal(true);
             }}
@@ -267,113 +275,47 @@ function MontosServicio() {
         <>
           <div className="d-flex align-items-center justify-content-between">
             <h5 className="fw-bold text-center">Inscripción </h5>
-           
           </div>
 
           {/* Mostrar solo si no hay monto de inscripción configurado */}
           {!serviceData?.montoInscripcion && (
-           <Alert variant="warning" className="d-flex justify-content-between align-items-center">
-           <span>No hay monto de inscripción configurado.</span>
-           <Button variant="primary" onClick={handleConfigurar}>
-             Configurar
-           </Button>
-         </Alert>
+            <Alert
+              variant="warning"
+              className="d-flex justify-content-between align-items-center"
+            >
+              <span>No hay monto de inscripción configurado.</span>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  reset();
+                  setConfigShowModal(true);
+                }}
+              >
+                Configurar
+              </Button>
+            </Alert>
           )}
         </>
       )}
 
-      {/* Modal para actualizar montos */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Actualizar monto</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit(handleAddMonto)}>
-            <Form.Group className="mb-3">
-              <Form.Label>Frecuencia semanal</Form.Label>
-              <Form.Select
-                {...register("selectedFrequency", {
-                  required: "Seleccione una frecuencia semanal.",
-                })}
-                onChange={(e) => handleFrequencyChange(e.target.value)}
-              >
-                <option value="">Seleccione...</option>
-                {availableFrequencies.map((freq) => (
-                  <option key={freq} value={freq}>
-                    {freq} veces por semana
-                  </option>
-                ))}
-              </Form.Select>
-              {errors.selectedFrequency && (
-                <small className="text-danger">
-                  {errors.selectedFrequency.message}
-                </small>
-              )}
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Fecha de inicio</Form.Label>
-              <Form.Control
-                type="date"
-                {...register("startDate", {
-                  required: "Seleccione una fecha de inicio.",
-                  validate: (value) => {
-                    const selectedDate = new Date(value);
-                    const today = new Date();
-                    console.log(today);
-                    console.log(selectedDate);
-                    selectedDate.setHours(0, 0, 0, 0);
-                    today.setHours(0, 0, 0, 0);
-                    console.log(today);
-                    console.log(selectedDate);
-
-                    if (hasMontoForFrequency) {
-                      return (
-                        selectedDate > today ||
-                        "La fecha debe ser posterior a hoy."
-                      );
-                    }
-
-                    return (
-                      selectedDate >= today ||
-                      "La fecha debe ser igual o posterior a hoy."
-                    );
-                  },
-                })}
-              />
-              {errors.startDate && (
-                <small className="text-danger">
-                  {errors.startDate.message}
-                </small>
-              )}
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Monto</Form.Label>
-              <Form.Control
-                type="number"
-                {...register("amount", {
-                  required: "Ingrese un monto.",
-                  validate: (value) =>
-                    value > 0 || "El monto debe ser mayor a cero.",
-                })}
-              />
-              {errors.amount && (
-                <small className="text-danger">{errors.amount.message}</small>
-              )}
-            </Form.Group>
-
-            <Modal.Footer>
-              <Button variant="secondary" onClick={() => setShowModal(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" variant="primary">
-                Confirmar
-              </Button>
-            </Modal.Footer>
-          </Form>
-        </Modal.Body>
-      </Modal>
+      <div>
+        {/* Aquí se pasa al modal */}
+        <ModalActualizarMontos
+          showModal={showModal}
+          setShowModal={setShowModal}
+          availableFrequencies={availableFrequencies}
+          hasMontoForFrequency={hasMontoForFrequency}
+          handleAddMonto={handleAddMonto}
+        />
+      </div>
+      <div>
+        <ModalConfigurarMonto
+          showModal={configShowModal}
+          setShowModal={setConfigShowModal}
+          fetchFrequencies={fetchFrequencies}
+          handleRegister={handleRegister}
+        />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ServiceHeader from "./SeviceHeader";
 import GruposServicio from "./GruposServicio";
-import MontosServicio from "./MontosServicio";
+import MontosServicio from "./Monto/MontosServicio";
 import ReviewCarousel from "../MiServicio/MenuOpciones/Dashboard/Reseñas";
 import { Row, Col } from "react-bootstrap";
 import { useParams, useNavigate } from 'react-router-dom';
