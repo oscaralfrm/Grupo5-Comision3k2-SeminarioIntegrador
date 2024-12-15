@@ -38,20 +38,27 @@ function ServiceHeader({ serviceData, setServiceData }) {
 
 
   return (
-    <Card className="mb-4 p-4 position-relative" style={{ backgroundColor: '#f3e5f5', borderRadius: '20px', border: 'none' }}>
+    <Card className="mb-4 p-4 position-relative" style={{       
+      backgroundColor: "white",
+      padding: "20px",
+      borderRadius: "20px",
+      boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
+      maxWidth: "100%",
+      margin: "auto",
+    }}>
       {/* Edit Button */}
       <Button
         variant="light"
-        className="rounded-circle p-2 position-absolute"
+        className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute  "
         onClick={handleEditClick}
-        style={{ backgroundColor: '#d1c4e9', border: 'none', top: '10px', right: '10px' }}
+        style={{ backgroundColor: '#1E1B4B', border: 'none', top: '10px', right: '10px' }}
       >
-        <FaCog color="#6a1b9a" size={20} />
+        <FaCog color="white" size={20} />
       </Button>
 
       <Row className="align-items-center text-center text-md-start g-3">
         {/* Service Logo */}
-        <Col md="3" className="d-flex justify-content-center justify-content-md-start">
+        <Col md="3" className="d-flex justify-content-center justify-content-md-start align-items-center">
           <img
             src="https://via.placeholder.com/120"
             alt="Logo del servicio"

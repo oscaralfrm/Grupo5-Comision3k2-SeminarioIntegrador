@@ -72,7 +72,14 @@ function GruposServicio() {
     };
 
     return (
-        <Container className="p-3 bg-light rounded shadow-sm">
+        <Container className="p-3 bg-light rounded shadow-sm" style={{       
+            backgroundColor: "white",
+            padding: "20px",
+            borderRadius: "20px",
+            boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
+            maxWidth: "100%",
+            margin: "auto",
+          }}>
             <h4 className="fw-bold mb-3">Grupos y Horarios</h4>
 
             {/* Botón para Crear Grupo */}

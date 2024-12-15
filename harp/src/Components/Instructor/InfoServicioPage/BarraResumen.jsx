@@ -5,45 +5,54 @@ import { FaRegCalendarAlt, FaUserAlt, FaCoins, FaClock } from 'react-icons/fa';
 
 const BarraResumen = ({ fechaInicio, frecuencia, monto, inscriptos, onConfigurarFecha, onIniciarServicio, onSuspenderServicio }) => {
   return (
-    <Card className="mb-4 p-3" style={{ backgroundColor: '#f3f4f6', borderRadius: '20px', border: 'none' }}>
+    <Card className="mb-4 p-3">
       <Row className="text-center text-md-start align-items-center">
+        
         {/* Fecha de Inicio */}
-        <Col md="3" className="d-flex flex-column align-items-center">
-          <FaRegCalendarAlt size={25} className="mb-2 text-primary" />
+        <Col className="d-flex flex-column align-items-center">
+          <FaRegCalendarAlt size={25} className="mb-2 mt-2 text-primary" />
           {fechaInicio ? (
             <>
               <p className="mb-1 fw-bold">Fecha Inicio:</p>
               <p>{fechaInicio}</p>
-              <Button variant="warning" size="sm" onClick={onSuspenderServicio}>Suspender</Button>
+              <Button variant="warning" size="sm" className='mb-3' onClick={onSuspenderServicio}>Suspender</Button>
             </>
           ) : (
             <>
               <p className="mb-1 fw-bold">Fecha Inicio</p>
-              <Button variant="primary" size="sm" onClick={onConfigurarFecha}>Configurar</Button>
+              <Button variant="primary" size="sm" className='mb-2' onClick={onConfigurarFecha}>Configurar</Button>
             </>
           )}
         </Col>
 
         {/* Frecuencia */}
-        <Col md="3" className="d-flex flex-column align-items-center">
+        <Col className="d-flex flex-column align-items-center">
           <FaClock size={25} className="mb-2 text-success" />
           <p className="mb-1 fw-bold">Frecuencia:</p>
           <p>{frecuencia || 'No definida'}</p>
         </Col>
 
         {/* Monto */}
-        <Col md="3" className="d-flex flex-column align-items-center">
+        <Col className="d-flex flex-column align-items-center">
           <FaCoins size={25} className="mb-2 text-warning" />
           <p className="mb-1 fw-bold">Desde:</p>
           <p>{monto ? `$${monto}` : 'No definido'}</p>
         </Col>
 
         {/* Alumnos Inscriptos */}
-        <Col md="3" className="d-flex flex-column align-items-center">
+        <Col className="d-flex flex-column align-items-center">
           <FaUserAlt size={25} className="mb-2 text-info" />
           <p className="mb-1 fw-bold">Inscriptos:</p>
           <p>{inscriptos || 0} alumnos</p>
         </Col>
+
+        {/* Ver Actividad */}
+        <Col className="d-flex flex-column align-items-center">
+          <i className="bi bi-binoculars-fill mb-2 text-primary" style={{ fontSize: '25px' }} />
+          <p className="mb-1 fw-bold">Actividad</p>
+          <Button variant="primary" size="sm" onClick={onConfigurarFecha}>Ver Actividad</Button>
+        </Col>
+        
       </Row>
     </Card>
   );

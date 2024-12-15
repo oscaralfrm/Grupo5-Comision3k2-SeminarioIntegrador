@@ -63,7 +63,6 @@ function NavbarInstructor() {
         backgroundColor: "#1E1B4B",
         color: "white",
         width: "100%",
-        height: "13vh",
         fontSize: "1.2rem",
       }}
     >
@@ -78,9 +77,26 @@ function NavbarInstructor() {
           <img src={img} alt="Harp Logo" width="100" />
         </a>
 
-        {/* Contenedor para los elementos centrados */}
-        <div className="d-flex justify-content-center w-100 mx-4">
-          <ul className="navbar-nav">
+        {/* Botón para mostrar/ocultar el menú en pantallas pequeñas */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded={dropdownOpen ? "true" : "false"}
+          aria-label="Toggle navigation"
+          onClick={toggleDropdown}
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        {/* Contenedor de elementos en el navbar */}
+        <div
+          className={`collapse navbar-collapse w-100 ${dropdownOpen ? "show" : ""}`}
+          id="navbarNav"
+        >
+          <ul className="navbar-nav mx-auto">
             {/* Mi Servicio */}
             <li className="nav-item">
               <a
@@ -133,9 +149,7 @@ function NavbarInstructor() {
                 onClick={toggleDropdown}
                 style={{ color: "white" }}
               >
-                {selectedService
-                  ? selectedService.nombre
-                  : "Selecciona un servicio"}
+                {selectedService ? selectedService.nombre : "Selecciona un servicio"}
               </a>
               <div
                 className={`dropdown-menu ${dropdownOpen ? "show" : ""}`}
