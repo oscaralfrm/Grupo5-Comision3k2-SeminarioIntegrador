@@ -96,7 +96,7 @@ function MontosServicio() {
 
   return (
     <div
-      className="p-3 "
+      className="p-3"
       style={{
         backgroundColor: "white",
         padding: "20px",
