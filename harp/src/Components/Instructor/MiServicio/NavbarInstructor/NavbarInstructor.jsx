@@ -127,7 +127,8 @@ function NavbarInstructor() {
                 Cobros
               </a>
             </li>
-            {/* Configuración */}
+
+            {/* Configuración
             <li className="nav-item">
               <a
                 className="nav-link"
@@ -137,6 +138,7 @@ function NavbarInstructor() {
                 Configuración
               </a>
             </li>
+            */}
             {/* Selector de servicio */}
             <li className="nav-item dropdown">
               <a
