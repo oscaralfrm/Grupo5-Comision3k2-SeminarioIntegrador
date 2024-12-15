@@ -250,14 +250,14 @@ function MontosServicio() {
       {serviceData && serviceData.montoInscripcion > 0 ? (
         <>
           <div>
-            <h5 className="fw-bold text-center">Inscripción Habilitada</h5>
+            <h5 className="fw-bold text-center">Inscripción</h5>
           </div>
           <Card className="mb-3 ">
             <Card.Body>
               <Row>
                 <Col md={8}>
                   <p className="mb-1">
-                    <strong>Monto de inscripción:</strong> $
+                    <strong>Monto:</strong> $
                     {serviceData.montoInscripcion}
                   </p>
                   <p className="mb-0">

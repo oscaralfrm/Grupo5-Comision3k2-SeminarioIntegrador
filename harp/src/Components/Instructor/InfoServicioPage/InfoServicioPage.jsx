@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ServiceHeader from "./SeviceHeader";
-import GruposServicio from "./GruposServicio";
+import GruposServicio from "./Grupos/GruposServicio";
 import MontosServicio from "./Monto/MontosServicio";
 import ReviewCarousel from "../MiServicio/MenuOpciones/Dashboard/Reseñas";
 import { Row, Col } from "react-bootstrap";
@@ -72,7 +72,7 @@ const InfoServicioPage = () => {
               color: "white",
             }}
           >
-            <h4 className="fw-blod mb-2 mt-2 text-center">Descripcion</h4>
+            <h4 className="fw-blod mb-2 mt-2 text-center">Acerca de las clases</h4>
 
            
           </div>

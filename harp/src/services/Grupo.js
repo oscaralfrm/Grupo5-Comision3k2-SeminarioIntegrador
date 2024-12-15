@@ -26,14 +26,15 @@ export const createGrupo = async (grupoDTO, idServicio) => {
 };
 
 // Servicio para crear un grupo con horarios
-export const createGrupoConHorarios = async (numero, cantMaxCupos, horariosConFechasYDia, idServicio) => {
+export const createGrupoConHorarios = async (nombre, numero, cantMaxCupos, horarios, idServicio) => {
     try {
         const response = await axios.post(`${API_URL}/${idServicio}/grupos`, 
-            { numero, cantMaxCupos, horariosConFechasYDia });
+            { nombre, numero, cantMaxCupos, horarios });
         return response.data; 
     } catch (error) {
-        console.error("Error creating grupo con horarios: ", error);
-        throw error;
+        console.error('Error al crear grupo', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
