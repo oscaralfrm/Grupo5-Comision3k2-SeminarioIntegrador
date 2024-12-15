@@ -27,10 +27,24 @@ function MontosServicio() {
     // Aquí deberías llamar al servicio real para obtener las frecuencias
     return ["Mensual", "Bimensual", "Trimestral"];
   };
-  const handleRegister = (data) => {
-    console.log("Monto y Frecuencia registrados:", data);
+  const handleRegister = async (data) => {
+    const { selectedFrequency, startDate, amount } = data;
+
+    try {
+      await addMontoToServicio(
+        amount,
+        selectedFrequency,
+        startDate,
+        idServicio
+      );
+      setShowModal(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error adding monto:", error);
+    }
     // Lógica para manejar el registro
   };
+
   const {
     register,
     handleSubmit,
@@ -145,23 +159,33 @@ function MontosServicio() {
             <Card>
               <Card.Body>
                 {frequencies.length > 0 ? (
-                  frequencies.map((freq, index) => (
-                    <div key={index} className="mb-2">
-                      <p className="mb-1">
-                        <strong>Frecuencia:</strong> {freq.cantVecesSemanales}{" "}
-                        veces por semana
-                      </p>
-                      <p className="mb-1">
-                        <strong>Monto actual:</strong> ${freq.monto}
-                      </p>
-                      <p className="mb-1">
-                        <strong>Vigente desde:</strong>{" "}
-                        {new Date(
-                          freq.fechaInicio + "T00:00:00"
-                        ).toLocaleDateString()}
-                      </p>
-                    </div>
-                  ))
+                  frequencies.map((freq, index) => {
+                    const fechaInicio = new Date(
+                      freq.fechaInicio + "T00:00:00"
+                    );
+                    const esFechaFutura = fechaInicio > new Date();
+
+                    return (
+                      <div key={index} className="mb-2">
+                        <p className="mb-1">
+                          <strong>Frecuencia:</strong> {freq.cantVecesSemanales}{" "}
+                          veces por semana
+                        </p>
+                        <p className="mb-1">
+                          <strong>Monto actual:</strong> ${freq.monto}
+                          {esFechaFutura && (
+                            <button className="btn btn-primary ms-2">
+                              Editar Monto
+                            </button>
+                          )}
+                        </p>
+                        <p className="mb-1">
+                          <strong>Vigente desde:</strong>{" "}
+                          {fechaInicio.toLocaleDateString()}
+                        </p>
+                      </div>
+                    );
+                  })
                 ) : (
                   <Alert variant="warning">
                     No hay montos configurados para ninguna frecuencia semanal.
@@ -173,44 +197,56 @@ function MontosServicio() {
         </Col>
 
         {/* Columna derecha: Montos del servicio */}
-        <Col
-          md={6}
-          sm={12}
-          className="align-items-center"
-          style={{
-            minWidth: "50%", // Ancho máximo del 50% en pantallas grandes
-          }}
-        >
-          <div className="p-3 bg-light rounded shadow-sm">
+        <Col md={6} sm={12} className="align-items-center">
+          <div className="p-3 ">
             <h5 className="fw-bold text-center">Programados</h5>
             {/* Montos programados */}
-            <Card
-              className="h-10 align-items-center"
-              style={{ width: "90%", maxWidth: "18rem", minHeight: "25vh" }}
-            >
+            <Card className="h-10 align-items-center">
               <Card.Body className="d-flex flex-column justify-content-between">
                 {programados.length > 0 ? (
-                  programados.map((freq, index) => (
-                    <div key={index} className="mb-2 vh-6">
-                      <p className="mb-1">
-                        <strong>Frecuencia:</strong> {freq.cantVecesSemanales}{" "}
-                        veces por semana
-                      </p>
-                      <p className="mb-1">
-                        <strong>Monto:</strong> ${freq.monto}
-                      </p>
-                      <p className="mb-1">
-                        <strong>Vigente desde:</strong>{" "}
-                        {new Date(
-                          freq.fechaInicio + "T00:00:00"
-                        ).toLocaleDateString()}
-                      </p>
-                    </div>
-                  ))
+                  programados.map((freq, index) => {
+                    const fechaInicio = new Date(
+                      freq.fechaInicio + "T00:00:00"
+                    );
+                    const esFechaFutura = fechaInicio > new Date();
+
+                    return (
+                      <div key={index} className="mb-2 vh-6">
+                        <p className="mb-1">
+                          <strong>Frecuencia:</strong> {freq.cantVecesSemanales}{" "}
+                          veces por semana
+                        </p>
+                        <p className="mb-1">
+                          <strong>Monto:</strong> ${freq.monto}
+                        </p>
+                        <p className="mb-1">
+                          <strong>Vigente desde:</strong>{" "}
+                          {fechaInicio.toLocaleDateString()}
+                        </p>
+                        {esFechaFutura && (
+                          <button className="btn btn-primary">Editar</button>
+                        )}
+                      </div>
+                    );
+                  })
                 ) : (
-                  <Alert variant="warning">
-                    No hay montos programados a futuro.
-                  </Alert>
+                  <>
+                    <Alert
+                      variant="warning"
+                      className="justify-content-between align-items-center"
+                    >
+                      <span>No hay un cambio en el monto configurado.</span>
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          reset();
+                          setConfigShowModal(true);
+                        }}
+                      >
+                        Configurar
+                      </Button>
+                    </Alert>
+                  </>
                 )}
               </Card.Body>
             </Card>
@@ -218,35 +254,8 @@ function MontosServicio() {
         </Col>
       </Row>
 
-      {/* Botón para actualizar montos */}
-      {frequencies.length > 0 ? (
-        <div className="text-end ">
-          <Button
-            variant="primary"
-            onClick={() => {
-              console.log("hola");
-              reset();
-              setShowModal(true);
-            }}
-          >
-            Actualizar monto
-          </Button>
-        </div>
-      ) : (
-        <div className="text-end  mb-3">
-          <Button
-            variant="primary"
-            onClick={() => {
-              reset();
-              setShowModal(true);
-            }}
-          >
-            Cofigurar monto
-          </Button>
-        </div>
-      )}
+      
       <hr />
-
       {serviceData && serviceData.montoInscripcion > 0 ? (
         <>
           <div>
@@ -257,8 +266,7 @@ function MontosServicio() {
               <Row>
                 <Col md={8}>
                   <p className="mb-1">
-                    <strong>Monto:</strong> $
-                    {serviceData.montoInscripcion}
+                    <strong>Monto:</strong> ${serviceData.montoInscripcion}
                   </p>
                   <p className="mb-0">
                     <strong>Modalidad de pago:</strong>{" "}

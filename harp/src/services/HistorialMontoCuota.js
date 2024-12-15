@@ -24,8 +24,9 @@ export const getMontosActualesServicio = async (idServicio) => {
         const response = await axios.get(`${API_URL}/${idServicio}/monto-actual`);
         return response.data;
     } catch (error) {
-        console.error('Error al obtener el servicio', error);
-        throw error;
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
@@ -34,8 +35,9 @@ export const getMontosProgramadosServicio = async (idServicio) => {
         const response = await axios.get(`${API_URL}/${idServicio}/montos-programados`);
         return response.data;
     } catch (error) {
-        console.error('Error al obtener el servicio', error);
-        throw error;
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
@@ -44,8 +46,9 @@ export const getHistorialMontosServicio = async (idServicio) => {
         const response = await axios.get(`${API_URL}/${idServicio}/historial-montos`);
         return response.data;
     } catch (error) {
-        console.error('Error al obtener el servicio', error);
-        throw error;
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
@@ -55,7 +58,8 @@ export const editarMontoServicio = async (idMonto, monto, fechaInicio, cantVeces
         const response = await axios.put(`${API_URL}/historiales-montos/${idMonto}`, {monto, fechaInicio, cantVecesSemanales});
         return response.data;
     } catch (error) {
-        console.error('Error al obtener el servicio', error);
-        throw error;
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
