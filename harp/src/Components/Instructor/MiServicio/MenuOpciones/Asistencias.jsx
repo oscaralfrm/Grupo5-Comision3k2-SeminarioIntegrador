@@ -204,7 +204,7 @@ const Asistencias = () => {
     return (
         <>
             <Navbar />
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center',  marginTop: "10rem"  }}>
                 <div
                     style={{
                         backgroundColor: 'white',
