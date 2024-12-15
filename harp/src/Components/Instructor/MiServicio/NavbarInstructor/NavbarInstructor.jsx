@@ -161,21 +161,21 @@ function NavbarInstructor() {
               </div>
             </li>
           </ul>
-          
-          {/* Opción de Cerrar Sesión dentro del menú hamburguesa */}
-          <ul className="navbar-nav ml-auto d-lg-none">
-            <li className="nav-item">
-              <a
-                className="nav-link"
-                href="/"
-                style={{ color: "white", whiteSpace: "nowrap" }} // Evita el salto de línea
-                onClick={handleClick}
-              >
-                Cerrar Sesión
-              </a>
-            </li>
-          </ul>
         </div>
+
+        {/* Botón Cerrar Sesión visible en todas las pantallas */}
+        <button
+          className="btn"
+          onClick={handleClick}
+          style={{
+            backgroundColor: "#4a47a3",
+            color: "white",
+            whiteSpace: "nowrap",
+            marginLeft: "15px",
+          }}
+        >
+          Cerrar Sesión
+        </button>
       </div>
     </nav>
   );
