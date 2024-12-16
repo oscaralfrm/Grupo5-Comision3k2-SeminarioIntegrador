@@ -51,7 +51,7 @@ function NavbarInstructor() {
   }, [idServicio, servicios]);
 
   const handleClick = () => {
-    navigate("/login");
+    navigate("/");
   };
 
   return (
