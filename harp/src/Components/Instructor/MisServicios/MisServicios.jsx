@@ -38,7 +38,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div style={{ marginTop: "2vh", padding: "20px" }}>
+    <div style={{ marginTop: "1rem", padding: "20px" }}>
       {/* Título "Mis Servicios" */}
 
       <h2 style={{ textAlign: "center", marginLeft: "20px", color: "#1E1B4B" }}>

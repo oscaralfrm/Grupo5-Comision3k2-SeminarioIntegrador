@@ -8,29 +8,29 @@ import NavbarServicio from '../Instructor/MiServicio/NavbarInstructor/NavbarServ
 
 const AppNavbar = () => {
   const location = useLocation();
-  const { idServicio } = useParams();
+  const { idInstructor, idServicio } = useParams();
 
-  // Define las rutas que mostrarán cada navbar
+  // Define condiciones para mostrar las Navbars
   const isPrincipalRoute = location.pathname === '/';
-  const isInstructorRoute = location.pathname.startsWith('/instructor');
-  const isServicioRoute = location.pathname.includes('/servicio');
+  const isInstructorRoute = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/`);
+  const isInstructorService =location.pathname === `/instructor/${idInstructor}/servicios`;
+  const isCreateServiceRoute = location.pathname === `/instructor/${idInstructor}/crear-servicio`;
   const isRegisterRoute = location.pathname.startsWith('/registro');
-  const isLoginRoute = location.pathname.startsWith('/login');
 
   return (
-    <>      
-      {/* Muestra la Navbar de inicio solo en la ruta principal */}
+    <>
+      {/* Muestra la Navbar de inicio en la ruta principal */}
       {isPrincipalRoute && <Navbar />}
-      
-      {/* Muestra la Navbar del instructor solo si estamos en una ruta de instructor (esto cubre cualquier ruta bajo /instructor) */}
-      {isInstructorRoute && <NavbarInstructor />}
-      
-      {/* Muestra la NavbarServicio solo si estamos en una ruta de servicio (no puede estar en /instructor) */}
-      {isServicioRoute && !isInstructorRoute && <NavbarServicio />}
-      
-      {/* Muestra NavbarRegisterChooser solo si no estamos en una ruta de instructor */}
-      {(!isInstructorRoute && isRegisterRoute) && <NavbarRegisterChooser />}
-      {(!isInstructorRoute && isLoginRoute) && <NavbarRegisterChooser />}
+
+      {/* Muestra NavbarInstructor en la ruta específica del servicio */}
+      {isInstructorRoute  && <NavbarInstructor />}
+
+      {/* Muestra NavbarServicio en la ruta de creación de servicio */}
+      {isCreateServiceRoute && <NavbarServicio />}
+ 
+      {/* Muestra NavbarRegisterChooser en rutas de registro */}
+      {isRegisterRoute && <NavbarRegisterChooser />}
+      {isInstructorService && <NavbarServicio /> }
     </>
   );
 };

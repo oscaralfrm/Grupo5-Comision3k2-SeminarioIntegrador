@@ -33,14 +33,13 @@ const Servicio = () => {
   
 
   return (
-    <Container fluid className="py-4" style={{ fontFamily: "Roboto", color: "#1E1B4B", marginTop: "2rem" }}>
+    <Container fluid className="py-4" style={{ fontFamily: "Roboto", color: "#1E1B4B", marginTop: "6rem" }}>
       <div className="position-relative mb-4">
         {/* Botón "Mis Servicios" en pantallas grandes */}
         <button
           onClick={handleNavigate}
           style={{
             position: "absolute",
-            top: "-50px", // Ajusta la posición vertical si es necesario
             right: "20px",
             padding: "10px 15px",
             fontSize: "16px",
