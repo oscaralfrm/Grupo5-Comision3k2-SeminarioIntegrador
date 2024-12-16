@@ -43,8 +43,9 @@ export const deleteGrupo = async (idGrupo) => {
     try {
         await axios.delete(`${API_URL}/grupos/${idGrupo}`);
     } catch (error) {
-        console.error("Error deleting grupo: ", error);
-        throw error;
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
@@ -82,12 +83,12 @@ export const editGrupo = async (idGrupo, grupoDTO) => {
 };
 
 // Servicio para agregar un horario a un grupo
-export const agregarHorarioAGrupo = async (idGrupo, horarioDTO) => {
+export const agregarHorariosAGrupo = async (horariosDTO, idGrupo, idServicio) => {
     try {
-        const response = await axios.post(`${API_URL}/grupos/${idGrupo}/horarios`, horarioDTO);
+        const response = await axios.post(`${API_URL}/${idServicio}/grupos/${idGrupo}/nuevos-horarios`, horariosDTO);
         return response.data;  // Suponiendo que la respuesta es el grupo actualizado con el nuevo horario
     } catch (error) {
-        console.error("Error adding horario to grupo: ", error);
+        console.error("Error adding horarios to grupo: ", error);
         throw error;
     }
 };
