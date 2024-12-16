@@ -187,8 +187,8 @@ public class GrupoService implements IGrupoService {
     @Override
     public Grupo editGrupo(Long idGrupo, GrupoDTO grupoDTO) {
         Grupo grupoExistente = this.findGrupo(idGrupo);
-        grupoExistente = grupoConverter.dtoToEntity(grupoDTO);
-        grupoExistente.setId(idGrupo);
+        grupoExistente.setNombre(grupoDTO.getNombre());
+        grupoExistente.setCantMaxAlumnos(grupoDTO.getCantMaxCupos());
         return grupoRepository.save(grupoExistente);
     };
 
