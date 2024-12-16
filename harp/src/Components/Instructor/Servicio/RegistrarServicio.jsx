@@ -87,7 +87,7 @@ export default function ServicioForm() {
       const response = await createServicio(servicioDTO);
       alert("Servicio creado con éxito");
       navigate(
-        `/instructor/${idInstructor}/servicio/${response.id}/mi-servicio`
+        `/instructor/${idInstructor}/servicio/${response.id}/info-servicio`
       );
     } catch (error) {
       console.error("Error al crear el servicio:", error);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getClasesDeServicio } from "../../../../../services/Clase.js";
 
-const ClassesCard = () => {
+const ClassesCard = ({asistenciasActivas}) => {
   const [classes, setClasses] = useState([]); // Contendrá todas las clases
   const [expanded, setExpanded] = useState(false);
   const {idServicio} = useParams();

@@ -1,18 +1,36 @@
-import React from "react";
+import React, { useState , useEffect} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InfoCard from "../MenuOpciones/Dashboard/InfoServicio";
 import Enrollments from "../MenuOpciones/Dashboard/Inscripciones";
 import Cobros from "../MenuOpciones/Dashboard/Cobros";
 import StudentsCard from "../MenuOpciones/Dashboard/Alumnos";
 import { Container, Row, Col } from "react-bootstrap";
+import { getServicioById } from "../../../../services/Servicio";
+import ClassesCard from "./Dashboard/Clases";
 
 const Servicio = () => {
+  const [serviceData, setServiceData] = useState(null);
   const navigate = useNavigate();
   const { idInstructor } = useParams();
+  const {idServicio} = useParams();
 
   const handleNavigate = () => {
     navigate(`/instructor/${idInstructor}/servicios`);
   };
+
+  const fetchServicio = async () => {
+    try {
+      const data = await getServicioById(idServicio);
+      setServiceData(data);
+    } catch (error) {
+      console.error('Error al traer el servicio:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchServicio();
+  }, [idServicio]);
+  
 
   return (
     <Container fluid className="py-4" style={{ fontFamily: "Roboto", color: "#1E1B4B", marginTop: "10rem" }}>
@@ -69,7 +87,8 @@ const Servicio = () => {
 
         {/* Columna Central */}
         <Col xs={12} md={4}>
-          <Enrollments />
+        <ClassesCard asistenciasActivas={serviceData?.asistenciasActivas} />
+          <Enrollments habilitadas={serviceData?.inscripcionesAbiertas} fetchServicio={fetchServicio} />
         </Col>
 
         {/* Columna Derecha */}
