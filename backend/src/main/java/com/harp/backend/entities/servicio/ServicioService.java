@@ -118,12 +118,14 @@ public class ServicioService implements IServicioService {
             throw new UnsupportedOperationException("Para habilitar inscripciones se debe configurar un monto de las cuotas del servicio.");
         }
         servicio.setInscripcionesAbiertas(true);
+        servicio.setPublico(true);
         servicioRepository.save(servicio);
     }
 
     public void deshabilitarInscripciones(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
         servicio.setInscripcionesAbiertas(false);
+        servicio.setPublico(false);
         servicioRepository.save(servicio);
     }
 
@@ -316,7 +318,8 @@ public class ServicioService implements IServicioService {
 
         // le setteamos la fecha de inicio a los montos primeros
         for (MontoServicio monto : servicio.obtenerMontosActuales()) {
-            monto.setFechaInicio(servicio.getFechaInicio());
+            //monto.setFechaInicio(servicio.getFechaInicio());
+            montoService.cambiarFechaInicioMontoServicio(monto, servicio.getFechaInicio());
         }
 
         // Luego creamos las clases
@@ -333,6 +336,7 @@ public class ServicioService implements IServicioService {
 
     public void desactivarAsistencias(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
+
         servicio.setAsistenciasActivas(false);
         servicioRepository.save(servicio);
     }
