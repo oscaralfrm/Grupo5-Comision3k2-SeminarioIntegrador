@@ -51,11 +51,16 @@ const CourseCards = ({ servicios, Instructorid }) => {
               style={{
                 padding: "15px",
                 backgroundColor:
-                  highlightedCourseId === servicio.id ? "#A5B4FC" : "#fff",
+                  highlightedCourseId === servicio.id
+                    ? "#A5B4FC"
+                    : servicio.inscripcionesAbiertas === false
+                    ? "#E0E0E0" // Color gris si el servicio no es público
+                    : "#fff",
                 borderRadius: "20px",
                 boxShadow: "0px 4px 18px rgba(0, 0, 0, 0.5)",
                 textAlign: "center",
                 transition: "transform 0.3s, box-shadow 0.3s, background-color 0.3s",
+                opacity: servicio.inscripcionesAbiertas === false ? "0.6" : "1", // Opacidad reducida si no es público
               }}
             >
               <div
@@ -103,7 +108,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
                   onClick={() => handleGoToService(servicio.id)}
                   className="btn btn-secondary"
                 >
-                  Ir al Servicio
+                  Ir a Actividad
                 </button>
               </div>
             </div>
@@ -111,53 +116,52 @@ const CourseCards = ({ servicios, Instructorid }) => {
         ))}
 
         {/* Card para agregar un nuevo servicio */}
-<div className="col-md-4">
-  <div
-    className="card mb-4"
-    style={{
-      padding: "15px",
-      backgroundColor: "#A5B4FC",
-      borderRadius: "20px",
-      height: "240px", // Ajustar para que coincida con las demás tarjetas
-      width: "100%", // Asegurar el ancho consistente
-      boxShadow: "0px 4px 18px rgba(0, 0, 0, 0.5)",
-      textAlign: "center",
-      transition: "transform 0.3s, box-shadow 0.3s, background-color 0.3s",
-      cursor: "pointer",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-    }}
-    onClick={handleAddNewService}
-  >
-    <div
-      style={{
-        width: "70px",
-        height: "70px",
-        borderRadius: "50%",
-        backgroundColor: "#4a47a3",
-        marginBottom: "15px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <span
-        style={{ fontSize: "2rem", color: "#fff", fontWeight: "bold" }}
-      >
-        +
-      </span>
-    </div>
-    <h4
-      className="card-title"
-      style={{ fontSize: "1.15rem", color: "#333", fontWeight: "bold" }}
-    >
-      Nuevo Servicio
-    </h4>
-  </div>
-</div>
-
+        <div className="col-md-4">
+          <div
+            className="card mb-4"
+            style={{
+              padding: "15px",
+              backgroundColor: "#A5B4FC",
+              borderRadius: "20px",
+              height: "240px", // Ajustar para que coincida con las demás tarjetas
+              width: "100%", // Asegurar el ancho consistente
+              boxShadow: "0px 4px 18px rgba(0, 0, 0, 0.5)",
+              textAlign: "center",
+              transition: "transform 0.3s, box-shadow 0.3s, background-color 0.3s",
+              cursor: "pointer",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={handleAddNewService}
+          >
+            <div
+              style={{
+                width: "70px",
+                height: "70px",
+                borderRadius: "50%",
+                backgroundColor: "#4a47a3",
+                marginBottom: "15px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <span
+                style={{ fontSize: "2rem", color: "#fff", fontWeight: "bold" }}
+              >
+                +
+              </span>
+            </div>
+            <h4
+              className="card-title"
+              style={{ fontSize: "1.15rem", color: "#333", fontWeight: "bold" }}
+            >
+              Nuevo Servicio
+            </h4>
+          </div>
+        </div>
       </div>
 
       {/* Sección de Paginación */}

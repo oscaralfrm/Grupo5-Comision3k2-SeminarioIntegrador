@@ -10,56 +10,6 @@ export default function Modalidad({
 }) {
   return (
     <>
-      {/* Cómo son las clases */}
-      <Form.Group controlId="divideEnGrupos" className="mt-3">
-        <Form.Label>¿Cómo son tus clases?</Form.Label>
-        <Row>
-          {["Individuales", "Grupales"].map((opcion) => (
-            <Col key={opcion} md={6}>
-              <Form.Check
-                className="primary"
-                type="radio"
-                id={`clases-${opcion}`}
-                label={opcion}
-                value={opcion}
-                {...register("divideEnGrupos", {
-                  required: "Debes seleccionar una opción.",
-                })}
-              />
-            </Col>
-          ))}
-        </Row>
-        {errors.divideEnGrupos && (
-          <p className="text-danger">{errors.divideEnGrupos.message}</p>
-        )}
-      </Form.Group>
-
-      {/* Cupo máximo de alumnos */}
-      {(formData.divideEnGrupos === "Grupales" ||
-        formData.divideEnGrupos === "Individuales y grupales") && (
-        <Form.Group controlId="cupoMaximoAlumnos" className="mt-3">
-          <Form.Label>Cupo por grupo</Form.Label>
-          <Form.Control
-            type="number"
-            placeholder="Ej: 20"
-            {...register("cupoMaximoAlumnos", {
-              required:
-                formData.divideEnGrupos === "Grupales" ||
-                formData.divideEnGrupos === "Individuales y grupales"
-                  ? "Este campo es obligatorio."
-                  : false,
-              min: {
-                value: 1,
-                message: "El cupo debe ser al menos 1.",
-              },
-            })}
-          />
-          {errors.cupoMaximoAlumnos && (
-            <p className="text-danger">{errors.cupoMaximoAlumnos.message}</p>
-          )}
-        </Form.Group>
-      )}
-
       <Form.Group controlId="asistencias" className="mt-3">
         <Form.Label>¿Se registran las asistencias?</Form.Label>
         <Row>
