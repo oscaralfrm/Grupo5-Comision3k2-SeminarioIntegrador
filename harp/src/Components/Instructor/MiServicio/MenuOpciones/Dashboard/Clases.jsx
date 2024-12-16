@@ -1,13 +1,39 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Form } from "react-bootstrap";
 import { getClasesDeServicio } from "../../../../../services/Clase.js";
+import { activarAsistencias, desactivarAsistencias } from "../../../../../services/Servicio.js";
 
-const ClassesCard = ({asistenciasActivas}) => {
+const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
   const [classes, setClasses] = useState([]); // Contendrá todas las clases
   const [expanded, setExpanded] = useState(false);
-  const {idServicio} = useParams();
+  const { idServicio } = useParams();
 
   const allClasses = getClasesDeServicio(idServicio);
+
+
+  const toggleAsistencias = async () => {
+    const newStatus = !asistenciasActivas;
+    const confirmationMessage = newStatus
+      ? "¿Está seguro de que desea activar las asistencias?"
+      : "¿Está seguro de que desea desactivar las asistencias?";
+
+    if (window.confirm(confirmationMessage)) {
+      try {
+        newStatus
+          ? await activarAsistencias(idServicio)
+          : await desactivarAsistencias(idServicio);
+        fetchServicio();
+      } catch (error) {
+        console.error(
+          "Error al cambiar el estado de las inscripciones:",
+          error.message
+        );
+        alert(error.message); // El componente decide cómo manejar el error
+      }
+    }
+  };
+
 
   useEffect(() => {
     const fetchClases = async () => {
@@ -30,52 +56,77 @@ const ClassesCard = ({asistenciasActivas}) => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1E1B4B", borderRadius: "8px", width: "100%", padding: "15px" }}>
         <h2 className="text-center" style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5em" }}>Clases</h2>
 
-        <Link to="" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px", display: "flex", alignItems: "center" }}>
-          Historial
-        </Link>
+        <Form>
+          <Form.Check
+            type="switch"
+            id="inscriptions-switch"
+            label={
+              <span style={{ color: "white" }}>
+                {asistenciasActivas ? "Activas" : "Inactivas"}
+              </span>
+            }
+            checked={asistenciasActivas}
+            onChange={toggleAsistencias}
+          />
+        </Form>
+
+        {asistenciasActivas &&
+          <Link to="" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px", display: "flex", alignItems: "center" }}>
+            Historial
+          </Link>
+        }
+
       </div>
 
-      {classes.length > 0 ? (
-        <>
-          <div className="mt-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>Fecha</span>
-            <span>Dia</span>
-            <span>Hora</span>
-          </div>
-          <hr />
+      {asistenciasActivas ?
+ <>
+{classes.length > 0 ? (
+  <>
+    <div className="mt-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <span>Fecha</span>
+      <span>Dia</span>
+      <span>Hora</span>
+    </div>
+    <hr />
 
-          {/* Mostrar solo la primera clase si no se ha expandido */}
-          {classes.slice(0, expanded ? classes.length : 1).map((cls) => (
-            <div
-              key={cls.id}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "10px 0",
-                cursor: "pointer",
-                color: "inherit",
-                borderBottom: "1px solid #ccc",
-              }}
-            >
-              <span>{cls.fecha}</span>
-              <span>{cls.observaciones}</span>
-              <span>{cls.horario.diaSemana.nombre}</span>
-              <span>{cls.horario.horaInicio}</span>
-            </div>
-          ))}
+    {/* Mostrar solo la primera clase si no se ha expandido */}
+    {classes.slice(0, expanded ? classes.length : 1).map((cls) => (
+      <div
+        key={cls.id}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "10px 0",
+          cursor: "pointer",
+          color: "inherit",
+          borderBottom: "1px solid #ccc",
+        }}
+      >
+        <span>{cls.fecha}</span>
+        <span>{cls.observaciones}</span>
+        <span>{cls.horario.diaSemana.nombre}</span>
+        <span>{cls.horario.horaInicio}</span>
+      </div>
+    ))}
 
-          <div style={{ display: "flex", justifyContent: "center", marginTop: "15px" }}>
-            <button onClick={handleExpandToggle} style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", fontSize: "14px", border: "none", cursor: "pointer" }}>
-              {expanded ? "Ver menos" : "Ver todos"}
-            </button>
-          </div>
-        </>
-      ) : (
-        <div>
-          <p>No hay clases disponibles</p>
-        </div>
-      )}
+    <div style={{ display: "flex", justifyContent: "center", marginTop: "15px" }}>
+      <button onClick={handleExpandToggle} style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", fontSize: "14px", border: "none", cursor: "pointer" }}>
+        {expanded ? "Ver menos" : "Ver todos"}
+      </button>
+    </div>
+  </>
+)  : (
+  <div>
+    <p>No hay clases disponibles</p>
+  </div>
+)} </>
+
+      : 
+      <p className="mt-3 text-center">Activa las funcionalidad del registro de asistencias de tus alumnos.</p>
+      
+      }
+      
     </div>
   );
 };

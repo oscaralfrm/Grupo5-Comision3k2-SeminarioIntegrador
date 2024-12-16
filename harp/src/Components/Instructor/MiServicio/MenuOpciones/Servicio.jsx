@@ -81,13 +81,13 @@ const Servicio = () => {
       <Row className="g-4">
         {/* Columna Izquierda */}
         <Col xs={12} md={4}>
-          <InfoCard />
+          <InfoCard serviceData={serviceData} setServiceData={setServiceData}/>
           <StudentsCard />
         </Col>
 
         {/* Columna Central */}
         <Col xs={12} md={4}>
-        <ClassesCard asistenciasActivas={serviceData?.asistenciasActivas} />
+        <ClassesCard asistenciasActivas={serviceData?.asistenciasActivas} fetchServicio={fetchServicio}/>
           <Enrollments habilitadas={serviceData?.inscripcionesAbiertas} fetchServicio={fetchServicio} />
         </Col>
 

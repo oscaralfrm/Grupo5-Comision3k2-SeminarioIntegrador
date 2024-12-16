@@ -3,24 +3,11 @@ import ReviewCarousel from "./Reseñas";
 import { useNavigate, useParams } from "react-router-dom";
 import { getServicioById } from "../../../../../services/Servicio.js";
 
-const InfoCard = () => {
+const InfoCard = ({serviceData, setServiceData}) => {
   const [showDetails, setShowDetails] = useState(true);
-  const [serviceData, setServiceData] = useState(null);
   const {idServicio} = useParams();
 
   const toggleDetails = () => setShowDetails(!showDetails);
-
-  useEffect(() => {
-    const fetchServicio = async () => {
-      try {
-        const data = await getServicioById(idServicio);
-        setServiceData(data);
-      } catch (error) {
-        console.error('Error al traer el servicio:', error);
-      }
-    };
-    fetchServicio();
-  }, [idServicio]);
 
   const cardStyle = {
     backgroundColor: "white",
