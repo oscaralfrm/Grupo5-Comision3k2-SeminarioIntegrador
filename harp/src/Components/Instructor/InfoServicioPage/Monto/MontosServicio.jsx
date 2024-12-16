@@ -11,6 +11,7 @@ import {
 } from "../../../../services/HistorialMontoCuota";
 import { getGruposDeServicio } from "../../../../services/Grupo";
 import ModalConfigurarMonto from "./ModalConfigurarMonto";
+import ModalMontoInscripcion from "./ModalMontoInscripcion";
 
 function MontosServicio() {
   const { idServicio } = useParams();
@@ -18,6 +19,7 @@ function MontosServicio() {
   const [frequencies, setFrequencies] = useState([]);
   const [programados, setProgramados] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showMontoInscrip,setShowMontoInscrip] = useState(false)
   const [configShowModal, setConfigShowModal] = useState(false);
   const [availableFrequencies, setAvailableFrequencies] = useState([]);
   const [selectedFrequency, setSelectedFrequency] = useState(null);
@@ -25,6 +27,7 @@ function MontosServicio() {
   const [frecuencias, setFrecuencias] = useState([]);
   const [montosUnificados, setMontosUnificados] = useState([]);
   const [frec, setFrec] = useState(null);
+  const [unMonto, setUnMonto] = useState([]);
   const fetchFrequencies = async () => {
     // Aquí deberías llamar al servicio real para obtener las frecuencias
     return ["Mensual", "Bimensual", "Trimestral"];
@@ -136,6 +139,7 @@ function MontosServicio() {
 
   const handleAddMonto = async (data) => {
     const { selectedFrequency, startDate, amount } = data;
+  
 
     try {
       await addMontoToServicio(
@@ -150,6 +154,25 @@ function MontosServicio() {
       console.error("Error adding monto:", error);
     }
   };
+
+  const handleRegistroMontoInscripcion = async (data) => {
+    const { selectedFrequency, startDate, amount } = data;
+  
+
+    try {
+      await addMontoToServicio(
+        amount,
+        selectedFrequency,
+        startDate,
+        idServicio
+      );
+      setShowModal(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error adding monto:", error);
+    }
+  };
+
 
   const handleFrequencyChange = (freq) => {
     setSelectedFrequency(freq);
@@ -213,10 +236,18 @@ function MontosServicio() {
               <Card.Body>
                 {montosUnificados.length > 0 ? (
                   montosUnificados.map((freq, index) => {
-                    const fechaInicio = new Date(
-                      freq.fechaInicio + "T00:00:00"
-                    );
-                    const esFechaFutura = fechaInicio > new Date();
+                    const fechaInicio = freq.fechaInicio
+                      ? new Date(freq.fechaInicio + "T00:00:00")
+                      : null;
+                    const esFechaFutura = fechaInicio
+                      ? fechaInicio > new Date()
+                      : true; // Si no tiene fecha, lo consideramos como editable
+                    const esFechaValida = fechaInicio
+                      ? fechaInicio <= new Date()
+                      : true; // Fecha válida si no tiene fecha o la fecha está vigente
+
+                    // Permitir editar si no tiene fecha de vigencia definida o si la fecha está en vigor
+                    const sePuedeEditar = !fechaInicio || esFechaValida;
 
                     return (
                       <div key={index} className="mb-2 vh-6">
@@ -231,63 +262,48 @@ function MontosServicio() {
                           ) : (
                             <>
                               <span>No está definido</span>
-                              <button
-                                className="btn btn-outline-secondary ms-2"
-                                style={{
-                                  fontSize: "1rem",
-                                  padding: "0.25rem 0.5rem",
-                                }}
-                                disabled={esFechaFutura} // Deshabilitar si es fecha futura
-                                onClick={() => {
-                                  if (frec && frec.horarios) {
-                                    setFrec(frec.horarios.length); // Solo accede a frec.horarios.length si 'frec' y 'frec.horarios' están definidos
-                                  } else {
-                                    // Maneja el caso en que 'frec' o 'frec.horarios' no están definidos
-                                    console.log('La propiedad horarios no está definida');
-                                  }
-                                  reset();
-                                  setConfigShowModal(true);
-                                }}
-                                
-                              >
-                                ✏️
-                              </button>
                             </>
                           )}
+                          <button
+                            className="btn btn-outline-secondary ms-2"
+                            style={{
+                              fontSize: "1rem",
+                              padding: "0.25rem 0.5rem",
+                            }}
+                            disabled={!sePuedeEditar} // Deshabilitar si no se puede editar
+                            onClick={() => {
+                              if (freq && freq.horarios) {
+                                setUnMonto(freq); // Usamos setFrec para actualizar el estado
+                                reset(); // Resetear el formulario si es necesario
+                                setConfigShowModal(true); // Mostrar el modal
+                              } else {
+                                console.log(
+                                  "La propiedad horarios no está definida"
+                                );
+                              }
+                            }}
+                          >
+                            ✏️
+                          </button>
                         </p>
                         <p className="mb-1">
                           <strong>Vigente desde:</strong>{" "}
-                          {fechaInicio.toLocaleDateString()}
+                          {fechaInicio
+                            ? fechaInicio.toLocaleDateString()
+                            : "No definida"}
                         </p>
                         <hr />
                       </div>
                     );
                   })
                 ) : (
-                  <Alert
-                    variant="warning"
-                    className="justify-content-between align-items-center"
-                  >
-                    <span>
-                      No hay montos configurados para ninguna frecuencia
-                      semanal.
-                    </span>
-                    <Button
-                      variant="primary"
-                      onClick={() => {
-                        reset();
-                        setConfigShowModal(true);
-                      }}
-                    >
-                      Configurar
-                    </Button>
-                  </Alert>
+                  <p>No hay montos disponibles.</p>
                 )}
               </Card.Body>
             </Card>
           </div>
         </Col>
-        {frequencies.length > 0 && (
+        {montosUnificados.length > 0 && (
           <Col md={6} sm={12} className="align-items-center">
             <div className="p-3">
               <h5 className="fw-bold text-center">Programados</h5>
@@ -341,12 +357,12 @@ function MontosServicio() {
                       variant="warning"
                       className="justify-content-between align-items-center"
                     >
-                      <span>No hay un cambio en el monto configurado.</span>
+                      <span>No hay un cambio en los montos configurados.</span>
                       <Button
                         variant="primary"
                         onClick={() => {
                           reset();
-                          setConfigShowModal(true);
+                          setShowModal(true);
                         }}
                       >
                         Configurar
@@ -400,8 +416,9 @@ function MontosServicio() {
               <Button
                 variant="primary"
                 onClick={() => {
+                  
                   reset();
-                  setConfigShowModal(true);
+                  setShowMontoInscrip(true);
                 }}
               >
                 Configurar
@@ -416,7 +433,7 @@ function MontosServicio() {
         <ModalActualizarMontos
           showModal={showModal}
           setShowModal={setShowModal}
-          availableFrequencies={availableFrequencies}
+          availableFrequencies={montosUnificados}
           hasMontoForFrequency={hasMontoForFrequency}
           handleAddMonto={handleAddMonto}
         />
@@ -425,9 +442,16 @@ function MontosServicio() {
         <ModalConfigurarMonto
           showModal={configShowModal}
           setShowModal={setConfigShowModal}
-
           handleRegister={handleRegister}
-          initialPaymentFrequency={frec} // Pasa solo el valor de 'frec', que es un número ahora
+          unMonto={unMonto} // Pasa solo el valor de 'frec', que es un número ahora
+        />
+      </div>
+      <div>
+        <ModalMontoInscripcion
+          showModal={showMontoInscrip}
+          setShowModal={setShowMontoInscrip}
+          handleRegister={handleRegistroMontoInscripcion}
+         
         />
       </div>
     </div>

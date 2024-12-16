@@ -6,9 +6,14 @@ function ModalConfigurarMonto({
   showModal,
   setShowModal,
   handleRegister,
-  initialPaymentFrequency // Recibimos la frecuencia de pago como parámetro
+  unMonto, // Recibimos el monto como parámetro
 }) {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
     mode: "onChange",
   });
 
@@ -22,22 +27,49 @@ function ModalConfigurarMonto({
   const validateDate = (date) => {
     const currentDate = new Date();
     const selectedDate = new Date(date);
-    return selectedDate > currentDate || "La fecha debe ser posterior a la fecha actual.";
+    return (
+      selectedDate > currentDate ||
+      "La fecha debe ser posterior a la fecha actual."
+    );
+  };
+
+  // Condición para saber si el campo de monto debe ser habilitado
+  const isAmountEditable = () => {
+    const fechaInicio = unMonto?.fechaInicio; // Asegurarse de que no sea undefined
+    if (!fechaInicio) {
+      return true; // Si fechaInicio es undefined, permitir modificar monto
+    }
+
+    const currentDate = new Date();
+    const startDate = new Date(fechaInicio);
+
+    // Si la fecha de inicio es futura, permitir modificar el monto
+    return startDate > currentDate;
   };
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Configurar Monto y Frecuencia</Modal.Title>
+        <Modal.Title>Configurar Monto</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(onSubmit)}>
+          {/* Campo de Frecuencia de actividades */}
+          <Form.Group className="mb-3">
+            <Form.Label>Frecuencia de actividades:</Form.Label>
+            <Form.Control
+              type="text"
+              value={unMonto?.horarios?.length || "Todavía no definido"} // Agregamos un chequeo para evitar el error
+              readOnly // Hacer el campo de frecuencia solo lectura
+            />
+          </Form.Group>
+
           {/* Campo de Monto */}
           <Form.Group className="mb-3">
             <Form.Label>Monto</Form.Label>
             <Form.Control
               type="number"
-              {...register("amount", {
+              {...register("monto", {
                 required: "El monto es obligatorio.",
                 min: {
                   value: 1,
@@ -45,32 +77,13 @@ function ModalConfigurarMonto({
                 },
               })}
               placeholder="Ingrese el monto"
+              disabled={!isAmountEditable()} // Deshabilitar el campo si no se puede editar
             />
-            {errors.amount && <small className="text-danger">{errors.amount.message}</small>}
+            {errors.amount && (
+              <small className="text-danger">{errors.amount.message}</small>
+            )}
           </Form.Group>
 
-          {/* Campo de Frecuencia de pagos (ahora solo visualización) */}
-          <Form.Group className="mb-3">
-            <Form.Label>Frecuencia de actividades:</Form.Label>
-            <Form.Control
-              type="text"
-              value={initialPaymentFrequency}
-              readOnly // Hacer el campo de frecuencia solo lectura
-            />
-          </Form.Group>
-
-          {/* Campo de Fecha */}
-          <Form.Group className="mb-3">
-            <Form.Label>Fecha de Pago</Form.Label>
-            <Form.Control
-              type="date"
-              {...register("paymentDate", {
-                required: "La fecha es obligatoria.",
-                validate: validateDate,
-              })}
-            />
-            {errors.paymentDate && <small className="text-danger">{errors.paymentDate.message}</small>}
-          </Form.Group>
         </Form>
       </Modal.Body>
 
@@ -83,7 +96,11 @@ function ModalConfigurarMonto({
             </Button>
           </Col>
           <Col className="d-flex justify-content-end">
-            <Button variant="primary" type="submit" onClick={handleSubmit(onSubmit)}>
+            <Button
+              variant="primary"
+              type="submit"
+              onClick={handleSubmit(onSubmit)}
+            >
               Registrar
             </Button>
           </Col>
