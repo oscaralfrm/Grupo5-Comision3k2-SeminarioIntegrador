@@ -23,7 +23,8 @@ function MontosServicio() {
   const [selectedFrequency, setSelectedFrequency] = useState(null);
   const [hasMontoForFrequency, setHasMontoForFrequency] = useState(false);
   const [frecuencias, setFrecuencias] = useState([]);
-
+  const [montosUnificados, setMontosUnificados] = useState([]);
+  const [frec, setFrec] = useState(null);
   const fetchFrequencies = async () => {
     // Aquí deberías llamar al servicio real para obtener las frecuencias
     return ["Mensual", "Bimensual", "Trimestral"];
@@ -67,23 +68,64 @@ function MontosServicio() {
         const programados = await getMontosProgramadosServicio(idServicio);
         setProgramados(programados);
 
-
         const grupos = await getGruposDeServicio(idServicio);
+
+        // Obtener frecuencias únicas
         const frequenciesSet = new Set(
           grupos.map((grupo) => grupo.horarios.length)
         );
-      // Crear un Map para asegurar elementos únicos basados en cantVecesSemanales
-      const uniqueFrequencies = Array.from(
-        new Map(
-          grupos.map((freq) => [freq.horarios.length, freq])
-        ).values()
-      );
 
-      setFrecuencias(uniqueFrequencies);
-      console.log(frecuencias.length);
+        // Crear frecuencias únicas basadas en horarios
+        const uniqueFrequencies = Array.from(
+          new Map(
+            grupos.map((grupo) => [grupo.horarios.length, grupo])
+          ).values()
+        );
+
+        setFrecuencias(uniqueFrequencies);
         setAvailableFrequencies(
           Array.from(frequenciesSet).sort((a, b) => a - b)
         );
+
+        // Unir montos con frecuencias
+        const mergedArray = uniqueFrequencies
+          .map((grupo) => {
+            const matchingMonto = montos.find(
+              (monto) => monto.cantVecesSemanales === grupo.horarios.length
+            );
+
+            // Asegúrate de que ambos objetos (grupo y matchingMonto) tengan las mismas claves
+            const mergedObject = {
+              ...grupo,
+              cantMaxAlumnos:
+                grupo.cantMaxAlumnos !== undefined
+                  ? grupo.cantMaxAlumnos
+                  : undefined,
+              cantVecesSemanales:
+                grupo.cantVecesSemanales !== undefined
+                  ? grupo.cantVecesSemanales
+                  : undefined,
+              clases: grupo.clases !== undefined ? grupo.clases : undefined,
+              fechaFin:
+                grupo.fechaFin !== undefined ? grupo.fechaFin : undefined,
+              fechaInicio:
+                grupo.fechaInicio !== undefined ? grupo.fechaInicio : undefined,
+              horarios:
+                grupo.horarios !== undefined ? grupo.horarios : undefined,
+              id: grupo.id !== undefined ? grupo.id : undefined,
+              monto: matchingMonto ? matchingMonto.monto : undefined, // Asignar monto del objeto encontrado
+              nombre: grupo.nombre !== undefined ? grupo.nombre : undefined,
+              numero: grupo.numero !== undefined ? grupo.numero : undefined,
+            };
+
+            return mergedObject;
+          })
+          .sort((a, b) => a.horarios.length - b.horarios.length);
+
+        setMontosUnificados(mergedArray);
+
+        setMontosUnificados(mergedArray);
+        console.log("Montos unificados:", mergedArray);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -166,11 +208,11 @@ function MontosServicio() {
         >
           <div className="p-3 bg-light rounded shadow-sm">
             <h5 className="fw-bold text-center">Actuales</h5>
-            {/* Montos por frecuencia semanal */}
+
             <Card>
               <Card.Body>
-                {frecuencias.length > 0 ? (
-                  frecuencias.map((freq, index) => {
+                {montosUnificados.length > 0 ? (
+                  montosUnificados.map((freq, index) => {
                     const fechaInicio = new Date(
                       freq.fechaInicio + "T00:00:00"
                     );
@@ -179,21 +221,45 @@ function MontosServicio() {
                     return (
                       <div key={index} className="mb-2 vh-6">
                         <p className="mb-1">
-                          <strong>Frecuencia:</strong> {freq.cantVecesSemanales}{" "}
-                          veces por semana
+                          <strong>Frecuencia:</strong> {freq.horarios.length}{" "}
+                          vez/veces por semana
                         </p>
                         <p className="mb-1">
-                          <strong>Monto actual:</strong> ${freq.monto}
-                          {esFechaFutura && (
-                            <button className="btn btn-primary ms-2">
-                              Editar Monto
-                            </button>
+                          <strong>Monto:</strong>
+                          {freq.monto !== undefined && freq.monto !== "" ? (
+                            `$${freq.monto}`
+                          ) : (
+                            <>
+                              <span>No está definido</span>
+                              <button
+                                className="btn btn-outline-secondary ms-2"
+                                style={{
+                                  fontSize: "1rem",
+                                  padding: "0.25rem 0.5rem",
+                                }}
+                                disabled={esFechaFutura} // Deshabilitar si es fecha futura
+                                onClick={() => {
+                                  if (frec && frec.horarios) {
+                                    setFrec(frec.horarios.length); // Solo accede a frec.horarios.length si 'frec' y 'frec.horarios' están definidos
+                                  } else {
+                                    // Maneja el caso en que 'frec' o 'frec.horarios' no están definidos
+                                    console.log('La propiedad horarios no está definida');
+                                  }
+                                  reset();
+                                  setConfigShowModal(true);
+                                }}
+                                
+                              >
+                                ✏️
+                              </button>
+                            </>
                           )}
                         </p>
                         <p className="mb-1">
                           <strong>Vigente desde:</strong>{" "}
                           {fechaInicio.toLocaleDateString()}
                         </p>
+                        <hr />
                       </div>
                     );
                   })
@@ -237,12 +303,29 @@ function MontosServicio() {
                       return (
                         <div key={index} className="mb-2 vh-6">
                           <p className="mb-1">
-                            <strong>Frecuencia:</strong>{" "}
-                            {freq.cantVecesSemanales} veces por semana
+                            <strong>Frecuencia:</strong> {freq.horarios.length}{" "}
+                            veces por semana
                           </p>
                           <p className="mb-1">
-                            <strong>Monto:</strong> ${freq.monto}
+                            <strong>Monto:</strong>
+                            {freq.monto !== "" && freq.monto !== undefined ? (
+                              `$${freq.monto}`
+                            ) : (
+                              <>
+                                <span>No está definido</span>
+                                <button
+                                  className="btn btn-outline-secondary ms-2"
+                                  style={{
+                                    fontSize: "1rem",
+                                    padding: "0.25rem 0.5rem",
+                                  }}
+                                >
+                                  ✏️
+                                </button>
+                              </>
+                            )}
                           </p>
+
                           <p className="mb-1">
                             <strong>Vigente desde:</strong>{" "}
                             {fechaInicio.toLocaleDateString()}
@@ -342,8 +425,9 @@ function MontosServicio() {
         <ModalConfigurarMonto
           showModal={configShowModal}
           setShowModal={setConfigShowModal}
-          fetchFrequencies={fetchFrequencies}
+
           handleRegister={handleRegister}
+          initialPaymentFrequency={frec} // Pasa solo el valor de 'frec', que es un número ahora
         />
       </div>
     </div>

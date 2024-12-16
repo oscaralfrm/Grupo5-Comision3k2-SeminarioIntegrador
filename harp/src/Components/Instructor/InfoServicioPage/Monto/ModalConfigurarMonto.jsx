@@ -2,28 +2,27 @@ import React, { useState, useEffect } from "react";
 import { Modal, Form, Button, Row, Col } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
-function ModalConfigurarMonto({ showModal, setShowModal, fetchFrequencies, handleRegister }) {
-  const [frequencies, setFrequencies] = useState([]);
+function ModalConfigurarMonto({
+  showModal,
+  setShowModal,
+  handleRegister,
+  initialPaymentFrequency // Recibimos la frecuencia de pago como parámetro
+}) {
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     mode: "onChange",
   });
-
-  // Cargar frecuencias desde el servicio al cargar el modal
-  useEffect(() => {
-    const getFrequencies = async () => {
-      const fetchedFrequencies = await fetchFrequencies();
-      setFrequencies(fetchedFrequencies);
-    };
-
-    if (showModal) {
-      getFrequencies();
-    }
-  }, [showModal, fetchFrequencies]);
 
   const onSubmit = (data) => {
     handleRegister(data);
     setShowModal(false); // Cerrar el modal después de registrar
     reset(); // Reiniciar el formulario
+  };
+
+  // Validación personalizada para la fecha (debe ser posterior a la fecha actual)
+  const validateDate = (date) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(date);
+    return selectedDate > currentDate || "La fecha debe ser posterior a la fecha actual.";
   };
 
   return (
@@ -50,20 +49,27 @@ function ModalConfigurarMonto({ showModal, setShowModal, fetchFrequencies, handl
             {errors.amount && <small className="text-danger">{errors.amount.message}</small>}
           </Form.Group>
 
-          {/* Campo de Frecuencia de pagos */}
+          {/* Campo de Frecuencia de pagos (ahora solo visualización) */}
           <Form.Group className="mb-3">
-            <Form.Label>Frecuencia de Pagos</Form.Label>
-            <Form.Select {...register("paymentFrequency", { required: "Seleccione una frecuencia" })}>
-              <option value="">Seleccione...</option>
-              {frequencies.map((frequency, index) => (
-                <option key={index} value={frequency}>
-                  {frequency} veces por mes
-                </option>
-              ))}
-            </Form.Select>
-            {errors.paymentFrequency && (
-              <small className="text-danger">{errors.paymentFrequency.message}</small>
-            )}
+            <Form.Label>Frecuencia de actividades:</Form.Label>
+            <Form.Control
+              type="text"
+              value={initialPaymentFrequency}
+              readOnly // Hacer el campo de frecuencia solo lectura
+            />
+          </Form.Group>
+
+          {/* Campo de Fecha */}
+          <Form.Group className="mb-3">
+            <Form.Label>Fecha de Pago</Form.Label>
+            <Form.Control
+              type="date"
+              {...register("paymentDate", {
+                required: "La fecha es obligatoria.",
+                validate: validateDate,
+              })}
+            />
+            {errors.paymentDate && <small className="text-danger">{errors.paymentDate.message}</small>}
           </Form.Group>
         </Form>
       </Modal.Body>
