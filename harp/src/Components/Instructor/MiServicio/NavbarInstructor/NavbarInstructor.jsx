@@ -9,7 +9,6 @@ function NavbarInstructor() {
   const navigate = useNavigate();
   const [servicios, setServicios] = useState([]);
   const { idInstructor, idServicio } = useParams();
-
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
 
@@ -64,17 +63,14 @@ function NavbarInstructor() {
         color: "white",
         width: "100%",
         fontSize: "1.2rem",
+        minHeight: "10vh",
       }}
     >
       <div className="container-fluid d-flex justify-content-between align-items-center">
-        {/* Logo en pantallas grandes */}
-        <a className="navbar-brand d-none d-lg-block" href="/">
-          <img src={img} alt="Harp Logo" width="130" />
-        </a>
-
-        {/* Logo en pantallas pequeñas */}
-        <a className="navbar-brand d-lg-none" href="/">
-          <img src={img} alt="Harp Logo" width="100" />
+        {/* Logo en todas las pantallas */}
+        <a className="navbar-brand" href="/" style={{ margin: "0 auto" }}>
+          <img src={img} alt="Harp Logo" width="130" className="d-none d-lg-block" />
+          <img src={img} alt="Harp Logo" width="100" className="d-lg-none" />
         </a>
 
         {/* Botón para mostrar/ocultar el menú en pantallas pequeñas */}
@@ -87,8 +83,14 @@ function NavbarInstructor() {
           aria-expanded={dropdownOpen ? "true" : "false"}
           aria-label="Toggle navigation"
           onClick={toggleDropdown}
+          style={{ border: "none" }} // Eliminar borde
         >
-          <span className="navbar-toggler-icon"></span>
+          <span
+            className="navbar-toggler-icon"
+            style={{
+              backgroundImage: "url('data:image/svg+xml;charset=utf8,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 30 30\"%3E%3Cpath stroke=\"white\" stroke-width=\"2\" d=\"M4 7h22M4 15h22M4 23h22\"/%3E%3C/svg%3E')",
+            }} // Cambiar color a blanco
+          ></span>
         </button>
 
         {/* Contenedor de elementos en el navbar */}
@@ -128,17 +130,6 @@ function NavbarInstructor() {
               </a>
             </li>
 
-            {/* Configuración
-            <li className="nav-item">
-              <a
-                className="nav-link"
-                href={`/instructor/${idInstructor}/servicio/${idServicio}/configuracion`}
-                style={{ color: "white" }}
-              >
-                Configuración
-              </a>
-            </li>
-            */}
             {/* Selector de servicio */}
             <li className="nav-item dropdown">
               <a
@@ -172,20 +163,19 @@ function NavbarInstructor() {
           </ul>
         </div>
 
-        {/* Cerrar sesión en la misma fila */}
-        <ul className="navbar-nav ml-auto">
-          {/* Cerrar sesión */}
-          <li className="nav-item">
-            <a
-              className="nav-link"
-              href="/"
-              style={{ color: "white", whiteSpace: "nowrap" }} // Evita el salto de línea
-              onClick={handleClick}
-            >
-              Cerrar Sesión
-            </a>
-          </li>
-        </ul>
+        {/* Botón Cerrar Sesión visible en todas las pantallas */}
+        <button
+          className="btn"
+          onClick={handleClick}
+          style={{
+            backgroundColor: "#4a47a3",
+            color: "white",
+            whiteSpace: "nowrap",
+            marginLeft: "15px",
+          }}
+        >
+          Cerrar Sesión
+        </button>
       </div>
     </nav>
   );
