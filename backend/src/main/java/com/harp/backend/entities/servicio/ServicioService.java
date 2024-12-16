@@ -303,7 +303,9 @@ public class ServicioService implements IServicioService {
         servicioRepository.save(servicio);
 
         // Luego creamos las clases
-        claseService.crearClasesParaSemanaSiguente(servicio, fechaInicio);
+        if (servicio.tieneInscripcionesActivas()) {
+            claseService.crearClasesParaSemanaSiguente(servicio, fechaInicio);
+        }
     }
 
     public void activarAsistencias(Long idServicio) {
