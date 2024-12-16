@@ -2,23 +2,20 @@ import React, { useState, useEffect } from "react";
 import { Modal, Form, Button, Row, Col } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
-function ModalConfigurarMonto({ showModal, setShowModal, fetchFrequencies, handleRegister }) {
-  const [frequencies, setFrequencies] = useState([]);
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+function ModalConfigurarMonto({
+  showModal,
+  setShowModal,
+  handleRegister,
+  unMonto, // Recibimos el monto como parámetro
+}) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
     mode: "onChange",
   });
-
-  // Cargar frecuencias desde el servicio al cargar el modal
-  useEffect(() => {
-    const getFrequencies = async () => {
-      const fetchedFrequencies = await fetchFrequencies();
-      setFrequencies(fetchedFrequencies);
-    };
-
-    if (showModal) {
-      getFrequencies();
-    }
-  }, [showModal, fetchFrequencies]);
 
   const onSubmit = (data) => {
     handleRegister(data);
@@ -26,19 +23,53 @@ function ModalConfigurarMonto({ showModal, setShowModal, fetchFrequencies, handl
     reset(); // Reiniciar el formulario
   };
 
+  // Validación personalizada para la fecha (debe ser posterior a la fecha actual)
+  const validateDate = (date) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(date);
+    return (
+      selectedDate > currentDate ||
+      "La fecha debe ser posterior a la fecha actual."
+    );
+  };
+
+  // Condición para saber si el campo de monto debe ser habilitado
+  const isAmountEditable = () => {
+    const fechaInicio = unMonto?.fechaInicio; // Asegurarse de que no sea undefined
+    if (!fechaInicio) {
+      return true; // Si fechaInicio es undefined, permitir modificar monto
+    }
+
+    const currentDate = new Date();
+    const startDate = new Date(fechaInicio);
+
+    // Si la fecha de inicio es futura, permitir modificar el monto
+    return startDate > currentDate;
+  };
+
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Configurar Monto y Frecuencia</Modal.Title>
+        <Modal.Title>Configurar Monto</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(onSubmit)}>
+          {/* Campo de Frecuencia de actividades */}
+          <Form.Group className="mb-3">
+            <Form.Label>Frecuencia de actividades:</Form.Label>
+            <Form.Control
+              type="text"
+              value={unMonto?.horarios?.length || "Todavía no definido"} // Agregamos un chequeo para evitar el error
+              readOnly // Hacer el campo de frecuencia solo lectura
+            />
+          </Form.Group>
+
           {/* Campo de Monto */}
           <Form.Group className="mb-3">
             <Form.Label>Monto</Form.Label>
             <Form.Control
               type="number"
-              {...register("amount", {
+              {...register("monto", {
                 required: "El monto es obligatorio.",
                 min: {
                   value: 1,
@@ -46,25 +77,13 @@ function ModalConfigurarMonto({ showModal, setShowModal, fetchFrequencies, handl
                 },
               })}
               placeholder="Ingrese el monto"
+              disabled={!isAmountEditable()} // Deshabilitar el campo si no se puede editar
             />
-            {errors.amount && <small className="text-danger">{errors.amount.message}</small>}
-          </Form.Group>
-
-          {/* Campo de Frecuencia de pagos */}
-          <Form.Group className="mb-3">
-            <Form.Label>Frecuencia de Pagos</Form.Label>
-            <Form.Select {...register("paymentFrequency", { required: "Seleccione una frecuencia" })}>
-              <option value="">Seleccione...</option>
-              {frequencies.map((frequency, index) => (
-                <option key={index} value={frequency}>
-                  {frequency} veces por mes
-                </option>
-              ))}
-            </Form.Select>
-            {errors.paymentFrequency && (
-              <small className="text-danger">{errors.paymentFrequency.message}</small>
+            {errors.amount && (
+              <small className="text-danger">{errors.amount.message}</small>
             )}
           </Form.Group>
+
         </Form>
       </Modal.Body>
 
@@ -77,7 +96,11 @@ function ModalConfigurarMonto({ showModal, setShowModal, fetchFrequencies, handl
             </Button>
           </Col>
           <Col className="d-flex justify-content-end">
-            <Button variant="primary" type="submit" onClick={handleSubmit(onSubmit)}>
+            <Button
+              variant="primary"
+              type="submit"
+              onClick={handleSubmit(onSubmit)}
+            >
               Registrar
             </Button>
           </Col>

@@ -5,11 +5,15 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { getServicioById, definirFechaInicioDeServicio, updateServicio } from '../../../services/Servicio';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getAlumnosDeServicio } from '../../../services/Alumno';
+import { getMontosActualesServicio } from '../../../services/HistorialMontoCuota';
 
 const BarraResumen = ({ idServicio }) => {
   const [serviceData, setServiceData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [alumnos, setAlumnos] = useState([]);
+  const [montos, setMontos] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
   const {idInstructor} = useParams();
@@ -19,8 +23,15 @@ const BarraResumen = ({ idServicio }) => {
       try {
         console.log('Fetching servicio data for ID:', idServicio); // Log para verificar el ID del servicio
         const data = await getServicioById(idServicio);
+
         console.log('Servicio data fetched:', data); // Log de los datos obtenidos
         setServiceData(data);
+
+        const alumnosInscritos = await getAlumnosDeServicio(idServicio);
+        setAlumnos(alumnosInscritos);
+
+        const montosActuales = await getMontosActualesServicio(idServicio);
+        setMontos(montosActuales);
       } catch (error) {
         console.error('Error al obtener los datos del servicio:', error);
       }
@@ -119,8 +130,9 @@ const BarraResumen = ({ idServicio }) => {
           <Col className="d-flex flex-column align-items-center">
             <FaUserAlt size={25} className="mb-2 text-info" />
             <p className="mb-1 fw-bold">Inscriptos:</p>
-            <p>{serviceData.inscriptos || 0} alumnos</p>
+            <p>{alumnos.length} alumnos</p>
           </Col>
+          {serviceData.fechaInicio && 
           <Col className="d-flex flex-column align-items-center">
             <i
               className="bi bi-binoculars-fill mb-2 text-primary"
@@ -130,7 +142,8 @@ const BarraResumen = ({ idServicio }) => {
             <Button variant="primary" size="sm" onClick={handleViewActivity}>
               Ver Actividad
             </Button>
-          </Col>
+          </Col> }
+         
         </Row>
       </Card>
 

@@ -67,17 +67,10 @@ export default function ServicioForm() {
         data.frecuenciaCuotas === "otros"
           ? data.duracionCuotasPersonalizada
           : null,
-      cantMaxAlumnosPorGrupo:
-        data.divideEnGrupos === "Grupales" ||
-        data.divideEnGrupos === "Individuales y grupales"
-          ? data.cupoMaximoAlumnos
-          : data.divideEnGrupos === "Individuales"
-          ? 1
-          : null,
       tipoModalidad:
         data.divideEnGrupos === "Sin clases" ? "AServicio" : "AGrupo",
-      claseDePrueba: data.clasePrueba === "Si" ? true : false,
-      asistenciasActivas: data.asistencias === "Si",
+      claseDePrueba: data.clasePrueba === "sí" ? true : false,
+      asistenciasActivas: data.asistencias === "sí" ? true : false,
       montoInscripcion: data.montoInscripcion || 0,
       pagoAnticipadoDeMontoInscripcion:
         data.pagoInscripcion === "De forma Anticipada",
@@ -87,7 +80,7 @@ export default function ServicioForm() {
       const response = await createServicio(servicioDTO);
       alert("Servicio creado con éxito");
       navigate(
-        `/instructor/${idInstructor}/servicio/${response.id}/mi-servicio`
+        `/instructor/${idInstructor}/servicio/${response.id}/info-servicio`
       );
     } catch (error) {
       console.error("Error al crear el servicio:", error);

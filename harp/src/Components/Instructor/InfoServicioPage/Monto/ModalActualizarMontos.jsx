@@ -37,11 +37,15 @@ export default function ModalActualizarMontos({
               })}
             >
               <option value="">Seleccione...</option>
-              {availableFrequencies.map((freq, index) => (
-                <option key={index} value={freq}>
-                  {freq} veces por semana
-                </option>
-              ))}
+              {availableFrequencies.length > 0 ? (
+                availableFrequencies.map((freq, index) => (
+                  <option key={index} value={freq}>
+                    {freq.horarios.length} veces por semana
+                  </option>
+                ))
+              ) : (
+                <option disabled>No hay frecuencias disponibles</option>
+              )}
             </Form.Select>
             {errors.selectedFrequency && (
               <small className="text-danger">
@@ -62,24 +66,16 @@ export default function ModalActualizarMontos({
                   selectedDate.setHours(0, 0, 0, 0);
                   today.setHours(0, 0, 0, 0);
 
-                  if (hasMontoForFrequency) {
-                    return (
-                      selectedDate > today ||
-                      "La fecha debe ser posterior a hoy."
-                    );
+                  if (selectedDate <= today) {
+                    return "La fecha debe ser posterior a hoy.";
                   }
 
-                  return (
-                    selectedDate >= today ||
-                    "La fecha debe ser igual o posterior a hoy."
-                  );
+                  return true;
                 },
               })}
             />
             {errors.startDate && (
-              <small className="text-danger">
-                {errors.startDate.message}
-              </small>
+              <small className="text-danger">{errors.startDate.message}</small>
             )}
           </Form.Group>
 

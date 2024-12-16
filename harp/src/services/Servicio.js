@@ -69,7 +69,18 @@ export const updateServicio = async (idServicio, servicioDTO) => {
 
 export const activarAsistencias = async (idServicio) => {
     try {
-        const response = await axios.put(`${API_URL}servicios/${idServicio}`, servicioDTO);
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/activar-asistencias`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al actualizar servicio', error);
+        throw error;
+    }
+};
+
+
+export const desactivarAsistencias = async (idServicio) => {
+    try {
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/desactivar-asistencias`);
         return response.data;
     } catch (error) {
         console.error('Error al actualizar servicio', error);
