@@ -9,11 +9,27 @@ import {
   habilitarInscripcionesDeServicio,
 } from "../../../services/Inscripcion";
 import BarraResumen from "./BarraResumen";
+import { getInstructorById } from "../../../services/Instructor";
 
 function ServiceHeader({ serviceData, setServiceData }) {
   console.log("Service data en Service Header", serviceData);
   const { idServicio } = useParams();
+  const { idInstructor } = useParams();
+  const [instructor, setInstructor] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchInstructor = async () => {
+      try {
+        const data = await getInstructorById(idInstructor);
+        setInstructor(data);
+      } catch (error) {
+        console.error("Error al traer el instructor:", error);
+      }
+    };
+    fetchInstructor();
+  }, [idInstructor]);
+
 
   const toggleInscriptions = async () => {
     const newStatus = !serviceData?.inscripcionesAbiertas;
@@ -54,6 +70,7 @@ function ServiceHeader({ serviceData, setServiceData }) {
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         maxWidth: "100%",
         margin: "auto",
+        marginTop: "80px"
       }}
     >
       {/* Edit Button */}
@@ -133,7 +150,7 @@ function ServiceHeader({ serviceData, setServiceData }) {
           </Col>
 
           <p className="mb-1">
-            <strong>Instructor:</strong> Nombre del Instructor
+            <strong>Instructor:</strong> {instructor?.usuario.nombre} {instructor?.usuario.apellido} 
           </p>
           <p className="mb-3">
             <strong>Descripción:</strong> {serviceData?.descripcion}

@@ -103,9 +103,24 @@ function GruposServicio() {
   };
 
   return (
-    <Container className="p-3 bg-light" style={{ maxWidth: "100%", margin: "auto", fontFamily: "Roboto" }}>
+    <Container 
+      className="p-3 bg-light" 
+      style={{ 
+        maxWidth: "100%", 
+        margin: "auto", 
+        fontFamily: "Roboto", 
+        backgroundColor: "white",
+        padding: "20px",
+        borderRadius: "20px",
+        boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
+        
+        }}>
+                          
       <div className="mb-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1E1B4B", borderRadius: "8px", padding: "15px" }}>
-        <h2 className="text-center" style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5em" }}>
+        <h2 className="text-center" 
+          style={{ color: "white", 
+                  fontFamily: "Roboto", 
+                  fontSize: "1.5em" }}>
           Grupos y Horarios
         </h2>
         <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleCrearGrupo}>
@@ -151,6 +166,9 @@ function GruposServicio() {
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
                       <span className="text-muted small">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
+                    <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
+                      <FaCog color="white" size={10} />
+                    </Button>
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}

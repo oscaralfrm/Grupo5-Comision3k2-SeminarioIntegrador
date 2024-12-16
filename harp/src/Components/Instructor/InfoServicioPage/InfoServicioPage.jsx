@@ -45,15 +45,16 @@ const InfoServicioPage = () => {
         </Col>
       </Row>
 
-
       {/* Reseñas */}
       <Row className="mt-4 align-items-center">
-        <Col className=" align-items-center">
-          <div className="p-3 bg-light rounded shadow-sm">
+        <Col className="col-6 align-items-center d-flex justify-content-center">
+          <div className="align-items-center d-flex justify-content-center w-100">
             <ReviewCarousel />
           </div>
         </Col>
+
         <Col
+          className="col-6"
           style={{
             backgroundColor: "white",
             padding: "20px",
@@ -72,11 +73,11 @@ const InfoServicioPage = () => {
               color: "white",
             }}
           >
-            <h4 className="fw-blod mb-2 mt-2 text-center">Acerca de las clases</h4>
-
-           
+            <h4 className="fw-blod mb-2 mt-2 text-center">
+              Acerca de las clases
+            </h4>
           </div>
-           <p className="mt-3">{serviceData?.descripcion}</p>
+          <p className="mt-3">{serviceData?.descripcion}</p>
         </Col>
       </Row>
     </div>

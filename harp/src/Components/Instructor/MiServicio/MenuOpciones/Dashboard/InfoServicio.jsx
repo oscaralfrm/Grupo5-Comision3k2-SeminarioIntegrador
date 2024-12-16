@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getServicioById } from "../../../../../services/Servicio.js";
 
-const InfoCard = () => {
+const InfoCard = ({serviceData, setServiceData}) => {
   const [showDetails, setShowDetails] = useState(true);
   const [serviceData, setServiceData] = useState(null);
   const { idServicio } = useParams();
@@ -27,6 +27,10 @@ const InfoCard = () => {
     // Cambiar la ruta según lo que necesites
     navigate(`/instructor/${idInstructor}/servicio/${idServicio}/info-servicio`);  // Ejemplo de ruta dinámica
   };
+
+  //const {idServicio} = useParams();
+
+  //const toggleDetails = () => setShowDetails(!showDetails);
 
   const cardStyle = {
     backgroundColor: "white",
