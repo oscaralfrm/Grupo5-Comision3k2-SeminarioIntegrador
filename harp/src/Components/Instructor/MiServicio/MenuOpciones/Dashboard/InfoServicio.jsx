@@ -4,7 +4,7 @@ import { getServicioById } from "../../../../../services/Servicio.js";
 
 const InfoCard = ({serviceData, setServiceData}) => {
   const [showDetails, setShowDetails] = useState(true);
-  const [serviceData, setServiceData] = useState(null);
+  //const [serviceData, setServiceData] = useState(null);
   const { idServicio } = useParams();
   const {idInstructor} = useParams();
   const navigate = useNavigate();  // Hook para navegar
