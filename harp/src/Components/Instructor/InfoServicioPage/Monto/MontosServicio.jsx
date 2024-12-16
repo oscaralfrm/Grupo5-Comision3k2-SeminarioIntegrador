@@ -75,7 +75,7 @@ function MontosServicio() {
       // Crear un Map para asegurar elementos únicos basados en cantVecesSemanales
       const uniqueFrequencies = Array.from(
         new Map(
-          grupos.map((freq) => [freq.cantVecesSemanales, freq])
+          grupos.map((freq) => [freq.horarios.length, freq])
         ).values()
       );
 

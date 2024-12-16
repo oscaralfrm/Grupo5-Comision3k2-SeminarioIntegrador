@@ -4,14 +4,16 @@ import { FaCog } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
 import { getGruposDeServicio, createGrupoConHorarios } from "../../../../services/Grupo";
 import { getAlumnosDeGrupo } from "../../../../services/Alumno";
-import CrearGrupoModal from "./ModalGruposServicio";
+import CrearGrupoModal from "./ModalCrearGrupo";
+import EditarGrupoModal from "./ModalEditarGrupo";
 
 function GruposServicio() {
   const { idServicio } = useParams();
-  const navigate = useNavigate();
   const [grupos, setGrupos] = useState([]);
   const [cuposLibres, setCuposLibres] = useState({});
-  const [showModal, setShowModal] = useState(false);
+  const [grupoSeleccionado, setGrupoSeleccionado] = useState(null); // Nuevo estado
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [showModalCrear, setShowModalCrear] = useState(false);
   const [ultimoNumeroGrupo, setUltimoNumeroGrupo] = useState(0);
 
   const fetchGrupos = async () => {
@@ -48,8 +50,9 @@ function GruposServicio() {
     return numeroMaximo;
   };
 
-  const handleEditClick = () => {
-    navigate("/edit-grupo");
+  const handleEditClick = (grupo) => {
+    setGrupoSeleccionado(grupo);
+    setShowModalEdit(true);
   };
 
   const cargarCuposLibres = async () => {
@@ -86,11 +89,16 @@ function GruposServicio() {
   };
 
   const handleCrearGrupo = () => {
-    setShowModal(true);
+    setShowModalCrear(true);
   };
 
-  const handleCerrarModal = () => {
-    setShowModal(false);
+  const handleCerrarModalCrear = () => {
+    setShowModalCrear(false);
+    fetchGrupos();
+  };
+
+  const handleCerrarModalEdit = () => {
+    setShowModalEdit(false);
     fetchGrupos();
   };
 
@@ -117,7 +125,7 @@ function GruposServicio() {
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
                       <span className="text-muted small me-4">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
-                    <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={handleEditClick} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
+                    <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
                       <FaCog color="white" size={10} />
                     </Button>
                     {ordenarPorDia(grupo.horarios).map((horario) => (
@@ -157,8 +165,11 @@ function GruposServicio() {
       </Row>
 
       {/* Modal para Crear Grupo */}
-      <CrearGrupoModal show={showModal} handleClose={handleCerrarModal} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos}/>
+      <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos}/>
       
+      {/* Modal para Editar Grupo */}
+      <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchGrupos}/>
+
     </Container>
   );
 }
