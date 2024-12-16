@@ -103,9 +103,24 @@ function GruposServicio() {
   };
 
   return (
-    <Container className="p-3 bg-light" style={{ maxWidth: "100%", margin: "auto", fontFamily: "Roboto" }}>
+    <Container 
+      className="p-3 bg-light" 
+      style={{ 
+        maxWidth: "100%", 
+        margin: "auto", 
+        fontFamily: "Roboto", 
+        backgroundColor: "white",
+        padding: "20px",
+        borderRadius: "20px",
+        boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
+        
+        }}>
+                          
       <div className="mb-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1E1B4B", borderRadius: "8px", padding: "15px" }}>
-        <h2 className="text-center" style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5em" }}>
+        <h2 className="text-center" 
+          style={{ color: "white", 
+                  fontFamily: "Roboto", 
+                  fontSize: "1.5em" }}>
           Grupos y Horarios
         </h2>
         <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleCrearGrupo}>
