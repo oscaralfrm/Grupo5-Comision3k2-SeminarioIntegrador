@@ -69,6 +69,13 @@ public class GrupoService implements IGrupoService {
         return grupoCreado;
     };
 
+    public boolean validarSuperposicionHorarios(Servicio servicio, HorarioDTO horarioDTO) {
+        boolean noCumple = servicio.tienGrupoEnEsteHorario(horarioDTO.getHoraInicio(),
+                horarioDTO.getHoraFin(),
+                horarioDTO.getNombreDiaSemana());
+        return noCumple;
+    }
+
     @Transactional
     @Override
     public Grupo createGrupoConHorarios(GrupoDTO grupoDTO, Long idServicio) {
@@ -127,6 +134,54 @@ public class GrupoService implements IGrupoService {
         }
 
         return grupoCreado;
+    }
+
+    public void agregarHorariosAGrupo(List<HorarioDTO> horariosDTO, Long idGrupo, Long idServicio) {
+        Grupo grupoExistente = findGrupo(idGrupo);
+        Servicio servicio = servicioService.findServicio(idServicio);
+
+        // ACA Validar
+        for (HorarioDTO horarioDTO : horariosDTO) {
+            boolean noCumple = servicio.tienGrupoEnEsteHorario(horarioDTO.getHoraInicio(),
+                    horarioDTO.getHoraFin(),
+                    horarioDTO.getNombreDiaSemana());
+            if (noCumple) {
+                throw new UnsupportedOperationException("Un horario se superpone con otro configurado previamente.");
+            }
+        }
+
+        List<Horario> horarios = horariosDTO.stream().map(dto -> horarioConverter.dtoToEntity(dto)).toList();
+
+        for (int i=0; i< horarios.size(); i++) {
+            Horario horario1 = horarios.get(i);
+
+            for (int j = i+1; j<horariosDTO.size(); j++) {
+                Horario horario2 = horarios.get(j);
+                if (horario2.estaEn(horario1.getHoraInicio(),
+                        horario1.getHoraFin(),
+                        horario1.getDiaSemana().getNombre())) {
+                    throw new UnsupportedOperationException("Los horarios ingresados se superponen entre sí");
+                }
+            }
+        }
+
+        // Por cada horario que nos llega
+        for (Horario horario : horarios) {
+            // aca asignarle al grupo el numero del último asociado al servicio
+            horarioService.saveHorario(horario);
+            grupoExistente.agregarHorario(horario);
+        }
+
+        grupoRepository.save(grupoExistente);
+
+        // Aca creamos las clases para ese horario
+        if (servicio.isAsistenciasActivas() && servicio.tieneFechaInicio()) {
+            // Creamos las clases a partir de la fecha inicio del servicio
+            // Cuando setteamos la fecha inicio tambien deberiamos crear las clases
+            for (Horario horario : horarios) {
+                claseService.crearClasesParaSemanaSiguienteHorario(grupoExistente, servicio.getFechaInicio(), horario);
+            }
+        }
     }
 
 
@@ -207,15 +262,7 @@ public class GrupoService implements IGrupoService {
 //        grupoRepository.save(grupoExistente);
 //    }
 
-    public void agregarHorarioAGrupo(Horario horario, Long idGrupo) {
-        Grupo grupoExistente = findGrupo(idGrupo);
 
-        // ACA Validar que el grupo tenga luga disponible
-
-
-        grupoExistente.agregarHorario(horario);
-        grupoRepository.save(grupoExistente);
-    }
 
 /*
     // REdefinir: servicioService deberia buscar el servicio y pasarselo por parametros?

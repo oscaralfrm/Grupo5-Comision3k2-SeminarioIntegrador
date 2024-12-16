@@ -4,6 +4,7 @@ import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.horario.Horario;
+import com.harp.backend.entities.horario.HorarioDTO;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public interface IGrupoService {
     //public void agregarAlumnoAGrupo(Long idServicio, Integer numGrupo, Long idAlumno);
     //public void eliminarAlumnoDeGrupo(Long idServicio, Integer numGrupo, Long idAlumno);
     Grupo createGrupoConHorarios(GrupoDTO grupoDTO, Long idServicio);
+    void agregarHorariosAGrupo(List<HorarioDTO> horariosDTO, Long idGrupo, Long idServicio);
     List<Alumno> obtenerAlumnosActualesDeGrupo(Long idServicio, Long idGrupo);
     List<Inscripcion> findInscripcionesDeGrupo(Long idServicio, Long idGrupo, boolean vigentes, boolean pendientes);
 }

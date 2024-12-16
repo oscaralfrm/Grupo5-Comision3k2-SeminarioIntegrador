@@ -4,6 +4,7 @@ package com.harp.backend.entities.clase;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.grupo.Grupo;
+import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.servicio.Servicio;
 
 import java.time.LocalDate;
@@ -20,4 +21,5 @@ public interface IClaseService {
     public void cambiarClaseANoFueDada(Long idClase);
     void crearClasesParaSemanaSiguente(Servicio servicio, LocalDate fechaInicio);
     void crearClasesParaSemanaSiguienteGrupo(Grupo grupo, LocalDate fechaInicio);
+    void crearClasesParaSemanaSiguienteHorario(Grupo grupo, LocalDate fechaInicio, Horario horario);
 }
