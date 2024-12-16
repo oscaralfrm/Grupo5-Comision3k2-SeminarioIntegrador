@@ -7,6 +7,7 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
   const [diaSemana, setDiaSemana] = useState('');
   const [horaInicio, setHoraInicio] = useState('');
   const [horaFin, setHoraFin] = useState('');
+  const [tipoClase, setTipoClase] = useState('');
   const [horarios, setHorarios] = useState([]);
   const [cantMaxCupos, setCantMaxCupos] = useState(0);
   
@@ -64,6 +65,16 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
       return;
     }
 
+    if (!tipoClase) {
+      alert('Debe seleccionar el tipo de clase.');
+      return;
+    }
+
+    if (tipoClase === 'Grupal' && cantMaxCupos < 2) {
+      alert('Las clases grupales deben tener al menos 2 cupos.');
+      return;
+    }
+
     if (horarios.length === 0) {
       alert('Debe agregar al menos un horario.');
       return;
@@ -99,14 +110,39 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
           </Form.Group>
 
           <Form.Group className="mb-3">
+            <Form.Label>Tipo de Clase</Form.Label>
+            <Form.Select
+              value={tipoClase}
+              onChange={(e) => {
+                const tipo = e.target.value;
+                setTipoClase(tipo);
+                // Ajustar los cupos según el tipo de clase
+                if (tipo === 'Individual') {
+                  setCantMaxCupos(1);
+                } else {
+                  setCantMaxCupos('');
+                }
+              }}
+              required
+            >
+              <option value="" disabled>
+                Seleccione tipo de clase
+              </option>
+              <option value="Individual">Individual</option>
+              <option value="Grupal">Grupal</option>
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
             <Form.Label>Cupos Máximos</Form.Label>
             <Form.Control
               type="number"
-              min={1} // Set minimum cupos to 1
+              min={tipoClase === 'Grupal' ? 2 : 1} // Mínimo dinámico
               value={cantMaxCupos}
-              onChange={(e) => setCantMaxCupos(parseInt(e.target.value))} // Parse to integer
+              onChange={(e) => setCantMaxCupos(parseInt(e.target.value))}
               placeholder="Cantidad máxima de cupos"
               required
+              disabled={tipoClase === 'Individual'} // Deshabilitar si es Individual
             />
           </Form.Group>
 
