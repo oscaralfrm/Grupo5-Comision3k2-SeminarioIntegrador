@@ -166,6 +166,9 @@ function GruposServicio() {
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
                       <span className="text-muted small">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
+                    <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
+                      <FaCog color="white" size={10} />
+                    </Button>
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
