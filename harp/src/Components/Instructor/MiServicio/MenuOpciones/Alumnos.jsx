@@ -66,15 +66,6 @@ const Alumnos = () => {
             <div className="text-center" style={{ flex: 1 }}>
               <h1 style={{ color: "#1E1B4B", fontWeight: "bold" }}>Alumnos</h1>
             </div>
-            <div className="text-end">
-              <Button
-                style={{ backgroundColor: "#4a47a3",
-                  color: "#ffffff", border: 0, padding: "1vh"}}
-                onClick={() => navigate(`/instructor/${idServicio}/crear-grupo`)}
-              >
-                Agregar Grupo
-              </Button>
-            </div>
           </Row>
   
           {/* Filtros */}

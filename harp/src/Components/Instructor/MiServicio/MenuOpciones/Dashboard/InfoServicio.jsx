@@ -1,21 +1,44 @@
-import React, { useState , useEffect} from "react";
-import ReviewCarousel from "./Reseñas";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getServicioById } from "../../../../../services/Servicio.js";
 
 const InfoCard = ({serviceData, setServiceData}) => {
   const [showDetails, setShowDetails] = useState(true);
-  const {idServicio} = useParams();
+  //const [serviceData, setServiceData] = useState(null);
+  const { idServicio } = useParams();
+  const {idInstructor} = useParams();
+  const navigate = useNavigate();  // Hook para navegar
 
   const toggleDetails = () => setShowDetails(!showDetails);
+
+  useEffect(() => {
+    const fetchServicio = async () => {
+      try {
+        const data = await getServicioById(idServicio);
+        setServiceData(data);
+      } catch (error) {
+        console.error('Error al traer el servicio:', error);
+      }
+    };
+    fetchServicio();
+  }, [idServicio]);
+
+  const handleVerServicio = () => {
+    // Cambiar la ruta según lo que necesites
+    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/info-servicio`);  // Ejemplo de ruta dinámica
+  };
+
+  //const {idServicio} = useParams();
+
+  //const toggleDetails = () => setShowDetails(!showDetails);
 
   const cardStyle = {
     backgroundColor: "white",
     padding: "20px",
     borderRadius: "20px",
     boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-    maxWidth:'90%',
-    minWidth:'90%',
+    maxWidth: '90%',
+    minWidth: '90%',
     margin: "0 auto",
   };
 
@@ -46,7 +69,6 @@ const InfoCard = ({serviceData, setServiceData}) => {
 
   return (
     <div style={cardStyle}>
-      {/* Contenedor con margen superior */}
       <div
         style={{
           backgroundColor: "#1E1B4B",
@@ -120,21 +142,21 @@ const InfoCard = ({serviceData, setServiceData}) => {
           {showDetails ? "Ocultar Detalles" : "Mostrar Detalles"}
         </button>
         <button
-          type = "submit"
+          type="button"
+          onClick={handleVerServicio}  // Acción de navegar
           style={{
             ...buttonStyle,
             backgroundColor: "white",
-            color: "#4F46E5", // Color del texto
-            borderColor: "#4F46E5", // Color del borde
-            borderWidth: "2px", // Puedes ajustar el grosor del borde si es necesario
-            borderStyle: "solid", // Definir el estilo del borde (opcional, pero recomendado)
+            color: "#4F46E5", 
+            borderColor: "#4F46E5", 
+            borderWidth: "2px",
+            borderStyle: "solid",
           }}
         >
-          Editar
+          Ver Servicio
         </button>
       </div>
 
-      {/* Responsive adjustments */}
       <style>
         {`
           @media (max-width: 768px) {

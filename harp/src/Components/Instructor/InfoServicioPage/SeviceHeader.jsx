@@ -123,7 +123,7 @@ function ServiceHeader({ serviceData, setServiceData }) {
                 <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
               </p>
               <div className="ms-auto d-flex align-items-center">
-                <strong className="me-2">Inscripciones:</strong>
+                <strong className="me-2">Publicar Servicio:</strong>
                 <Form>
                   <Form.Check
                     type="switch"
@@ -137,8 +137,8 @@ function ServiceHeader({ serviceData, setServiceData }) {
                         }
                       >
                         {serviceData?.inscripcionesAbiertas
-                          ? "Habilitadas"
-                          : "Deshabilitadas"}
+                          ? "Servicio Publicado"
+                          : "Servicio NO Publicado"}
                       </span>
                     }
                     checked={serviceData?.inscripcionesAbiertas}
