@@ -14,7 +14,7 @@ function Footer() {
           </div>
 
           {/* Sobre Nosotros */}
-          <div className="col-md-3 mt-3">
+          <div className="col-md-3">
             <h5 className="text-center">Sobre Nosotros</h5>
             <p className="text-center">
               Somos la plataforma líder de gestión de cursos y nos consolidamos
