@@ -33,11 +33,28 @@ function NavbarInstructor() {
   const handleSelectService = (serviceId) => {
     const service = servicios.find((servicio) => servicio.id === serviceId);
     if (service) {
+      // Obtener la ruta actual
+      const currentPath = window.location.pathname;
+  
+      // Identificar si termina con "mi-servicio" o "info-servicio" o cualquier otra parte final
+      const basePath = currentPath.split('/').slice(0, -1).join('/'); // Ruta base sin el último segmento
+      const lastSegment = currentPath.split('/').pop(); // Último segmento de la ruta actual
+  
+      // Construir la nueva ruta con el patrón actual
+      const newPath = `${basePath}/${lastSegment}`.replace(
+        /\/servicio\/\d+\//, // Reemplaza la parte `/servicio/:serviceId/`
+        `/servicio/${serviceId}/`
+      );
+  
+      // Navegar a la nueva ruta
       setSelectedService(service);
-      navigate(`/instructor/${idInstructor}/servicio/${serviceId}/mi-servicio`);
+      navigate(newPath);
     }
+  
+    // Cerrar el dropdown
     setDropdownOpen(false);
   };
+  
 
   useEffect(() => {
     if (idServicio) {

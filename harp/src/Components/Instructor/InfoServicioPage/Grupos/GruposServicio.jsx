@@ -104,7 +104,7 @@ function GruposServicio() {
 
   return (
     <Container 
-      className="p-3 bg-light" 
+      className="p-3" 
       style={{ 
         maxWidth: "100%", 
         margin: "auto", 
@@ -113,6 +113,7 @@ function GruposServicio() {
         padding: "20px",
         borderRadius: "20px",
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
+        minHeight: "100%"
         
         }}>
                           
