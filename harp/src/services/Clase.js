@@ -16,7 +16,7 @@ export const getClaseById = async (idClase) => {
 
 export const getClasesDeGrupo = async (idGrupo) => {
     try {
-        const response = await axios.get(`${API_URL}/servicios/grupos/${idGrupo}/clases`);
+        const response = await axios.get(`/servicios/grupos/${idGrupo}/clases`);
         return response.data;  // Suponiendo que la respuesta es un array de clases
     } catch (error) {
         console.error("Error fetching clases de grupo: ", error);
@@ -27,7 +27,7 @@ export const getClasesDeGrupo = async (idGrupo) => {
 // Servicio para obtener clases futuras de un horario específico
 export const getClasesFuturasDeGrupo = async (idGrupo) => {
     try {
-        const response = await axios.get(`${API_URL}/servicio/grupos/${idGrupo}/clases-futuras`);
+        const response = await axios.get(`/servicio/grupos/${idGrupo}/clases-futuras`);
         return response.data;  // Suponiendo que la respuesta es un array de clases futuras
     } catch (error) {
         console.error("Error fetching clases futuras de horario: ", error);
@@ -70,7 +70,7 @@ export const cambiarClaseANoFueDada = async (idClase) => {
 
 export const getClaseHoyDeServicio = async (idServicio) => {
     try {
-        const response = await axios.get(`${API_URL}/servicios/${idServicio}/clases-hoy`);
+        const response = await axios.get(`/servicios/${idServicio}/clases-hoy`);
         return response.data;  // Suponiendo que la respuesta es un array de clases
     } catch (error) {
         console.error("Error fetching clases de grupo: ", error);
@@ -80,7 +80,7 @@ export const getClaseHoyDeServicio = async (idServicio) => {
 
 export const getClasesDeServicio = async (idServicio) => {
     try {
-        const response = await axios.get(`${API_URL}/servicios/${idServicio}/clases`);
+        const response = await axios.get(`/servicios/${idServicio}/clases`);
         return response.data;  // Suponiendo que la respuesta es un array de clases
     } catch (error) {
         console.error("Error fetching clases de grupo: ", error);
