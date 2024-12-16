@@ -101,6 +101,13 @@ public class ServicioController {
         return  ResponseEntity.ok("Se activaron las asistencias");
     }
 
+    // EDITAR
+    @PutMapping("/{idServicio}/desactivar-asistencias")
+    public ResponseEntity<String> desactivarAsistencias(@PathVariable @Min(1) Long idServicio) {
+        servicioService.desactivarAsistencias(idServicio);
+        return  ResponseEntity.ok("Se desactivaron las asistencias");
+    }
+
 //    // EDITAR
 //    @GetMapping("/{idServicio}/inscripciones/obtener")
 //    public ResponseEntity<List<Inscripcion>> obtenerInscripcionesDeServicio(@PathVariable @Min(1) Long idServicio) {
