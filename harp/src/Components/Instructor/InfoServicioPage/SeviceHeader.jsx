@@ -54,6 +54,7 @@ function ServiceHeader({ serviceData, setServiceData }) {
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         maxWidth: "100%",
         margin: "auto",
+        marginTop:"6rem" 
       }}
     >
       {/* Edit Button */}

@@ -22,6 +22,7 @@ function MontosServicio() {
   const [availableFrequencies, setAvailableFrequencies] = useState([]);
   const [selectedFrequency, setSelectedFrequency] = useState(null);
   const [hasMontoForFrequency, setHasMontoForFrequency] = useState(false);
+  const [frecuencias, setFrecuencias] = useState([]);
 
   const fetchFrequencies = async () => {
     // Aquí deberías llamar al servicio real para obtener las frecuencias
@@ -66,10 +67,20 @@ function MontosServicio() {
         const programados = await getMontosProgramadosServicio(idServicio);
         setProgramados(programados);
 
+
         const grupos = await getGruposDeServicio(idServicio);
         const frequenciesSet = new Set(
           grupos.map((grupo) => grupo.horarios.length)
         );
+      // Crear un Map para asegurar elementos únicos basados en cantVecesSemanales
+      const uniqueFrequencies = Array.from(
+        new Map(
+          grupos.map((freq) => [freq.cantVecesSemanales, freq])
+        ).values()
+      );
+
+      setFrecuencias(uniqueFrequencies);
+      console.log(frecuencias.length);
         setAvailableFrequencies(
           Array.from(frequenciesSet).sort((a, b) => a - b)
         );
@@ -158,15 +169,15 @@ function MontosServicio() {
             {/* Montos por frecuencia semanal */}
             <Card>
               <Card.Body>
-                {frequencies.length > 0 ? (
-                  frequencies.map((freq, index) => {
+                {frecuencias.length > 0 ? (
+                  frecuencias.map((freq, index) => {
                     const fechaInicio = new Date(
                       freq.fechaInicio + "T00:00:00"
                     );
                     const esFechaFutura = fechaInicio > new Date();
 
                     return (
-                      <div key={index} className="mb-2">
+                      <div key={index} className="mb-2 vh-6">
                         <p className="mb-1">
                           <strong>Frecuencia:</strong> {freq.cantVecesSemanales}{" "}
                           veces por semana
@@ -187,50 +198,62 @@ function MontosServicio() {
                     );
                   })
                 ) : (
-                  <Alert variant="warning">
-                    No hay montos configurados para ninguna frecuencia semanal.
+                  <Alert
+                    variant="warning"
+                    className="justify-content-between align-items-center"
+                  >
+                    <span>
+                      No hay montos configurados para ninguna frecuencia
+                      semanal.
+                    </span>
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        reset();
+                        setConfigShowModal(true);
+                      }}
+                    >
+                      Configurar
+                    </Button>
                   </Alert>
                 )}
               </Card.Body>
             </Card>
           </div>
         </Col>
+        {frequencies.length > 0 && (
+          <Col md={6} sm={12} className="align-items-center">
+            <div className="p-3">
+              <h5 className="fw-bold text-center">Programados</h5>
+              <Card className="h-10 align-items-center">
+                <Card.Body className="d-flex flex-column justify-content-between">
+                  {programados.length > 0 ? (
+                    programados.map((freq, index) => {
+                      const fechaInicio = new Date(
+                        freq.fechaInicio + "T00:00:00"
+                      );
+                      const esFechaFutura = fechaInicio > new Date();
 
-        {/* Columna derecha: Montos del servicio */}
-        <Col md={6} sm={12} className="align-items-center">
-          <div className="p-3 ">
-            <h5 className="fw-bold text-center">Programados</h5>
-            {/* Montos programados */}
-            <Card className="h-10 align-items-center">
-              <Card.Body className="d-flex flex-column justify-content-between">
-                {programados.length > 0 ? (
-                  programados.map((freq, index) => {
-                    const fechaInicio = new Date(
-                      freq.fechaInicio + "T00:00:00"
-                    );
-                    const esFechaFutura = fechaInicio > new Date();
-
-                    return (
-                      <div key={index} className="mb-2 vh-6">
-                        <p className="mb-1">
-                          <strong>Frecuencia:</strong> {freq.cantVecesSemanales}{" "}
-                          veces por semana
-                        </p>
-                        <p className="mb-1">
-                          <strong>Monto:</strong> ${freq.monto}
-                        </p>
-                        <p className="mb-1">
-                          <strong>Vigente desde:</strong>{" "}
-                          {fechaInicio.toLocaleDateString()}
-                        </p>
-                        {esFechaFutura && (
-                          <button className="btn btn-primary">Editar</button>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <>
+                      return (
+                        <div key={index} className="mb-2 vh-6">
+                          <p className="mb-1">
+                            <strong>Frecuencia:</strong>{" "}
+                            {freq.cantVecesSemanales} veces por semana
+                          </p>
+                          <p className="mb-1">
+                            <strong>Monto:</strong> ${freq.monto}
+                          </p>
+                          <p className="mb-1">
+                            <strong>Vigente desde:</strong>{" "}
+                            {fechaInicio.toLocaleDateString()}
+                          </p>
+                          {esFechaFutura && (
+                            <button className="btn btn-primary">Editar</button>
+                          )}
+                        </div>
+                      );
+                    })
+                  ) : (
                     <Alert
                       variant="warning"
                       className="justify-content-between align-items-center"
@@ -246,15 +269,14 @@ function MontosServicio() {
                         Configurar
                       </Button>
                     </Alert>
-                  </>
-                )}
-              </Card.Body>
-            </Card>
-          </div>
-        </Col>
+                  )}
+                </Card.Body>
+              </Card>
+            </div>
+          </Col>
+        )}
       </Row>
 
-      
       <hr />
       {serviceData && serviceData.montoInscripcion > 0 ? (
         <>

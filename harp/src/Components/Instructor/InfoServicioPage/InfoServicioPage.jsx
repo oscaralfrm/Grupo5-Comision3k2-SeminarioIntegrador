@@ -25,7 +25,7 @@ const InfoServicioPage = () => {
   }, [idServicio]);
 
   return (
-    <div className="container mt-4" style={{ fontFamily: "Roboto" }}>
+    <div className="container mt-4" style={{ fontFamily: "Roboto"}}>
       {/* Servicio Header */}
       <ServiceHeader
         serviceData={serviceData}
