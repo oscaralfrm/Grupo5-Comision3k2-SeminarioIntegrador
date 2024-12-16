@@ -155,7 +155,7 @@ function ServiceHeader({ serviceData, setServiceData }) {
           </Row>
         </Col>
       </Row>
-      <BarraResumen />
+      <BarraResumen idServicio={idServicio}/>
     </Card>
   );
 }
