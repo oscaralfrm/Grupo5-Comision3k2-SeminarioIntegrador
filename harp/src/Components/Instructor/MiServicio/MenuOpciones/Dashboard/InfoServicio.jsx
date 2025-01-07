@@ -129,11 +129,12 @@ const InfoCard = ({serviceData, setServiceData}) => {
             <strong>Asistencias:</strong> {serviceData?.asistenciasActivas === true ? "Activas" : "Inactivas"}
           </p>
           <p>
-            <strong>Clase prueba:</strong> {serviceData?.claseDePruba === true ? "Si" : "No"}
+            <strong>Clase prueba:</strong> {serviceData?.claseDePruba ===  1 ? "Si" : "No"}
           </p>
           <p>
-            <strong>Publicado:</strong> {serviceData?.publico === true ? "Si" : "No"} 
+            <strong>Publicado:</strong> {serviceData?.publico === 1 ? "Si" : "No"} 
           </p>
+          
         </div>
       )}
 

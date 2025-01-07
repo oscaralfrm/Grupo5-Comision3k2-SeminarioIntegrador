@@ -5,6 +5,7 @@ import Navbar from '../PaginaDeInicio/NavbarLandingPage/NavbarLandingPage.jsx';
 import NavbarInstructor from '../Instructor/MiServicio/NavbarInstructor/NavbarInstructor.jsx';
 import NavbarRegisterChooser from '../RegistroSesion/NavbarRegistrerChooser/NavbarRegisterChooser.jsx';
 import NavbarServicio from '../Instructor/MiServicio/NavbarInstructor/NavbarServicios/NavbarServicio.jsx';
+import { IoIosLogIn } from 'react-icons/io';
 
 const AppNavbar = () => {
   const location = useLocation();
@@ -14,6 +15,7 @@ const AppNavbar = () => {
   const isPrincipalRoute = location.pathname === '/';
   const isInstructorRoute = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/`);
   const isInstructorService =location.pathname === `/instructor/${idInstructor}/servicios`;
+  const isLogin =location.pathname === `/login`;
   const isCreateServiceRoute = location.pathname === `/instructor/${idInstructor}/crear-servicio`;
   const isRegisterRoute = location.pathname.startsWith('/registro');
 
@@ -31,6 +33,7 @@ const AppNavbar = () => {
       {/* Muestra NavbarRegisterChooser en rutas de registro */}
       {isRegisterRoute && <NavbarRegisterChooser />}
       {isInstructorService && <NavbarServicio /> }
+      {isLogin && <NavbarRegisterChooser /> }
     </>
   );
 };

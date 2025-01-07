@@ -106,7 +106,6 @@ export default function ServicioForm() {
         height: "100vh",
         fontFamily: "Roboto",
         flexWrap: "wrap",
-        marginTop:"5rem"
       }}
     >
       {/* Columna Izquierda (Formulario) */}

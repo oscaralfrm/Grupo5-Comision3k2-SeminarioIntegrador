@@ -9,8 +9,19 @@ function Footer() {
       <div className="container py-4">
         <div className="row">
           {/* Logo */}
-          <div className="d-flex col-md-3 align-items-center justify-content-center">
-            <img src={img} alt="Harp Logo" width="100%"  />
+          <div
+            className="d-flex col-md-3 align-items-center justify-content-center"
+            style={{ height: "100%" }} // Asegura que el contenedor ocupe toda la altura
+          >
+            <img
+              src={img}
+              alt="Harp Logo"
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain", // Ajusta el logo dentro del contenedor
+              }}
+            />
           </div>
 
           {/* Sobre Nosotros */}
