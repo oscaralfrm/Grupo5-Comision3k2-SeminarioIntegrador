@@ -30,25 +30,25 @@ export const RegisterFormChooser = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         textAlign: 'center',
-        height: '100%', // Se asegura de que ambas tarjetas tengan la misma altura
         borderRadius: '20px',
-        padding: '1.5rem', // Reducir padding para menos espacio dentro de las tarjetas
-        minHeight: '400px', // Para asegurar un tamaño adecuado en pantallas pequeñas
+        padding: '1.5rem',
+        minHeight: '350px', // Reducido para permitir más flexibilidad en pantallas pequeñas
+        width: '100%', // Se asegura que las tarjetas no se extiendan más allá de su contenedor
     };
 
     return (
         <div 
-            className="container-fluid vh-100 d-flex align-items-center justify-content-center" 
+            className="container-fluid vh-100 d-flex flex-column align-items-center" 
             style={{
                 fontFamily: 'Roboto',
                 backgroundColor: '#F4F4F9',
-                padding: '2rem',
-                marginTop: '-3em', // Sin margen en pantallas grandes
+                padding: '1rem',
+                marginTop: '10vh', // Mayor margen superior para bajar las tarjetas
             }}
         >
-            <div className="row w-100 d-flex justify-content-between" style={{ gap: '0' }}>
+            <div className="row w-100 d-flex justify-content-center" style={{ gap: '10px', flexWrap: 'wrap' }}>
                 {/* Card de Instructor */}
-                <div className="col-md-5 col-sm-8 col-12 d-flex justify-content-center mb-3 px-0 a" style={{ marginRight: '20px' }}>
+                <div className="col-lg-5 col-md-5 col-sm-8 col-10 d-flex justify-content-center mb-3 px-0">
                     <div 
                         className="shadow-lg w-100"
                         style={{
@@ -57,7 +57,7 @@ export const RegisterFormChooser = () => {
                             ...slideInLeftStyle,
                         }}
                     >
-                        <h3 className="mb-3" style={{ fontSize: '2rem' }}>¿Eres Instructor?</h3>
+                        <h3 className="mb-3" style={{ fontSize: '1.8rem' }}>¿Eres Instructor?</h3>
                         <img 
                             src={panaTeacher} 
                             alt="PanaTeacher" 
@@ -75,7 +75,7 @@ export const RegisterFormChooser = () => {
                 </div>
 
                 {/* Card de Alumno */}
-                <div className="col-md-5 col-sm-8 col-12 d-flex justify-content-center mb-3 px-0 b" style={{ marginLeft: '20px' }}>
+                <div className="col-lg-5 col-md-5 col-sm-8 col-10 d-flex justify-content-center mb-3 px-0">
                     <div 
                         className="shadow-lg w-100"
                         style={{
@@ -84,7 +84,7 @@ export const RegisterFormChooser = () => {
                             ...slideInRightStyle,
                         }}
                     >
-                        <h3 className="mb-3" style={{ fontSize: '2rem' }}>¿Eres Alumno?</h3>
+                        <h3 className="mb-3" style={{ fontSize: '1.8rem' }}>¿Eres Alumno?</h3>
                         <img 
                             src={panaStudents} 
                             alt="PanaStudents" 
@@ -101,27 +101,38 @@ export const RegisterFormChooser = () => {
                     </div>
                 </div>
             </div>
-            
-            {/* Media query para ajustar el margen superior en pantallas pequeñas */}
+
+            {/* Media queries más detallados */}
             <style>
                 {`
-                    @media (max-width: 768px) {
+                    @media (max-width: 576px) {
                         .container-fluid {
-                            margin-top: 6vh !important;
+                            padding: 1rem;
+                            margin-top: 15vh; // Aumentar el margen superior
                         }
-                        .col-md-5 {
-                            margin-left: 0 !important;
-                            margin-right: 0 !important;
+                        h3 {
+                            font-size: 1.6rem; // Ajustar el tamaño del texto
                         }
                     }
-                    @media (min-width: 768px) {
-                        .b {
-                            margin-left: 0px; /* Márgenes para pantallas más grandes */
-                            margin-right: 60px; /* Márgenes para pantallas más grandes */
+                    @media (min-width: 577px) and (max-width: 768px) {
+                        .container-fluid {
+                            padding: 1.5rem;
+                            margin-top: 10vh; // Espacio ajustado para pantallas medianas
                         }
-                        .a {
-                            margin-left: 60px; /* Márgenes para pantallas más grandes */
-                            margin-right: 0px; /* Márgenes para pantallas más grandes */
+                        h3 {
+                            font-size: 1.8rem; // Ajustar el tamaño del texto
+                        }
+                    }
+                    @media (min-width: 769px) and (max-width: 992px) {
+                        .container-fluid {
+                            padding: 2rem;
+                            margin-top: 0; // Elimina margen superior en escritorios grandes
+                        }
+                    }
+                    @media (min-width: 993px) {
+                        .container-fluid {
+                            padding: 2rem;
+                            margin-top: 0; // Elimina margen superior en escritorios grandes
                         }
                     }
                 `}
