@@ -14,7 +14,6 @@ export const RegisterFormChooser = () => {
         navigate('/registro/alumno');
     };
 
-    // Estilos de animación en línea
     const slideInLeftStyle = {
         animation: 'slide-in-left 1s ease-out forwards'
     };
@@ -23,7 +22,6 @@ export const RegisterFormChooser = () => {
         animation: 'slide-in-right 1s ease-out forwards'
     };
 
-    // Estilo de tarjetas para que tengan la misma altura y sean responsivas
     const cardStyle = {
         display: 'flex',
         flexDirection: 'column',
@@ -32,8 +30,8 @@ export const RegisterFormChooser = () => {
         textAlign: 'center',
         borderRadius: '20px',
         padding: '1.5rem',
-        minHeight: '350px', // Reducido para permitir más flexibilidad en pantallas pequeñas
-        width: '100%', // Se asegura que las tarjetas no se extiendan más allá de su contenedor
+        minHeight: '400px',
+        width: '100%',
     };
 
     return (
@@ -41,13 +39,17 @@ export const RegisterFormChooser = () => {
             className="container-fluid vh-100 d-flex flex-column align-items-center" 
             style={{
                 fontFamily: 'Roboto',
-                backgroundColor: '#F4F4F9',
+                backgroundColor: '#FFFFFF',
                 padding: '1rem',
-                marginTop: '10vh', // Mayor margen superior para bajar las tarjetas
+                marginTop: '10vh',
             }}
         >
+<<<<<<< HEAD
             <div className="row w-100 d-flex justify-content-center" style={{ gap: '80px', flexWrap: 'wrap' }}>
                 {/* Card de Instructor */}
+=======
+            <div className="row w-100 d-flex justify-content-center" style={{ gap: '55px', flexWrap: 'wrap' }}>
+>>>>>>> aa1a419b358af6a4cee3599900eb5cf272aaf27d
                 <div className="col-lg-5 col-md-5 col-sm-8 col-10 d-flex justify-content-center mb-3 px-0">
                     <div 
                         className="shadow-lg w-100"
@@ -74,7 +76,6 @@ export const RegisterFormChooser = () => {
                     </div>
                 </div>
 
-                {/* Card de Alumno */}
                 <div className="col-lg-5 col-md-5 col-sm-8 col-10 d-flex justify-content-center mb-3 px-0">
                     <div 
                         className="shadow-lg w-100"
@@ -102,68 +103,63 @@ export const RegisterFormChooser = () => {
                 </div>
             </div>
 
-            {/* Media queries más detallados */}
             <style>
-                {`
+                {
+                    `
                     @media (max-width: 576px) {
                         .container-fluid {
                             padding: 1rem;
-                            margin-top: 15vh; // Aumentar el margen superior
+                            margin-top: 15vh;
+                        }
+                        .shadow-lg {
+                            margin-bottom: 10vh;
                         }
                         h3 {
-                            font-size: 1.6rem; // Ajustar el tamaño del texto
+                            font-size: 1.6rem;
                         }
                     }
                     @media (min-width: 577px) and (max-width: 768px) {
                         .container-fluid {
                             padding: 1.5rem;
-                            margin-top: 10vh; // Espacio ajustado para pantallas medianas
+                            margin-top: 10vh;
                         }
                         h3 {
-                            font-size: 1.8rem; // Ajustar el tamaño del texto
+                            font-size: 1.8rem;
                         }
                     }
-                    @media (min-width: 769px) and (max-width: 992px) {
+                    @media (min-width: 769px) {
                         .container-fluid {
                             padding: 2rem;
-                            margin-top: 0; // Elimina margen superior en escritorios grandes
+                            margin-top: 0;
+                        }
+                        .shadow-lg {
+                            margin-bottom: 0;
                         }
                     }
-                    @media (min-width: 993px) {
-                        .container-fluid {
-                            padding: 2rem;
-                            margin-top: 0; // Elimina margen superior en escritorios grandes
+                    @keyframes slide-in-left {
+                        from {
+                            transform: translateX(-100%);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
                         }
                     }
-                `}
+
+                    @keyframes slide-in-right {
+                        from {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                    `
+                }
             </style>
         </div>
     );
 };
-
-// Agregar las animaciones CSS al archivo
-const styleTag = document.createElement('style');
-styleTag.innerHTML = `
-@keyframes slide-in-left {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slide-in-right {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-`;
-document.head.appendChild(styleTag);
