@@ -44,12 +44,7 @@ export const RegisterFormChooser = () => {
                 marginTop: '10vh',
             }}
         >
-<<<<<<< HEAD
-            <div className="row w-100 d-flex justify-content-center" style={{ gap: '80px', flexWrap: 'wrap' }}>
-                {/* Card de Instructor */}
-=======
             <div className="row w-100 d-flex justify-content-center" style={{ gap: '55px', flexWrap: 'wrap' }}>
->>>>>>> aa1a419b358af6a4cee3599900eb5cf272aaf27d
                 <div className="col-lg-5 col-md-5 col-sm-8 col-10 d-flex justify-content-center mb-3 px-0">
                     <div 
                         className="shadow-lg w-100"

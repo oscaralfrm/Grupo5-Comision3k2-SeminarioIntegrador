@@ -20,9 +20,7 @@ export const LoginForm = () => {
     const onSubmit = async (data) => {
         try {
             const { email, password } = data;
-            console.log(email, password);
             const id = await iniciarSesion(email, password);
-            console.log(id);
             const servicios = await getServiciosDeInstructor(id);
             
             //navegate(`/instructor/${id}/servicio/${servicios[0].id}/mi-servicio`)
