@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Navbar, Nav, NavDropdown, Button, Dropdown } from "react-bootstrap"; // Importa los componentes de react-bootstrap
 import img from "../../../../assets/LogoHarp420.png";
 import { getServiciosDeInstructor } from "../../../../services/Instructor";
 import { getServicioById } from "../../../../services/Servicio";
-
+import profileImg from "../../../../assets/profile.png";
 function NavbarInstructor() {
   const navigate = useNavigate();
   const [servicios, setServicios] = useState([]);
@@ -35,26 +36,25 @@ function NavbarInstructor() {
     if (service) {
       // Obtener la ruta actual
       const currentPath = window.location.pathname;
-  
+
       // Identificar si termina con "mi-servicio" o "info-servicio" o cualquier otra parte final
-      const basePath = currentPath.split('/').slice(0, -1).join('/'); // Ruta base sin el último segmento
-      const lastSegment = currentPath.split('/').pop(); // Último segmento de la ruta actual
-  
+      const basePath = currentPath.split("/").slice(0, -1).join("/"); // Ruta base sin el último segmento
+      const lastSegment = currentPath.split("/").pop(); // Último segmento de la ruta actual
+
       // Construir la nueva ruta con el patrón actual
       const newPath = `${basePath}/${lastSegment}`.replace(
         /\/servicio\/\d+\//, // Reemplaza la parte `/servicio/:serviceId/`
         `/servicio/${serviceId}/`
       );
-  
+
       // Navegar a la nueva ruta
       setSelectedService(service);
       navigate(newPath);
     }
-  
+
     // Cerrar el dropdown
     setDropdownOpen(false);
   };
-  
 
   useEffect(() => {
     if (idServicio) {
@@ -72,129 +72,123 @@ function NavbarInstructor() {
   };
 
   return (
-    <nav
-      className="navbar navbar-expand-lg navbar-light fixed-top"
+    <Navbar
+      expand="lg"
+      fixed="top"
       style={{
         fontFamily: "Roboto",
         backgroundColor: "#1E1B4B",
         color: "white",
-        width: "100%",
         fontSize: "1.2rem",
-        minHeight: "10vh",
       }}
     >
       <div className="container-fluid d-flex justify-content-between align-items-center">
         {/* Logo en todas las pantallas */}
-        <a className="navbar-brand" href="/" style={{ margin: "0 auto" }}>
-          <img src={img} alt="Harp Logo" width="130" className="d-none d-lg-block" />
+        <Navbar.Brand href="/" style={{ margin: "0 auto" }}>
+          <img
+            src={img}
+            alt="Harp Logo"
+            width="130"
+            className="d-none d-lg-block"
+          />
           <img src={img} alt="Harp Logo" width="100" className="d-lg-none" />
-        </a>
+        </Navbar.Brand>
 
         {/* Botón para mostrar/ocultar el menú en pantallas pequeñas */}
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
+        <Navbar.Toggle
           aria-controls="navbarNav"
-          aria-expanded={dropdownOpen ? "true" : "false"}
-          aria-label="Toggle navigation"
           onClick={toggleDropdown}
           style={{ border: "none" }} // Eliminar borde
-        >
-          <span
-            className="navbar-toggler-icon"
-            style={{
-              backgroundImage: "url('data:image/svg+xml;charset=utf8,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 30 30\"%3E%3Cpath stroke=\"white\" stroke-width=\"2\" d=\"M4 7h22M4 15h22M4 23h22\"/%3E%3C/svg%3E')",
-            }} // Cambiar color a blanco
-          ></span>
-        </button>
+        />
 
         {/* Contenedor de elementos en el navbar */}
-        <div
-          className={`collapse navbar-collapse w-100 ${dropdownOpen ? "show" : ""}`}
+        <Navbar.Collapse
           id="navbarNav"
+          className={dropdownOpen ? "show" : "text-white"}
         >
-          <ul className="navbar-nav mx-auto">
+          <Nav className="mx-auto">
             {/* Mi Servicio */}
-            <li className="nav-item">
-              <a
-                className="nav-link"
-                href={`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`}
-                style={{ color: "white" }}
-              >
-                Mi Servicio
-              </a>
-            </li>
+            <Nav.Link
+              href={`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`}
+              style={{ color: "white" }}
+            >
+              Mi Servicio
+            </Nav.Link>
             {/* Alumnos */}
-            <li className="nav-item">
-              <a
-                className="nav-link"
-                href={`/instructor/${idInstructor}/servicio/${idServicio}/alumnos`}
-                style={{ color: "white" }}
-              >
-                Alumnos
-              </a>
-            </li>
+            <Nav.Link
+              href={`/instructor/${idInstructor}/servicio/${idServicio}/alumnos`}
+              style={{ color: "white" }}
+            >
+              Alumnos
+            </Nav.Link>
             {/* Cobros */}
-            <li className="nav-item">
-              <a
-                className="nav-link"
-                href={`/instructor/${idInstructor}/servicio/${idServicio}/cobros`}
-                style={{ color: "white" }}
-              >
-                Cobros
-              </a>
-            </li>
+            <Nav.Link
+              href={`/instructor/${idInstructor}/servicio/${idServicio}/cobros`}
+              style={{ color: "white" }}
+            >
+              Cobros
+            </Nav.Link>
 
-            {/* Selector de servicio */}
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="#"
-                id="navbarDropdownMenuLink"
-                role="button"
-                aria-haspopup="true"
-                aria-expanded={dropdownOpen ? "true" : "false"}
-                onClick={toggleDropdown}
-                style={{ color: "white" }}
-              >
-                {selectedService ? selectedService.nombre : "Selecciona un servicio"}
-              </a>
-              <div
-                className={`dropdown-menu ${dropdownOpen ? "show" : ""}`}
-                aria-labelledby="navbarDropdownMenuLink"
-              >
-                {servicios.map((servicio) => (
-                  <button
-                    key={servicio.id}
-                    className="dropdown-item"
-                    onClick={() => handleSelectService(servicio.id)}
-                    style={{ color: "#1E1B4B" }}
-                  >
-                    {servicio.nombre}
-                  </button>
-                ))}
-              </div>
-            </li>
-          </ul>
-        </div>
+            <NavDropdown
+              color="white"
+              title={
+                selectedService
+                  ? selectedService.nombre
+                  : "Selecciona un servicio"
+              }
+              id="navbarDropdownMenuLink"
+              show={dropdownOpen}
+              onClick={toggleDropdown}
+              className="text-white" // Aplica la clase text-white al título
+            >
+              {servicios.map((servicio) => (
+                <NavDropdown.Item
+                  key={servicio.id}
+                  onClick={() => handleSelectService(servicio.id)}
+                  className="text-dark" // Mantén el color de texto oscuro para los items del dropdown
+                >
+                  {servicio.nombre}
+                </NavDropdown.Item>
+              ))}
+            </NavDropdown>
+          </Nav>
+        </Navbar.Collapse>
 
-        {/* Botón Cerrar Sesión visible en todas las pantallas */}
-        <button
-          className="btn"
-          onClick={handleClick}
-          style={{
-            backgroundColor: "#4a47a3",
-            color: "white",
-            whiteSpace: "nowrap",
-            marginLeft: "15px",
-          }}
-        >
-          Cerrar Sesión
-        </button>
+        {/* Menú de perfil a la derecha */}
+        <Dropdown align="end">
+          <Dropdown.Toggle
+            id="dropdown-profile"
+            style={{
+              background: "none",
+              border: "none",
+              padding: "0",
+              cursor: "pointer",
+            }}
+          >
+            <img
+              src={profileImg} // Asegúrate de definir esta imagen
+              alt="Profile"
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                backgroundColor: "gray",
+              }}
+            />
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={() => navigate("/editar-perfil")}>
+              Editar perfil
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => navigate("/")}>
+              Cerrar sesión
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
-    </nav>
+    </Navbar>
   );
 }
 

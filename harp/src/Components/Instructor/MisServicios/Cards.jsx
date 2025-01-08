@@ -102,13 +102,13 @@ const CourseCards = ({ servicios, Instructorid }) => {
                   onClick={() => handleMoreInfo(servicio.id)}
                   className="btn btn-primary"
                 >
-                  Ver Servicio
+                  Configurar
                 </button>
                 <button
                   onClick={() => handleGoToService(servicio.id)}
                   className="btn btn-secondary"
                 >
-                  Ir a Actividad
+                  Ver Servicio
                 </button>
               </div>
             </div>
