@@ -5,9 +5,9 @@ import img from '../../../../../assets/LogoHarp420.png';
 
 export default function NavbarServicio() {
   const navigate = useNavigate();
-  
+
   return (
-    <Navbar expand="lg" style={{ backgroundColor: '#1E1B4B', padding: '0 1rem' }}>
+    <Navbar expand="lg" style={{ backgroundColor: '#1E1B4B', padding: '0.5rem 1rem', position: 'relative', width: '100vw' }}>
       {/* Flecha de regreso */}
       <button
         className="btn d-lg-flex justify-content-center align-items-center"
@@ -21,7 +21,7 @@ export default function NavbarServicio() {
           cursor: 'pointer',
           position: 'absolute',
           left: '1rem',
-          zIndex: 1, // Aseguramos que el botón esté por encima de otros elementos
+          zIndex: 1,
         }}
         aria-label="Back"
       >
@@ -29,34 +29,22 @@ export default function NavbarServicio() {
       </button>
 
       {/* Logo centrado */}
-      <Navbar.Brand className="mx-auto" style={{ flexGrow: 1, textAlign: 'center' }}>
+      <Navbar.Brand
+        className="mx-auto d-flex justify-content-center align-items-center"
+        style={{ flexGrow: 1, position: 'relative' }}
+      >
         <img
           src={img}
           alt="App Logo"
-          style={{ width: '130px', height: 'auto' }}
+          style={{ maxWidth: '150px', height: 'auto' }}
           className="d-inline-block align-top"
         />
       </Navbar.Brand>
 
       <Navbar.Toggle aria-controls="navbar-nav" className="border-0">
-        <div style={{
-          width: '25px',
-          height: '3px',
-          backgroundColor: 'white',
-          margin: '5px 0',
-        }}></div>
-        <div style={{
-          width: '25px',
-          height: '3px',
-          backgroundColor: 'white',
-          margin: '5px 0',
-        }}></div>
-        <div style={{
-          width: '25px',
-          height: '3px',
-          backgroundColor: 'white',
-          margin: '5px 0',
-        }}></div>
+        <span style={{ display: 'block', width: '25px', height: '3px', backgroundColor: 'white', margin: '5px 0' }}></span>
+        <span style={{ display: 'block', width: '25px', height: '3px', backgroundColor: 'white', margin: '5px 0' }}></span>
+        <span style={{ display: 'block', width: '25px', height: '3px', backgroundColor: 'white', margin: '5px 0' }}></span>
       </Navbar.Toggle>
 
       <Navbar.Collapse id="navbar-nav" className="justify-content-end">
@@ -79,38 +67,31 @@ export default function NavbarServicio() {
         </Nav>
       </Navbar.Collapse>
 
-      {/* Estilos Adicionales */}
       <style>
         {`
           .navbar {
-            width: 100%;
+            width: 100vw;
           }
 
-          @media (max-width: 992px) {
-            .navbar-toggler-icon {
-              background-image: none;
+          @media (max-width: 350px) {
+            .navbar {
+              width: 100vw;
+              padding: 0.5rem;
+            }
+          }
+
+          @media (min-width: 992px) {
+            .navbar-brand {
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
             }
           }
 
           @media (max-width: 768px) {
             .navbar-brand {
-              position: static;
-              transform: none;
+              margin: 0 auto;
               text-align: center;
-              width: 100%; // Asegurar que ocupe todo el ancho
-            }
-
-            .btn {
-              position: static;
-              transform: none;
-              margin-bottom: 10px;
-              width: 100%; // Asegurar que ocupe todo el ancho
-            }
-          }
-
-          @media (max-width: 300px) {
-            .navbar {
-              padding: 0; // Ajustes adicionales para pantallas muy pequeñas
             }
           }
         `}
