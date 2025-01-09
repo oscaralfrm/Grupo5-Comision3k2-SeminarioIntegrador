@@ -1,101 +1,91 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Navbar, Nav, Button } from 'react-bootstrap';
-import img from '../../../../../assets/LogoHarp420.png';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Navbar, Dropdown, Container, Form, FormControl, Button } from "react-bootstrap";
+import img from "../../../../../assets/LogoHarp420.png"; // Ruta del logo
+import profileImg from "../../../../../assets/profile.png"; // Ruta de la imagen de perfil
 
 export default function NavbarServicio() {
   const navigate = useNavigate();
 
+  const handleClick = () => {
+    navigate('/');
+  };
+
   return (
-    <Navbar expand="lg" style={{ backgroundColor: '#1E1B4B', padding: '0.5rem 1rem', position: 'relative', width: '100vw' }}>
-      {/* Flecha de regreso */}
-      <button
-        className="btn d-lg-flex justify-content-center align-items-center"
-        onClick={() => window.history.back()}
+    <div style={{ width: "100%", position: "relative" }}>
+      <Navbar
+        expand="lg"
         style={{
-          border: 'none',
-          background: 'none',
-          padding: '0',
-          width: '40px',
-          height: '40px',
-          cursor: 'pointer',
-          position: 'absolute',
-          left: '1rem',
-          zIndex: 1,
+          backgroundColor: "#1E1B4B",
+          padding: "0.5rem 1rem",
+          width: "100%", 
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1040,
         }}
-        aria-label="Back"
       >
-        <i className="bi bi-arrow-left" style={{ fontSize: '1.5rem', color: 'white' }}></i>
-      </button>
-
-      {/* Logo centrado */}
-      <Navbar.Brand
-        className="mx-auto d-flex justify-content-center align-items-center"
-        style={{ flexGrow: 1, position: 'relative' }}
-      >
-        <img
-          src={img}
-          alt="App Logo"
-          style={{ maxWidth: '150px', height: 'auto' }}
-          className="d-inline-block align-top"
-        />
-      </Navbar.Brand>
-
-      <Navbar.Toggle aria-controls="navbar-nav" className="border-0">
-        <span style={{ display: 'block', width: '25px', height: '3px', backgroundColor: 'white', margin: '5px 0' }}></span>
-        <span style={{ display: 'block', width: '25px', height: '3px', backgroundColor: 'white', margin: '5px 0' }}></span>
-        <span style={{ display: 'block', width: '25px', height: '3px', backgroundColor: 'white', margin: '5px 0' }}></span>
-      </Navbar.Toggle>
-
-      <Navbar.Collapse id="navbar-nav" className="justify-content-end">
-        <Nav>
-          <Button
-            style={{
-              backgroundColor: '#4F46E5',
-              color: 'white',
-              border: 'none',
-              fontSize: '1rem',
-              padding: '0.5rem 1rem',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-            onClick={() => navigate('/')}
-            className="mb-2 mb-sm-0"
+        <Container fluid className="d-flex justify-content-between align-items-center">
+          {/* Logo de Harp */}
+          <Navbar.Brand
+            className="d-flex align-items-center"
+            style={{ marginRight: "auto", cursor: "pointer" }}
+            onClick={handleClick}
           >
-            Cerrar Sesión
-          </Button>
-        </Nav>
-      </Navbar.Collapse>
+            <img
+              src={img}
+              alt="App Logo"
+              width="130"
+              style={{
+                height: "auto",
+                maxWidth: "100%",
+              }}
+            />
+          </Navbar.Brand>
 
-      <style>
-        {`
-          .navbar {
-            width: 100vw;
-          }
+          {/* Menú de perfil a la derecha */}
+          <Dropdown align="end">
+            <Dropdown.Toggle
+              id="dropdown-profile"
+              style={{
+                background: "none",
+                border: "none",
+                padding: "0",
+                cursor: "pointer",
+              }}
+            >
+              <img
+                src={profileImg}
+                alt="Profile"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  backgroundColor: "gray",
+                }}
+              />
+            </Dropdown.Toggle>
 
-          @media (max-width: 350px) {
-            .navbar {
-              width: 100vw;
-              padding: 0.5rem;
-            }
-          }
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => navigate("/editar-perfil")}>
+                Editar perfil
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => navigate("/")}>
+                Cerrar sesión
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </Container>
+      </Navbar>
 
-          @media (min-width: 992px) {
-            .navbar-brand {
-              position: absolute;
-              left: 50%;
-              transform: translateX(-50%);
-            }
-          }
-
-          @media (max-width: 768px) {
-            .navbar-brand {
-              margin: 0 auto;
-              text-align: center;
-            }
-          }
-        `}
-      </style>
-    </Navbar>
+      {/* Sección "Mis Servicios" */}
+      <div style={{ paddingTop: "70px", textAlign: "center" }}>
+        <h1 style={{ color: "#fff" }}>Mis Servicios</h1>
+        <Form inline className="d-flex justify-content-center mt-3">
+        </Form>
+      </div>
+    </div>
   );
 }
