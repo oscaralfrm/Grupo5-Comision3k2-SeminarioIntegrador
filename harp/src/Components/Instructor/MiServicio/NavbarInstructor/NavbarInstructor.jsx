@@ -130,27 +130,26 @@ function NavbarInstructor() {
             </Nav.Link>
 
             <NavDropdown
-              color="white"
-              title={
-                selectedService
-                  ? selectedService.nombre
-                  : "Selecciona un servicio"
-              }
-              id="navbarDropdownMenuLink"
-              show={dropdownOpen}
-              onClick={toggleDropdown}
-              className="text-white" // Aplica la clase text-white al título
-            >
-              {servicios.map((servicio) => (
-                <NavDropdown.Item
-                  key={servicio.id}
-                  onClick={() => handleSelectService(servicio.id)}
-                  className="text-dark" // Mantén el color de texto oscuro para los items del dropdown
-                >
-                  {servicio.nombre}
-                </NavDropdown.Item>
-              ))}
-            </NavDropdown>
+  title={
+    <span style={{ color: "white" }}>
+      {selectedService ? selectedService.nombre : "Selecciona un servicio"}
+    </span>
+  }
+  id="navbarDropdownMenuLink"
+  show={dropdownOpen}
+  onClick={toggleDropdown}
+  menuVariant="white" // Asegura fondo oscuro para los items
+>
+  {servicios.map((servicio) => (
+    <NavDropdown.Item
+      key={servicio.id}
+      onClick={() => handleSelectService(servicio.id)}
+      className="text-dark" // Mantiene texto oscuro para los items
+    >
+      {servicio.nombre}
+    </NavDropdown.Item>
+  ))}
+</NavDropdown>
           </Nav>
         </Navbar.Collapse>
 
