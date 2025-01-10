@@ -67,7 +67,6 @@ export default function NavbarServicio() {
                 }}
               />
             </Dropdown.Toggle>
-
             <Dropdown.Menu>
               <Dropdown.Item onClick={() => navigate("/editar-perfil")}>
                 Editar perfil
@@ -79,22 +78,6 @@ export default function NavbarServicio() {
           </Dropdown>
         </Container>
       </Navbar>
-
-      {/* Sección "Mis Servicios" */}
-      <div
-        style={{
-          paddingTop: "80px", // Espacio para que no se sobreponga con la barra fija
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center", // Centrado verticalmente
-          alignItems: "center", // Centrado horizontalmente
-          width: "100%", // Asegura que ocupe todo el ancho
-          textAlign: "center", // Alinea el texto al centro
-        }}
-      >
-        <h1 style={{ color: "#fff", marginBottom: "1rem" }}>Mis Servicios</h1>
-
-      </div>
     </div>
   );
 }
