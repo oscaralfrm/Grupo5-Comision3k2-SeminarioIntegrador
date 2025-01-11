@@ -6,6 +6,8 @@ import img from "../../../../assets/LogoHarp420.png";
 import { getServiciosDeInstructor } from "../../../../services/Instructor";
 import { getServicioById } from "../../../../services/Servicio";
 import profileImg from "../../../../assets/profile.png";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 function NavbarInstructor() {
   const navigate = useNavigate();
   const [servicios, setServicios] = useState([]);
@@ -102,10 +104,7 @@ function NavbarInstructor() {
         />
 
         {/* Contenedor de elementos en el navbar */}
-        <Navbar.Collapse
-          id="navbarNav"
-          className={dropdownOpen ? "show" : "text-white"}
-        >
+        <Navbar.Collapse id="navbarNav" className={dropdownOpen ? "" : ""}>
           <Nav className="mx-auto">
             {/* Mi Servicio */}
             <Nav.Link
@@ -130,26 +129,28 @@ function NavbarInstructor() {
             </Nav.Link>
 
             <NavDropdown
-  title={
-    <span style={{ color: "white" }}>
-      {selectedService ? selectedService.nombre : "Selecciona un servicio"}
-    </span>
-  }
-  id="navbarDropdownMenuLink"
-  show={dropdownOpen}
-  onClick={toggleDropdown}
-  menuVariant="white" // Asegura fondo oscuro para los items
->
-  {servicios.map((servicio) => (
-    <NavDropdown.Item
-      key={servicio.id}
-      onClick={() => handleSelectService(servicio.id)}
-      className="text-dark" // Mantiene texto oscuro para los items
-    >
-      {servicio.nombre}
-    </NavDropdown.Item>
-  ))}
-</NavDropdown>
+              title={
+                <span style={{ color: "white" }}>
+                  {selectedService
+                    ? selectedService.nombre
+                    : "Selecciona un servicio"}
+                </span>
+              }
+              id="navbarDropdownMenuLink"
+              show={dropdownOpen}
+              onClick={toggleDropdown}
+              className="custom-dropdown"
+            >
+              {servicios.map((servicio) => (
+                <NavDropdown.Item
+                  key={servicio.id}
+                  onClick={() => handleSelectService(servicio.id)}
+                  className="text-dark" // Mantiene texto oscuro para los items
+                >
+                  {servicio.nombre}
+                </NavDropdown.Item>
+              ))}
+            </NavDropdown>
           </Nav>
         </Navbar.Collapse>
 
@@ -187,6 +188,20 @@ function NavbarInstructor() {
           </Dropdown.Menu>
         </Dropdown>
       </div>
+
+      <style>
+        {`
+  .custom-dropdown .dropdown-toggle::after {
+    border-top: 0.24em solid white; /* Color negro para la flecha */
+    border-right: 0.25em solid transparent;
+    border-left: 0.25em solid transparent;
+    content: '';
+    display: inline-block;
+    vertical-align: 0.255em;
+    margin-left: 0.5em;
+  }
+`}
+      </style>
     </Navbar>
   );
 }

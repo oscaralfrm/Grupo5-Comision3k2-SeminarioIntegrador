@@ -30,7 +30,6 @@ function ServiceHeader({ serviceData, setServiceData }) {
     fetchInstructor();
   }, [idInstructor]);
 
-
   const toggleInscriptions = async () => {
     const newStatus = !serviceData?.inscripcionesAbiertas;
     const confirmationMessage = newStatus
@@ -76,7 +75,7 @@ function ServiceHeader({ serviceData, setServiceData }) {
       {/* Edit Button */}
       <Button
         variant="light"
-        className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute  "
+        className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
         onClick={handleEditClick}
         style={{
           backgroundColor: "#1E1B4B",
@@ -117,62 +116,66 @@ function ServiceHeader({ serviceData, setServiceData }) {
               {serviceData?.nombre}
             </h4>
           </div>
-          <Col md="6" className="mb-2" style={{ position: "relative", width:"100%" }}>
+          
+          {/* Adjusting margins for consistent space */}
+          <Col md="6" className="" style={{ width:"100%" }}>
             <div className="d-flex justify-content-between align-items-center">
-              <p className="mb-1 mt-3">
+              <p className=" mt-3">
                 <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
               </p>
               <div className="ms-auto d-flex align-items-center">
-                <strong className="me-2">Publicar Servicio:</strong>
-                <Form>
-                  <Form.Check
-                    type="switch"
-                    id="inscriptions-switch"
-                    label={
-                      <span
-                        className={
-                          serviceData?.inscripcionesAbiertas
-                            ? "text-success"
-                            : "text-secondary"
-                        }
-                      >
-                        {serviceData?.inscripcionesAbiertas
-                          ? "Servicio Publicado"
-                          : "Servicio NO Publicado"}
-                      </span>
-                    }
-                    checked={serviceData?.inscripcionesAbiertas}
-                    onChange={toggleInscriptions}
-                  />
-                </Form>
+                <strong>Calificación:</strong>
+                <span className="ms-2">
+                  {[1, 2, 3, 4, 5].map((star) =>
+                    star <= 4 ? (
+                      <FaStar key={star} color="gold" />
+                    ) : (
+                      <FaRegStar key={star} />
+                    )
+                  )}
+                </span>
+                <span className="ms-2">({4.9})</span>
               </div>
             </div>
           </Col>
 
-          <p className="mb-1">
-            <strong>Instructor:</strong> {instructor?.usuario.nombre} {instructor?.usuario.apellido} 
-          </p>
           <p className="mb-3">
+            <strong>Instructor:</strong> {instructor?.usuario.nombre} {instructor?.usuario.apellido}
+          </p>
+          <p>
             <strong>Descripción:</strong> {serviceData?.descripcion}
           </p>
-          <Row>
-            <Col md="6" className="mb-2">
-              <strong>Calificación:</strong>
-              <span className="ms-2">
-                {[1, 2, 3, 4, 5].map((star) =>
-                  star <= 4 ? (
-                    <FaStar key={star} color="gold" />
-                  ) : (
-                    <FaRegStar key={star} />
-                  )
-                )}
-              </span>
-              <span className="ms-2">({4.9})</span>
-            </Col>
-          </Row>
+
+          {/* Publicar Servicio section */}
+          <Col md="6" className="mb-2" style={{ width:"100%" }}>
+            <div className="ms-auto d-flex align-items-center">
+              <strong className="me-2">Publicar Servicio:</strong>
+              <Form>
+                <Form.Check
+                  type="switch"
+                  id="inscriptions-switch"
+                  label={
+                    <span
+                      className={
+                        serviceData?.inscripcionesAbiertas
+                          ? "text-success"
+                          : "text-secondary"
+                      }
+                    >
+                      {serviceData?.inscripcionesAbiertas
+                        ? "Servicio Publicado"
+                        : "Servicio NO Publicado"}
+                    </span>
+                  }
+                  checked={serviceData?.inscripcionesAbiertas}
+                  onChange={toggleInscriptions}
+                />
+              </Form>
+            </div>
+          </Col>
         </Col>
       </Row>
-      <BarraResumen idServicio={idServicio}/>
+      {/*<BarraResumen idServicio={idServicio}/>*/}
     </Card>
   );
 }
