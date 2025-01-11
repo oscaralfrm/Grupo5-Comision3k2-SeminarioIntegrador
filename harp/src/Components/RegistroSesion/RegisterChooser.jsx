@@ -36,16 +36,17 @@ export const RegisterFormChooser = () => {
 
     return (
         <div 
-            className="container-fluid vh-100 d-flex flex-column align-items-center" 
+            className="container-fluid vh-100 d-flex flex-column align-items-center justify-content-start" 
             style={{
                 fontFamily: 'Roboto',
                 backgroundColor: '#FFFFFF',
-                padding: '1rem',
-                marginTop: '10vh',
+                padding: '5rem 1rem 0', // Incrementado el margen superior
+                margin: '0 0 0.5rem 0',  // Reducido el margen inferior
+                overflow: 'hidden',
             }}
         >
-            <div className="row w-100 d-flex justify-content-center" style={{ gap: '55px', flexWrap: 'wrap' }}>
-                <div className="col-lg-5 col-md-5 col-sm-8 col-10 d-flex justify-content-center mb-3 px-0">
+            <div className="row w-100 d-flex justify-content-center mt-5" style={{ gap: '55px', flexWrap: 'wrap' }}>
+                <div className="col-lg-5 col-md-5 col-sm-8 col-10 d-flex justify-content-center px-0">
                     <div 
                         className="shadow-lg w-100"
                         style={{
@@ -62,7 +63,7 @@ export const RegisterFormChooser = () => {
                             style={{ width: '100%', maxHeight: '30vh', objectFit: 'contain' }} 
                         />
                         <button
-                            className="btn btn-lg btn-light text-dark mt-3 mb-3"
+                            className="btn btn-lg btn-light text-dark mt-3"
                             style={{ borderRadius: '30px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
                             onClick={handleInstructorClick}
                         >
@@ -71,7 +72,7 @@ export const RegisterFormChooser = () => {
                     </div>
                 </div>
 
-                <div className="col-lg-5 col-md-5 col-sm-8 col-10 d-flex justify-content-center mb-3 px-0">
+                <div className="col-lg-5 col-md-5 col-sm-8 col-10 d-flex justify-content-center px-0">
                     <div 
                         className="shadow-lg w-100"
                         style={{
@@ -88,8 +89,8 @@ export const RegisterFormChooser = () => {
                             style={{ width: '100%', maxHeight: '30vh', objectFit: 'contain' }} 
                         />
                         <button
-                            className="btn btn-lg btn-light text-dark mb-3" 
-                            style={{ borderRadius: '30px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', marginTop: '3vh' }}
+                            className="btn btn-lg btn-light text-dark mt-3" 
+                            style={{ borderRadius: '30px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
                             onClick={handleStudentClick}
                         >
                             Regístrate
@@ -99,15 +100,14 @@ export const RegisterFormChooser = () => {
             </div>
 
             <style>
-                {
-                    `
+                {`
+                    body {
+                        margin: 0;
+                        overflow: hidden;
+                    }
                     @media (max-width: 576px) {
                         .container-fluid {
-                            padding: 1rem;
-                            margin-top: 15vh;
-                        }
-                        .shadow-lg {
-                            margin-bottom: 10vh;
+                            padding: 2rem 1rem 0;
                         }
                         h3 {
                             font-size: 1.6rem;
@@ -115,20 +115,10 @@ export const RegisterFormChooser = () => {
                     }
                     @media (min-width: 577px) and (max-width: 768px) {
                         .container-fluid {
-                            padding: 1.5rem;
-                            margin-top: 10vh;
+                            padding: 2.5rem 1.5rem 0;
                         }
                         h3 {
                             font-size: 1.8rem;
-                        }
-                    }
-                    @media (min-width: 769px) {
-                        .container-fluid {
-                            padding: 2rem;
-                            margin-top: 0;
-                        }
-                        .shadow-lg {
-                            margin-bottom: 0;
                         }
                     }
                     @keyframes slide-in-left {
@@ -152,8 +142,7 @@ export const RegisterFormChooser = () => {
                             opacity: 1;
                         }
                     }
-                    `
-                }
+                `}
             </style>
         </div>
     );
