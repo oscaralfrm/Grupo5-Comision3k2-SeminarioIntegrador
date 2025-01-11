@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import PanaTeacher from '../../assets/PanaLogin.png'; // Asegúrate de importar tu imagen
+import PanaTeacher from '../../assets/panaBuenLogin.png';
 import { getServiciosDeInstructor, iniciarSesion } from '../../services/Instructor';
-// import { signInWithGoogle } from '../../services/authService'; // Asegúrate de implementar esta función
 
 export const LoginForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [errorMessage, setErrorMessage] = useState('');
     const [user, setUser] = useState(null);
-    const navegate = useNavigate();
+    const navigate = useNavigate();
+
     useEffect(() => {
         const loggedUser = window.localStorage.getItem("loggedUser");
         if (loggedUser) {
@@ -22,15 +22,14 @@ export const LoginForm = () => {
             const { email, password } = data;
             const id = await iniciarSesion(email, password);
             const servicios = await getServiciosDeInstructor(id);
-            
-            //navegate(`/instructor/${id}/servicio/${servicios[0].id}/mi-servicio`)
-            navegate(`/instructor/${id}/servicios`);     
-
-          } catch (error) {
+            navigate(`/instructor/${id}/servicios`);     
+        } catch (error) {
             console.error('Error al iniciar sesión:', error);
-          }
+            setErrorMessage('Error al iniciar sesión. Por favor, verifica tus credenciales.');
+            setTimeout(() => setErrorMessage(''), 5000);
+        }
     };
- 
+
     const handleGoogleLogin = async () => {
         try {
             const user = await signInWithGoogle();
@@ -38,23 +37,48 @@ export const LoginForm = () => {
             setUser(user);
         } catch (error) {
             setErrorMessage('Error al iniciar sesión con Google: ' + error.message);
-            setTimeout(() => {
-                setErrorMessage('');
-            }, 5000);
+            setTimeout(() => setErrorMessage(''), 5000);
         }
     };
 
     const loginForm = () => (
-        <div className="container-fluid" style={{ overflow: 'hidden', marginTop: '0vh', fontFamily:'Roboto' }}>
-            <div className="row">
+        <div
+            className="container-fluid"
+            style={{
+                overflow: "hidden",
+                padding: "0",
+                margin: "0",
+                height: "90vh",
+                display: "flex",
+                flexDirection: "column",
+            }}
+        >
+            <div className="row h-100">
                 {/* Sección de Imagen */}
-                <div className="col-lg-6 d-flex justify-content-center align-items-center bg-light">
-                    <img src={PanaTeacher} alt="Login Illustration" className="img-fluid" />
+                <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center bg-light" style={{ height: '100%', maxHeight: '90vh' }}>
+                    <img
+                        src={PanaTeacher}
+                        alt="Login Illustration"
+                        className="img-fluid"
+                        style={{ 
+                            maxHeight: '60%',
+                            width: 'auto',
+                            maxWidth: '400px',
+                            objectFit: 'contain' 
+                        }} 
+                    />
                 </div>
 
                 {/* Sección de Formulario */}
-                <div className="col-lg-6 d-flex justify-content-center align-items-center">
-                    <div className="col-md-8 col-sm-10" style={{ height: '100vh', marginTop: '4em', marginBottom: '2em' }}>
+                <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center" style={{ height: '100%', maxHeight: '90vh' }}>
+                    <div
+                        className="col-md-8 col-sm-10"
+                        style={{
+                            height: "auto", 
+                            marginTop: "1em",
+                            marginBottom: "0.5em",
+                        }}
+                    >
                         <h1 className="text-center">Iniciar Sesión</h1>
                         <Link to="/registro" className="d-block text-center mb-3">
                             Si no tienes un usuario, regístrate aquí
@@ -85,7 +109,7 @@ export const LoginForm = () => {
                                         />
                                         {errors.email && (
                                             <div className="invalid-feedback">
-                                                Por favor, ingrese un correo electrónico
+                                                Por favor, ingresa un correo electrónico
                                             </div>
                                         )}
                                     </div>
@@ -108,12 +132,11 @@ export const LoginForm = () => {
                                         />
                                         {errors.password && (
                                             <div className="invalid-feedback">
-                                                Por favor, ingrese una contraseña
+                                                Por favor, ingresa una contraseña
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* Checkbox para recordar datos */}
                                     <div className="form-check mb-3">
                                         <input
                                             type="checkbox"
@@ -129,7 +152,6 @@ export const LoginForm = () => {
                                         <button 
                                             type="submit" 
                                             className="btn fs-5" 
-                                        
                                             style={{ backgroundImage: "linear-gradient(135deg, #1E1B4B, #4F46E5)", color: 'white', padding: '6px 17px' }}
                                         >
                                             Iniciar Sesión
@@ -156,7 +178,12 @@ export const LoginForm = () => {
     );
 
     const userDashboard = () => (
-        <main className="container mt-3">
+        <main 
+            className="container mt-3"
+            style={{
+                maxHeight: "90vh"
+            }}
+        >
             <h2>Bienvenido, {user.userName}</h2>
             <hr />
         </main>
