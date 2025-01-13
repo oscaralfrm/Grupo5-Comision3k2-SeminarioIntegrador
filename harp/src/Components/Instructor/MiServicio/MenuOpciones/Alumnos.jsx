@@ -60,7 +60,7 @@ const Alumnos = () => {
 
   return (
     <Container fluid>
-      <div className="mx-auto" style={{ maxWidth: "1200px",  marginTop: "10rem"  }}> {/* Añadimos un contenedor con un ancho máximo */}
+      <div className="mx-auto" style={{ maxWidth: "1200px",  marginTop: "7rem"  }}> {/* Añadimos un contenedor con un ancho máximo */}
         <Row className="mt-3"> {/* Reducir el margen superior */}
           <Row className="mb-3 d-flex justify-content-between align-items-center"> {/* Reducir margen inferior */}
             <div className="text-center" style={{ flex: 1 }}>

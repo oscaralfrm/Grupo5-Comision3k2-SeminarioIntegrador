@@ -111,7 +111,7 @@ const Cobros = ({ id }) => {
   return (
     <div
       className="container-fluid d-flex flex-column justify-content-start align-items-center"
-      style={{ minHeight: "85vh", paddingTop: "2vh",  marginTop: "10rem"  }}
+      style={{ minHeight: "85vh", paddingTop: "2vh",  marginTop: "7rem"  }}
     >
       <h1 className="text-center mb-4" style={{color: "#1E1B4B", fontWeight: "bold"}}>Cobros</h1>
       {monto.map((item, index) => (
