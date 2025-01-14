@@ -49,9 +49,9 @@ const StudentsCard = () => {
           justifyContent: "space-between", // Cambiado para que los elementos se alineen a los extremos
           alignItems: "center",
           backgroundColor: "#1E1B4B",
-          borderRadius: "8px",
+          borderRadius: "10px",
           width: "100%",
-          padding: "15px",
+          padding: "10px",
         }}
       >
         <h2

@@ -53,8 +53,8 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
 
   return (
     <div style={{ position: "relative", backgroundColor: "white", padding: "20px", borderRadius: "20px", boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)", maxWidth: "100%", width: "100%", fontFamily: "Roboto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1E1B4B", borderRadius: "8px", width: "100%", padding: "15px" }}>
-        <h2 className="text-center" style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5em" }}>Clases</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1E1B4B", borderRadius: "10px", width: "100%", padding: "10px" }}>
+        <h2  style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5em" }}>Clases</h2>
 
         <Form>
           <Form.Check

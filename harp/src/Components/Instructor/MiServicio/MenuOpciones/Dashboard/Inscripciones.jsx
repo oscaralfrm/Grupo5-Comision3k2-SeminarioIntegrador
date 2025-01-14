@@ -163,9 +163,9 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
     justifyContent: "space-between", // Distribuir espacio entre elementos
     alignItems: "center", // Centrar verticalmente
     width: "100%",
-    padding: "20px",
+    padding: "15px",
     backgroundColor: "#1E1B4B",
-    borderRadius: "8px",
+    borderRadius: "10px",
     color: "white",
   }}
 >
