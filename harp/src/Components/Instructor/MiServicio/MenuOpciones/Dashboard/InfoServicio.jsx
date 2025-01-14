@@ -72,8 +72,8 @@ const InfoCard = ({serviceData, setServiceData}) => {
       <div
         style={{
           backgroundColor: "#1E1B4B",
-          borderRadius: "20px",
-          padding: "20px",
+          borderRadius: "10px",
+          padding: "12px",
         }}
       >
         {showDetails && (
@@ -86,6 +86,7 @@ const InfoCard = ({serviceData, setServiceData}) => {
           style={{
             color: "white",
             textAlign: "center",
+            justifyContent:"center",
             fontFamily: "Roboto",
             fontSize: "1.5rem",
           }}

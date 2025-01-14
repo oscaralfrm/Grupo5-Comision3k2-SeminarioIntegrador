@@ -156,21 +156,20 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
     >
 
       
-{/* Título e indicador */}
 <div
   style={{
     display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "flex-start",
+    flexDirection: "row", // Cambiar a 'row' para alinear en la misma fila
+    justifyContent: "space-between", // Distribuir espacio entre elementos
+    alignItems: "center", // Centrar verticalmente
     width: "100%",
-    padding: "20px",
+    padding: "15px",
     backgroundColor: "#1E1B4B",
-    borderRadius: "8px",
+    borderRadius: "10px",
     color: "white",
   }}
 >
-  <h2 style={{ fontSize: "1.5em", marginBottom: "10px" }}>Inscripciones</h2>
+  <h2 style={{ fontSize: "1.5em", margin: 0 }}>Inscripciones</h2> {/* Quitar marginBottom */}
   <Form>
     <Form.Check
       type="switch"
@@ -185,6 +184,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
     />
   </Form>
 </div>
+
 
       {/* Contenido condicional */}
       {habilitadas ? (

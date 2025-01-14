@@ -103,12 +103,12 @@ const Cobros = () => {
           justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
-          padding: "20px",
           backgroundColor: "#1E1B4B",
-          borderRadius: "8px",
+          borderRadius: "10px",
+          padding:"10px"
         }}
       >
-        <h2 style={{ color: "white", margin: 0, fontFamily: "Roboto", fontSize: "1.5rem" }}>
+        <h2 style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5rem" }}>
           Cobros
         </h2>
         <button
@@ -120,7 +120,6 @@ const Cobros = () => {
             borderRadius: "4px",
             border: "none",
             cursor: "pointer",
-            marginTop: "10px",
             marginLeft: "10px",
           }}
         >
