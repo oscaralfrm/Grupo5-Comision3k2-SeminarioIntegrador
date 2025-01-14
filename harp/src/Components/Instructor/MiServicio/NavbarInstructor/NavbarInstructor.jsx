@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Navbar, Nav, NavDropdown, Button, Dropdown } from "react-bootstrap"; // Importa los componentes de react-bootstrap
+import { Navbar, Nav, NavDropdown, Dropdown } from "react-bootstrap";
 import img from "../../../../assets/LogoHarp420.png";
 import { getServiciosDeInstructor } from "../../../../services/Instructor";
 import { getServicioById } from "../../../../services/Servicio";
 import profileImg from "../../../../assets/profile.png";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 function NavbarInstructor() {
   const navigate = useNavigate();
@@ -36,25 +35,18 @@ function NavbarInstructor() {
   const handleSelectService = (serviceId) => {
     const service = servicios.find((servicio) => servicio.id === serviceId);
     if (service) {
-      // Obtener la ruta actual
       const currentPath = window.location.pathname;
+      const basePath = currentPath.split("/").slice(0, -1).join("/");
+      const lastSegment = currentPath.split("/").pop();
 
-      // Identificar si termina con "mi-servicio" o "info-servicio" o cualquier otra parte final
-      const basePath = currentPath.split("/").slice(0, -1).join("/"); // Ruta base sin el último segmento
-      const lastSegment = currentPath.split("/").pop(); // Último segmento de la ruta actual
-
-      // Construir la nueva ruta con el patrón actual
       const newPath = `${basePath}/${lastSegment}`.replace(
-        /\/servicio\/\d+\//, // Reemplaza la parte `/servicio/:serviceId/`
+        /\/servicio\/\d+\//,
         `/servicio/${serviceId}/`
       );
 
-      // Navegar a la nueva ruta
       setSelectedService(service);
       navigate(newPath);
     }
-
-    // Cerrar el dropdown
     setDropdownOpen(false);
   };
 
@@ -69,10 +61,6 @@ function NavbarInstructor() {
     }
   }, [idServicio, servicios]);
 
-  const handleClick = () => {
-    navigate("/");
-  };
-
   return (
     <Navbar
       expand="lg"
@@ -84,43 +72,48 @@ function NavbarInstructor() {
         fontSize: "1.2rem",
       }}
     >
-      <div className="container-fluid d-flex justify-content-between align-items-center">
-        {/* Logo en todas las pantallas */}
-        <Navbar.Brand href="/" style={{ margin: "0 auto" }}>
+      <div className="container-fluid d-flex align-items-center">
+        <Navbar.Brand href="/" className="mx-auto">
           <img
             src={img}
             alt="Harp Logo"
-            width="130"
+            style={{
+              height: "auto",
+              maxHeight: "50px",
+            }}
             className="d-none d-lg-block"
           />
-          <img src={img} alt="Harp Logo" width="100" className="d-lg-none" />
+          <img
+            src={img}
+            alt="Harp Logo"
+            style={{
+              height: "auto",
+              maxHeight: "40px",
+            }}
+            className="d-lg-none"
+          />
         </Navbar.Brand>
 
-        {/* Botón para mostrar/ocultar el menú en pantallas pequeñas */}
         <Navbar.Toggle
           aria-controls="navbarNav"
           onClick={toggleDropdown}
-          style={{ border: "none" }} // Eliminar borde
+          style={{ border: "none" }}
         />
 
-        {/* Contenedor de elementos en el navbar */}
-        <Navbar.Collapse id="navbarNav" className={dropdownOpen ? "" : ""}>
-          <Nav className="mx-auto">
-            {/* Mi Servicio */}
+        <Navbar.Collapse id="navbarNav" className={dropdownOpen ? "show" : ""}>
+          <Nav className="mx-auto d-flex justify-content-center w-100">
             <Nav.Link
               href={`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`}
               style={{ color: "white" }}
             >
               Mi Servicio
             </Nav.Link>
-            {/* Alumnos */}
             <Nav.Link
               href={`/instructor/${idInstructor}/servicio/${idServicio}/alumnos`}
               style={{ color: "white" }}
             >
               Alumnos
             </Nav.Link>
-            {/* Cobros */}
             <Nav.Link
               href={`/instructor/${idInstructor}/servicio/${idServicio}/cobros`}
               style={{ color: "white" }}
@@ -131,9 +124,7 @@ function NavbarInstructor() {
             <NavDropdown
               title={
                 <span style={{ color: "white" }}>
-                  {selectedService
-                    ? selectedService.nombre
-                    : "Selecciona un servicio"}
+                  {selectedService ? selectedService.nombre : "Selecciona un servicio"}
                 </span>
               }
               id="navbarDropdownMenuLink"
@@ -145,7 +136,7 @@ function NavbarInstructor() {
                 <NavDropdown.Item
                   key={servicio.id}
                   onClick={() => handleSelectService(servicio.id)}
-                  className="text-dark" // Mantiene texto oscuro para los items
+                  className="text-dark"
                 >
                   {servicio.nombre}
                 </NavDropdown.Item>
@@ -154,53 +145,97 @@ function NavbarInstructor() {
           </Nav>
         </Navbar.Collapse>
 
-        {/* Menú de perfil a la derecha */}
-        <Dropdown align="end">
-          <Dropdown.Toggle
-            id="dropdown-profile"
-            style={{
-              background: "none",
-              border: "none",
-              padding: "0",
-              cursor: "pointer",
-            }}
-          >
-            <img
-              src={profileImg} // Asegúrate de definir esta imagen
-              alt="Profile"
+        {/* Contenedor para el perfil */}
+        <div className="d-flex align-items-center">
+          <Dropdown align="end">
+            <Dropdown.Toggle
+              id="dropdown-profile"
               style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                backgroundColor: "gray",
+                background: "none",
+                border: "none",
+                padding: "0",
+                cursor: "pointer",
               }}
-            />
-          </Dropdown.Toggle>
+            >
+              <img
+                src={profileImg}
+                alt="Profile"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  backgroundColor: "gray",
+                }}
+              />
+            </Dropdown.Toggle>
 
-          <Dropdown.Menu>
-            <Dropdown.Item onClick={() => navigate("/editar-perfil")}>
-              Editar perfil
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => navigate("/")}>
-              Cerrar sesión
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => navigate("/editar-perfil")}>
+                Editar perfil
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => navigate("/")}>
+                Cerrar sesión
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
       </div>
 
       <style>
         {`
-  .custom-dropdown .dropdown-toggle::after {
-    border-top: 0.24em solid white; /* Color negro para la flecha */
-    border-right: 0.25em solid transparent;
-    border-left: 0.25em solid transparent;
-    content: '';
-    display: inline-block;
-    vertical-align: 0.255em;
-    margin-left: 0.5em;
-  }
-`}
+          .custom-dropdown .dropdown-toggle::after {
+            border-top: 0.24em solid white; /* Color blanco para la flecha */
+            border-right: 0.25em solid transparent;
+            border-left: 0.25em solid transparent;
+            content: '';
+            display: inline-block;
+            vertical-align: 0.255em;
+            margin-left: 0.5em;
+          }
+
+          /* Alinear elementos al centro en pantallas pequeñas */
+          @media (max-width: 761px) {
+            .navbar-nav {
+              display: flex;
+              justify-content: center;
+              width: 100%;
+            }
+            .navbar-brand {
+              flex-grow: 1;
+              text-align: center;
+            }
+            .d-flex.align-items-center {
+              justify-content: center;
+              flex-grow: 1; /* Asegurar que el perfil también esté centrado */
+            }
+          }
+
+          /* Asegurar que la barra de navegación se mantenga centrada en pantallas grandes */
+          @media (min-width: 761px) {
+            .navbar-nav {
+              justify-content: center;
+              width: auto; /* Ajustar a auto para mantener el orden */
+            }
+          }
+
+          /* Cambiar color de las líneas del menú hamburguesa a blanco */
+          .navbar-toggler {
+            border: none; /* Sin borde */
+          }
+
+          .navbar-toggler:focus {
+            outline: none; /* Sin contorno en focus */
+          }
+
+          .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E"); /* Icono de hamburguesa blanco */
+          }
+
+          .navbar-brand img {
+            max-height: 50px; /* Controlar la altura de las imágenes */
+          }
+        `}
       </style>
     </Navbar>
   );
