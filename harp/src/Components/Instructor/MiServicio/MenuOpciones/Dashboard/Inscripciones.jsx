@@ -12,8 +12,6 @@ export function calcularEdad(fechaNacimiento) {
   const nacimiento = new Date(fechaNacimiento);
 
   let edad = hoy.getFullYear() - nacimiento.getFullYear();
-
-  // Ajustar si el cumpleaños no ha ocurrido aún este año
   const mes = hoy.getMonth() - nacimiento.getMonth();
   if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
     edad--;
@@ -30,20 +28,17 @@ export function calcularAntiguedadComoTexto(fechaRegistro) {
   let meses = hoy.getMonth() - registro.getMonth();
   let días = hoy.getDate() - registro.getDate();
 
-  // Ajuste si el día es negativo
   if (días < 0) {
     meses--;
     const diasMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0).getDate();
     días += diasMesAnterior;
   }
 
-  // Ajuste si el mes es negativo
   if (meses < 0) {
     años--;
     meses += 12;
   }
 
-  // Formatear como texto
   const partes = [];
   if (años > 0) partes.push(`${años} ${años === 1 ? "año" : "años"}`);
   if (meses > 0) partes.push(`${meses} ${meses === 1 ? "mes" : "meses"}`);
@@ -51,7 +46,6 @@ export function calcularAntiguedadComoTexto(fechaRegistro) {
 
   return partes.join(" ");
 }
-
 
 const Enrollments = ({ habilitadas, fetchServicio }) => {
   const [showDetail, setShowDetail] = useState(false);
@@ -135,7 +129,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
           "Error al cambiar el estado de las inscripciones:",
           error.message
         );
-        alert(error.message); // El componente decide cómo manejar el error
+        alert(error.message);
       }
     }
   };
@@ -154,39 +148,51 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
         margin: "4vh auto",
       }}
     >
+      <div
+        className="responsive-container"
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          width: "100%",
+          padding: "15px",
+          backgroundColor: "#1E1B4B",
+          borderRadius: "10px",
+          color: "white",
+        }}
+      >
+        <h2 style={{ fontSize: "1.5em", margin: 0, textAlign: "center" }}>Inscripciones</h2>
+        <Form style={{ textAlign: "center" }}>
+          <Form.Check
+            type="switch"
+            id="inscriptions-switch"
+            label={
+              <span style={{ color: "white" }}>
+                {habilitadas ? "Habilitadas" : "Deshabilitadas"}
+              </span>
+            }
+            checked={habilitadas}
+            onChange={toggleInscriptions}
+          />
+        </Form>
+      </div>
 
-      
-<div
-  style={{
-    display: "flex",
-    flexDirection: "row", // Cambiar a 'row' para alinear en la misma fila
-    justifyContent: "space-between", // Distribuir espacio entre elementos
-    alignItems: "center", // Centrar verticalmente
-    width: "100%",
-    padding: "15px",
-    backgroundColor: "#1E1B4B",
-    borderRadius: "10px",
-    color: "white",
-  }}
->
-  <h2 style={{ fontSize: "1.5em", margin: 0 }}>Inscripciones</h2> {/* Quitar marginBottom */}
-  <Form>
-    <Form.Check
-      type="switch"
-      id="inscriptions-switch"
-      label={
-        <span style={{ color: "white" }}>
-          {habilitadas ? "Habilitadas" : "Deshabilitadas"}
-        </span>
-      }
-      checked={habilitadas}
-      onChange={toggleInscriptions}
-    />
-  </Form>
-</div>
+      <style>
+        {`
+          @media (max-width: 500px) {
+            .responsive-container {
+              flex-direction: column;
+              align-items: center;
+            }
+            .responsive-container h2,
+            .responsive-container form {
+              text-align: center;
+            }
+          }
+        `}
+      </style>
 
-
-      {/* Contenido condicional */}
       {habilitadas ? (
         <div style={{ width: "100%", marginTop: "20px" }}>
           {pendingEnrollments.length > 0 ? (
@@ -201,9 +207,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
                 }}
               >
                 <span style={{ flex: "1 1 60%" }}>
-                  {enroll.alumno.usuario.nombre +
-                    " " +
-                    enroll.alumno.usuario.apellido}
+                  {enroll.alumno.usuario.nombre + " " + enroll.alumno.usuario.apellido}
                 </span>
                 <span style={{ flex: "1 1 60%" }}>{enroll.grupo.nombre}</span>
                 <div
@@ -285,30 +289,36 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
               <div>
                 {acceptedEnrollments.length > 0 ? (
                   acceptedEnrollments.map((enroll) => (
-                    <div key={enroll.id}>
-                      {enroll.alumno.usuario.nombre +
-                        " " +
-                        enroll.alumno.usuario.apellido}
+                    <div
+                      key={enroll.id}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginTop: "2vh",
+                      }}
+                    >
+                      <span style={{ flex: "1 1 60%" }}>
+                        {enroll.alumno.usuario.nombre + " " + enroll.alumno.usuario.apellido}
+                      </span>
+                      <span style={{ flex: "1 1 40%" }}>{enroll.grupo.nombre}</span>
                     </div>
                   ))
                 ) : (
-                  <p className="mt-3 text-center">
-                    No hay inscripciones aceptadas aún
-                  </p>
+                  <p>No hay alumnos aún.</p>
                 )}
               </div>
             )}
           </div>
         </div>
       ) : (
-        <p className="mt-3 text-center">
-          Las inscripciones están deshabilitadas. Cambie el estado para ver las
-          solicitudes.
-        </p>
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <FaBell style={{ fontSize: "2em" }} />
+          <p>Las inscripciones están deshabilitadas.</p>
+        </div>
       )}
     </div>
   );
-
 };
 
 export default Enrollments;
