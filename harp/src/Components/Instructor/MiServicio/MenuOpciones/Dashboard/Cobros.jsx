@@ -38,7 +38,6 @@ const Cobros = () => {
     fetchCuotas();
   }, [idServicio]);
 
-  // Filtrar cuotas para obtener el estado actual (fechaFin === null)
   const cuotasConEstadoActual = cuotas.map(([alumno, cuotas]) => [
     alumno,
     cuotas.map((cuota) => ({
@@ -47,7 +46,6 @@ const Cobros = () => {
     })),
   ]);
 
-  // Alumnos con cuotas pendientes
   const cuotasPendientes = cuotasConEstadoActual
     .map(([alumno, cuotas]) => [
       alumno,
@@ -57,7 +55,6 @@ const Cobros = () => {
     ])
     .filter(([_, cuotas]) => cuotas.length > 0);
 
-  // Alumnos con cuotas vencidas
   const cuotasVencidas = cuotasConEstadoActual
     .map(([alumno, cuotas]) => [
       alumno,
@@ -96,8 +93,10 @@ const Cobros = () => {
         maxWidth: "90%",
         margin: "auto",
       }}
+      className="responsive-container"
     >
       <div
+        className="header-container"
         style={{
           display: "flex",
           justifyContent: "space-between",
@@ -105,12 +104,10 @@ const Cobros = () => {
           flexWrap: "wrap",
           backgroundColor: "#1E1B4B",
           borderRadius: "10px",
-          padding:"10px"
+          padding: "10px",
         }}
       >
-        <h2 style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5rem" }}>
-          Cobros
-        </h2>
+        <h2 style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5rem", margin: 0 }}>Cobros</h2>
         <button
           onClick={() => navigate(`/instructor/1/servicio/${idServicio}/cobros`)}
           style={{
@@ -122,21 +119,47 @@ const Cobros = () => {
             cursor: "pointer",
             marginLeft: "10px",
           }}
+          className="go-to-payments-button"
         >
           Ir a Cobros
         </button>
       </div>
-      <hr />
 
-      <div style={{ marginTop: "20px" }}>
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .header-container {
+              justify-content: center; /* Centrar contenido en móviles */
+              flex-direction: column; /* Cambiar a columna en móviles */
+              align-items: center; /* Centrar ambos elementos */
+            }
+
+            .header-container button {
+              margin-top: 10px; /* Margen superior para el botón en móvil */
+              width: 100%; /* Hacer que el botón ocupe todo el ancho en móvil */
+              max-width: 200px; /* Opcional: Máximo ancho para el botón */
+            }
+          }
+
+          .section h3 {
+            margin-top: 20px; /* Aumenta el margen superior para el título de sección */
+          }
+
+          .highlight {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border-radius: 50%;
+          }
+        `}
+      </style>
+
+      <div className="section">
         <h3 style={{ color: "#1E1B4B", fontSize: "1.4rem" }}>Alumnos con Pago Pendiente</h3>
         <hr />
         <ul style={{ listStyle: "none", padding: 0 }}>
-          
           {cuotasPendientes
             .slice(0, showAllPending ? cuotasPendientes.length : 3)
             .map(([alumno, cuotas]) => (
-              
               <li key={alumno.id} style={{ marginBottom: "10px" }}>
                 <span>{alumno.usuario.nombre}</span>
                 <button
@@ -159,7 +182,7 @@ const Cobros = () => {
       </div>
 
       {cuotasVencidas.length > 0 && (
-        <div style={{ marginTop: "20px" }}>
+        <div className="section">
           <button
             onClick={toggleShowLatePayments}
             style={{
@@ -208,20 +231,10 @@ const Cobros = () => {
       )}
 
       <hr />
-      <div style={{ marginTop: "20px" }}>
+      <div className="section">
         <h3 style={{ color: "#1E1B4B", fontSize: "1.4rem" }}>Calendario de Pagos</h3>
         <Calendar tileClassName={tileClassName} />
       </div>
-
-      <style>
-        {`
-          .highlight {
-            background-color: #dc3545 !important;
-            color: white !important;
-            border-radius: 50%;
-          }
-        `}
-      </style>
     </div>
   );
 };
