@@ -54,6 +54,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
   const [rejectedEnrollments, setRejectedEnrollments] = useState([]);
   const [showAcceptedList, setShowAcceptedList] = useState(false);
   const [enrollments, setEnrrolments] = useState([]);
+  const [inscriptionsSwitchActive, setInscriptionsSwitchActive] = useState(habilitadas);
   const { idServicio } = useParams();
 
   const pendingEnrollments = enrollments.filter(
@@ -68,7 +69,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
         const data = await getInscripcionesDeServicio(idServicio, false, true);
         setEnrrolments(data);
       } catch (error) {
-        console.error('Error al traer las solicitudes de inscripcion:', error);
+        console.error('Error al traer las solicitudes de inscripción:', error);
       }
     };
     fetchInscripciones();
@@ -79,7 +80,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
       ...enroll,
       dni: enroll.alumno.usuario.dni,
       phone: enroll.alumno.usuario.telefono,
-      email: enroll.alumno.usuario.email,
+      email: enroll.alumno.usuario.usuario.email,
       seniority: calcularAntiguedadComoTexto(enroll.alumno.usuario.fechaRegistro),
       courses: 3,
       paymentsUpToDate: true,
@@ -113,7 +114,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
   };
 
   const toggleInscriptions = async () => {
-    const newStatus = !habilitadas;
+    const newStatus = !inscriptionsSwitchActive;
     const confirmationMessage = newStatus
       ? "¿Está seguro de que desea habilitar las inscripciones?"
       : "¿Está seguro de que desea deshabilitar las inscripciones?";
@@ -152,7 +153,6 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
         className="responsive-container"
         style={{
           display: "flex",
-          flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
           width: "100%",
@@ -162,17 +162,17 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
           color: "white",
         }}
       >
-        <h2 style={{ fontSize: "1.5em", margin: 0, textAlign: "center" }}>Inscripciones</h2>
-        <Form style={{ textAlign: "center" }}>
+        <h2 style={{ fontSize: "1.5em", margin: 0 }}>Inscripciones</h2>
+        <Form style={{ display: "flex", alignItems: "center" }}>
           <Form.Check
             type="switch"
             id="inscriptions-switch"
             label={
-              <span style={{ color: "white" }}>
-                {habilitadas ? "Habilitadas" : "Deshabilitadas"}
+              <span style={{ color: "white", marginRight: "8px" }}>
+                {inscriptionsSwitchActive ? "Habilitadas" : "Deshabilitadas"}
               </span>
             }
-            checked={habilitadas}
+            checked={inscriptionsSwitchActive}
             onChange={toggleInscriptions}
           />
         </Form>
@@ -183,17 +183,14 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
           @media (max-width: 500px) {
             .responsive-container {
               flex-direction: column;
+              justify-content: center;
               align-items: center;
-            }
-            .responsive-container h2,
-            .responsive-container form {
-              text-align: center;
             }
           }
         `}
       </style>
 
-      {habilitadas ? (
+      {inscriptionsSwitchActive ? (
         <div style={{ width: "100%", marginTop: "20px" }}>
           {pendingEnrollments.length > 0 ? (
             pendingEnrollments.map((enroll) => (
