@@ -1,30 +1,28 @@
 import React, { useState } from "react";
-import { Tab } from "react-bootstrap";
 
 export default function Password({
   register,
   errors,
   handleInputChange,
   goToPreviousTab,
-  password, // Valor de contraseña desde el formulario
-  isValid, // Indicador de validez del formulario
+  isValid,
+  contrasena, // Pasar la contraseña desde el estado principal para la validación
 }) {
-  // Estados locales para mostrar/ocultar contraseñas
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <div>
-      {/* Campo de Contraseña */}
-      <div className="form-group mb-3 mt-2">
+      {/* Campo Contraseña */}
+      <div className="form-group mb-3">
         <label htmlFor="password">Contraseña</label>
         <input
           type={showPassword ? "text" : "password"}
           id="password"
           name="password"
-          className={`form-control ${errors.password ? "is-invalid" : ""}`}
+          className={`form-control ${errors?.contrasena ? "is-invalid" : ""}`}
           placeholder="Contraseña"
-          {...register("password", {
+          {...register("contrasena", {
             required: "La contraseña es obligatoria",
             minLength: {
               value: 8,
@@ -33,8 +31,8 @@ export default function Password({
             onChange: handleInputChange,
           })}
         />
-        {errors.password && (
-          <div className="invalid-feedback">{errors.password.message}</div>
+        {errors?.contrasena && (
+          <div className="invalid-feedback">{errors.contrasena.message}</div>
         )}
         <button
           type="button"
@@ -45,7 +43,7 @@ export default function Password({
         </button>
       </div>
 
-      {/* Campo de Confirmar Contraseña */}
+      {/* Campo Confirmar Contraseña */}
       <div className="form-group mb-3">
         <label htmlFor="confirmPassword">Confirmar Contraseña</label>
         <input
@@ -53,17 +51,17 @@ export default function Password({
           id="confirmPassword"
           name="confirmPassword"
           className={`form-control ${
-            errors.confirmPassword ? "is-invalid" : ""
+            errors?.confirmPassword ? "is-invalid" : ""
           }`}
           placeholder="Confirmar Contraseña"
           {...register("confirmPassword", {
             required: "Por favor, confirma tu contraseña",
             validate: (value) =>
-              value === password || "Las contraseñas no coinciden",
+              value === contrasena || "Las contraseñas no coinciden",
             onChange: handleInputChange,
           })}
         />
-        {errors.confirmPassword && (
+        {errors?.confirmPassword && (
           <div className="invalid-feedback">
             {errors.confirmPassword.message}
           </div>
@@ -77,18 +75,17 @@ export default function Password({
         </button>
       </div>
 
-      {/* Navegación y envío */}
-      <div className="d-flex justify-content-between mt-3">
-        {/* Botón para regresar a la pestaña anterior */}
+      {/* Botones de Navegación */}
+      <div className="d-flex justify-content-between">
+        {/* Volver a la sección anterior */}
         <span
-          className="fs-3 text-primary"
+          className="fs-3"
           onClick={goToPreviousTab}
           style={{ cursor: "pointer" }}
         >
           &#8592;
         </span>
-
-        {/* Botón de envío */}
+        {/* Botón para enviar el formulario */}
         <button
           type="submit"
           className="btn btn-primary"

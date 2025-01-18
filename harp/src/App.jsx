@@ -18,6 +18,7 @@ import Dashboard from "./Components/Instructor/MisServicios/MisServicios.jsx";
 import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/Grupos.jsx";
 import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Configuracion.jsx";
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
+//import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
 function App() {
   return (
@@ -78,5 +79,7 @@ function App() {
     </div>
   );
 }
+
+// <Route path= "alumno/:idAlumno/cursos" element={<><AppNavbar /><MisCursos /></>}/>
 
 export default App;
