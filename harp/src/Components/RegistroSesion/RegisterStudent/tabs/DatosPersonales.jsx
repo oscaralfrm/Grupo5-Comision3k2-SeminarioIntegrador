@@ -15,18 +15,18 @@ export default function DatosPersonales({
           type="text"
           id="nombre"
           name="nombre"
-          className={`form-control ${errors.nombre ? "is-invalid" : ""}`}
+          className={`form-control ${errors?.nombre ? "is-invalid" : ""}`}
           placeholder="Nombre"
           {...register("nombre", {
             required: "El nombre es obligatorio",
             pattern: {
-              value: /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/, // Solo letras y espacios
+              value: /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/,
               message: "Solo se permiten letras y espacios",
             },
+            onChange: handleInputChange,
           })}
-          onChange={handleInputChange}
         />
-        {errors.nombre && (
+        {errors?.nombre && (
           <div className="invalid-feedback">{errors.nombre.message}</div>
         )}
       </div>
@@ -38,18 +38,18 @@ export default function DatosPersonales({
           type="text"
           id="apellido"
           name="apellido"
-          className={`form-control ${errors.apellido ? "is-invalid" : ""}`}
+          className={`form-control ${errors?.apellido ? "is-invalid" : ""}`}
           placeholder="Apellido"
           {...register("apellido", {
             required: "El apellido es obligatorio",
             pattern: {
-              value: /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/, // Solo letras y espacios
+              value: /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/,
               message: "Solo se permiten letras y espacios",
             },
+            onChange: handleInputChange,
           })}
-          onChange={handleInputChange}
         />
-        {errors.apellido && (
+        {errors?.apellido && (
           <div className="invalid-feedback">{errors.apellido.message}</div>
         )}
       </div>
@@ -61,12 +61,12 @@ export default function DatosPersonales({
           type="text"
           id="dni"
           name="dni"
-          className={`form-control ${errors.dni ? "is-invalid" : ""}`}
+          className={`form-control ${errors?.dni ? "is-invalid" : ""}`}
           placeholder="DNI"
           {...register("dni", {
             required: "El DNI es obligatorio",
             pattern: {
-              value: /^[0-9]+$/, // Solo números
+              value: /^[0-9]+$/,
               message: "El DNI solo debe contener números",
             },
             minLength: {
@@ -77,45 +77,77 @@ export default function DatosPersonales({
               value: 8,
               message: "El DNI no puede tener más de 8 dígitos",
             },
-            validate: {
-              // Validación extra para verificar primero el patrón
-              firstValidate: (value) =>
-                /^[0-9]+$/.test(value) || "El DNI solo debe contener números",
-            },
-            onChange: handleInputChange, // Agregar onChange para validación en tiempo real
+            onChange: handleInputChange,
           })}
         />
-        {errors.dni && (
+        {errors?.dni && (
           <div className="invalid-feedback">{errors.dni.message}</div>
         )}
       </div>
 
-      {/* Campo Nombre de Usuario */}
-      <div className="form-group">
-        <label htmlFor="username">Nombre de usuario</label>
+      {/* Campo Fecha de Nacimiento */}
+      <div className="form-group mb-3">
+        <label htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
         <input
-          type="text"
-          id="username"
-          name="username"
-          className={`form-control ${errors.username ? "is-invalid" : ""}`}
-          placeholder="Nombre de usuario"
-          {...register("username", {
-            required: "El nombre de usuario es obligatorio",
+          type="date"
+          id="fechaNacimiento"
+          name="fechaNacimiento"
+          className={`form-control ${
+            errors?.fechaNacimiento ? "is-invalid" : ""
+          }`}
+          {...register("fechaNacimiento", {
+            required: "La fecha de nacimiento es obligatoria",
+            validate: (value) => {
+              const currentDate = new Date();
+              const inputDate = new Date(value);
+              const age = currentDate.getFullYear() - inputDate.getFullYear();
+              const isBirthdayPassed =
+                currentDate.getMonth() > inputDate.getMonth() ||
+                (currentDate.getMonth() === inputDate.getMonth() &&
+                  currentDate.getDate() >= inputDate.getDate());
+              return (
+                age > 18 ||
+                (age === 18 && isBirthdayPassed) ||
+                "Debes tener al menos 18 años"
+              );
+            },
+            onChange: handleInputChange,
           })}
-          onChange={handleInputChange}
         />
-        {errors.username && (
-          <div className="invalid-feedback">{errors.username.message}</div>
+        {errors?.fechaNacimiento && (
+          <div className="invalid-feedback">
+            {errors.fechaNacimiento.message}
+          </div>
         )}
       </div>
 
-      {/* Botón de avanzar a la siguiente pestaña */}
+      {/* Campo Nombre de Usuario */}
+      <div className="form-group mb-3">
+        <label htmlFor="nombreUsuario">Nombre de usuario</label>
+        <input
+          type="text"
+          id="nombreUsuario"
+          name="nombreUsuario"
+          className={`form-control ${
+            errors?.nombreUsuario ? "is-invalid" : ""
+          }`}
+          placeholder="Nombre de usuario"
+          {...register("nombreUsuario", {
+            required: "El nombre de usuario es obligatorio",
+            onChange: handleInputChange,
+          })}
+        />
+        {errors?.nombreUsuario && (
+          <div className="invalid-feedback">{errors.nombreUsuario.message}</div>
+        )}
+      </div>
+
+      {/* Botón para ir al siguiente tab */}
       <div className="d-flex justify-content-end align-items-center">
         <span
           className="fs-3"
           style={{ cursor: "pointer" }}
           onClick={goToNextTab}
-          disabled={Object.keys(errors).length > 0} // Desactiva el avance si hay errores
         >
           &#8594;
         </span>

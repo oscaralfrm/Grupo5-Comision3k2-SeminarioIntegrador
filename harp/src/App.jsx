@@ -18,7 +18,11 @@ import Dashboard from "./Components/Instructor/MisServicios/MisServicios.jsx";
 import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/Grupos.jsx";
 import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Configuracion.jsx";
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
+<<<<<<< HEAD
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
+=======
+//import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
+>>>>>>> f59282483acd7be6ad80a1a4a6bf40f890b33a14
 
 function App() {
   return (
@@ -84,5 +88,7 @@ function App() {
     </div>
   );
 }
+
+// <Route path= "alumno/:idAlumno/cursos" element={<><AppNavbar /><MisCursos /></>}/>
 
 export default App;
