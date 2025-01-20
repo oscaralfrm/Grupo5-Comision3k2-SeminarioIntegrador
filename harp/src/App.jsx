@@ -18,6 +18,7 @@ import Dashboard from "./Components/Instructor/MisServicios/MisServicios.jsx";
 import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/Grupos.jsx";
 import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Configuracion.jsx";
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
+import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
 
 function App() {
   return (
@@ -65,6 +66,11 @@ function App() {
             path= "instructor/:idInstructor/servicio/:idServicio/info-servicio" 
             element={<><AppNavbar /><InfoServicioPage /></>}
           />
+          <Route 
+            path= "instructor/:idInstructor/editar-usuario" 
+            element={<><AppNavbar /><EditUsuario /></>}
+          />
+
 
           /* Componente de Creación de Grupos. Observar que se puede llegar al mismo por varias rutas. Una desde la creación del servicio y otra 
           desde la configuración.
