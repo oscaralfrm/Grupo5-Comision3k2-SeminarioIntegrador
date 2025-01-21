@@ -19,6 +19,7 @@ export default function Contacto({
           name="email"
           className={`form-control ${errors?.email ? "is-invalid" : ""}`}
           placeholder="Email"
+          defaultValue={data?.email || ""} 
           {...register("email", {
             required: "El email es obligatorio",
             pattern: {
@@ -42,6 +43,7 @@ export default function Contacto({
           name="telefono"
           className={`form-control ${errors?.telefono ? "is-invalid" : ""}`}
           placeholder="Teléfono"
+          defaultValue={data?.telefono || ""} 
           {...register("telefono", {
             required: "El teléfono es obligatorio",
             pattern: {

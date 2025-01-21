@@ -23,7 +23,7 @@ export default function InfoCard({ formData }) {
               className="mb-3 text-center fs-1 text-white"
               style={{ fontFamily: "Roboto", fontWeight: "400" }}
             >
-              Información Ingresada
+              Información de Cuenta
             </h1>
           </div>
           <div

@@ -1,20 +1,87 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import { createInstructor } from "../../../services/Instructor.js";
+import {
+  editInstructor,
+  getInstructorById,
+} from "../../services/Instructor.js";
 import DatosPersonales from "./Tabs/DatosPersonales.jsx";
-import InfoCard from "./Tabs/InfoCard.jsx";
 import Contacto from "./Tabs/Contacto.jsx";
+import InfoCard from "./Tabs/InfoCard.jsx";
 import Password from "./Tabs/Password.jsx";
+import { editAlumno } from "../../services/Alumno.js";
 
-export const RegisterFormInstructor = () => {
+export const EditUsuario = () => {
+  const params = useParams();
+  const location = useLocation();
+  const [id, setId] = useState(null);
+  const [tipoUsuario, setTipoUsuario] = useState(null);
+  const [usuario, setUsuario] = useState(null);
+  const [error, setError] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
     watch,
-  } = useForm({ mode: "onChange" });
+    reset,  // Agregar reset aquí
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      nombre: "",
+      apellido: "",
+      dni: "",
+      fechaNacimiento: "",
+      nombreUsuario: "",
+      telefono: "",
+      email: "",
+      contrasena: "",
+    },
+  });
+
+  useEffect(() => {
+    const determinarUsuario = () => {
+      if (location.pathname.startsWith("/instructor")) {
+        setId(params.idInstructor || null);
+        setTipoUsuario("Instructor");
+      } else if (location.pathname.startsWith("/alumno")) {
+        setId(params.idAlumno || null);
+        setTipoUsuario("Alumno");
+      } else {
+        setId(null);
+        setTipoUsuario(null);
+      }
+    };
+
+    determinarUsuario();
+  }, [location.pathname, params]);
+
+  useEffect(() => {
+    const fetchUsuario = async () => {
+      if (id && tipoUsuario) {
+        try {
+          if (tipoUsuario.trim().toLowerCase() === "instructor") {
+            
+            const data = await getInstructorById(id);
+            console.log(data)
+            setUsuario(data.usuario);
+            reset(data.usuario);  // Actualizar los valores del formulario después de obtener los datos
+          } else if (tipoUsuario.trim().toLowerCase() === "alumno") {
+            const data = await getAlumnoById(id);
+            setUsuario(data);
+            reset(data);  // Actualizar los valores del formulario después de obtener los datos
+          } else {
+            console.log("Tipo de usuario no reconocido");
+          }
+        } catch (err) {
+          setError(`Error al obtener datos del ${tipoUsuario}: ${err.message}`);
+        }
+      }
+    };
+    fetchUsuario();
+    console.log(usuario)
+  }, [id, tipoUsuario, reset]);
 
   const contrasena = watch("contrasena");
   const navigate = useNavigate();
@@ -22,23 +89,38 @@ export const RegisterFormInstructor = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data)
-      const instructorCreado = await createInstructor(
-        data.nombre,
-        data.apellido,
-        data.dni,
-        data.nombreUsuario,
-        data.contrasena,
-        data.email,
-        data.telefono,
-        data.direccion,
-        data.fechaNacimiento
-      );
-      navigate(`/instructor/${instructorCreado.id}/servicios`);
-      //navigate(`/instructor/${instructorCreado.id}/crear-servicio`);
+      if (tipoUsuario.trim().toLowerCase() === "instructor") {
+        await editInstructor(
+          id,
+          data.nombre,
+          data.apellido,
+          data.dni,
+          data.nombreUsuario,
+          data.contrasena,
+          data.email,
+          data.telefono,
+          data.direccion,
+          data.fechaNacimiento
+        );
+        
+      } else if (tipoUsuario.trim().toLowerCase() === "alumno") {
+        await editAlumno(
+          id,
+          data.nombre,
+          data.apellido,
+          data.dni,
+          data.nombreUsuario,
+          data.contrasena,
+          data.email,
+          data.telefono,
+          data.direccion,
+          data.fechaNacimiento
+        );
+        
+      }
     } catch (error) {
       console.error("Error:", error);
-      alert("Hubo un problema al registrar al instructor. Por favor, inténtalo nuevamente.");
+      alert(`Hubo un problema al editar al ${tipoUsuario}. Por favor, inténtalo nuevamente.`);
     }
   };
 
@@ -66,7 +148,6 @@ export const RegisterFormInstructor = () => {
         padding: "20px",
       }}
     >
-      {/* Columna Izquierda (Formulario) */}
       <div
         style={{
           flex: "1 1 auto",
@@ -80,10 +161,7 @@ export const RegisterFormInstructor = () => {
         className="col-12 col-md-6"
       >
         <div style={{ width: "100%" }}>
-          <h1 className="mb-1 text-center fs-1">Regístrate como Instructor</h1>
-          <p className="text-center text-muted fs-6">
-            ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
-          </p>
+          <h1 className="mb-1 text-center fs-1">Editar información de cuenta</h1>
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="card shadow-lg rounded-3 bg-light p-4"
@@ -104,7 +182,7 @@ export const RegisterFormInstructor = () => {
                   register={register}
                   errors={errors}
                   goToNextTab={goToNextTab}
-                  data={data}
+                  data={usuario}
                 />
               </Tab>
 
@@ -114,7 +192,7 @@ export const RegisterFormInstructor = () => {
                   errors={errors}
                   goToNextTab={goToNextTab}
                   goToPreviousTab={goToPreviousTab}
-                  data={data}
+                  data={usuario}
                 />
               </Tab>
 
@@ -125,7 +203,7 @@ export const RegisterFormInstructor = () => {
                   goToPreviousTab={goToPreviousTab}
                   contrasena={contrasena}
                   isValid={isValid}
-                  data={data}
+                  data={usuario}
                 />
               </Tab>
             </Tabs>
@@ -133,7 +211,6 @@ export const RegisterFormInstructor = () => {
         </div>
       </div>
 
-      {/* Columna Derecha (InfoCard) */}
       <div
         style={{
           flex: "1 1 100%",
@@ -147,6 +224,7 @@ export const RegisterFormInstructor = () => {
         className="col-12 col-md-6 mt-4 mt-md-0 mb-3"
       >
         <InfoCard formData={watch()} />
+        {console.log(watch())}
       </div>
     </div>
   );

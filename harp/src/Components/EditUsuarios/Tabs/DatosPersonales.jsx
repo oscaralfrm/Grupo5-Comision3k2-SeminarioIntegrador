@@ -5,6 +5,7 @@ export default function DatosPersonales({
   errors,
   handleInputChange,
   goToNextTab,
+  data
 }) {
   return (
     <div>
@@ -17,6 +18,7 @@ export default function DatosPersonales({
           name="nombre"
           className={`form-control ${errors?.nombre ? "is-invalid" : ""}`}
           placeholder="Nombre"
+          defaultValue={data?.nombre || ""} 
           {...register("nombre", {
             required: "El nombre es obligatorio",
             pattern: {
@@ -40,6 +42,7 @@ export default function DatosPersonales({
           name="apellido"
           className={`form-control ${errors?.apellido ? "is-invalid" : ""}`}
           placeholder="Apellido"
+          defaultValue={data?.apellido || ""} 
           {...register("apellido", {
             required: "El apellido es obligatorio",
             pattern: {
@@ -63,6 +66,7 @@ export default function DatosPersonales({
           name="dni"
           className={`form-control ${errors?.dni ? "is-invalid" : ""}`}
           placeholder="DNI"
+          defaultValue={data?.dni || ""} 
           {...register("dni", {
             required: "El DNI es obligatorio",
             pattern: {
@@ -95,6 +99,7 @@ export default function DatosPersonales({
           className={`form-control ${
             errors?.fechaNacimiento ? "is-invalid" : ""
           }`}
+          defaultValue={data?.fechaNacimiento || ""} 
           {...register("fechaNacimiento", {
             required: "La fecha de nacimiento es obligatoria",
             validate: (value) => {
@@ -128,6 +133,7 @@ export default function DatosPersonales({
           type="text"
           id="nombreUsuario"
           name="nombreUsuario"
+          defaultValue={data?.nombreUsuario || ""} 
           className={`form-control ${
             errors?.nombreUsuario ? "is-invalid" : ""
           }`}

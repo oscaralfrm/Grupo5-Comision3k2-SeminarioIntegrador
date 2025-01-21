@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Password({
   register,
@@ -6,10 +6,23 @@ export default function Password({
   handleInputChange,
   goToPreviousTab,
   isValid,
-  contrasena, // Pasar la contraseña desde el estado principal para la validación
+  contrasena,
+  data, // Datos del usuario
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Al cargar el componente, asegura que los valores iniciales estén configurados
+  useEffect(() => {
+    if (data?.password) {
+      handleInputChange({ target: { name: "password", value: data.password } });
+    }
+    if (data?.confirmPassword) {
+      handleInputChange({
+        target: { name: "confirmPassword", value: data.confirmPassword },
+      });
+    }
+  }, [data, handleInputChange]);
 
   return (
     <div>
@@ -22,6 +35,7 @@ export default function Password({
           name="password"
           className={`form-control ${errors?.contrasena ? "is-invalid" : ""}`}
           placeholder="Contraseña"
+          defaultValue={data?.contrasena || ""} // Rellenar con datos si están disponibles
           {...register("contrasena", {
             required: "La contraseña es obligatoria",
             minLength: {
@@ -54,6 +68,7 @@ export default function Password({
             errors?.confirmPassword ? "is-invalid" : ""
           }`}
           placeholder="Confirmar Contraseña"
+          defaultValue={data?.confirmPassword || ""} // Rellenar con datos si están disponibles
           {...register("confirmPassword", {
             required: "Por favor, confirma tu contraseña",
             validate: (value) =>
@@ -91,7 +106,7 @@ export default function Password({
           className="btn btn-primary"
           disabled={!isValid} // Deshabilitar si el formulario no es válido
         >
-          Regístrate
+          Guardar
         </button>
       </div>
     </div>
