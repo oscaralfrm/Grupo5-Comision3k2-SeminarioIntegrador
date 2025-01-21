@@ -65,4 +65,13 @@ public class UsuarioController {
         }
         return null;
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> verificarUsuario(@RequestParam String email, @RequestParam String contrasena, @RequestParam String nombreUsuario) {
+        String perfil = usuarioService.verificarCredenciales(email, contrasena, nombreUsuario);
+        return ResponseEntity.ok(perfil);
+    }
+
+
+
 }

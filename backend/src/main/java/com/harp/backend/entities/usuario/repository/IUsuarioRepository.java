@@ -13,4 +13,8 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsByEmail(String email);
 
     Usuario findByEmail(String email);
+
+    Optional<Usuario> findByEmailOrNombreUsuarioAndContrasena(String email, String nombreUsuario, String contrasena);
+    // Ésta útlima es para el Login.
+
 }

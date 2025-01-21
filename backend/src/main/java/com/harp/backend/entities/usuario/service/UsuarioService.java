@@ -1,5 +1,6 @@
 package com.harp.backend.entities.usuario.service;
 
+import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.repository.IUsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UsuarioService implements IUsuarioService {
@@ -24,6 +26,25 @@ public class UsuarioService implements IUsuarioService {
         usuarioRepository.save(usuario);
         return null;
     }
+
+    // Éste es el método para poder veritifcar las credenciales del usuario y con eso... en la API devolver el String. IMPORTANTE
+    @Override
+    public String verificarCredenciales(String email, String contrasena, String nombreUsuario) {
+        Optional<Usuario> usuario = usuarioRepository.findByEmailOrNombreUsuarioAndContrasena(email, nombreUsuario, contrasena);
+        if (usuario.isPresent()) {
+            Set<Perfil> perfiles = usuario.get().getPerfiles();
+            for (Perfil perfil : perfiles) {
+                if (perfil.getId() == 2) {
+                    return "instructor";
+                } else if (perfil.getId() == 3) {
+                    return "alumno";
+                }
+            }
+        }
+        return "credenciales inválidas";
+    }
+
+
 
     @Override
     public void deleteUsuario(Long idUsuario) {

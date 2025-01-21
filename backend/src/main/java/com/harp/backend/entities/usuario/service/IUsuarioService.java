@@ -11,5 +11,6 @@ public interface IUsuarioService {
     void deleteUsuario(Long idUsuario);
     Optional<Usuario> findUsuario(Long idUsuario);
     Usuario editUsuario(Usuario usuario);
+    String verificarCredenciales(String email, String contrasena, String nombreUsuario); // Esto es para el LOGIN.
 //    public String encriptPassword(String password);
 }
