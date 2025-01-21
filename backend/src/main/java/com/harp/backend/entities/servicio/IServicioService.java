@@ -41,6 +41,7 @@ public interface IServicioService {
     void setFechaInicioServicio(Long idServicio, LocalDate fechaInicio);
     double[] calcularIngresosPorMesDeServicio(Long idServicio);
     void activarAsistencias(Long idServicio);
+    void desactivarAsistencias(Long idServicio);
     List<Clase> findClasesFechaDeServicio(Long idServicio, LocalDate fecha);
     List<Clase> findClasesDeServicio(Long idServicio);
 }

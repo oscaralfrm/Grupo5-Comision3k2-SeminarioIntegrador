@@ -61,36 +61,40 @@ public class ClaseService implements IClaseService {
     @Override
     public void crearClasesParaSemanaSiguienteGrupo(Grupo grupo, LocalDate fechaInicio) {
         Set<Horario> horarios = grupo.getHorarios(); // Obtener los horarios del grupo
-        System.out.println("horarios2" + horarios);
-        System.out.println("grupo" + grupo);
+        //System.out.println("horarios2" + horarios);
+        //System.out.println("grupo" + grupo);
 
         // Iteramos sobre cada horario del grupo
         for (Horario horario : horarios) {
-            DiaSemana diaSemanaHorario = horario.getDiaSemana();
-            DayOfWeek dayOfWeek = diaSemanaHorario.toDayOfWeek();
-
-            if (fechaInicio == null) {
-                fechaInicio = LocalDate.now();
-            }
-
-            // Calcular la próxima fecha para el día del horario
-            LocalDate fechaClase = fechaInicio.with(dayOfWeek);
-
-            // Si el día obtenido es hoy osea es domingo o ya pasó, ajustamos a la semana siguiente
-            // Los domingos a primera hora se crean las clases desde el lunes hasta el doming siguiente
-            if (!fechaClase.isAfter(fechaInicio)) {
-                fechaClase = fechaClase.plusWeeks(1);
-            }
-
-            // Crear y guardar la clase
-            Clase nuevaClase = new Clase();
-            nuevaClase.setFecha(fechaClase);
-            nuevaClase.setHorario(horario);
-            grupo.agregarClase(nuevaClase);
-            System.out.println("nueva clase" + nuevaClase);
-
-            this.createClaseConAsistencias(nuevaClase, horario.getAlumnos());
+            crearClasesParaSemanaSiguienteHorario(grupo, fechaInicio, horario);
         }
+    }
+
+    public void crearClasesParaSemanaSiguienteHorario(Grupo grupo, LocalDate fechaInicio, Horario horario) {
+        DiaSemana diaSemanaHorario = horario.getDiaSemana();
+        DayOfWeek dayOfWeek = diaSemanaHorario.toDayOfWeek();
+
+        if (fechaInicio == null) {
+            fechaInicio = LocalDate.now();
+        }
+
+        // Calcular la próxima fecha para el día del horario
+        LocalDate fechaClase = fechaInicio.with(dayOfWeek);
+
+        // Si el día obtenido es hoy osea es domingo o ya pasó, ajustamos a la semana siguiente
+        // Los domingos a primera hora se crean las clases desde el lunes hasta el doming siguiente
+        if (!fechaClase.isAfter(fechaInicio)) {
+            fechaClase = fechaClase.plusWeeks(1);
+        }
+
+        // Crear y guardar la clase
+        Clase nuevaClase = new Clase();
+        nuevaClase.setFecha(fechaClase);
+        nuevaClase.setHorario(horario);
+        grupo.agregarClase(nuevaClase);
+        System.out.println("nueva clase" + nuevaClase);
+
+        this.createClaseConAsistencias(nuevaClase, horario.getAlumnos());
     }
 
     @Override

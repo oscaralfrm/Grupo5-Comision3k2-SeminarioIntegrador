@@ -4,6 +4,7 @@ package com.harp.backend.entities.grupo;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.horario.Horario;
+import com.harp.backend.entities.horario.HorarioDTO;
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
@@ -99,6 +100,16 @@ public class GrupoController {
         Grupo nuevoGrupo = grupoService.createGrupoConHorarios(grupoDTO, idServicio);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoGrupo); // 201 CREATED
+    }
+
+    // POST CON HORARIOS DTOS
+    @PostMapping("/{idServicio}/grupos/{idGrupo}/nuevos-horarios")
+    public ResponseEntity<String> agregarHorariosAGrupo(@PathVariable Long idServicio,
+                                                       @PathVariable @Valid Long idGrupo,
+                                                       @RequestBody List<HorarioDTO> horariosDTO) {
+        grupoService.agregarHorariosAGrupo(horariosDTO, idGrupo, idServicio);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Se han agregado los horarios al grupo."); // 201 CREATED
     }
 
     // ELIMINAR

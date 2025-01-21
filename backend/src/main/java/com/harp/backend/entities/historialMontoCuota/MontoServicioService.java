@@ -61,6 +61,13 @@ public class MontoServicioService implements IMontoServicioService {
         montoServicioRepository.save(montoActual);
     }
 
+    public void cambiarFechaInicioMontoServicio(MontoServicio monto, LocalDate fechaInicio) {
+        // Solo le permitimos crear nuevos montos del servicio con fechaInicioProximoMonto > fechaActual
+        // Por eso si programan un monto por ej. para mañana, la fecha fin del monto actual será hoy.
+        monto.setFechaInicio(fechaInicio);
+        montoServicioRepository.save(monto);
+    }
+
 
 //    public List<MontoServicio> getHistorialMontosDeServicio(Long idServicio) {
 //        return montoServicioRepository.findByServicioId(idServicio);

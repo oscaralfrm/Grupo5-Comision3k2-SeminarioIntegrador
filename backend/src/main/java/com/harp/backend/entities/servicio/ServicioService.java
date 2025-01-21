@@ -118,12 +118,14 @@ public class ServicioService implements IServicioService {
             throw new UnsupportedOperationException("Para habilitar inscripciones se debe configurar un monto de las cuotas del servicio.");
         }
         servicio.setInscripcionesAbiertas(true);
+        servicio.setPublico(true);
         servicioRepository.save(servicio);
     }
 
     public void deshabilitarInscripciones(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
         servicio.setInscripcionesAbiertas(false);
+        servicio.setPublico(false);
         servicioRepository.save(servicio);
     }
 
@@ -165,14 +167,6 @@ public class ServicioService implements IServicioService {
             throw new UnsupportedOperationException("El servicio ya tiene un monto programado. Edite este monto.");
         }
 
-        // Solo le dejamos crear un monto nuevo MINIMO con fecha inicio el dia siguente al actual
-        // Validamos que la fechaInicio del monto del servicio que se quiere crear es Mayor a la actual
-        LocalDate fechaActual = LocalDate.now();
-        if (montoServicioDTO.getFechaInicio().isEqual(fechaActual) ||
-                montoServicioDTO.getFechaInicio().isBefore(fechaActual)) {
-            throw new UnsupportedOperationException("No se puede configurar un monto para una fecha anterior o igual a la actual");
-        }
-
         // VALIDAR Se deberia validar que la cantidad de veces semanales sea igual a
         // la cantidad de veces semanales definida en el servicio
 
@@ -188,17 +182,37 @@ public class ServicioService implements IServicioService {
             throw new UnsupportedOperationException("El servicio no tiene esa frecuencia de asistencia semanal");
         }
 
-        // Crear el nuevo monto
-        MontoServicio nuevoMontoServicio = montoService.createMontoServicio(montoServicioDTO);
+        MontoServicio nuevoMontoServicio;
 
         // Solo si hay un monto actual le settamos la fecha fin
         // Si es el primer monto del servicio entonces no tendrá ningun motno actual configurado
         // VALIDAR Y si tiene un monto actual configurado pero no para esa frecuencia semanal?
         if (servicio.tieneMontoActualConEstasVecesSemanales(cantVecesSemanales)) {
+
+            // Solo le dejamos crear un monto nuevo MINIMO con fecha inicio el dia siguente al actual
+            // Validamos que la fechaInicio del monto del servicio que se quiere crear es Mayor a la actual
+            LocalDate fechaActual = LocalDate.now();
+            if (montoServicioDTO.getFechaInicio().isEqual(fechaActual) ||
+                    montoServicioDTO.getFechaInicio().isBefore(fechaActual)) {
+                throw new UnsupportedOperationException("No se puede configurar un monto para una fecha anterior o igual a la actual");
+            }
+
+            // Crear el nuevo monto
+            nuevoMontoServicio = montoService.createMontoServicio(montoServicioDTO);
+
             MontoServicio montoActual = obtenerMontoActual(idServicio, cantVecesSemanales);
             // La fecha fin del monto actual será un dia antes que la nueva
             // Si se define para mañana la fecha inicio, entonces la fecha fin del monto anterior es de hoy
             montoService.cambiarFechaFinMontoServicio(montoActual, nuevoMontoServicio.getFechaInicio()); // Persistimos el cambio en la fecha fin
+        } else {
+            // si no hay un monto anterior con esa frecuencia semanal es el primer monto por lo tanto se tiene
+            // que corroborar que si hay una fecha de inicio del servicio entonces que el monto
+            // sea igual a la fecha de inicio del servicio
+
+            MontoServicioDTO dtoSinFecha = new MontoServicioDTO(montoServicioDTO.getMonto(), null, montoServicioDTO.getCantVecesSemanales());
+
+            // Crear el nuevo monto
+            nuevoMontoServicio = montoService.createMontoServicio(dtoSinFecha);
         }
 
         // Asociar el nuevo monto al servicio
@@ -302,13 +316,28 @@ public class ServicioService implements IServicioService {
         servicio.setFechaInicio(fechaInicio);
         servicioRepository.save(servicio);
 
+        // le setteamos la fecha de inicio a los montos primeros
+        for (MontoServicio monto : servicio.obtenerMontosActuales()) {
+            //monto.setFechaInicio(servicio.getFechaInicio());
+            montoService.cambiarFechaInicioMontoServicio(monto, servicio.getFechaInicio());
+        }
+
         // Luego creamos las clases
-        claseService.crearClasesParaSemanaSiguente(servicio, fechaInicio);
+        if (servicio.tieneInscripcionesActivas()) {
+            claseService.crearClasesParaSemanaSiguente(servicio, fechaInicio);
+        }
     }
 
     public void activarAsistencias(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
         servicio.setAsistenciasActivas(true);
+        servicioRepository.save(servicio);
+    }
+
+    public void desactivarAsistencias(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+
+        servicio.setAsistenciasActivas(false);
         servicioRepository.save(servicio);
     }
 
