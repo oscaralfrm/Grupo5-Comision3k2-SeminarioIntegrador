@@ -34,14 +34,17 @@ public class UsuarioService implements IUsuarioService {
         if (usuario.isPresent()) {
             Set<Perfil> perfiles = usuario.get().getPerfiles();
             for (Perfil perfil : perfiles) {
-                if (perfil.getId() == 2) {
-                    return "instructor";
-                } else if (perfil.getId() == 3) {
-                    return "alumno";
+                switch (perfil.getId().intValue()) {
+                    case 2:
+                        return "instructor";
+                    case 3:
+                        return "alumno";
+                    default:
+                        break;
                 }
             }
         }
-        return "credenciales inválidas";
+        return null;  // Devuelve null para que el controlador maneje el error
     }
 
 

@@ -67,9 +67,12 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> verificarUsuario(@RequestParam String email, @RequestParam String contrasena, @RequestParam String nombreUsuario) {
-        String perfil = usuarioService.verificarCredenciales(email, contrasena, nombreUsuario);
-        return ResponseEntity.ok(perfil);
+    public ResponseEntity<String> verificarUsuario(@RequestBody Usuario usuario) {
+        String perfil = usuarioService.verificarCredenciales(usuario.getEmail(), usuario.getContrasena(), usuario.getNombreUsuario());
+        if (perfil != null) {
+            return ResponseEntity.ok(perfil);
+        }
+        return ResponseEntity.status(401).body("Credenciales incorrectas.");
     }
 
 
