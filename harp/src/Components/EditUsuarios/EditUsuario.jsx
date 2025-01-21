@@ -146,6 +146,7 @@ export const EditUsuario = () => {
         fontFamily: "Roboto",
         overflow: "hidden",
         padding: "20px",
+        marginTop:"3rem"
       }}
     >
       <div
