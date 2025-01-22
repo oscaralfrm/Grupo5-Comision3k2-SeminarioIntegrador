@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import PanaTeacher from '../../assets/panaBuenLogin.png';
-import { getServiciosDeInstructor, iniciarSesion } from '../../services/Instructor';
+import { iniciarSesion } from '../../services/Instructor';
 
 export const LoginForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -20,9 +20,14 @@ export const LoginForm = () => {
     const onSubmit = async (data) => {
         try {
             const { email, password } = data;
-            const id = await iniciarSesion(email, password);
-            const servicios = await getServiciosDeInstructor(id);
-            navigate(`/instructor/${id}/servicios`);     
+            const response = await iniciarSesion(email, password);
+            const { id, tipoUsuario } = response;
+            window.localStorage.setItem('loggedUser', JSON.stringify(response));
+            if (tipoUsuario === 'instructor') {
+                navigate(`/instructor/${id}/servicios`);
+            } else if (tipoUsuario === 'alumno') {
+                navigate(`/alumno/${id}/dashboard`);
+            }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
             setErrorMessage('Error al iniciar sesión. Por favor, verifica tus credenciales.');
@@ -54,7 +59,6 @@ export const LoginForm = () => {
             }}
         >
             <div className="row h-100">
-                {/* Sección de Imagen */}
                 <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center bg-light" style={{ height: '100%', maxHeight: '90vh' }}>
                     <img
                         src={PanaTeacher}
@@ -69,7 +73,6 @@ export const LoginForm = () => {
                     />
                 </div>
 
-                {/* Sección de Formulario */}
                 <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center" style={{ height: '100%', maxHeight: '90vh' }}>
                     <div
                         className="col-md-8 col-sm-10"
