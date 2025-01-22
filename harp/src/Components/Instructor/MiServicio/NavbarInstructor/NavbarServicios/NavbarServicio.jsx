@@ -1,12 +1,12 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Navbar, Dropdown, Container, Form, FormControl, Button } from "react-bootstrap";
 import img from "../../../../../assets/LogoHarp420.png"; // Ruta del logo
 import profileImg from "../../../../../assets/profile.png"; // Ruta de la imagen de perfil
 
 export default function NavbarServicio() {
   const navigate = useNavigate();
-
+  const {idInstructor} = useParams();
   const handleClick = () => {
     navigate('/');
   };
@@ -68,7 +68,7 @@ export default function NavbarServicio() {
               />
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => navigate("/editar-perfil")}>
+              <Dropdown.Item onClick={() => navigate(`/instructor/${idInstructor}/editar-usuario`)}>
                 Editar perfil
               </Dropdown.Item>
               <Dropdown.Item onClick={() => navigate("/")}>

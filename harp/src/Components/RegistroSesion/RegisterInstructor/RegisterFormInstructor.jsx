@@ -104,8 +104,7 @@ export const RegisterFormInstructor = () => {
                   register={register}
                   errors={errors}
                   goToNextTab={goToNextTab}
-                  data={data}
-                />
+                                />
               </Tab>
 
               <Tab eventKey="contacto" title="Contacto">
@@ -114,7 +113,7 @@ export const RegisterFormInstructor = () => {
                   errors={errors}
                   goToNextTab={goToNextTab}
                   goToPreviousTab={goToPreviousTab}
-                  data={data}
+                  
                 />
               </Tab>
 
@@ -125,7 +124,7 @@ export const RegisterFormInstructor = () => {
                   goToPreviousTab={goToPreviousTab}
                   contrasena={contrasena}
                   isValid={isValid}
-                  data={data}
+                  
                 />
               </Tab>
             </Tabs>
