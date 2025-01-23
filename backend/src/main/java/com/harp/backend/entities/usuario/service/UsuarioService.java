@@ -2,6 +2,7 @@ package com.harp.backend.entities.usuario.service;
 
 import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.usuario.model.Usuario;
+import com.harp.backend.entities.usuario.model.UsuarioLoginResponse;
 import com.harp.backend.entities.usuario.repository.IUsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,22 +30,28 @@ public class UsuarioService implements IUsuarioService {
 
     // Éste es el método para poder veritifcar las credenciales del usuario y con eso... en la API devolver el String. IMPORTANTE
     @Override
-    public String verificarCredenciales(String email, String contrasena, String nombreUsuario) {
-        Optional<Usuario> usuario = usuarioRepository.findByEmailOrNombreUsuarioAndContrasena(email, nombreUsuario, contrasena);
+    public UsuarioLoginResponse verificarCredenciales(String email, String contrasena) {
+        Optional<Usuario> usuario = usuarioRepository.findByEmailOContrasena(email, contrasena);
         if (usuario.isPresent()) {
             Set<Perfil> perfiles = usuario.get().getPerfiles();
             for (Perfil perfil : perfiles) {
+                String perfilString = null;
                 switch (perfil.getId().intValue()) {
                     case 2:
-                        return "instructor";
+                        perfilString = "instructor";
+                        break;
                     case 3:
-                        return "alumno";
+                        perfilString = "alumno";
+                        break;
                     default:
                         break;
                 }
+                if (perfilString != null) {
+                    return new UsuarioLoginResponse(usuario.get().getId(), perfilString);
+                }
             }
         }
-        return null;  // Devuelve null para que el controlador maneje el error
+        return null; // Usuario no encontrado o sin un perfil válido
     }
 
 

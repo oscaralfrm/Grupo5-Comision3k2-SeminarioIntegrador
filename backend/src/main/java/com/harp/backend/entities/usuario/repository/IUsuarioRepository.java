@@ -16,6 +16,6 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Usuario findByEmail(String email);
 
-    @Query("SELECT u FROM Usuario u WHERE (u.email = :email OR u.nombreUsuario = :nombreUsuario) AND u.contrasena = :contrasena")
-    Optional<Usuario> findByEmailOrNombreUsuarioAndContrasena(@Param("email") String email, @Param("nombreUsuario") String nombreUsuario, @Param("contrasena") String contrasena);
+    @Query("SELECT u FROM Usuario u WHERE u.email = :email AND u.contrasena = :contrasena")
+    Optional<Usuario> findByEmailOContrasena(@Param("email") String email, @Param("contrasena") String contrasena);
 }
