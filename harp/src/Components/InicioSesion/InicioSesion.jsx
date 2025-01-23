@@ -1,45 +1,49 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import PanaTeacher from '../../assets/panaBuenLogin.png';
-import { iniciarSesion } from '../../services/Instructor';
+import { iniciarSesion } from '../../services/Login';
 
 export const LoginForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [errorMessage, setErrorMessage] = useState('');
-    const [user, setUser] = useState(null);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const loggedUser = window.localStorage.getItem("loggedUser");
-        if (loggedUser) {
-            setUser(JSON.parse(loggedUser));
-        }
-    }, []);
 
     const onSubmit = async (data) => {
         try {
-            const { email, password } = data;
-            const response = await iniciarSesion(email, password);
-            const { id, tipoUsuario } = response;
+            const { email, password } = data; // 'password' es el nombre que usarás en tu formulario
+            // Asegúrate de que el backend esté esperando "contrasena"
+            const response = await iniciarSesion(email, password); // En caso de que el backend espere 'contrasena', cámbialo aquí
+            
+            const { id, perfil } = response;
+
+            // Guardar la información del usuario en el localStorage
             window.localStorage.setItem('loggedUser', JSON.stringify(response));
-            if (tipoUsuario === 'instructor') {
+
+            // Redirigir al usuario según su perfil
+            if (perfil === 'instructor') {
                 navigate(`/instructor/${id}/servicios`);
-            } else if (tipoUsuario === 'alumno') {
+            } else if (perfil === 'alumno') {
                 navigate(`/alumno/${id}/dashboard`);
             }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
             setErrorMessage('Error al iniciar sesión. Por favor, verifica tus credenciales.');
-            setTimeout(() => setErrorMessage(''), 5000);
+            setTimeout(() => setErrorMessage(''), 5000); // Limpiar mensaje de error después de 5 segundos
         }
     };
 
     const handleGoogleLogin = async () => {
         try {
-            const user = await signInWithGoogle();
+            const user = await signInWithGoogle(); // Asegúrate de tener esta función definida
             window.localStorage.setItem('loggedUser', JSON.stringify(user));
-            setUser(user);
+            const { id, perfil } = user;
+
+            if (perfil === 'instructor') {
+                navigate(`/instructor/${id}/servicios`);
+            } else if (perfil === 'alumno') {
+                navigate(`/alumno/${id}/dashboard`);
+            }
         } catch (error) {
             setErrorMessage('Error al iniciar sesión con Google: ' + error.message);
             setTimeout(() => setErrorMessage(''), 5000);
@@ -103,7 +107,6 @@ export const LoginForm = () => {
                                         <label htmlFor="email" className="form-label">Correo Electrónico</label>
                                         <input 
                                             type="email" 
-                                            name="email" 
                                             id="email" 
                                             className={`form-control ${errors.email ? 'is-invalid' : ''}`} 
                                             placeholder="Correo Electrónico" 
@@ -126,12 +129,11 @@ export const LoginForm = () => {
                                         </div>
                                         <input
                                             type="password"
-                                            name="password"
                                             id="password"
                                             className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                                             placeholder="Contraseña"
                                             autoComplete="current-password"
-                                            {...register("password", { required: true })}
+                                            {...register("password", { required: true })} // Cambiar 'password' a 'contrasena' si es necesario
                                         />
                                         {errors.password && (
                                             <div className="invalid-feedback">
@@ -180,21 +182,5 @@ export const LoginForm = () => {
         </div>
     );
 
-    const userDashboard = () => (
-        <main 
-            className="container mt-3"
-            style={{
-                maxHeight: "90vh"
-            }}
-        >
-            <h2>Bienvenido, {user.userName}</h2>
-            <hr />
-        </main>
-    );
-
-    return (
-        <>
-            {user ? userDashboard() : loginForm()}
-        </>
-    );
+    return loginForm();
 };
