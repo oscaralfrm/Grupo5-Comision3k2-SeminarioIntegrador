@@ -125,34 +125,17 @@ public class ServicioController {
         return  ResponseEntity.ok("Se configuró el inicio del servicio");
     }
 
-    @PostMapping("/{idServicio}/monto")
-    public ResponseEntity<MontoServicio> crearNuevoMonto(
-            @PathVariable Long idServicio,
-            @RequestBody MontoServicioDTO montoServicioDTO) {
+//    @GetMapping("/{idServicio}/monto-actual")
+//    public ResponseEntity<List<MontoServicio>> traerMontosActualesDeServicio(@PathVariable @Min(1) Long idServicio) {
+//        List<MontoServicio> montosServicio = servicioService.obtenerMontosActualesServicio(idServicio);
+//        return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
+//    };
 
-        // Llama a servicioService para gestionar la actualización y creación del nuevo monto
-        MontoServicio nuevoMontoServicio = servicioService.actualizarYCrearNuevoMonto(montoServicioDTO, idServicio);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoMontoServicio);
-    }
-
-    @GetMapping("/{idServicio}/monto-actual")
-    public ResponseEntity<List<MontoServicio>> traerMontosActualesDeServicio(@PathVariable @Min(1) Long idServicio) {
-        List<MontoServicio> montosServicio = servicioService.obtenerMontosActualesServicio(idServicio);
-        return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
-    };
-
-    @GetMapping("/{idServicio}/montos-programados")
-    public ResponseEntity<List<MontoServicio>> traerMontosProgramadosDeServicio(@PathVariable @Min(1) Long idServicio) {
-        List<MontoServicio> montosServicio = servicioService.obtenerMontosProgramadosFuturoServicio(idServicio);
-        return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
-    };
-
-    @GetMapping("/{idServicio}/historial-montos")
-    public ResponseEntity<Set<MontoServicio>> traerHistorialMontosDeServicio(@PathVariable @Min(1) Long idServicio) {
-        Set<MontoServicio> montosServicio = servicioService.obtenerHistorialMontosDeServicio(idServicio);
-        return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
-    };
+//    @GetMapping("/{idServicio}/historial-montos")
+//    public ResponseEntity<Set<MontoServicio>> traerHistorialMontosDeServicio(@PathVariable @Min(1) Long idServicio) {
+//        Set<MontoServicio> montosServicio = servicioService.obtenerHistorialMontosDeServicio(idServicio);
+//        return ResponseEntity.status(HttpStatus.OK).body(montosServicio);
+//    };
 
     @GetMapping("/{idServicio}/clases-hoy")
     public ResponseEntity<List<Clase>> traerClasesHoyDeServicio(@PathVariable @Min(1) Long idServicio) {

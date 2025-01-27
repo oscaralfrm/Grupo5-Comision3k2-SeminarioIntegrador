@@ -17,4 +17,5 @@ public class GrupoDTO {
     private Integer numero;
     private Integer cantMaxCupos;
     private List<HorarioDTO> horarios;
+    private Float monto;
 }

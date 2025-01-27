@@ -7,6 +7,7 @@ import com.harp.backend.entities.cuota.estadoCuota.CambioEstadoCuotaService;
 import com.harp.backend.entities.cuota.estadoCuota.EstadoCuota;
 import com.harp.backend.entities.cuota.estrategiaCrearCuota.*;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
+import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.pagos.IPagoService;
@@ -15,6 +16,7 @@ import com.harp.backend.entities.pagos.metodoPago.MetodoPago;
 import com.harp.backend.entities.pagos.metodoPago.MetodoPagoService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.exception.NoSuchElementFoundException;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -128,15 +130,14 @@ public class CuotaService implements ICuotaService {
                     //SERVICIO Y ALUMNO
                     // obtenemos el servicio asociado a a la inscripcion de alumno
                     Servicio servicio = inscripcion.getServicio();
+                    Grupo grupo = inscripcion.getGrupo();
 
                     // MONTO
                     // Aca deberiamos implementar estrategias de calculo de monto segun cada tipo de servicio
                     // calculamos la cantidad de horarios de un grupo de este servicio en los que esta inscripto el alumno
 
-                    Integer cantVecesSemanalesAlumno = inscripcion.getCantVecesSemanales();
-
                     // en base a eso macheamos cantHorarios con CantVecesSemana del monto
-                    MontoServicio montoCuota = servicio.obtenerMontoActualConEstasVecesSemanales(cantVecesSemanalesAlumno);
+                    MontoServicio montoCuota = grupo.obtenerMontoActual();
 
                     // ESTRATEGIA FECHAS CUOTA
                     // obtenemos la estrategia que correponda segun la frecuencia de pago
@@ -148,8 +149,10 @@ public class CuotaService implements ICuotaService {
                     // - segun inscripcion de cada alumno
                     // - un solo pago: se crea con fechaInicioCiclo = fechaInicioServicio, y fin lo mismo
                     // - pago unico pero adelantado: se crea inicio = fechaInscripcion, fin = fechaFinServicio, limite = fechaInicioServicio
-                    IEstrategiaCrearCuota estrategiaCrearCuota = this.determinarEstrategia(servicio.getTipoFrecuenciaPago());
-                    FechasCuota fechasNuevaCuota = estrategiaCrearCuota.calcularFechas(cuota, servicio);
+//                    IEstrategiaCrearCuota estrategiaCrearCuota = this.determinarEstrategia(servicio.getTipoFrecuenciaPago());
+//                    FechasCuota fechasNuevaCuota = estrategiaCrearCuota.calcularFechas(cuota, servicio);
+
+                    FechasCuota fechasNuevaCuota = servicio.getTipoFrecuenciaPago().calcularFechas(cuota);
 
                     // Creamos la cuota
                     this.createCuota(inscripcion, montoCuota, 0,
@@ -176,29 +179,26 @@ public class CuotaService implements ICuotaService {
         // REVISAR RECURSIVIDAD
 
         cuotaRepository.save(cuotaCreada);
-        System.out.println("cuota creada" + cuotaCreada);
         return cuotaCreada;
     }
 
-    public IEstrategiaCrearCuota determinarEstrategia(TipoFrecuenciaPago tipoFrecuenciaPago) {
-        return switch (tipoFrecuenciaPago.getNombre()) {
-                    case "A mes calendario" -> new EstrategiaMesCalendario();
-                    case "A mes calendario con fecha limite" -> new EstrategiaMesCalendarioConFechaLimitePago();
-                    case "Cada 30 dias" -> new EstrategiaCada30diasSegunFechaInscripcion();
-                    //case "Cada 15 dias" -> new EstrategiaCada15Dias();
-                    default -> throw new IllegalArgumentException("Frecuencia de pago desconocida: " + tipoFrecuenciaPago.getNombre());
-            };
-    }
+//    public IEstrategiaCrearCuota determinarEstrategia(TipoFrecuenciaPago tipoFrecuenciaPago) {
+//        return switch (tipoFrecuenciaPago.getNombre()) {
+//                    case "A mes calendario" -> new EstrategiaMesCalendario();
+//                    case "A mes calendario con fecha limite" -> new EstrategiaMesCalendarioConFechaLimitePago();
+//                    case "Cada 30 dias" -> new EstrategiaCada30diasSegunFechaInscripcion();
+//                    //case "Cada 15 dias" -> new EstrategiaCada15Dias();
+//                    default -> throw new IllegalArgumentException("Frecuencia de pago desconocida: " + tipoFrecuenciaPago.getNombre());
+//            };
+//    }
 
     public Cuota crearPrimerCuotaConEstrategia(Inscripcion inscripcion, Servicio servicio) {
         // si los alumnos se inscriben al servicio, el servicio tiene una cantidad de veces semanales
         // si los alumnos se inscriben al grupo, el grupo tiene una cantidad de veces semanales
-        System.out.println("creando cuota");
-        // REVISARRRRRRRRRR
-        // REVISAR SI RESUELVE TENER EN INSCRIPCION LA CANTIDAD DE VECES SEMANALES
-        Integer cantVecesSemanalesAlumno = inscripcion.getCantVecesSemanales();
+
+        Grupo grupo = inscripcion.getGrupo();
         // en base a eso macheamos cantHorarios con CantVecesSemana del monto
-        MontoServicio montoServicio = servicio.obtenerMontoActualConEstasVecesSemanales(cantVecesSemanalesAlumno);
+        MontoServicio montoGrupo = grupo.obtenerMontoActual();
         // Aca podriamos buscar el monto con la estrategia correspondiente
 
         // Buscamos los si el servicio tiene configurado pafos anticipados
@@ -208,11 +208,14 @@ public class CuotaService implements ICuotaService {
         boolean tieneMontoInscripcion = servicio.tieneMontoInscripcion();
 
         // aca calculamos las fechas de la primera cuota
-        IEstrategiaCrearCuota estrategiaCrearCuota = this.determinarEstrategia(servicio.getTipoFrecuenciaPago());
-        FechasCuota fechasNuevaCuota = estrategiaCrearCuota.calcularFechasPrimeraCuota(inscripcion,
-                servicio.getDiaLimitePago(),
-                pagoAnticipMontoInscrip,
-                pagoAnticipPrimeraCuota);
+//        IEstrategiaCrearCuota estrategiaCrearCuota = this.determinarEstrategia(servicio.getTipoFrecuenciaPago());
+//        FechasCuota fechasNuevaCuota = estrategiaCrearCuota.calcularFechasPrimeraCuota(inscripcion,
+//                servicio.getDiaLimitePago(),
+//                pagoAnticipMontoInscrip,
+//                pagoAnticipPrimeraCuota);
+
+        // Opcion 2: revisar la fecha inicio actividad
+        FechasCuota fechasNuevaCuota = servicio.getTipoFrecuenciaPago().calcularFechasPrimeraCuota(inscripcion.getFechaInicio());
 
         // Si el servicio tiene un monto de inscripcion luego de crear la cuota le asigamos un recargo
         // Tenemos recargo cuando: pagoAnticipadoPrimeraCuota+montoInscripcion, nungunAnticipado + montoInscripcion
@@ -222,11 +225,11 @@ public class CuotaService implements ICuotaService {
         // Tenemos montoCuota = montoServicio cuando pagoAnticipadoCuota, ningunPagoAnticipado
         // Tenemos montoCuota = montoServicio + montoInscripcion cuando pagoAnticipadoCuota + monto, ningunPagoAnticipado + montoo
 
-        MontoServicio montoCuota = montoServicio;
+        MontoServicio montoCuota = montoGrupo;
         // Definimos el monto de la cuota como null si el pago es anticipado y solo para monto inscripcion
-        if (! pagoAnticipPrimeraCuota && pagoAnticipMontoInscrip && tieneMontoInscripcion) {
-           montoCuota = null;
-        }
+//        if (! pagoAnticipPrimeraCuota && pagoAnticipMontoInscrip && tieneMontoInscripcion) {
+//           montoCuota = null;
+//        }
 
         double recargo = 0;
         if (tieneMontoInscripcion) {

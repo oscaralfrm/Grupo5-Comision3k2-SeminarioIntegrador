@@ -4,6 +4,9 @@ import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.AlumnoService;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.IClaseService;
+import com.harp.backend.entities.historialMontoCuota.MontoServicio;
+import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
+import com.harp.backend.entities.historialMontoCuota.MontoServicioService;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.horario.HorarioConverter;
 import com.harp.backend.entities.horario.HorarioDTO;
@@ -11,14 +14,14 @@ import com.harp.backend.entities.horario.IHorarioService;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
-import com.harp.backend.entities.servicio.ServicioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.atomic.LongAccumulator;
+import java.util.Set;
 
 @Service
 public class GrupoService implements IGrupoService {
@@ -43,6 +46,9 @@ public class GrupoService implements IGrupoService {
     private IClaseService claseService;
 
     @Autowired
+    private MontoServicioService montoService;
+
+    @Autowired
     private HorarioConverter horarioConverter;
 
     //Lo usamos en la generacion de clases automaticas
@@ -64,8 +70,14 @@ public class GrupoService implements IGrupoService {
         //Aca se deberia busar el ultimo numero y sumarle 1
         Grupo nuevoGrupo = grupoConverter.dtoToEntity(grupoDTO);
         Grupo grupoCreado = grupoRepository.save(nuevoGrupo);
+        // Agregamos el grupo al servicio
         Servicio servicio = servicioService.findServicio(idServicio);
         servicioService.agregarGrupoAServicio(nuevoGrupo, servicio);
+
+        // Agregamos el monto al grupo
+        MontoServicio nuevoMonto = montoService.createMontoGrupo(grupoDTO.getMonto(), LocalDate.now());
+        grupoCreado.agregarMontoAHistorial(nuevoMonto);
+
         return grupoCreado;
     };
 
@@ -84,6 +96,10 @@ public class GrupoService implements IGrupoService {
         Grupo grupoCreado = grupoRepository.save(nuevoGrupo);
         Servicio servicio = servicioService.findServicio(idServicio);
         servicioService.agregarGrupoAServicio(nuevoGrupo, servicio);
+
+        // Agregamos el monto al grupo
+        MontoServicio nuevoMonto = montoService.createMontoGrupo(grupoDTO.getMonto(), LocalDate.now());
+        grupoCreado.agregarMontoAHistorial(nuevoMonto);
 
         List<HorarioDTO> horariosDTO = grupoDTO.getHorarios();
         // Validar aca que no se superpongan los horarios de ls grupos
@@ -184,6 +200,87 @@ public class GrupoService implements IGrupoService {
         }
     }
 
+    public void agregarMontoAGrupo(MontoServicio montoServicio, Grupo grupoExistente) {
+        grupoExistente.agregarMontoAHistorial(montoServicio);
+        grupoRepository.save(grupoExistente);
+    }
+
+    public MontoServicio obtenerMontoActualGrupo(Long idGrupo) {
+        Grupo grupo = this.findGrupo(idGrupo);
+        return grupo.obtenerMontoActual();
+    }
+
+    public MontoServicio obtenerMontoProgramadoFuturoGrupo(Long idGrupo) {
+        Grupo grupo = this.findGrupo(idGrupo);
+        return grupo.obtenerMontoFuturo();
+    }
+
+
+    public MontoServicio actualizarYCrearNuevoMonto(MontoServicioDTO montoServicioDTO, Long idGrupo) {
+        // ESTO ES PARA GRUPOS CON HORARIOS FIJOS DONDE LOS ALUMNOS SE INSCRIBEN A TODOS LOS HORARIOS DE UN GRUPO
+
+        // Solo el dejamos crear/programar UN SOLO monto futuro
+        // Entonces le preguntamos al grupo si tiene un monto programado futuro
+        Grupo grupo = this.findGrupo(idGrupo);
+        if (grupo.tieneMontoProgramadoFuturo()) {
+            throw new UnsupportedOperationException("El grupo ya tiene un monto programado. Edite este monto.");
+        }
+
+//        // Le pedimos a la estrategia AGrupos, AHorarios, AServicio que es quien sabe cual
+//        // frecuencia semanal hay que tener en cuenta de esas tres entidades
+//        // si es AServicio entonces nos fijamos si servicio tiene esa frecuencia semanal
+//        // Si es a grupos entonces nos fijamos si hay alguno que tenga esa frecuencia semanal
+//        // Y si es a horarios??? REVISAR ESTO
+//        Integer cantVecesSemanales = montoServicioDTO.getCantVecesSemanales();
+//        IEstrategiaInscripcion estrategiaModalidadInscrip = EstrategiaCrearInscripcionFactory
+//                .getEstrategia(servicio.getModalidadInscripcion());
+//        if (! estrategiaModalidadInscrip.tieneEstasVecesSemanales(servicio, cantVecesSemanales)) {
+//            throw new UnsupportedOperationException("El servicio no tiene esa frecuencia de asistencia semanal");
+//        }
+
+        MontoServicio nuevoMontoGrupo;
+
+        // Solo si hay un monto actual le settamos la fecha fin
+        // Si es el primer monto del servicio entonces no tendrá ningun motno actual configurado
+        // VALIDAR Y si tiene un monto actual configurado pero no para esa frecuencia semanal?
+        if (grupo.tieneMontoActualConfigurado()) {
+
+            // Solo le dejamos crear un monto nuevo MINIMO con fecha inicio el dia siguente al actual
+            // Validamos que la fechaInicio del monto del servicio que se quiere crear es Mayor a la actual
+            LocalDate fechaActual = LocalDate.now();
+            if (montoServicioDTO.getFechaInicio().isEqual(fechaActual) ||
+                    montoServicioDTO.getFechaInicio().isBefore(fechaActual)) {
+                throw new UnsupportedOperationException("No se puede configurar un monto para una fecha anterior o igual a la actual");
+            }
+
+            // Crear el nuevo monto
+            nuevoMontoGrupo = montoService.createMontoServicio(montoServicioDTO);
+
+            MontoServicio montoActual = grupo.obtenerMontoActual();
+            // La fecha fin del monto actual será un dia antes que la nueva
+            // Si se define para mañana la fecha inicio, entonces la fecha fin del monto anterior es de hoy
+            montoService.cambiarFechaFinMontoServicio(montoActual, nuevoMontoGrupo.getFechaInicio()); // Persistimos el cambio en la fecha fin
+        } else {
+            // si no hay un monto anterior con esa frecuencia semanal es el primer monto por lo tanto se tiene
+            // que corroborar que si hay una fecha de inicio del servicio entonces que el monto
+            // sea igual a la fecha de inicio del servicio
+
+            MontoServicioDTO dtoSinFecha = new MontoServicioDTO(montoServicioDTO.getMonto(), null);
+
+            // Crear el nuevo monto
+            nuevoMontoGrupo = montoService.createMontoServicio(dtoSinFecha);
+        }
+
+        // Asociar el nuevo monto al servicio
+        this.agregarMontoAGrupo(nuevoMontoGrupo, grupo);
+
+        return nuevoMontoGrupo;
+    }
+
+    public Set<MontoServicio> obtenerHistorialMontosDeGrupo(Long idGrupo) {
+        Grupo grupo = this.findGrupo(idGrupo);
+        return grupo.getHistorialMontos();
+    }
 
     @Override
     public void deleteGrupo(Long idGrupo){

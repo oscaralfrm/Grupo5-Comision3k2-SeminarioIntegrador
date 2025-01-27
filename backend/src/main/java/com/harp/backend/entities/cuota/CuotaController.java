@@ -1,6 +1,7 @@
 package com.harp.backend.entities.cuota;
 
 import com.harp.backend.entities.alumno.service.IAlumnoService;
+import com.harp.backend.entities.inscripcion.InscripcionService;
 import com.harp.backend.entities.pagos.PagoDTO;
 import com.harp.backend.entities.pagos.metodoPago.MetodoPago;
 import com.harp.backend.entities.servicio.IServicioService;
@@ -40,13 +41,13 @@ public class CuotaController {
         return ResponseEntity.ok(cuotas);
     }
 
-    // LAS CUOTAS DE UN ALUMNO
-    @GetMapping("/alumnos/{idAlumno}/cuotas")
-    public ResponseEntity<List<Cuota>> getCuotasDeAlumnoYServicio(@PathVariable @Min(1) Long idAlumno,
-                                                            @PathVariable @Min(1) Long idServicio) {
-        List<Cuota> cuotas = alumnoService.obtenerHistorialCuotasEsteAlumnoYServicio(idAlumno, idServicio);
-        return ResponseEntity.ok(cuotas);
-    }
+//    // LAS CUOTAS DE UN ALUMNO
+//    @GetMapping("/alumnos/{idAlumno}/cuotas")
+//    public ResponseEntity<List<Cuota>> getCuotasDeAlumnoYServicio(@PathVariable @Min(1) Long idAlumno,
+//                                                            @PathVariable @Min(1) Long idServicio) {
+//        List<Cuota> cuotas = alumnoService.obtenerHistorialCuotasEsteAlumnoYServicio(idAlumno, idServicio);
+//        return ResponseEntity.ok(cuotas);
+//    }
 
     // LAS CUOTAS DE UN SS
     // REVISAR COMO HACER PARA QUE LAS CUOTAS TENGAN EL ALUMNO

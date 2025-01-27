@@ -1,6 +1,7 @@
 package com.harp.backend.entities.servicio;
 
 import com.harp.backend.entities.categoria.CategoriaService;
+import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPagoService;
 import com.harp.backend.entities.modalidad.Modalidad;
 import org.modelmapper.ModelMapper;
@@ -32,7 +33,7 @@ public class ServicioConverter {
         //servicio.setFechaInicio(dto.getFechaInicio());
         //servicio.setFechaFin(dto.getFechaFin());
         servicio.setPublico(dto.isPublico());
-        servicio.setCantDiasCiclo(dto.getCantDiasCiclo());
+        //servicio.setCantDiasCiclo(dto.getCantDiasCiclo());
         servicio.setDiaLimitePago(dto.getDiaLimitePago());
         servicio.setClaseDePrueba(dto.isClaseDePrueba());
         servicio.setAsistenciasActivas(dto.isAsistenciasActivas());
@@ -41,9 +42,16 @@ public class ServicioConverter {
 
         //Definir manualmente los atributos que son otros objetos
         servicio.setCategoria(categoriaService.findCategoriaByNombre(dto.getCategoria()));
-
-        servicio.setTipoFrecuenciaPago(tipoFrecuenciaPagoService.findTipoFrecuenciaPago(dto.getFrecuenciaPagoId()));
         servicio.setModalidadInscripcion(Modalidad.valueOf(dto.getTipoModalidad()));
+
+        TipoFrecuenciaPago nuevoTipoFrecuencia = tipoFrecuenciaPagoService.createTipoFrecuenciaPago(
+                dto.getCantCiclo(),
+                dto.getUnidadCiclo(),
+                dto.getDiaLimitePago(),
+                dto.getTipoCiclo()
+        );
+        servicio.setTipoFrecuenciaPago(nuevoTipoFrecuencia);
+//        servicio.setTipoFrecuenciaPago(tipoFrecuenciaPagoService.findTipoFrecuenciaPago(dto.getFrecuenciaPagoId()));
         return servicio;
     }
 

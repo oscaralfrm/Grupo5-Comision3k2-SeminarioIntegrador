@@ -7,6 +7,7 @@ import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.cuota.CuotaService;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.horario.Horario;
+import com.harp.backend.entities.pagos.Pago;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
@@ -68,6 +69,7 @@ public class Inscripcion {
     @ManyToOne
     @JoinColumn(name = "grupo_id")
     private Grupo grupo;
+
 
     //HACERLO EN LA BASE DE DATOS CON TABLA INTERMEDIA
     //HAcerlo LAZY
@@ -161,7 +163,7 @@ public class Inscripcion {
 
     public void aceptar(LocalDate fechaInicioNueva, LocalDate fechaFin) {
         // La puedo aceptar solo cuando esta en pendiente
-        if (! estaPendiente()) {
+        if (! this.estaPendiente() ) {
             throw new UnsupportedOperationException("La inscripción no puede ser aceptada");
         }
         this.fechaAceptacion = LocalDate.now();
@@ -173,9 +175,6 @@ public class Inscripcion {
         // Siempre vamos a tener fecha inicio, solo algunas veces fecha fin
         this.fechaInicio = fechaInicioNueva;
         this.fechaFin = fechaFin;
-
-        System.out.println(this.fechaInicio);
-        System.out.println(fechaInicioNueva);
 
         //cambiar el estado a Aceptada
         this.estado = EstadoInscripcion.Aceptada;

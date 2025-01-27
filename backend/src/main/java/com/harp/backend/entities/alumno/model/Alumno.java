@@ -102,6 +102,7 @@ public class Alumno {
     public List<Cuota> obtenerHistorialCuotasEsteServicio(Servicio servicio) {
         for (Inscripcion inscripcion : inscripciones) {
             if (inscripcion.esDeEsteServicio(servicio)){
+                System.out.println(inscripcion.getCuotas().size());
                 return inscripcion.getCuotas();
             }
         }

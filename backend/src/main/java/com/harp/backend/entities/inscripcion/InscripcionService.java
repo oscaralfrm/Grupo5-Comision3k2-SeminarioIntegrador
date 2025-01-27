@@ -4,15 +4,13 @@ import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.AlumnoService;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.cuota.CuotaService;
-import com.harp.backend.entities.grupo.Grupo;
-import com.harp.backend.entities.grupo.GrupoService;
-import com.harp.backend.entities.grupo.IGrupoService;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.horario.HorarioService;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.EstrategiaCrearInscripcionFactory;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.IEstrategiaInscripcion;
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.instructor.InstructorService;
+import com.harp.backend.entities.pagos.PagoService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 //REVISAR Agregar transaccional
 @Service
@@ -49,6 +46,10 @@ public class InscripcionService implements IInscripcionService {
 
     @Autowired
     private CuotaService cuotaService;
+
+    @Autowired
+    private PagoService pagoService;
+
 
     @Override
     public List<Inscripcion> getAllInscripciones() {
@@ -141,7 +142,7 @@ public class InscripcionService implements IInscripcionService {
 //        return inscripcionRepository.save(inscipcionEditada);
 //    };
 
-
+    @Transactional
     public void aceptarInscripcion(Long idInstructor, Long idServicio, Long idInscripcion, LocalDate fechaInicioActividad) {
         // Buscar servicio e instructor
         Servicio servicio = servicioService.findServicio(idServicio);
@@ -244,10 +245,38 @@ public class InscripcionService implements IInscripcionService {
 
         // ACA creamos la primera cuota REVISAR!!°!!!
         Cuota cuota = cuotaService.crearPrimerCuotaConEstrategia(inscripcionExistente, servicio);
-        System.out.println("cuota3" + cuota);
+
         this.agregarCuotaAInscripcion(inscripcionExistente, cuota);
         //Aca notificamos que la inscripcion ya fue aceptada
     }
+
+/*
+    public void pagarYAceptarInscripcion(Long idAlumno, Long idInstructor, Long idServicio, Long idGrupo,  List<Long> idsHorarios) {
+        // Buscar servicio e instructor
+
+        Servicio servicio = servicioService.findServicio(idServicio);
+        Instructor instructorExistente = instructorService.findInstructor(idInstructor);
+
+        // Aca usamos mercado pago
+
+        // Aca creamos el pago
+        Inscripcion nuevaInscripcion = this.createInscripcion(idAlumno, idServicio, idGrupo, idsHorarios);
+
+        // REVISAR si esta bien pasar la fecha como la de hoy
+        this.aceptarInscripcion(idInstructor, idServicio, nuevaInscripcion.getId(), LocalDate.now());
+
+        if (servicio.getTipoFrecuenciaPago().isPagoAnticipadoMontoInscripcion()) {
+            Pago nuevoPago = pagoService.createPago();
+            nuevaInscripcion.setPago(nuevoPago);
+        } else {
+            if (servicio.getTipoFrecuenciaPago().isPagoAnticipadoPrimeraCuota()) {
+                Cuota nuevaCuota = nuevaInscripcion.obtenerUltimaCuota();
+                cuotaService.pagarCuota(nuevaCuota.getId(), "Transferencia");
+            }
+        }
+
+    }
+*/
 
     public void rechazarInscripcion(Long idInscripcion) {
         Inscripcion inscipcionExistente = this.findInscripcion(idInscripcion);
@@ -309,5 +338,10 @@ public class InscripcionService implements IInscripcionService {
         // en cuotas validar que las cuotas que lleguen a vencidas pero sean las
         // primeras cuotas de un servicio con pago adelantado
         // entonces rechazo la inscripcion
+    }
+
+    public List<Cuota> obtenerHistorialCuotasInscripcion(Long idInscripcion) {
+        Inscripcion inscripcion = this.findInscripcion(idInscripcion);
+        return inscripcion.getCuotas();
     }
 }

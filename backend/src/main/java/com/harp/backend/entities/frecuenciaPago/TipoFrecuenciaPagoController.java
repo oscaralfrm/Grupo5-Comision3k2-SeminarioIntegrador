@@ -42,11 +42,11 @@ public class TipoFrecuenciaPagoController {
         return ResponseEntity.noContent().build();
     };
 
-    // EDITAR
-    @PutMapping("/{idTipoFrecuenciaPago}")
-    public TipoFrecuenciaPago editarTipoFrecuenciaPago(@PathVariable Long idTipoFrecuenciaPago, @RequestBody TipoFrecuenciaPago tipoFrecuenciaPago) {
-        TipoFrecuenciaPago tipoFrecuenciaPagoEditado = tipoFrecuenciaPagoService.editTipoFrecuenciaPago(idTipoFrecuenciaPago, tipoFrecuenciaPago);
-        return tipoFrecuenciaPagoEditado;
-    }
+//    // EDITAR
+//    @PutMapping("/{idTipoFrecuenciaPago}")
+//    public TipoFrecuenciaPago editarTipoFrecuenciaPago(@PathVariable Long idTipoFrecuenciaPago, @RequestBody TipoFrecuenciaPago tipoFrecuenciaPago) {
+//        TipoFrecuenciaPago tipoFrecuenciaPagoEditado = tipoFrecuenciaPagoService.editTipoFrecuenciaPago(idTipoFrecuenciaPago, tipoFrecuenciaPago);
+//        return tipoFrecuenciaPagoEditado;
+//    }
 
 }

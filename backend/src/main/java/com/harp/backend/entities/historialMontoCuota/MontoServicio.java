@@ -23,8 +23,8 @@ public class MontoServicio {
 //     @ManyToOne
 //     private Servicio servicio;
 
-     // AGREGAR EN BASE DE DATOS Y EN CONVERTER
-     private Integer cantVecesSemanales;
+//     // BORRAR EN BASE DE DATOS Y EN CONVERTER
+//     private Integer cantVecesSemanales;
 
      @Setter(AccessLevel.NONE)
      private double monto;
@@ -36,12 +36,6 @@ public class MontoServicio {
      @Column(name = "fecha_fin")
      @Setter(AccessLevel.NONE)
      private LocalDate fechaFin = null;
-
-     public MontoServicio(double monto, LocalDate fechaInicio, Integer vecesSemanales) {
-          this.monto = monto;
-          this.fechaInicio = fechaInicio;
-          this.cantVecesSemanales = vecesSemanales;
-     }
 
      public MontoServicio(double monto, LocalDate fechaInicio) {
           this.monto = monto;
@@ -79,7 +73,6 @@ public class MontoServicio {
                throw new UnsupportedOperationException("La fecha inicio ya no puede ser modificada");
           }
           this.fechaInicio = fechaInicio;
-
      }
 
      public void setMonto(double monto) {
@@ -97,9 +90,5 @@ public class MontoServicio {
           } else {
                return (fechaInicio.isAfter(fechaActual));
           }
-     }
-
-     public boolean esDeEstasVecesSemanales(Integer vecesSemanales) {
-          return ( this.cantVecesSemanales.equals(vecesSemanales));
      }
 }

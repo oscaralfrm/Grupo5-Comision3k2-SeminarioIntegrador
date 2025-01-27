@@ -28,6 +28,13 @@ public class MontoServicioService implements IMontoServicioService {
         return montoCreado;
     };
 
+    public MontoServicio createMontoGrupo(Float monto, LocalDate fechaIncio) {
+        MontoServicio nuevoMontoGrupo = new MontoServicio(monto, fechaIncio);
+        MontoServicio montoCreado = montoServicioRepository.save(nuevoMontoGrupo);
+
+        return montoCreado;
+    };
+
     @Override
     public void deleteMontoServicio(Long idHistorialMonto){
         montoServicioRepository.deleteById(idHistorialMonto);

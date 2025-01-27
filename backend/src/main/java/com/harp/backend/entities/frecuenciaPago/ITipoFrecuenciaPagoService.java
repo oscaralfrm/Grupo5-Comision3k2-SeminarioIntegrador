@@ -8,5 +8,5 @@ public interface ITipoFrecuenciaPagoService {
     public TipoFrecuenciaPago saveTipoFrecuenciaPago(TipoFrecuenciaPago tipoFrecuenciaPago);
     public void deleteTipoFrecuenciaPago(Long idTipoFrecuenciaPago);
     public TipoFrecuenciaPago findTipoFrecuenciaPago(Long idTipoFrecuenciaPago);
-    public TipoFrecuenciaPago editTipoFrecuenciaPago(Long idTipoFrecuenciaPago, TipoFrecuenciaPago tipoFrecuenciaPago);
+    //public TipoFrecuenciaPago editTipoFrecuenciaPago(Long idTipoFrecuenciaPago, TipoFrecuenciaPago tipoFrecuenciaPago);
 }

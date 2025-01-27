@@ -21,4 +21,5 @@ public interface IInscripcionService {
     public void rechazarInscripcion(Long idInscripcion);
     public void finalizarInscripcion(Long idInscripcion);
     //List<Inscripcion> findInscripcionesDeServicio(Long idServicio);
+    public List<Cuota> obtenerHistorialCuotasInscripcion(Long idInscripcion);
 }
