@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Form } from "react-bootstrap";
 import { getClasesDeServicio } from "../../../../../services/Clase.js";
-import { activarAsistencias, desactivarAsistencias } from "../../../../../services/Servicio.js";
 
 const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
   const [classes, setClasses] = useState([]); // Contendrá todas las clases
@@ -21,25 +19,6 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
     };
     fetchClases();
   }, [idServicio]);
-
-  const toggleAsistencias = async () => {
-    const newStatus = !asistenciasActivas;
-    const confirmationMessage = newStatus
-      ? "¿Está seguro de que desea activar las asistencias?"
-      : "¿Está seguro de que desea desactivar las asistencias?";
-
-    if (window.confirm(confirmationMessage)) {
-      try {
-        newStatus
-          ? await activarAsistencias(idServicio)
-          : await desactivarAsistencias(idServicio);
-        fetchServicio();
-      } catch (error) {
-        console.error("Error al cambiar el estado de las inscripciones:", error.message);
-        alert(error.message); // El componente decide cómo manejar el error
-      }
-    }
-  };
 
   const handleExpandToggle = () => {
     setExpanded(!expanded);
@@ -75,41 +54,18 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
           textAlign: "left"
         }}>Clases</h2>
 
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "flex-end",
-          flexShrink: 0,
-          gap: "10px",
-          flexWrap: "wrap"
-        }}>
-          <Form>
-            <Form.Check
-              type="switch"
-              id="inscriptions-switch"
-              label={
-                <span style={{ color: "white" }}>
-                  {asistenciasActivas ? "Activas" : "Inactivas"}
-                </span>
-              }
-              checked={asistenciasActivas}
-              onChange={toggleAsistencias}
-              style={{ margin: '0 10px' }}
-            />
-          </Form>
-          {asistenciasActivas &&
-            <Link to="" style={{
-              backgroundColor: "#4F46E5",
-              color: "white",
-              padding: "10px 20px",
-              borderRadius: "4px",
-              textDecoration: "none",
-              fontSize: "14px"
-            }}>
-              Historial
-            </Link>
-          }
-        </div>
+        {asistenciasActivas && (
+          <Link to="" style={{
+            backgroundColor: "#4F46E5",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "4px",
+            textDecoration: "none",
+            fontSize: "14px"
+          }}>
+            Historial
+          </Link>
+        )}
       </div>
 
       <style>
@@ -117,14 +73,11 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
           @media (max-width: 500px) {
             .responsive-container {
               flex-direction: column;
-              align-items: center; // Alineación centrada
+              align-items: center;
               text-align: center;
             }
             .responsive-container h2 {
               text-align: center;
-            }
-            .responsive-buttons {
-              justify-content: center;
             }
           }
         `}
@@ -188,8 +141,9 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
             </div>
           )}
         </>
-      ) :
-        <p className="mt-3 text-center">Activa las funcionalidades del registro de asistencias de tus alumnos.</p>}
+      ) : (
+        <p className="mt-3 text-center">Activa las funcionalidades del registro de asistencias de tus alumnos.</p>
+      )}
     </div>
   );
 };

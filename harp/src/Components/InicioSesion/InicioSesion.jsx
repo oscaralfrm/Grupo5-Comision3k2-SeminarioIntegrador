@@ -11,10 +11,9 @@ export const LoginForm = () => {
 
     const onSubmit = async (data) => {
         try {
-            const { email, password } = data; // 'password' es el nombre que usarás en tu formulario
-            // Asegúrate de que el backend esté esperando "contrasena"
-            const response = await iniciarSesion(email, password); // En caso de que el backend espere 'contrasena', cámbialo aquí
-            
+            const { email, password } = data;
+            const response = await iniciarSesion(email, password);
+
             const { id, perfil } = response;
 
             // Guardar la información del usuario en el localStorage
@@ -30,23 +29,6 @@ export const LoginForm = () => {
             console.error('Error al iniciar sesión:', error);
             setErrorMessage('Error al iniciar sesión. Por favor, verifica tus credenciales.');
             setTimeout(() => setErrorMessage(''), 5000); // Limpiar mensaje de error después de 5 segundos
-        }
-    };
-
-    const handleGoogleLogin = async () => {
-        try {
-            const user = await signInWithGoogle(); // Asegúrate de tener esta función definida
-            window.localStorage.setItem('loggedUser', JSON.stringify(user));
-            const { id, perfil } = user;
-
-            if (perfil === 'instructor') {
-                navigate(`/instructor/${id}/servicios`);
-            } else if (perfil === 'alumno') {
-                navigate(`/alumno/${id}/dashboard`);
-            }
-        } catch (error) {
-            setErrorMessage('Error al iniciar sesión con Google: ' + error.message);
-            setTimeout(() => setErrorMessage(''), 5000);
         }
     };
 
@@ -133,24 +115,13 @@ export const LoginForm = () => {
                                             className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                                             placeholder="Contraseña"
                                             autoComplete="current-password"
-                                            {...register("password", { required: true })} // Cambiar 'password' a 'contrasena' si es necesario
+                                            {...register("password", { required: true })}
                                         />
                                         {errors.password && (
                                             <div className="invalid-feedback">
                                                 Por favor, ingresa una contraseña
                                             </div>
                                         )}
-                                    </div>
-
-                                    <div className="form-check mb-3">
-                                        <input
-                                            type="checkbox"
-                                            className="form-check-input"
-                                            id="rememberMe"
-                                        />
-                                        <label className="form-check-label" htmlFor="rememberMe">
-                                            Recordar mis datos
-                                        </label>
                                     </div>
 
                                     <div className="d-flex justify-content-center">
@@ -163,17 +134,6 @@ export const LoginForm = () => {
                                         </button>
                                     </div>
                                 </form>
-
-                                <div className="text-center mt-4">
-                                    <hr />
-                                    <p>O, si deseas, inicia sesión con:</p>
-                                    <button 
-                                        onClick={handleGoogleLogin} 
-                                        className="btn btn-danger fs-6"
-                                    >
-                                        <i className="bi bi-google"></i> Google 
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>
