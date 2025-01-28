@@ -1,43 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import PanaTeacher from '../../assets/panaBuenLogin.png';
-import { getServiciosDeInstructor, iniciarSesion } from '../../services/Instructor';
+import { iniciarSesion } from '../../services/Login';
 
 export const LoginForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [errorMessage, setErrorMessage] = useState('');
-    const [user, setUser] = useState(null);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const loggedUser = window.localStorage.getItem("loggedUser");
-        if (loggedUser) {
-            setUser(JSON.parse(loggedUser));
-        }
-    }, []);
 
     const onSubmit = async (data) => {
         try {
             const { email, password } = data;
-            const id = await iniciarSesion(email, password);
-            const servicios = await getServiciosDeInstructor(id);
-            navigate(`/instructor/${id}/servicios`);     
+            const response = await iniciarSesion(email, password);
+
+            const { id, perfil } = response;
+
+            // Guardar la información del usuario en el localStorage
+            window.localStorage.setItem('loggedUser', JSON.stringify(response));
+
+            // Redirigir al usuario según su perfil
+            if (perfil === 'instructor') {
+                navigate(`/instructor/${id}/servicios`);
+            } else if (perfil === 'alumno') {
+                navigate(`/alumno/${id}/dashboard`);
+            }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
             setErrorMessage('Error al iniciar sesión. Por favor, verifica tus credenciales.');
-            setTimeout(() => setErrorMessage(''), 5000);
-        }
-    };
-
-    const handleGoogleLogin = async () => {
-        try {
-            const user = await signInWithGoogle();
-            window.localStorage.setItem('loggedUser', JSON.stringify(user));
-            setUser(user);
-        } catch (error) {
-            setErrorMessage('Error al iniciar sesión con Google: ' + error.message);
-            setTimeout(() => setErrorMessage(''), 5000);
+            setTimeout(() => setErrorMessage(''), 5000); // Limpiar mensaje de error después de 5 segundos
         }
     };
 
@@ -54,7 +45,6 @@ export const LoginForm = () => {
             }}
         >
             <div className="row h-100">
-                {/* Sección de Imagen */}
                 <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center bg-light" style={{ height: '100%', maxHeight: '90vh' }}>
                     <img
                         src={PanaTeacher}
@@ -69,7 +59,6 @@ export const LoginForm = () => {
                     />
                 </div>
 
-                {/* Sección de Formulario */}
                 <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center" style={{ height: '100%', maxHeight: '90vh' }}>
                     <div
                         className="col-md-8 col-sm-10"
@@ -100,7 +89,6 @@ export const LoginForm = () => {
                                         <label htmlFor="email" className="form-label">Correo Electrónico</label>
                                         <input 
                                             type="email" 
-                                            name="email" 
                                             id="email" 
                                             className={`form-control ${errors.email ? 'is-invalid' : ''}`} 
                                             placeholder="Correo Electrónico" 
@@ -123,7 +111,6 @@ export const LoginForm = () => {
                                         </div>
                                         <input
                                             type="password"
-                                            name="password"
                                             id="password"
                                             className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                                             placeholder="Contraseña"
@@ -137,17 +124,6 @@ export const LoginForm = () => {
                                         )}
                                     </div>
 
-                                    <div className="form-check mb-3">
-                                        <input
-                                            type="checkbox"
-                                            className="form-check-input"
-                                            id="rememberMe"
-                                        />
-                                        <label className="form-check-label" htmlFor="rememberMe">
-                                            Recordar mis datos
-                                        </label>
-                                    </div>
-
                                     <div className="d-flex justify-content-center">
                                         <button 
                                             type="submit" 
@@ -158,17 +134,6 @@ export const LoginForm = () => {
                                         </button>
                                     </div>
                                 </form>
-
-                                <div className="text-center mt-4">
-                                    <hr />
-                                    <p>O, si deseas, inicia sesión con:</p>
-                                    <button 
-                                        onClick={handleGoogleLogin} 
-                                        className="btn btn-danger fs-6"
-                                    >
-                                        <i className="bi bi-google"></i> Google 
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -177,21 +142,5 @@ export const LoginForm = () => {
         </div>
     );
 
-    const userDashboard = () => (
-        <main 
-            className="container mt-3"
-            style={{
-                maxHeight: "90vh"
-            }}
-        >
-            <h2>Bienvenido, {user.userName}</h2>
-            <hr />
-        </main>
-    );
-
-    return (
-        <>
-            {user ? userDashboard() : loginForm()}
-        </>
-    );
+    return loginForm();
 };
