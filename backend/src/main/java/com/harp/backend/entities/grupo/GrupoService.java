@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -276,6 +277,26 @@ public class GrupoService implements IGrupoService {
 
         return nuevoMontoGrupo;
     }
+
+    public void actualizarYCrearVariosNuevosMontos(MontoServicioDTO montoDTO, List<Long> idsGrupos) {
+        List<Grupo> grupos = new ArrayList<>();
+
+        // Verificamos que sea valido modificar el monto de todos los grupos que nos llegan en la lista de ids
+        // Si pueden ser modificados los agregamos a la lista de grupos
+        for (Long idGrupo : idsGrupos) {
+            Grupo grupo = this.findGrupo(idGrupo);
+            if (grupo.tieneMontoProgramadoFuturo()) {
+                throw new UnsupportedOperationException("El grupo ya tiene un monto programado. Edite este monto.");
+            }
+            grupos.add(grupo);
+        }
+
+        // Ahora sabiendo que a todos los grupos se le puede modificar su monto lo hacemos
+        for (Grupo grupo : grupos) {
+            this.actualizarYCrearNuevoMonto(montoDTO, grupo.getId());
+        }
+    }
+
 
     public Set<MontoServicio> obtenerHistorialMontosDeGrupo(Long idGrupo) {
         Grupo grupo = this.findGrupo(idGrupo);

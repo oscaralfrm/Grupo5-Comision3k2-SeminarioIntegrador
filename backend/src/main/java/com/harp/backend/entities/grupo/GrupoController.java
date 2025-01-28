@@ -117,6 +117,17 @@ public class GrupoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoMontoServicio);
     }
 
+    @PostMapping("/{idServicio}/grupos/monto")
+    public ResponseEntity<String> crearNuevosMontos(
+            @PathVariable Long idServicio,
+            @RequestBody GruposMontoDTO gruposMontoDTO) {
+
+        // Llama a servicioService para gestionar la actualización y creación del nuevo monto
+        grupoService.actualizarYCrearVariosNuevosMontos(gruposMontoDTO.getMontoDTO(), gruposMontoDTO.getIdsGrupos());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Se han actializado los montos de todos los grupos.");
+    }
+
     @GetMapping("/{idServicio}/grupos/{idGrupo}/monto-actual")
     public ResponseEntity<MontoServicio> traerMontosActualesDeServicio(@PathVariable @Min(1) Long idGrupo) {
         MontoServicio montoGrupo = grupoService.obtenerMontoActualGrupo(idGrupo);
