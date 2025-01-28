@@ -122,13 +122,6 @@ export default function ResumenServicio({ formData }) {
               </>
             )}
 
-            <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>Clases: </strong>
-              <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {capitalizeFirstLetter(formData.divideEnGrupos)}
-              </span>
-            </div>
-
             {(formData.divideEnGrupos === "Grupales" ||
               formData.divideEnGrupos === "Individuales y grupales") && (
               <div className="mb-3">
