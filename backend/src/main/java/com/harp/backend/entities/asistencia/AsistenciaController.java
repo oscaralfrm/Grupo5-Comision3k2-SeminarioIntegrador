@@ -41,7 +41,7 @@ public class AsistenciaController {
         return ResponseEntity.status(HttpStatus.OK).body(asistencia);
     };
 
-    @GetMapping
+    @GetMapping("/{idClase}/asistencias")
     public ResponseEntity<List<Asistencia>> getAsistenciasDeClase(@PathVariable @Min(1) Long idClase) {
         List<Asistencia> asistencias = asistenciaService.findAsistenciasDeClase(idClase);
         return ResponseEntity.status(HttpStatus.OK).body(asistencias);
@@ -75,7 +75,7 @@ public class AsistenciaController {
     // EDITAR
     @PutMapping("/{idAsistencia}")
     public ResponseEntity<Asistencia> editarAsistencia(@PathVariable @Min(1) Long idAsistencia, @RequestBody AsistenciaDTO asistenciaDTO) {
-        Asistencia asistenciaEditada = asistenciaService.editAsistencia(idAsistencia, asistenciaDTO);
+        Asistencia asistenciaEditada = asistenciaService.editAsistencia(idAsistencia, asistenciaDTO.isAsistio(), asistenciaDTO.getObservaciones());
         return  ResponseEntity.status(HttpStatus.OK).body(asistenciaEditada);
     }
 

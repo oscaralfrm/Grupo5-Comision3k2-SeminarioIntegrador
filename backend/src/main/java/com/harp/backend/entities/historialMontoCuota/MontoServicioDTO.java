@@ -18,5 +18,4 @@ public class MontoServicioDTO {
     //No podemos definir fecha fin del monto, siempre comienza en null
     //private LocalDate fechaFin;
 
-    private Integer cantVecesSemanales;
 }

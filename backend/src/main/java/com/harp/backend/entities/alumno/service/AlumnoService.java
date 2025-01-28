@@ -48,7 +48,7 @@ public class AlumnoService implements IAlumnoService {
         Usuario usuario = new Usuario(alumnoDTO);
 
         //Perfil al usuario
-        Perfil perfil = perfilService.findPerfil(2L);
+        Perfil perfil = perfilService.findPerfil(3L);
         usuario.setPerfiles(Set.of(perfil));
 
         usuarioService.saveUsuario(usuario);

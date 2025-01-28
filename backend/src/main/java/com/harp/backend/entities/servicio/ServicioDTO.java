@@ -1,6 +1,7 @@
 package com.harp.backend.entities.servicio;
 
 import com.harp.backend.entities.categoria.Categoria;
+import com.harp.backend.entities.frecuenciaPago.TipoCiclo;
 import com.harp.backend.entities.instructor.Instructor;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Data
 @NoArgsConstructor
@@ -37,13 +39,17 @@ public class ServicioDTO {
     private String categoria;
 
     // Tipo frecuencia id: segun si es "A mes calendario" "Con fecha limite" "Segun inscripcion" "Cada X dias"
-    private Long frecuenciaPagoId;
+    //private Long frecuenciaPagoId;
+    private TipoCiclo tipoCiclo;
 
     // SI es con fecha limite
     private int diaLimitePago;
 
     //Si es cada X cantidad de dias
-    private int cantDiasCiclo;
+    // private int cantDiasCiclo;
+
+    private int cantCiclo;
+    private ChronoUnit unidadCiclo; // Meses Semanas Dias
 
     // Cantidades
     private int cantMaxAlumnosPorGrupo;
@@ -52,7 +58,7 @@ public class ServicioDTO {
     // Modalidad: puede ser AGrupo AServicio
     private String tipoModalidad;
 
-    //
+
     private LocalDate fechaInicio;
 //    private LocalDate fechaFin;
 
@@ -66,7 +72,7 @@ public class ServicioDTO {
     private boolean asistenciasActivas;
 
     private double montoInscripcion;
-    private boolean pagoAnticipadoDeMontoInscripcion;
+    // private boolean pagoAnticipadoDeMontoInscripcion;
     //private boolean pagoAnticipadoDePrimeraCuota;
 }
 

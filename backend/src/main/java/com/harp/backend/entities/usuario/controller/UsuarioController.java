@@ -5,6 +5,7 @@ import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.perfil.service.IPerfilService;
 import com.harp.backend.entities.suspension.service.ISuspensionService;
 import com.harp.backend.entities.usuario.model.Usuario;
+import com.harp.backend.entities.usuario.model.UsuarioLoginResponse;
 import com.harp.backend.entities.usuario.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -65,4 +66,16 @@ public class UsuarioController {
         }
         return null;
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioLoginResponse> verificarUsuario(@RequestBody Usuario usuario) {
+        UsuarioLoginResponse response = usuarioService.verificarCredenciales(usuario.getEmail(), usuario.getContrasena());
+        if (response != null) {
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.status(401).build(); // Credenciales incorrectas
+    }
+
+
+
 }

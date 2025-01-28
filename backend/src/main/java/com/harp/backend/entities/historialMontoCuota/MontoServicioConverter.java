@@ -16,9 +16,8 @@ public class MontoServicioConverter {
         //MontoServicio montoServicio = modelMapper.map(dto, MontoServicio.class);
         double monto = dto.getMonto();
         LocalDate fechaInicio = dto.getFechaInicio();
-        Integer cantVecesSemanales = dto.getCantVecesSemanales();
 
-        MontoServicio montoServicio = new MontoServicio(monto, fechaInicio, cantVecesSemanales);
+        MontoServicio montoServicio = new MontoServicio(monto, fechaInicio);
         return montoServicio;
     }
 }

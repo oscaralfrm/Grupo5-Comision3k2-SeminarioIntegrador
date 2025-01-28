@@ -1,9 +1,12 @@
 package com.harp.backend.entities.grupo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.harp.backend.entities.alumno.model.Alumno;
 //import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.clase.Clase;
+import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.horario.Horario;
+import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +29,13 @@ import java.util.Set;
 @Entity
 @Table(name = "grupos")
 public class Grupo {
+    public Grupo(Integer numero, String nombre, Integer cantMaxAlumnos) {
+        this.numero = numero;
+        this.nombre = nombre;
+        this.cantMaxAlumnos = cantMaxAlumnos;
+        this.horarios = new HashSet<>(); // Inicializa el historial de horarios vacío
+        this.historialMontos = new HashSet<>(); // Inicializa el historial de montos vacío
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +52,11 @@ public class Grupo {
     @OneToMany
     @JoinColumn(name = "grupo_id")
     private Set<Horario> horarios = new HashSet<>();
+
+    @OneToMany
+    @JoinColumn(name = "grupo_id")
+    @JsonIgnore
+    private Set<MontoServicio> historialMontos = new HashSet<>();
 /*
     @ManyToMany
     @JoinTable(
@@ -75,6 +90,35 @@ public class Grupo {
 
     public void agregarClase(Clase clase) {
         clases.add(clase);
+    }
+
+    public void agregarMontoAHistorial(MontoServicio monto) {
+        this.historialMontos.add(monto);
+    }
+
+//    public MontoServicio buscarMontoActual() {
+//        for (MontoServicio monto : historialMontos) {
+//            if (monto.esMontoActual()) {
+//                return monto;
+//            }
+//        }
+//        throw new NoSuchElementFoundException("Monto actual no encontrado");
+//    }
+
+    public boolean tieneMontoProgramadoFuturo() {
+        return historialMontos.stream().anyMatch(MontoServicio::esMontoProgramadoFuturo);
+    }
+
+    public MontoServicio obtenerMontoActual() {
+        return historialMontos.stream().filter(MontoServicio::esMontoActual).findFirst().orElse(null);
+    }
+
+    public MontoServicio obtenerMontoFuturo() {
+        return historialMontos.stream().filter(MontoServicio::esMontoProgramadoFuturo).findFirst().orElse(null);
+    }
+
+    public boolean tieneMontoActualConfigurado() {
+        return (this.obtenerMontoActual() != null);
     }
 
 //    public boolean tieneAEsteAlumno(Alumno alumno) {

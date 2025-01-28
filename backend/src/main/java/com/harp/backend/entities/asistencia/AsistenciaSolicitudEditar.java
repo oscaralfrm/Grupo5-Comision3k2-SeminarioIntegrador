@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AsistenciaSolicitudEditar {
     private Long idAsistencia;
-    private AsistenciaDTO asistenciaDTO;
+    private boolean asistio;
+    private String observaciones;
 }

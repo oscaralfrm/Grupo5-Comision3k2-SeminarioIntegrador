@@ -23,8 +23,8 @@ public class MontoServicio {
 //     @ManyToOne
 //     private Servicio servicio;
 
-     // AGREGAR EN BASE DE DATOS Y EN CONVERTER
-     private Integer cantVecesSemanales;
+//     // BORRAR EN BASE DE DATOS Y EN CONVERTER
+//     private Integer cantVecesSemanales;
 
      @Setter(AccessLevel.NONE)
      private double monto;
@@ -37,12 +37,6 @@ public class MontoServicio {
      @Setter(AccessLevel.NONE)
      private LocalDate fechaFin = null;
 
-     public MontoServicio(double monto, LocalDate fechaInicio, Integer vecesSemanales) {
-          this.monto = monto;
-          this.fechaInicio = fechaInicio;
-          this.cantVecesSemanales = vecesSemanales;
-     }
-
      public MontoServicio(double monto, LocalDate fechaInicio) {
           this.monto = monto;
           this.fechaInicio = fechaInicio;
@@ -54,9 +48,13 @@ public class MontoServicio {
           // Si se creó un proximo monto pero programado para futuro, la fecha fin del monto actual no es null pero es mayor o igual a la fecha actual
 
           LocalDate fechaActual = LocalDate.now();
-          return ( ( this.fechaInicio.isBefore(LocalDate.now()) || this.fechaInicio.isEqual(fechaActual) )
-                  && ( this.fechaFin == null || ( this.fechaFin.isAfter(fechaActual) || this.fechaFin.isEqual(fechaActual) )  )
-                 ) ;
+          if (this.fechaInicio == null) {
+               return true;
+          } else {
+               return  ( ( this.fechaInicio.isBefore(LocalDate.now()) || this.fechaInicio.isEqual(fechaActual) )
+                       && ( this.fechaFin == null || ( this.fechaFin.isAfter(fechaActual) || this.fechaFin.isEqual(fechaActual) )  )
+               );
+          }
      }
 
      public void setFechaFin(LocalDate fechaFin) {
@@ -71,11 +69,10 @@ public class MontoServicio {
      public void setFechaInicio(LocalDate fechaInicio) {
           // Si se esta modificando, no creando (fechaInicio != null)
           // Solo se pueden modificar estos si la fecha actual es menor a la fecha inicio
-          if (fechaInicio != null && ! this.esMontoProgramadoFuturo()) {
+          if (this.fechaInicio != null && ! this.esMontoProgramadoFuturo()) {
                throw new UnsupportedOperationException("La fecha inicio ya no puede ser modificada");
           }
           this.fechaInicio = fechaInicio;
-
      }
 
      public void setMonto(double monto) {
@@ -88,10 +85,10 @@ public class MontoServicio {
 
      public boolean esMontoProgramadoFuturo() {
           LocalDate fechaActual = LocalDate.now();
-          return (fechaInicio.isAfter(fechaActual));
-     }
-
-     public boolean esDeEstasVecesSemanales(Integer vecesSemanales) {
-          return ( this.cantVecesSemanales.equals(vecesSemanales));
+          if (fechaInicio == null) {
+               return false;
+          } else {
+               return (fechaInicio.isAfter(fechaActual));
+          }
      }
 }

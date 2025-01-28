@@ -76,8 +76,16 @@ public class InstructorService implements IInstructorService {
     @Override
     public Instructor editInstructor(Long idInstructor, InstructorDTO instructorDTO) {
         Instructor instructorExistente = this.findInstructor(idInstructor);
-        instructorExistente = instructorConverter.dtoToEntity(instructorDTO);
-        instructorExistente.setId(idInstructor);
+        //instructorExistente = instructorConverter.dtoToEntity(instructorDTO);
+        //instructorExistente.setId(idInstructor);
+
+        instructorExistente.getUsuario().setNombre(instructorDTO.getNombre());
+        instructorExistente.getUsuario().setApellido(instructorDTO.getApellido());
+        instructorExistente.getUsuario().setEmail(instructorDTO.getEmail());
+        instructorExistente.getUsuario().setTelefono(instructorDTO.getTelefono());
+        instructorExistente.getUsuario().setDireccion(instructorDTO.getDireccion());
+        instructorExistente.getUsuario().setContrasena(instructorDTO.getContrasena());
+        instructorExistente.getUsuario().setFechaNacimiento(instructorDTO.getFechaNacimiento());
 
         return instructorRepository.save(instructorExistente);
     }

@@ -4,6 +4,7 @@ import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -24,6 +25,15 @@ public class TipoFrecuenciaPagoService implements ITipoFrecuenciaPagoService{
         return tipoFrecuenciaPagoRepository.save(tipoFrecuenciaPago);
     };
 
+    public TipoFrecuenciaPago createTipoFrecuenciaPago(Integer cantCiclo,
+                                                       ChronoUnit unidadCilo,
+                                                       Integer diaLimitePago,
+                                                       TipoCiclo tipoCiclo) {
+        TipoFrecuenciaPago tipoFrecuenciaPago = new TipoFrecuenciaPago(cantCiclo, unidadCilo, diaLimitePago, tipoCiclo);
+        this.saveTipoFrecuenciaPago(tipoFrecuenciaPago);
+        return tipoFrecuenciaPago;
+    }
+
     @Override
     public void deleteTipoFrecuenciaPago(Long idTipoFrecuenciaPago){
         tipoFrecuenciaPagoRepository.findById(idTipoFrecuenciaPago)
@@ -43,10 +53,10 @@ public class TipoFrecuenciaPagoService implements ITipoFrecuenciaPagoService{
 //        return tipoFrecuenciaPagoRepository.findOneByNombre(nombre);
 //    };
 
-    @Override
-    public TipoFrecuenciaPago editTipoFrecuenciaPago(Long idTipoFrecuenciaPago, TipoFrecuenciaPago tipoFrecuenciaPago) {
-        TipoFrecuenciaPago tipoFrecuenciaPagoExistente = this.findTipoFrecuenciaPago(idTipoFrecuenciaPago);
-        tipoFrecuenciaPagoExistente.setNombre(tipoFrecuenciaPago.getNombre());
-        return this.saveTipoFrecuenciaPago(tipoFrecuenciaPagoExistente);
-    };
+//    @Override
+//    public TipoFrecuenciaPago editTipoFrecuenciaPago(Long idTipoFrecuenciaPago, TipoFrecuenciaPago tipoFrecuenciaPago) {
+//        TipoFrecuenciaPago tipoFrecuenciaPagoExistente = this.findTipoFrecuenciaPago(idTipoFrecuenciaPago);
+//        tipoFrecuenciaPagoExistente.setNombre(tipoFrecuenciaPago.getNombre());
+//        return this.saveTipoFrecuenciaPago(tipoFrecuenciaPagoExistente);
+//    };
 }

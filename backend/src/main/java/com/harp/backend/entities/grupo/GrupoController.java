@@ -3,6 +3,8 @@ package com.harp.backend.entities.grupo;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.clase.Clase;
+import com.harp.backend.entities.historialMontoCuota.MontoServicio;
+import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.horario.HorarioDTO;
 import com.harp.backend.entities.instructor.Instructor;
@@ -17,12 +19,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/servicios")
 public class GrupoController {
     @Autowired
-    private IGrupoService grupoService;
+    private GrupoService grupoService;
 
     // No tiene mucho sentido, siempre buscamos los grupos o de un servicio o de un instructor
     @GetMapping("/grupos")
@@ -101,6 +104,49 @@ public class GrupoController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoGrupo); // 201 CREATED
     }
+
+    @PostMapping("/{idServicio}/grupos/{idGrupo}/monto")
+    public ResponseEntity<MontoServicio> crearNuevoMonto(
+            @PathVariable Long idServicio,
+            @PathVariable Long idGrupo,
+            @RequestBody MontoServicioDTO montoServicioDTO) {
+
+        // Llama a servicioService para gestionar la actualización y creación del nuevo monto
+        MontoServicio nuevoMontoServicio = grupoService.actualizarYCrearNuevoMonto(montoServicioDTO, idGrupo);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoMontoServicio);
+    }
+
+    @PostMapping("/{idServicio}/grupos/monto")
+    public ResponseEntity<String> crearNuevosMontos(
+            @PathVariable Long idServicio,
+            @RequestBody GruposMontoDTO gruposMontoDTO) {
+
+        // Llama a servicioService para gestionar la actualización y creación del nuevo monto
+        grupoService.actualizarYCrearVariosNuevosMontos(gruposMontoDTO.getMontoDTO(), gruposMontoDTO.getIdsGrupos());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Se han actializado los montos de todos los grupos.");
+    }
+
+    @GetMapping("/{idServicio}/grupos/{idGrupo}/monto-actual")
+    public ResponseEntity<MontoServicio> traerMontosActualesDeServicio(@PathVariable @Min(1) Long idGrupo) {
+        MontoServicio montoGrupo = grupoService.obtenerMontoActualGrupo(idGrupo);
+        return ResponseEntity.status(HttpStatus.OK).body(montoGrupo);
+    };
+
+    @GetMapping("/{idServicio}/grupos/{idGrupo}/monto-programado")
+    public ResponseEntity<MontoServicio> traerMontosProgramadosDeServicio(@PathVariable @Min(1) Long idServicio,
+                                                                                @PathVariable @Min(1) Long idGrupo) {
+        MontoServicio montoGrupo = grupoService.obtenerMontoProgramadoFuturoGrupo(idGrupo);
+        return ResponseEntity.status(HttpStatus.OK).body(montoGrupo);
+    };
+
+        @GetMapping("/{idServicio}/grupos/{idGrupo}/historial-montos")
+    public ResponseEntity<Set<MontoServicio>> traerHistorialMontosDeServicio(@PathVariable @Min(1) Long idGrupo) {
+        Set<MontoServicio> montosGrupo = grupoService.obtenerHistorialMontosDeGrupo(idGrupo);
+        return ResponseEntity.status(HttpStatus.OK).body(montosGrupo);
+    };
+
 
     // POST CON HORARIOS DTOS
     @PostMapping("/{idServicio}/grupos/{idGrupo}/nuevos-horarios")

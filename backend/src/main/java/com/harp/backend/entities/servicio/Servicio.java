@@ -64,7 +64,6 @@ public class Servicio {
         // Valores predeterminados o inicializados por defecto
         this.fechaCreacion = LocalDate.now(); // Fecha de creación en la fecha actual
         this.activo = false;                  // Por defecto, el servicio no está activo
-        this.historialMontos = new HashSet<>(); // Inicializa el historial de montos vacío
         this.grupos = new HashSet<>();          // Inicializa los grupos vacíos
         this.inscripcionesAbiertas = false;
     }
@@ -121,10 +120,10 @@ public class Servicio {
     @Column(name = "dia_limite_pago")
     private Integer diaLimitePago;
 
-    @OneToMany
-    @JoinColumn(name = "servicio_id")
-    @JsonIgnore
-    private Set<MontoServicio> historialMontos = new HashSet<>();
+//    @OneToMany
+//    @JoinColumn(name = "servicio_id")
+//    @JsonIgnore
+//    private Set<MontoServicio> historialMontos = new HashSet<>();
 
     @OneToMany
     @JoinColumn(name = "servicio_id")
@@ -177,19 +176,6 @@ public class Servicio {
         this.grupos.add(grupo);
     }
 
-    public void agregarMontoAHistorial(MontoServicio monto) {
-        this.historialMontos.add(monto);
-    }
-
-    public MontoServicio buscarMontoActual() {
-        for (MontoServicio monto : historialMontos) {
-            if (monto.esMontoActual()) {
-                return monto;
-            }
-        }
-        throw new NoSuchElementFoundException("Monto actual no encontrado");
-    }
-
 //    public String generarCodigoInscripcion() {
 //        return this.codigoInscripcion = UUID.randomUUID().toString();
 //    }
@@ -210,6 +196,14 @@ public class Servicio {
 //
 //        return (this.cantMaxAlumnos == null || this.cantMaxAlumnos > cantInscripcionesDeServicio);
 //    }
+
+    public boolean tieneMontoEnTodosSusGrupos() {
+        return this.grupos.stream().allMatch(Grupo::tieneMontoActualConfigurado);
+    }
+
+    public boolean tieneGrupos() {
+        return (! this.grupos.isEmpty());
+    }
 
     public Grupo obtenerGrupoConEsteNum(Integer numGrupo) {
         return grupos.stream()
@@ -241,41 +235,30 @@ public class Servicio {
         return (grupos.contains(grupo));
     }
 
-    public List<MontoServicio> obtenerMontosActuales() {
-        return historialMontos.stream().filter(MontoServicio::esMontoActual).toList();
+//    public MontoServicio obtenerMontoActualConEstasVecesSemanales(int vecesSemanales) {
+//        for (MontoServicio monto : this.obtenerMontosActuales()) {
+//            if (monto.esDeEstasVecesSemanales(vecesSemanales)) {
+//                return monto;
+//            }
+//        }
+//        throw new NoSuchElementFoundException("No se encontró un monto actual del servicio para esas veces semanales");
+//    }
+
+    public List<MontoServicio> obtenerMontosActualesGrupos() {
+        return this.grupos.stream().map(Grupo::obtenerMontoActual).toList();
     }
 
-    public List<MontoServicio> obtenerMontosFuturos() {
-        return historialMontos.stream().filter(MontoServicio::esMontoProgramadoFuturo).toList();
-    }
-
-    public MontoServicio obtenerMontoActualConEstasVecesSemanales(int vecesSemanales) {
-        for (MontoServicio monto : this.obtenerMontosActuales()) {
-            if (monto.esDeEstasVecesSemanales(vecesSemanales)) {
-                return monto;
-            }
-        }
-        throw new NoSuchElementFoundException("No se encontró un monto actual del servicio para esas veces semanales");
-    }
-
-    public boolean tieneMontoActualConfigurado() {
-        return (! this.obtenerMontosActuales().isEmpty());
-    }
 
     public boolean tieneInscripcionesActivas() {
         return ( ! this.obtenerInscripcionesVigentes().isEmpty() );
     }
 
-    public boolean tieneMontoActualConEstasVecesSemanales(Integer cantVecesSemanales) {
-        if (! tieneMontoActualConfigurado()) {
-            return false;
-        }
-        return historialMontos.stream().anyMatch(m -> m.esDeEstasVecesSemanales(cantVecesSemanales) );
-    }
-
-    public boolean tieneMontoProgramadoFuturo() {
-        return historialMontos.stream().anyMatch(MontoServicio::esMontoProgramadoFuturo);
-    }
+//    public boolean tieneMontoActualConEstasVecesSemanales(Integer cantVecesSemanales) {
+//        if (! tieneMontoActualConfigurado()) {
+//            return false;
+//        }
+//        return historialMontos.stream().anyMatch(m -> m.esDeEstasVecesSemanales(cantVecesSemanales) );
+//    }
 
 //    public boolean tieneEstaCantVecesSemanales(int vecesSemanales) {
 //        // implementar de otra forma si se le permite a los alumnos inscribirse

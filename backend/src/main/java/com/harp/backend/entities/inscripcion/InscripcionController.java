@@ -1,6 +1,7 @@
 package com.harp.backend.entities.inscripcion;
 
 import com.harp.backend.entities.alumno.service.IAlumnoService;
+import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.grupo.GrupoDTO;
 import com.harp.backend.entities.grupo.IGrupoService;
@@ -71,6 +72,13 @@ public class InscripcionController {
         return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
     };
 
+    // GET LAS CUOTAS DE UNA INSCRIPCION
+    @GetMapping("/{idServicio}/inscripciones/{idInscripcion}/cuotas")
+    public ResponseEntity<List<Cuota>> getCuotasDeInscripcion(@PathVariable @Min(1) Long idInscripcion) {
+        List<Cuota> cuotas = inscripcionService.obtenerHistorialCuotasInscripcion(idInscripcion);
+        return ResponseEntity.ok(cuotas);
+    }
+
     // POST
     @PostMapping("/{idServicio}/inscribir")
     public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio,
@@ -96,7 +104,7 @@ public class InscripcionController {
                                                      @PathVariable Long idServicio,
                                                      @RequestBody LocalDate fechaInicioActividad) {
         // REVISAR: Obtener el id del usuario de headers
-        Long idInstructor = Long.valueOf(1);
+        Long idInstructor = Long.valueOf(3);
         inscripcionService.aceptarInscripcion(idInstructor, idServicio, idInscripcion, fechaInicioActividad);
         return ResponseEntity.ok("Se aceptó la inscripción correctamente.");
     };

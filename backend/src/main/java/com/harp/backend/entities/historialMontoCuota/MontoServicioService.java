@@ -28,6 +28,13 @@ public class MontoServicioService implements IMontoServicioService {
         return montoCreado;
     };
 
+    public MontoServicio createMontoGrupo(Float monto, LocalDate fechaIncio) {
+        MontoServicio nuevoMontoGrupo = new MontoServicio(monto, fechaIncio);
+        MontoServicio montoCreado = montoServicioRepository.save(nuevoMontoGrupo);
+
+        return montoCreado;
+    };
+
     @Override
     public void deleteMontoServicio(Long idHistorialMonto){
         montoServicioRepository.deleteById(idHistorialMonto);
@@ -59,6 +66,13 @@ public class MontoServicioService implements IMontoServicioService {
         // Por eso si programan un monto por ej. para mañana, la fecha fin del monto actual será hoy.
         montoActual.setFechaFin(fechaInicioProximoMonto.minusDays(1));
         montoServicioRepository.save(montoActual);
+    }
+
+    public void cambiarFechaInicioMontoServicio(MontoServicio monto, LocalDate fechaInicio) {
+        // Solo le permitimos crear nuevos montos del servicio con fechaInicioProximoMonto > fechaActual
+        // Por eso si programan un monto por ej. para mañana, la fecha fin del monto actual será hoy.
+        monto.setFechaInicio(fechaInicio);
+        montoServicioRepository.save(monto);
     }
 
 
