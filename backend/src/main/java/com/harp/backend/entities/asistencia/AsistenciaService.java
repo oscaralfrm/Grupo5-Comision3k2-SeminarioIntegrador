@@ -49,10 +49,10 @@ public class AsistenciaService implements IAsistenciaService{
     }
 
     @Override
-    public Asistencia editAsistencia(Long idAsistencia, AsistenciaDTO asistenciaDTO) {
+    public Asistencia editAsistencia(Long idAsistencia, boolean asistio, String observaciones) {
         Asistencia asistenciaExistente = this.findAsistencia(idAsistencia);
-        asistenciaExistente.setAsistio(asistenciaDTO.isAsistio());
-        asistenciaExistente.setObservaciones(asistenciaDTO.getObservaciones());
+        asistenciaExistente.setAsistio(asistio);
+        asistenciaExistente.setObservaciones(observaciones);
         return asistenciaRepository.save(asistenciaExistente);
     };
 
@@ -68,6 +68,7 @@ public class AsistenciaService implements IAsistenciaService{
         asistenciasDto.forEach(asistenciaDto ->
                 this.editAsistencia(
                         asistenciaDto.getIdAsistencia(),
-                        asistenciaDto.getAsistenciaDTO()));
+                        asistenciaDto.isAsistio(),
+                        asistenciaDto.getObservaciones()));
     }
 }

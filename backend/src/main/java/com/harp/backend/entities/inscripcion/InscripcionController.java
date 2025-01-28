@@ -84,7 +84,7 @@ public class InscripcionController {
     public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio,
                                                         @RequestBody InscripcionDTO inscripcionDTO) {
         // REVISAR: Obtener el id del servicio de headers
-        Long idAlumno = Long.valueOf(3);
+        Long idAlumno = Long.valueOf(2);
         Long idGrupo = inscripcionDTO.getIdGrupo();
         List<Long> idsHorarios = inscripcionDTO.getIdsHorarios();
         Inscripcion nuevaInscripcion = inscripcionService.createInscripcion(idAlumno, idServicio, idGrupo, idsHorarios);
