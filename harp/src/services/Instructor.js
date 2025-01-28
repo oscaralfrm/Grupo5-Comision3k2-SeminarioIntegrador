@@ -64,11 +64,9 @@ export const deleteInstructor = async (idInstructor) => {
   }
 };
 
-export const editInstructor = async (idInstructor, nombre, apellido, dni, nombreUsuario, contrasena, 
-  email, telefono, direccion, fechaNacimiento) => {
+export const editInstructor = async (idInstructor, nombre, apellido, dni,email,contrasena, telefono, fechaNacimiento) => {
   try {
-    const response = await axios.put(`${BASE_URL}/${idInstructor}`, {nombre, apellido, dni, nombreUsuario, contrasena, 
-      email, telefono, direccion, fechaNacimiento});
+    const response = await axios.put(`${BASE_URL}/${idInstructor}`, {nombre, apellido, dni,email, contrasena, telefono, fechaNacimiento});
     return response.data;
   } catch (error) {
     console.error(`Error editing instructor with ID ${idInstructor}:`, error);
