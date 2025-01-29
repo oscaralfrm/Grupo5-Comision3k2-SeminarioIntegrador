@@ -8,7 +8,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
   const [selectedServicio, setSelectedServicio] = useState(null);
   const [highlightedCourseId, setHighlightedCourseId] = useState(null);
   const [instructor, setInstructor] = useState(null);
-  const navegate = useNavigate();
+  const navigate = useNavigate();
 
   const indexOfLastCourse = currentPage * serviciosPerPage;
   const indexOfFirstCourse = indexOfLastCourse - serviciosPerPage;
@@ -20,8 +20,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleMoreInfo = (servicioId) => {
-    navegate(`/instructor/${idInstructor}/servicio/${servicioId}/info-servicio`);
-    // setSelectedServicio(servicio);
+    navigate(`/instructor/${idInstructor}/servicio/${servicioId}/info-servicio`);
   };
 
   const closeDetails = () => setSelectedServicio(null);
@@ -29,14 +28,16 @@ const CourseCards = ({ servicios, Instructorid }) => {
   const { idInstructor } = useParams(); // Capturar el idInstructor de la ruta
 
   const handleGoToService = (servicioId) => {
-    navegate(`/instructor/${idInstructor}/servicio/${servicioId}/mi-servicio`);
+    navigate(`/instructor/${idInstructor}/servicio/${servicioId}/mi-servicio`);
   };
 
   const handleAddNewService = () => {
-    navegate(`/instructor/${idInstructor}/crear-servicio`);
+    navigate(`/instructor/${idInstructor}/crear-servicio`);
   };
 
   const totalPages = Math.ceil(servicios.length / serviciosPerPage);
+
+  const cardHeight = "260px"; // Altura consistente para todas las tarjetas
 
   return (
     <div
@@ -54,59 +55,87 @@ const CourseCards = ({ servicios, Instructorid }) => {
                   highlightedCourseId === servicio.id
                     ? "#A5B4FC"
                     : servicio.inscripcionesAbiertas === false
-                    ? "#E0E0E0" // Color gris si el servicio no es público
-                    : "#fff",
+                      ? "#E0E0E0" // Color gris si el servicio no es público
+                      : "#fff",
                 borderRadius: "20px",
                 boxShadow: "0px 4px 18px rgba(0, 0, 0, 0.5)",
                 textAlign: "center",
                 transition: "transform 0.3s, box-shadow 0.3s, background-color 0.3s",
-                opacity: servicio.inscripcionesAbiertas === false ? "0.6" : "1", // Opacidad reducida si no es público
+                height: cardHeight,
               }}
             >
+              {/* Contenido de la tarjeta */}
               <div
                 style={{
-                  width: "70px",
-                  height: "70px",
-                  borderRadius: "50%",
-                  backgroundColor: "#fff",
-                  border: "2px solid violet",
-                  marginBottom: "15px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  margin: "0 auto",
+                  opacity: servicio.inscripcionesAbiertas === false ? "0.6" : "1", // Contenido más opaco si no está publicado
+                  pointerEvents: servicio.inscripcionesAbiertas === false ? "none" : "auto", // Deshabilitar interacción solo con el contenido
                 }}
               >
-                {servicio.logoURL ? (
-                  <img
-                    src={servicio.logoURL}
-                    alt={servicio.nombre}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      borderRadius: "50%",
-                    }}
-                  />
-                ) : (
-                  <i className="fa fa-camera" style={{ color: "gray", fontSize: "24px" }}></i>
-                )}
+                <div
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    borderRadius: "50%",
+                    backgroundColor: "#fff",
+                    border: "2px solid violet",
+                    marginBottom: "15px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    margin: "0 auto",
+                    marginTop: "10px"
+                  }}
+                >
+                  {servicio.logoURL ? (
+                    <img
+                      src={servicio.logoURL}
+                      alt={servicio.nombre}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  ) : (
+                    <i className="fa fa-camera" style={{ color: "gray", fontSize: "24px" }}></i>
+                  )}
+                </div>
+                <h4 className="card-title" style={{ fontSize: "1.15rem", color: "#333", fontWeight: "bold" }}>
+                  {servicio.nombre}
+                </h4>
+                <p className="card-text" style={{ fontSize: "0.9em", color: "#333", lineHeight: "1.4" }}>
+                  {servicio.descripcion}
+                </p>
+                <tr></tr>
               </div>
-              <h4 className="card-title" style={{ fontSize: "1.15rem", color: "#333", fontWeight: "bold" }}>
-                {servicio.nombre}
-              </h4>
-              <p className="card-text" style={{ fontSize: "0.9em", color: "#333", lineHeight: "1.4" }}>
-                {servicio.descripcion}
-              </p>
+
+              {/* Botones */}
               <div className="d-flex justify-content-around" style={{ marginTop: "10px" }}>
                 <button
                   onClick={() => handleMoreInfo(servicio.id)}
                   className="btn btn-primary"
+                  style={{
+                    backgroundColor: "#4F46E5",
+                    color: "white",
+                    padding: "10px 20px",
+                    borderRadius: "4px",
+                    textDecoration: "none",
+                    fontSize: "14px",
+                  }}
                 >
                   Configurar
                 </button>
                 <button
                   onClick={() => handleGoToService(servicio.id)}
                   className="btn btn-secondary"
+                  style={{
+                    backgroundColor: "#4F46E5",
+                    color: "white",
+                    padding: "10px 20px",
+                    borderRadius: "4px",
+                    textDecoration: "none",
+                    fontSize: "14px",
+                  }}
                 >
                   Ver Servicio
                 </button>
@@ -123,7 +152,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
               padding: "15px",
               backgroundColor: "#A5B4FC",
               borderRadius: "20px",
-              height: "240px", // Ajustar para que coincida con las demás tarjetas
+              height: cardHeight, // Altura consistente
               width: "100%", // Asegurar el ancho consistente
               boxShadow: "0px 4px 18px rgba(0, 0, 0, 0.5)",
               textAlign: "center",

@@ -58,7 +58,7 @@ export const editarMontoServicio = async (idMonto, monto, fechaInicio, cantVeces
         const response = await axios.put(`${API_URL}/historiales-montos/${idMonto}`, {monto, fechaInicio, cantVecesSemanales});
         return response.data;
     } catch (error) {
-        console.error('Error al obtener el servicio', error.response.data.message);
+        console.error('Error al obtener el servicio', error.response ? error.response.data : error.message);
         const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
         throw new Error(errorMessage); // Pasa el mensaje al componente
     }

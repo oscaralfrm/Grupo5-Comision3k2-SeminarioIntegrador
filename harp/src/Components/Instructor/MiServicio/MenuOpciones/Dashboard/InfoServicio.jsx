@@ -155,7 +155,7 @@ const InfoCard = ({serviceData, setServiceData}) => {
             borderStyle: "solid",
           }}
         >
-          Ver Servicio
+          Configurar
         </button>
       </div>
 

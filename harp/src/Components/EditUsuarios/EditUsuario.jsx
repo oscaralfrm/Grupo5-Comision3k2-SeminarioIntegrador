@@ -25,7 +25,7 @@ export const EditUsuario = () => {
     handleSubmit,
     formState: { errors, isValid },
     watch,
-    reset,  // Agregar reset aquí
+    reset,
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -62,15 +62,13 @@ export const EditUsuario = () => {
       if (id && tipoUsuario) {
         try {
           if (tipoUsuario.trim().toLowerCase() === "instructor") {
-            
             const data = await getInstructorById(id);
-            console.log(data)
             setUsuario(data.usuario);
-            reset(data.usuario);  // Actualizar los valores del formulario después de obtener los datos
+            reset(data.usuario); // Actualizar los valores del formulario después de obtener los datos
           } else if (tipoUsuario.trim().toLowerCase() === "alumno") {
             const data = await getAlumnoById(id);
             setUsuario(data);
-            reset(data);  // Actualizar los valores del formulario después de obtener los datos
+            reset(data); // Actualizar los valores del formulario después de obtener los datos
           } else {
             console.log("Tipo de usuario no reconocido");
           }
@@ -80,10 +78,8 @@ export const EditUsuario = () => {
       }
     };
     fetchUsuario();
-    console.log(usuario)
   }, [id, tipoUsuario, reset]);
 
-  const contrasena = watch("contrasena");
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("datosPersonales");
 
@@ -95,33 +91,36 @@ export const EditUsuario = () => {
           data.nombre,
           data.apellido,
           data.dni,
-          data.nombreUsuario,
+          usuario.email,
           data.contrasena,
-          data.email,
           data.telefono,
-          data.direccion,
           data.fechaNacimiento
         );
-        
       } else if (tipoUsuario.trim().toLowerCase() === "alumno") {
         await editAlumno(
           id,
           data.nombre,
           data.apellido,
           data.dni,
-          data.nombreUsuario,
           data.contrasena,
-          data.email,
           data.telefono,
-          data.direccion,
           data.fechaNacimiento
         );
-        
       }
     } catch (error) {
       console.error("Error:", error);
-      alert(`Hubo un problema al editar al ${tipoUsuario}. Por favor, inténtalo nuevamente.`);
+      alert(
+        `Hubo un problema al editar al ${tipoUsuario}. Por favor, inténtalo nuevamente.`
+      );
     }
+  };
+
+  const validateField = (fieldName, value) => {
+    // Si el valor es igual al inicial, no es necesario validarlo
+    if (usuario && value === usuario[fieldName]) return true;
+
+    // Validar que el campo no esté vacío si fue modificado
+    return value.trim() !== "" || "Este campo no puede estar vacío";
   };
 
   const goToNextTab = () => {
@@ -146,7 +145,7 @@ export const EditUsuario = () => {
         fontFamily: "Roboto",
         overflow: "hidden",
         padding: "20px",
-        marginTop:"3rem"
+        marginTop: "3rem",
       }}
     >
       <div
@@ -180,7 +179,12 @@ export const EditUsuario = () => {
             >
               <Tab eventKey="datosPersonales" title="Datos Personales">
                 <DatosPersonales
-                  register={register}
+                  register={(name, options) =>
+                    register(name, {
+                      ...options,
+                      validate: (value) => validateField(name, value),
+                    })
+                  }
                   errors={errors}
                   goToNextTab={goToNextTab}
                   data={usuario}
@@ -189,7 +193,12 @@ export const EditUsuario = () => {
 
               <Tab eventKey="contacto" title="Contacto">
                 <Contacto
-                  register={register}
+                  register={(name, options) =>
+                    register(name, {
+                      ...options,
+                      validate: (value) => validateField(name, value),
+                    })
+                  }
                   errors={errors}
                   goToNextTab={goToNextTab}
                   goToPreviousTab={goToPreviousTab}
@@ -199,10 +208,14 @@ export const EditUsuario = () => {
 
               <Tab eventKey="contraseña" title="Contraseña">
                 <Password
-                  register={register}
+                  register={(name, options) =>
+                    register(name, {
+                      ...options,
+                      validate: (value) => validateField(name, value),
+                    })
+                  }
                   errors={errors}
                   goToPreviousTab={goToPreviousTab}
-                  contrasena={contrasena}
                   isValid={isValid}
                   data={usuario}
                 />

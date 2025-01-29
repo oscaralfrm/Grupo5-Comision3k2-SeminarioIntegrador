@@ -106,7 +106,7 @@ export default function ServicioForm() {
         height: "100vh",
         fontFamily: "Roboto",
         flexWrap: "wrap",
-        marginTop:"10vh"
+        marginTop: "10vh"
       }}
     >
       {/* Columna Izquierda (Formulario) */}
@@ -121,7 +121,7 @@ export default function ServicioForm() {
         className="col-12 col-md-12"
       >
         <div className="col-md-12 col-sm-12 p-4">
-          <h1 className="mb-1 text-center fs-1 mb-4">Formato Inicial del Servicio</h1>
+          <h1 className="mb-1 text-center fs-1 mb-4">Agregar Servicio</h1>
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="card shadow-lg rounded-3 bg-light p-4"

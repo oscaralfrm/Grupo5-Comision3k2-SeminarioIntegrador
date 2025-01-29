@@ -134,6 +134,7 @@ export default function DatosPersonales({
           id="nombreUsuario"
           name="nombreUsuario"
           defaultValue={data?.nombreUsuario || ""} 
+          readOnly 
           className={`form-control ${
             errors?.nombreUsuario ? "is-invalid" : ""
           }`}

@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import PanaTeacher from '../../assets/panaBuenLogin.png';
 import { iniciarSesion } from '../../services/Login';
+import { getAllInstructores } from '../../services/Instructor';
+import { getAllAlumnos } from '../../services/Alumno'; // Importar las funciones
 
 export const LoginForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -11,20 +13,52 @@ export const LoginForm = () => {
 
     const onSubmit = async (data) => {
         try {
+            console.log('Datos del formulario:', data); // Log de los datos del formulario
+
             const { email, password } = data;
+            console.log('Email:', email, 'Contraseña:', password); // Log del email y contraseña
+
             const response = await iniciarSesion(email, password);
+            console.log('Respuesta del backend:', response); // Log de la respuesta del backend
 
             const { id, perfil } = response;
+            console.log('ID del usuario:', id, 'Perfil del usuario:', perfil); // Log del ID y perfil
 
             // Guardar la información del usuario en el localStorage
             window.localStorage.setItem('loggedUser', JSON.stringify(response));
+            console.log('Usuario guardado en localStorage');
 
-            // Redirigir al usuario según su perfil
+            // Buscar instructores o alumnos según el perfil
             if (perfil === 'instructor') {
-                navigate(`/instructor/${id}/servicios`);
+                const instructores = await getAllInstructores(); // Obtener todos los instructores
+                console.log('Instructores obtenidos:', instructores); // Log de todos los instructores
+                
+                // Buscar el instructor cuyo id coincide con el id del usuario
+                const instructor = instructores.find(instructor => instructor.usuario.id === id); // Comparar con el id del usuario
+                if (instructor) {
+                    const userProfileId = instructor.id; // Usar el id del instructor directamente
+                    console.log('ID del instructor encontrado:', userProfileId); // Log del idInstructor
+                    navigate(`/instructor/${userProfileId}/servicios`);
+                } else {
+                    console.error('Instructor no encontrado');
+                    setErrorMessage('No se encontró el instructor.');
+                }
             } else if (perfil === 'alumno') {
-                navigate(`/alumno/${id}/dashboard`);
+                const alumnos = await getAllAlumnos(); // Obtener todos los alumnos
+                console.log('Alumnos obtenidos:', alumnos); // Log de todos los alumnos
+                
+                // Buscar el alumno cuyo id coincide con el id del usuario
+                const alumno = alumnos.find(alumno => alumno.usuario.id === id); // Comparar con el id del usuario
+                if (alumno) {
+                    const userProfileId = alumno.id; // Usar el id del alumno directamente
+                    console.log('ID del alumno encontrado:', userProfileId); // Log del idAlumno
+                    navigate(`/alumno/${userProfileId}/dashboard`);
+                } else {
+                    console.error('Alumno no encontrado');
+                    setErrorMessage('No se encontró el alumno.');
+                }
             }
+
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
             setErrorMessage('Error al iniciar sesión. Por favor, verifica tus credenciales.');
@@ -50,12 +84,12 @@ export const LoginForm = () => {
                         src={PanaTeacher}
                         alt="Login Illustration"
                         className="img-fluid"
-                        style={{ 
+                        style={{
                             maxHeight: '60%',
                             width: 'auto',
                             maxWidth: '400px',
-                            objectFit: 'contain' 
-                        }} 
+                            objectFit: 'contain'
+                        }}
                     />
                 </div>
 
@@ -63,7 +97,7 @@ export const LoginForm = () => {
                     <div
                         className="col-md-8 col-sm-10"
                         style={{
-                            height: "auto", 
+                            height: "auto",
                             marginTop: "1em",
                             marginBottom: "0.5em",
                         }}
@@ -87,13 +121,13 @@ export const LoginForm = () => {
                                 <form className="mt-3" onSubmit={handleSubmit(onSubmit)} id="login">
                                     <div className="mb-3">
                                         <label htmlFor="email" className="form-label">Correo Electrónico</label>
-                                        <input 
-                                            type="email" 
-                                            id="email" 
-                                            className={`form-control ${errors.email ? 'is-invalid' : ''}`} 
-                                            placeholder="Correo Electrónico" 
-                                            autoComplete="email" 
-                                            {...register("email", { required: true })} 
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                                            placeholder="Correo Electrónico"
+                                            autoComplete="email"
+                                            {...register("email", { required: true })}
                                         />
                                         {errors.email && (
                                             <div className="invalid-feedback">
@@ -125,9 +159,9 @@ export const LoginForm = () => {
                                     </div>
 
                                     <div className="d-flex justify-content-center">
-                                        <button 
-                                            type="submit" 
-                                            className="btn fs-5" 
+                                        <button
+                                            type="submit"
+                                            className="btn fs-5"
                                             style={{ backgroundImage: "linear-gradient(135deg, #1E1B4B, #4F46E5)", color: 'white', padding: '6px 17px' }}
                                         >
                                             Iniciar Sesión

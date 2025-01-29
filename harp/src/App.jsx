@@ -19,6 +19,7 @@ import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboar
 import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Configuracion.jsx";
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
+//import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
 function App() {
   return (
