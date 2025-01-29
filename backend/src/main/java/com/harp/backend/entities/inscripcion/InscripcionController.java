@@ -84,7 +84,7 @@ public class InscripcionController {
     public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio,
                                                         @RequestBody InscripcionDTO inscripcionDTO) {
         // REVISAR: Obtener el id del servicio de headers
-        Long idAlumno = Long.valueOf(2);
+        Long idAlumno = inscripcionDTO.getIdAlumno();
         Long idGrupo = inscripcionDTO.getIdGrupo();
         List<Long> idsHorarios = inscripcionDTO.getIdsHorarios();
         Inscripcion nuevaInscripcion = inscripcionService.createInscripcion(idAlumno, idServicio, idGrupo, idsHorarios);
@@ -104,15 +104,15 @@ public class InscripcionController {
                                                      @PathVariable Long idServicio,
                                                      @RequestBody LocalDate fechaInicioActividad) {
         // REVISAR: Obtener el id del usuario de headers
-        Long idInstructor = Long.valueOf(3);
-        inscripcionService.aceptarInscripcion(idInstructor, idServicio, idInscripcion, fechaInicioActividad);
+        inscripcionService.aceptarInscripcion(idServicio, idInscripcion, fechaInicioActividad);
         return ResponseEntity.ok("Se aceptó la inscripción correctamente.");
     };
 
     // EDITAR
-    @PutMapping("/inscripciones/{idInscripcion}/rechazar")
-    public ResponseEntity<String> rechazarInscripcion(@PathVariable Long idInscripcion) {
-        inscripcionService.rechazarInscripcion(idInscripcion);
+    @PutMapping("{idServicio}/inscripciones/{idInscripcion}/rechazar")
+    public ResponseEntity<String> rechazarInscripcion(@PathVariable Long idInscripcion,
+                                                      @RequestBody String motivo) {
+        inscripcionService.rechazarInscripcion(idInscripcion, motivo);
         return ResponseEntity.ok("Se rechazó la inscripción correctamente.");
     };
 

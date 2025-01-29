@@ -50,7 +50,7 @@ public class Cuota {
     @JoinColumn(name = "cuota_id")
     private List<CambioEstadoCuota> cambiosEstado = new ArrayList<>();
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "cuota_id")
     private Pago pago;
 
@@ -112,11 +112,20 @@ public class Cuota {
         return fechaActual.plusDays(diasProximos).isEqual(this.fechaFinCiclo);
     }
 
+    public boolean estaProximaAVencerse(LocalDate fechaActual, int diasProximos) {
+        // Si faltan X "diasProximos" para que finalice el ciclo
+        return fechaActual.plusDays(diasProximos).isEqual(this.fechaLimitePago);
+    }
+
     public boolean yaVencio(LocalDate fechaActual) {
         return (fechaLimitePago.isBefore(fechaActual));
     }
 
     public boolean yaTerminoSuCiclo(LocalDate fechaActual) {
         return (fechaFinCiclo.isBefore(fechaActual));
+    }
+
+    public boolean tieneEsteId(Long idCuota) {
+        return this.id.equals(idCuota);
     }
 }

@@ -70,6 +70,7 @@ public class Inscripcion {
     @JoinColumn(name = "grupo_id")
     private Grupo grupo;
 
+    private String motivoRechazo;
 
     //HACERLO EN LA BASE DE DATOS CON TABLA INTERMEDIA
     //HAcerlo LAZY
@@ -185,7 +186,7 @@ public class Inscripcion {
         }
     }
 
-    public void rechazar() {
+    public void rechazar(String motivo) {
         // la puedo rechazar solo cuando está en Pendiente
         if (fechaAceptacion != null) {
             throw new UnsupportedOperationException("La inscripción ya fue previamente aceptada");
@@ -197,6 +198,8 @@ public class Inscripcion {
         this.estado = EstadoInscripcion.Rechazada;
 
         // REVISAR si aca deberiamos cambiar la fechaFinInscripcion o no
+
+        this.motivoRechazo = motivo;
     }
 
     public boolean esFinalizada() {
@@ -240,6 +243,14 @@ public class Inscripcion {
             // ver como hacer para que corte aca en este caso como un break
         }
     }
+
+    public Cuota obtenerCuotaConEsteId(Long idCuota) {
+        return cuotas.stream()
+                .filter(c -> c.tieneEsteId(idCuota))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementFoundException("No se encontró cuota para esa inscripcion"));
+    }
+
 
     public boolean esDeEsteServicio(Servicio servicio) {
         return (servicio.tieneEsteGrupo(this.grupo));

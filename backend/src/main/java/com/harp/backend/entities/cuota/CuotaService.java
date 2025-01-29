@@ -10,13 +10,19 @@ import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.inscripcion.InscripcionService;
+import com.harp.backend.entities.instructor.Instructor;
+import com.harp.backend.entities.instructor.InstructorService;
+import com.harp.backend.entities.notificacion.NotificacionService;
 import com.harp.backend.entities.pagos.IPagoService;
 import com.harp.backend.entities.pagos.Pago;
 import com.harp.backend.entities.pagos.metodoPago.MetodoPago;
 import com.harp.backend.entities.pagos.metodoPago.MetodoPagoService;
 import com.harp.backend.entities.servicio.Servicio;
+import com.harp.backend.entities.servicio.ServicioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -41,6 +47,15 @@ public class CuotaService implements ICuotaService {
 
     @Autowired
     private MetodoPagoService metodoPagoService;
+
+    @Autowired
+    private NotificacionService notificacionService;
+
+    @Autowired
+    private ServicioService servicioService;
+
+    @Autowired
+    private InstructorService instructorService;
 
     @Override
     public List<Cuota> getAllCuotas() {
@@ -90,13 +105,50 @@ public class CuotaService implements ICuotaService {
                             // ACA NOTIFICAMOS AL INSTRUCTOR Y AL ALUMNO
                             //notificacionService.createNotificacion(alumno, "Cuota vencida", "...");
                             //ACA BUSCAMOS EL INSTRUCTOR DEL SERVICIO
+                            Servicio servicio = inscripcion.getServicio();
+                            Instructor instructor = instructorService.findInstructorDeEsteServicio(servicio);
+                            notificacionService.notificarCuotaVencida(servicio, alumno, instructor, cuota);
 
-                            //buscar el instructor que tiene ese servicio
-                            //notificacionService.createNotificacion(instructor, "Cuota vencida", "...");
                         }
                     }
                 }
             }
+
+    }
+
+    // RECORDATORIO CUOTAS PENDIENTES
+    @Scheduled(cron = "0 0 3 * * ?") // Ejecuta todos los días a las 3:00 AM
+    //@Scheduled(cron = "0 20 13 * * ?")
+    @Transactional
+    public void enviarRecordatorioCuotasPendientes() {
+        // Obtenemos la fecha actual
+        LocalDate fechaActual = LocalDate.now();
+
+        // Buscamos todos los alumnos que esten inscriptos actualmente en algun servicio
+        List<Alumno> alumnosConCuotas = alumnoService.getAlumnosInscriptosAServicio();
+
+        for (Alumno alumno : alumnosConCuotas) {
+            System.out.println("en cuotas pendientes");
+            // Obtenemos todas las incripciones, no solo las vigentes
+            // aunque ya haya terminado una inscripcion igual pueden quedar cuotas vencidas a pagar (excepcional)
+            List<Inscripcion> inscripcionesAlumno = alumno.getInscripciones();
+
+            for (Inscripcion inscripcion : inscripcionesAlumno) {
+                List<Cuota> cuotasPendientes = inscripcion.obtenerCuotasPendientes();
+
+                for (Cuota cuota : cuotasPendientes) {
+                    if (cuota.esPendiente() && cuota.estaProximaAVencerse(fechaActual, 3)) {
+                            // Notificamos tanto al alumno como al instructor
+                            Servicio servicio = inscripcion.getServicio();
+                            Instructor instructor = instructorService.findInstructorDeEsteServicio(servicio);
+                            notificacionService.notificarCuotaPorVencerse(servicio, alumno, instructor, cuota);
+                    }
+                }
+            }
+
+
+
+        }
 
     }
 
@@ -260,9 +312,14 @@ public class CuotaService implements ICuotaService {
 //        return cuotaRepository.save(cuota);
 //    }
 
-    public void pagarCuota(Long idCuota, String nombre) {
+    public void pagarCuota(Long idServicio, Long idInscripcion, Long idCuota, String nombre) {
         MetodoPago metodoPago = metodoPagoService.findMetodoPagoByNombre(nombre);
-        Cuota cuota = this.findCuota(idCuota);
+
+        Servicio servicio = servicioService.findServicio(idServicio);
+        Instructor instructor = instructorService.findInstructorDeEsteServicio(servicio);
+        Inscripcion inscripcion = servicio.obtenerInscripcionById(idInscripcion);
+
+        Cuota cuota = inscripcion.obtenerCuotaConEsteId(idCuota);
 
         if ( ! ( cuota.esPendiente() || cuota.esVencida() ) )  {
             throw new UnsupportedOperationException("La cuota no puede ser abonada.");
@@ -274,6 +331,11 @@ public class CuotaService implements ICuotaService {
 
         // CAMBIO DE ESTADO
         this.cambiarEstadoCuota(EstadoCuota.Abonada, cuota);
+
+        // Notificamos al instructor
+        // El alumno x ha abonado su ultima cuota de $x
+        Alumno alumno = inscripcion.getAlumno();
+        notificacionService.notificarPagoCuota(servicio, instructor, alumno,  cuota);
     }
 
     public void anularCuota(Long idCuota) {

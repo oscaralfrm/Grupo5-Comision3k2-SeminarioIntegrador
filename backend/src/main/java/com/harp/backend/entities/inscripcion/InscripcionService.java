@@ -10,6 +10,7 @@ import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.Estrateg
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.IEstrategiaInscripcion;
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.instructor.InstructorService;
+import com.harp.backend.entities.notificacion.NotificacionService;
 import com.harp.backend.entities.pagos.PagoService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioService;
@@ -49,6 +50,9 @@ public class InscripcionService implements IInscripcionService {
 
     @Autowired
     private PagoService pagoService;
+
+    @Autowired
+    private NotificacionService notificacionService;
 
 
     @Override
@@ -143,10 +147,10 @@ public class InscripcionService implements IInscripcionService {
 //    };
 
     @Transactional
-    public void aceptarInscripcion(Long idInstructor, Long idServicio, Long idInscripcion, LocalDate fechaInicioActividad) {
+    public void aceptarInscripcion(Long idServicio, Long idInscripcion, LocalDate fechaInicioActividad) {
         // Buscar servicio e instructor
         Servicio servicio = servicioService.findServicio(idServicio);
-        Instructor instructorExistente = instructorService.findInstructor(idInstructor);
+//        Instructor instructorExistente = instructorService.findInstructor(idInstructor);
 
         // Buscar inscripcion y validar que exista
         Inscripcion inscripcionExistente = servicio.obtenerInscripcionById(idInscripcion);
@@ -154,9 +158,9 @@ public class InscripcionService implements IInscripcionService {
         // Validar que el servicio de la inscripcion sea del instructor loggeado O DE UN ADMIN - IMPLEMENTAR
 //        Grupo grupoExistente = inscripcionExistente.getGrupo();
 
-        if (!  instructorExistente.tieneEsteServicio(servicio)) {
-            throw new UnsupportedOperationException("No tiene autorización para aceptar esa inscripcion.");
-        }
+//        if (!  instructorExistente.tieneEsteServicio(servicio)) {
+//            throw new UnsupportedOperationException("No tiene autorización para aceptar esa inscripcion.");
+//        }
 
         LocalDate fechaActual = LocalDate.now();
         // TRASLADAR A UNA ESTRATEGIA
@@ -247,7 +251,9 @@ public class InscripcionService implements IInscripcionService {
         Cuota cuota = cuotaService.crearPrimerCuotaConEstrategia(inscripcionExistente, servicio);
 
         this.agregarCuotaAInscripcion(inscripcionExistente, cuota);
+
         //Aca notificamos que la inscripcion ya fue aceptada
+        notificacionService.notificarAceptacionInscripcion(inscripcionExistente);
     }
 
 /*
@@ -278,11 +284,13 @@ public class InscripcionService implements IInscripcionService {
     }
 */
 
-    public void rechazarInscripcion(Long idInscripcion) {
+    public void rechazarInscripcion(Long idInscripcion, String motivo) {
         Inscripcion inscipcionExistente = this.findInscripcion(idInscripcion);
-        inscipcionExistente.rechazar();
+        inscipcionExistente.rechazar(motivo);
         inscripcionRepository.save(inscipcionExistente);
+
         // aca deberiamos notificar al alumno que su inscripcion fue rechazada
+        notificacionService.notificarRechazoInscripcion(inscipcionExistente);
     }
 
     @Transactional

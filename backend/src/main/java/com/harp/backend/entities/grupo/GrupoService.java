@@ -12,6 +12,7 @@ import com.harp.backend.entities.horario.HorarioConverter;
 import com.harp.backend.entities.horario.HorarioDTO;
 import com.harp.backend.entities.horario.IHorarioService;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.notificacion.NotificacionService;
 import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.exception.NoSuchElementFoundException;
@@ -51,6 +52,9 @@ public class GrupoService implements IGrupoService {
 
     @Autowired
     private HorarioConverter horarioConverter;
+
+    @Autowired
+    private NotificacionService notificacionService;
 
     //Lo usamos en la generacion de clases automaticas
     @Override
@@ -217,12 +221,15 @@ public class GrupoService implements IGrupoService {
     }
 
 
-    public MontoServicio actualizarYCrearNuevoMonto(MontoServicioDTO montoServicioDTO, Long idGrupo) {
+    public MontoServicio actualizarYCrearNuevoMonto(MontoServicioDTO montoServicioDTO, Long idGrupo, Long idServicio) {
         // ESTO ES PARA GRUPOS CON HORARIOS FIJOS DONDE LOS ALUMNOS SE INSCRIBEN A TODOS LOS HORARIOS DE UN GRUPO
 
         // Solo el dejamos crear/programar UN SOLO monto futuro
         // Entonces le preguntamos al grupo si tiene un monto programado futuro
-        Grupo grupo = this.findGrupo(idGrupo);
+
+        Servicio servicio = servicioService.findServicio(idServicio);
+
+        Grupo grupo = servicio.obtenerGrupoConEsteId(idGrupo);
         if (grupo.tieneMontoProgramadoFuturo()) {
             throw new UnsupportedOperationException("El grupo ya tiene un monto programado. Edite este monto.");
         }
@@ -275,16 +282,24 @@ public class GrupoService implements IGrupoService {
         // Asociar el nuevo monto al servicio
         this.agregarMontoAGrupo(nuevoMontoGrupo, grupo);
 
+        // Notificamos a los alumnos la actualizacion del monto
+        // titulo: actualizacion de monto
+        // el dia nuevoMonto.getFechaInicio() el grupo grupo.getNombre() del servicio servicio.getNombre() va a valer nuevoMonto.getMonto()
+
+        notificacionService.notificarActualizacionMonto(servicio, grupo, nuevoMontoGrupo);
+
         return nuevoMontoGrupo;
     }
 
-    public void actualizarYCrearVariosNuevosMontos(MontoServicioDTO montoDTO, List<Long> idsGrupos) {
+    public void actualizarYCrearVariosNuevosMontos(MontoServicioDTO montoDTO, List<Long> idsGrupos, Long idServicio) {
         List<Grupo> grupos = new ArrayList<>();
+        Servicio servicio = servicioService.findServicio(idServicio);
 
         // Verificamos que sea valido modificar el monto de todos los grupos que nos llegan en la lista de ids
         // Si pueden ser modificados los agregamos a la lista de grupos
         for (Long idGrupo : idsGrupos) {
-            Grupo grupo = this.findGrupo(idGrupo);
+            Grupo grupo = servicio.obtenerGrupoConEsteId(idGrupo);
+
             if (grupo.tieneMontoProgramadoFuturo()) {
                 throw new UnsupportedOperationException("El grupo ya tiene un monto programado. Edite este monto.");
             }
@@ -293,7 +308,7 @@ public class GrupoService implements IGrupoService {
 
         // Ahora sabiendo que a todos los grupos se le puede modificar su monto lo hacemos
         for (Grupo grupo : grupos) {
-            this.actualizarYCrearNuevoMonto(montoDTO, grupo.getId());
+            this.actualizarYCrearNuevoMonto(montoDTO, grupo.getId(), idServicio);
         }
     }
 

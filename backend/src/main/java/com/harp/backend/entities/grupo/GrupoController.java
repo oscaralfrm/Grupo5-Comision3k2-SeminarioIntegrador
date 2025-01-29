@@ -112,7 +112,7 @@ public class GrupoController {
             @RequestBody MontoServicioDTO montoServicioDTO) {
 
         // Llama a servicioService para gestionar la actualización y creación del nuevo monto
-        MontoServicio nuevoMontoServicio = grupoService.actualizarYCrearNuevoMonto(montoServicioDTO, idGrupo);
+        MontoServicio nuevoMontoServicio = grupoService.actualizarYCrearNuevoMonto(montoServicioDTO, idGrupo, idServicio);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoMontoServicio);
     }
@@ -123,9 +123,9 @@ public class GrupoController {
             @RequestBody GruposMontoDTO gruposMontoDTO) {
 
         // Llama a servicioService para gestionar la actualización y creación del nuevo monto
-        grupoService.actualizarYCrearVariosNuevosMontos(gruposMontoDTO.getMontoDTO(), gruposMontoDTO.getIdsGrupos());
+        grupoService.actualizarYCrearVariosNuevosMontos(gruposMontoDTO.getMontoDTO(), gruposMontoDTO.getIdsGrupos(), idServicio);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Se han actializado los montos de todos los grupos.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Se han actualizado los montos de todos los grupos.");
     }
 
     @GetMapping("/{idServicio}/grupos/{idGrupo}/monto-actual")

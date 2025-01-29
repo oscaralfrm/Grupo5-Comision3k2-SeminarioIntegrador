@@ -18,6 +18,6 @@ public interface ICuotaService {
     public void deleteCuota(Long idCuota);
     public Cuota findCuota(Long idCuota);
     public Cuota crearPrimerCuotaConEstrategia(Inscripcion inscripcionExistente, Servicio servicio);
-    public void pagarCuota(Long idCuota, String metodoPago);
+    public void pagarCuota(Long idServicio, Long idInscripcion, Long idCuota, String metodoPago);
     public void anularCuota(Long idCuota);
 }

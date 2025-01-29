@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InscripcionDTO {
+    private Long idAlumno;
     private Long idGrupo;
     private List<Long> idsHorarios;
 }

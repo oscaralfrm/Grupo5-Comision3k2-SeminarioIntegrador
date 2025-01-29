@@ -1,5 +1,6 @@
 package com.harp.backend.entities.notificacion;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.servicio.Servicio;
@@ -23,25 +24,29 @@ public class Notificacion {
 
     @ManyToOne
     @JoinColumn(name = "servicio_id")
+    @JsonIgnore
     private Servicio servicio;
 
     // O es para alumno o es para instructor
     // como era el obsever
     // creabas la I observer concreta, la suscribias
     // enviarNotificacion(destinatario, titulo, mensaje, )
-    // tenemos para cambios en el monto de la cuota
-    // cuando esta por vencerse la cuota o se vencio
-    // cuando un alumno pago una cuota
-    // cuando le aceptaron o rechazaron la solicitud al alumno
+    // tenemos para cambios en el monto de la cuota: LISTO
+    // cuando esta por vencerse la cuota:
+    // cuando una cuota se vencio: LISTO
+    // cuando un alumno pago una cuota: LISTO
+    // cuando le aceptaron o rechazaron la solicitud al alumno: LISTO
     // cuando un alumno hace 3 clases que no asiste
 
 
     @ManyToOne
     @JoinColumn(name = "alumno_id")
+    @JsonIgnore
     private Alumno alumnoDestinatario;
 
     @ManyToOne
     @JoinColumn(name = "instructor_id")
+    @JsonIgnore
     private Instructor instructorDestinatario;
 
     private String titulo;

@@ -81,7 +81,7 @@ public class InstructorService implements IInstructorService {
 
         instructorExistente.getUsuario().setNombre(instructorDTO.getNombre());
         instructorExistente.getUsuario().setApellido(instructorDTO.getApellido());
-        instructorExistente.getUsuario().setEmail(instructorDTO.getEmail());
+        //instructorExistente.getUsuario().setEmail(instructorDTO.getEmail());
         instructorExistente.getUsuario().setTelefono(instructorDTO.getTelefono());
         instructorExistente.getUsuario().setDireccion(instructorDTO.getDireccion());
         instructorExistente.getUsuario().setContrasena(instructorDTO.getContrasena());
@@ -111,6 +111,14 @@ public class InstructorService implements IInstructorService {
             }
         }
         throw new UnsupportedOperationException("El usuario o la contraseña es incorrecto.");
+    }
+
+    public Instructor findInstructorDeEsteServicio(Servicio servicio) {
+        return this.getAllInstructores()
+                .stream()
+                .filter(i -> i.tieneEsteServicio(servicio))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementFoundException("No se encontró el instructor del servicio."));
     }
 
 }

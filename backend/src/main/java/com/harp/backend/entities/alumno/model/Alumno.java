@@ -99,6 +99,12 @@ public class Alumno {
         return inscripciones.stream().map(Inscripcion::obtenerUltimaCuota).toList();
     }
 
+    public List<Cuota> obtenerCuotasPendientesDeEsteServicio(Servicio servicio) {
+        // obtengo la ultima cuota de cada inscripcion
+        Inscripcion inscripcion = this.obtenerInscripcionDeEsteServicio(servicio);
+        return inscripcion.obtenerCuotasPendientes();
+    }
+
     public List<Cuota> obtenerHistorialCuotasEsteServicio(Servicio servicio) {
         for (Inscripcion inscripcion : inscripciones) {
             if (inscripcion.esDeEsteServicio(servicio)){
@@ -124,6 +130,10 @@ public class Alumno {
             }
         }
         throw new NoSuchElementFoundException("El alumno no está inscripto a ese servicio");
+    }
+
+    public String getNombreCompleto() {
+        return usuario.getNombre() + " " + usuario.getApellido();
     }
 
 }
