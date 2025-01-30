@@ -18,7 +18,9 @@ import Dashboard from "./Components/Instructor/MisServicios/MisServicios.jsx";
 import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/Grupos.jsx";
 import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Configuracion.jsx";
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
+import DescubrirServicios from "./Components/Alumno/DescubrirServicios.jsx";
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
+
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
 function App() {
@@ -26,6 +28,7 @@ function App() {
     <div className="d-flex flex-column min-vh-100">
       <BrowserRouter>
         <Routes>
+          
           <Route path="/" element={<><AppNavbar /><PaginaDeInicio /></>} />
           <Route path="login" element={<><AppNavbar /><LoginForm /></>} />
           <Route path="registro" element={<><AppNavbar /><RegisterFormChooser /></>} />
@@ -34,6 +37,9 @@ function App() {
             element={<><AppNavbar /><RegisterFormInstructor /></>}
           />
           <Route path="registro/alumno" element={<><AppNavbar /><RegisterFormStudent /></>} />
+
+          // Para instructor...
+
           <Route
             path="instructor/:idInstructor/crear-servicio"
             element={<><AppNavbar /><ServicioForm /></>}
@@ -73,9 +79,13 @@ function App() {
           />
 
 
-          /* Componente de Creación de Grupos. Observar que se puede llegar al mismo por varias rutas. Una desde la creación del servicio y otra 
-          desde la configuración.
-           */
+          // Para alumnos...
+
+
+          <Route 
+            path="alumno/:idAlumno/servicios" 
+            element={<><AppNavbar /><DescubrirServicios /></>} 
+          />
 
           <Route path= "instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo/></>}/>
           {/* <Route path="instructor/:idInstructor/servicio/:idServicio/configuracion/crear-grupo" element={<><AppNavbar /><CrearGrupo /></>} /> */}

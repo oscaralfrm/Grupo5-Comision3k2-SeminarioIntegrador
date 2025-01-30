@@ -64,11 +64,9 @@ export const deleteInstructor = async (idInstructor) => {
   }
 };
 
-export const editInstructor = async (idInstructor, nombre, apellido, dni, nombreUsuario, contrasena, 
-  email, telefono, direccion, fechaNacimiento) => {
+export const editInstructor = async (idInstructor, nombre, apellido, dni,email,contrasena, telefono, fechaNacimiento) => {
   try {
-    const response = await axios.put(`${BASE_URL}/${idInstructor}`, {nombre, apellido, dni, nombreUsuario, contrasena, 
-      email, telefono, direccion, fechaNacimiento});
+    const response = await axios.put(`${BASE_URL}/${idInstructor}`, {nombre, apellido, dni,email, contrasena, telefono, fechaNacimiento});
     return response.data;
   } catch (error) {
     console.error(`Error editing instructor with ID ${idInstructor}:`, error);
@@ -88,3 +86,22 @@ export const iniciarSesion = async (email, contrasena) => {
   }
 };
 
+export const getAllServicios = async () => {
+  try {
+    const instructores = await getAllInstructores();
+    const servicios = await Promise.all(
+      instructores.map(async (instructor) => {
+        const serviciosInstructor = await getServiciosDeInstructor(instructor.id);
+        return serviciosInstructor.map((servicio) => ({
+          ...servicio,
+          instructorId: instructor.id,
+          instructorNombre: instructor.nombre,
+        }));
+      })
+    );
+    return servicios.flat();
+  } catch (error) {
+    console.error('Error al obtener servicios:', error);
+    throw error;
+  }
+};

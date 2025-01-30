@@ -1,12 +1,12 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Navbar, Dropdown } from "react-bootstrap";
 import img from "../../assets/LogoHarp420.png"; // Ruta del logo
 import profileImg from "../../assets/profile.png"; // Ruta de la imagen de perfil
 
 export default function NavbarSimple() {
   const navigate = useNavigate();
-
+  const {idInstructor} = useParams();
   const handleLogoClick = () => {
     navigate("/");
   };

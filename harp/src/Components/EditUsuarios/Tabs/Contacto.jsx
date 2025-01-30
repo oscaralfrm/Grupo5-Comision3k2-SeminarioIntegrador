@@ -19,6 +19,7 @@ export default function Contacto({
           name="email"
           className={`form-control ${errors?.email ? "is-invalid" : ""}`}
           placeholder="Email"
+          readOnly 
           defaultValue={data?.email || ""} 
           {...register("email", {
             required: "El email es obligatorio",
