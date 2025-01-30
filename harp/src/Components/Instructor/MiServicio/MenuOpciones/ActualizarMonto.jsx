@@ -96,7 +96,7 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
         console.log(`Enviando a backend (varios grupos) -> URL: http://localhost:9001/api/servicios/${idServicio}/grupos/monto`);
         console.log('Body:', requestBody);
   
-        await actualizarMontosVariosGrupos(idServicio, idsGrupos, requestBody);
+        await actualizarMontosVariosGrupos(idServicio, idsGrupos, montoDTO);
       }
   
       alert('Montos actualizados con éxito');

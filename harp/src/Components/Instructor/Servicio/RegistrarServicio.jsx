@@ -48,25 +48,45 @@ export default function ServicioForm() {
     fetchCategorias();
   }, []);
 
+  function obtenerValoresCiclo(frecuenciaCuotas, duracionCuotasPersonalizada) {
+    switch (frecuenciaCuotas) {
+      case "mensual":
+        return { cantidad: 1, unidad: "MONTHS" };
+  
+      case "semanal":
+        return { cantidad: 1, unidad: "WEEKS" };
+  
+      case "diario":
+        return { cantidad: 1, unidad: "DAYS" };
+  
+      case "OTROS":
+        if (duracionCuotasPersonalizada % 7 === 0) {
+          return { cantidad: duracionCuotasPersonalizada / 7, unidad: "WEEKS" };
+        } else {
+          return { cantidad: duracionCuotasPersonalizada, unidad: "DAYS" };
+        }
+  
+      default:
+        throw new Error("Frecuencia de cobro no válida");
+    }
+  }
+
   const onSubmit = async (data) => {
+    const ciclo = obtenerValoresCiclo( data.frecuenciaCuotas,data.duracionCuotasPersonalizada);
     const servicioDTO = {
       nombre: data.nombreServicio,
       idInstructor: idInstructor,
       descripcion: data.descripcion,
       ubicacion: data.ubicacion,
       categoria: data.categoria,
-      frecuenciaPagoId:
-        data.frecuenciaCuotas === "mensual"
-          ? data.ciclos === "Mismas Fechas"
-            ? 1
-            : 2
-          : null,
+      tipoCiclo:
+        data.ciclos === "Mismas Fechas"
+          ? "SegunCalendario"
+          : "SegunInscripcion",
       diaLimitePago:
         data.frecuenciaCuotas === "mensual" ? data.fechaLimitePago : null,
-      cantDiasCiclo:
-        data.frecuenciaCuotas === "otros"
-          ? data.duracionCuotasPersonalizada
-          : null,
+      cantCiclo: ciclo.cantidad,
+      unidadCiclo: ciclo.unidad,
       tipoModalidad:
         data.divideEnGrupos === "Sin clases" ? "AServicio" : "AGrupo",
       claseDePrueba: data.clasePrueba === "sí" ? true : false,

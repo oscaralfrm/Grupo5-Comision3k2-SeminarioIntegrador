@@ -14,9 +14,9 @@ export const obtenerCuotasDeServicio = async (idServicio) => {
 };
 
 // Servicio para pagar una cuota
-export const pagarCuota = async (idServicio, idCuota, metodoPago) => {
+export const pagarCuota = async (idServicio, idInscripcion, idCuota, metodoPago) => {
   try {
-    const response = await axios.put(`${baseUrl}/${idServicio}/cuotas/${idCuota}/pagar`, { nombre: metodoPago });
+    const response = await axios.put(`${baseUrl}/${idServicio}/inscripciones/${idInscripcion}/cuotas/${idCuota}/pagar`, { nombre: metodoPago });
     return response.data; // Devuelve la confirmación del pago
   } catch (error) {
     console.error("Error al pagar la cuota:", error.response?.data?.message || error.message);

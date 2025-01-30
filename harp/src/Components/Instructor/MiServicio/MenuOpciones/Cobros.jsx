@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form, Modal } from "react-bootstrap";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { pagarCuota, obtenerCuotasDeInscripcion } from "../../../../services/Cuota.js";
 import { useParams } from "react-router-dom";
 import { getGruposDeServicio } from "../../../../services/Grupo.js";
@@ -90,9 +90,6 @@ const Cobros = ({ id }) => {
   }, [idServicio, grupos]);
   
 
-  // Obtener cuotas
-  // Obtener cuotas
-useEffect(() => {
   const fetchCuotas = async () => {
     try {
       if (inscripciones.length === 0) return;
@@ -106,6 +103,7 @@ useEffect(() => {
               { ...alumno, nombreGrupo: grupo ? grupo.nombre : "Sin Grupo" },
               cuotas.map((cuota) => ({
                 ...cuota,
+                idInscripcion: id,
                 cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
               })),
             ];
@@ -122,6 +120,9 @@ useEffect(() => {
     }
   }
 
+  // Obtener cuotas
+  // Obtener cuotas
+useEffect(() => {
     if (inscripciones.length > 0) {
       fetchCuotas();
     }
@@ -143,13 +144,13 @@ useEffect(() => {
 
   // Funciones de manejo de pagos
   // En tu componente Cobros
-  const handleShowPaymentHistory = async (student) => {
+  const handleShowPaymentHistory = async (student, cuota) => {
     setSelectedStudent(student);
     setShowPaymentHistory(true);
 
     // Llamar al servicio para obtener el historial de cuotas
     try {
-      const historial = await getHistorialCuotasDeAlumno(student.id, idServicio); // Suponiendo que student tiene id
+      const historial = await getHistorialCuotasDeAlumno(cuota.idInscripcion, idServicio); // Suponiendo que student tiene id
       setSelectedStudent((prevStudent) => ({
         ...prevStudent,
         historialPagos: historial, // Agregar el historial a la información del alumno
@@ -167,7 +168,7 @@ useEffect(() => {
 
   const handleSavePayment = () => {
     try {
-      pagarCuota(idServicio, paymentMethod, selectedCuota.id);
+      pagarCuota(idServicio, selectedCuota.idInscripcion, selectedCuota.id, paymentMethod);
       fetchCuotas();
     } catch (error) {
       console.error("Error al guardar el pago:", error);
@@ -181,7 +182,10 @@ useEffect(() => {
   };
 
   // Formato de fecha
-  const formatDate = (date) => format(new Date(date), "dd/MM/yyyy");
+  const formatDate = (dateString) => {
+    const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date correctamente
+    return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
+  };
 
   return (
     <div
@@ -314,7 +318,7 @@ useEffect(() => {
                         textDecoration: "none",
                         fontSize: "14px",
                       }}
-                      onClick={() => handleShowPaymentHistory(student)}
+                      onClick={() => handleShowPaymentHistory(student, cuota)}
                     >
                       Historial de Pago
                     </Button>
