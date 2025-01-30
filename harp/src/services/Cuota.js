@@ -2,24 +2,46 @@ import axios from './axiosConfig.js';
 
 const baseUrl = '/servicios';
 
-// Crear una categoría
-export const traerUltimasCuotasDeServicio = async (idServicio) => {
+// Servicio para obtener todas las cuotas de un servicio
+export const obtenerCuotasDeServicio = async (idServicio) => {
   try {
-    const response = await axios.get(`${baseUrl}/${idServicio}/alumnos/cuotas`);
-    return response.data;
+    const response = await axios.get(`${baseUrl}/${idServicio}/cuotas`);
+    return response.data; // Devuelve todas las cuotas del servicio
   } catch (error) {
-    console.error("Error al buscar las cuotas:", error);
-    throw error;
+    console.error("Error al obtener las cuotas del servicio:", error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || "Error al obtener las cuotas del servicio");
   }
 };
 
-// hacer el pagar, y el anular
-export const pagarCuota = async (idServicio, nombre, idCuota) => {
+// Servicio para pagar una cuota
+export const pagarCuota = async (idServicio, idCuota, metodoPago) => {
   try {
-    const response = await axios.put(`${baseUrl}/${idServicio}/cuotas/${idCuota}/pagar`, {nombre});
-    return response.data;
+    const response = await axios.put(`${baseUrl}/${idServicio}/cuotas/${idCuota}/pagar`, { nombre: metodoPago });
+    return response.data; // Devuelve la confirmación del pago
   } catch (error) {
-    console.error("Error al pagar la cuota:", error);
-    throw error;
+    console.error("Error al pagar la cuota:", error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || "Error al pagar la cuota");
+  }
+};
+
+// Servicio para obtener las cuotas de una inscripción
+export const obtenerCuotasDeInscripcion = async (idServicio, idInscripcion) => {
+  try {
+    const response = await axios.get(`${baseUrl}/${idServicio}/inscripciones/${idInscripcion}/cuotas`);
+    return response.data; // Devuelve las cuotas de la inscripción
+  } catch (error) {
+    console.error("Error al obtener las cuotas de la inscripción:", error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || "Error al obtener las cuotas de la inscripción");
+  }
+};
+
+// Servicio para traer las últimas cuotas de alumnos (ya existente)
+export const traerUltimasCuotasDeServicio = async (idServicio) => {
+  try {
+    const response = await axios.get(`${baseUrl}/${idServicio}/alumnos/cuotas`);
+    return response.data; // Devuelve las últimas cuotas de los alumnos del servicio
+  } catch (error) {
+    console.error("Error al buscar las últimas cuotas:", error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || "Error al buscar las últimas cuotas");
   }
 };

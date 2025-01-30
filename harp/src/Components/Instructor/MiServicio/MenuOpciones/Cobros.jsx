@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form, Modal } from "react-bootstrap";
 import { format } from "date-fns";
-import { pagarCuota, traerUltimasCuotasDeServicio } from "../../../../services/Cuota.js";
+import { pagarCuota, obtenerCuotasDeInscripcion } from "../../../../services/Cuota.js";
 import { useParams } from "react-router-dom";
 import { getGruposDeServicio } from "../../../../services/Grupo.js";
-import { getMontosActualesServicio } from "../../../../services/HistorialMontoCuota.js";
+import { getMontoActualGrupo } from "../../../../services/HistorialMontoCuota.js";
 import { getInscripcionesDeServicio } from "../../../../services/Inscripcion.js";
 import ActualizarMontoModal from "./ActualizarMonto.jsx";
 import HistorialPagoModal from "./HistorialPago.jsx";
@@ -64,42 +64,63 @@ const Cobros = ({ id }) => {
 
   // Cargar monto
   useEffect(() => {
-    const fetchMonto = async () => {
+    const fetchMontos = async () => {
       try {
-        const data = await getMontosActualesServicio(idServicio);
-        setMonto(data);
+        if (!grupos || grupos.length === 0) return;
+  
+        const montos = await Promise.all(
+          grupos.map(async (grupo) => {
+            try {
+              const monto = await getMontoActualGrupo(idServicio, grupo.id);
+              return { idGrupo: grupo.id, nombreGrupo: grupo.nombre, monto };
+            } catch (error) {
+              console.error(`Error al obtener el monto del grupo ${grupo.id}:`, error);
+              return null;
+            }
+          })
+        );
+  
+        setMonto(montos.filter(Boolean)); // Filtra valores nulos
       } catch (error) {
-        console.error("Error al traer los servicios del instructor:", error);
+        console.error("Error al traer los montos de los grupos:", error);
       }
     };
-    fetchMonto();
-  }, []);
+  
+    fetchMontos();
+  }, [idServicio, grupos]);
+  
 
   // Obtener cuotas
-  useEffect(() => {
-    const fetchCuotas = async () => {
-      try {
-        const data = await traerUltimasCuotasDeServicio(idServicio);
-        if (inscripciones.length === 0) return;
+  // Obtener cuotas
+useEffect(() => {
+  const fetchCuotas = async () => {
+    try {
+      if (inscripciones.length === 0) return;
 
-        const cuotasConGrupo = data.map(([alumno, cuotas]) => {
-          const inscripcion = inscripciones.find((ins) => ins.alumno.id === alumno.id);
-          const grupoNombre = inscripcion ? inscripcion.grupo.nombre : "Sin Grupo";
+      const cuotasConGrupo = await Promise.all(
+        inscripciones.map(async (inscripcion) => {
+          const { alumno, grupo, id } = inscripcion;
+          try {
+            const cuotas = await obtenerCuotasDeInscripcion(idServicio, id);
+            return [
+              { ...alumno, nombreGrupo: grupo ? grupo.nombre : "Sin Grupo" },
+              cuotas.map((cuota) => ({
+                ...cuota,
+                cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
+              })),
+            ];
+          } catch (error) {
+            console.error(`Error al obtener cuotas para el alumno ${alumno.id}:`, error);
+            return null;
+          }
+        })
+      );
 
-          return [
-            { ...alumno, nombreGrupo: grupoNombre },
-            cuotas.map((cuota) => ({
-              ...cuota,
-              cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
-            })),
-          ];
-        });
-
-        setCuotas(cuotasConGrupo);
-      } catch (error) {
-        console.error("Error al traer las cuotas:", error);
-      }
-    };
+      setCuotas(cuotasConGrupo.filter(Boolean)); // Filtra los resultados nulos
+    } catch (error) {
+      console.error("Error al traer las cuotas:", error);
+    }
+  }
 
     if (inscripciones.length > 0) {
       fetchCuotas();
@@ -385,6 +406,7 @@ const Cobros = ({ id }) => {
         monto={monto}
         grupos={grupos}
         onSave={handleMontoSave} // Pasas la función aquí
+        idServicio={idServicio}
       />
       <HistorialPagoModal
         show={showPaymentHistory}

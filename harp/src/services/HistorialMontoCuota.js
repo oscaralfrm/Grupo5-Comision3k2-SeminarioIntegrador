@@ -63,3 +63,49 @@ export const editarMontoServicio = async (idMonto, monto, fechaInicio, cantVeces
         throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
+
+// Nuevo de montos con grupos 
+
+// Servicio para obtener el historial de montos de un grupo
+export const getHistorialMontosGrupo = async (idServicio, idGrupo) => {
+    try {
+        const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/historial-montos`);
+        return response.data; // Devuelve el historial de montos
+    } catch (error) {
+        console.error('Error al obtener el historial de montos:', error.response?.data?.message || error.message);
+        throw new Error(error.response?.data?.message || 'Error al obtener el historial de montos');
+    }
+};
+
+// Servicio para actualizar los precios de varios grupos
+export const actualizarMontosVariosGrupos = async (idServicio, idsGrupos, montoDTO) => {
+    try {
+        const response = await axios.post(`${API_URL}/${idServicio}/grupos/monto`, { idsGrupos, montoDTO });
+        return response.data; // Devuelve la confirmación de la operación
+    } catch (error) {
+        console.error('Error al actualizar los montos de varios grupos:', error.response?.data?.message || error.message);
+        throw new Error(error.response?.data?.message || 'Error al actualizar los montos de varios grupos');
+    }
+};
+
+// Servicio para actualizar el precio de un solo grupo
+export const actualizarMontoGrupo = async (idServicio, idGrupo, monto, fechaInicio) => {
+    try {
+        const response = await axios.post(`${API_URL}/${idServicio}/grupos/${idGrupo}/monto`, { monto, fechaInicio });
+        return response.data; // Devuelve la confirmación de la operación
+    } catch (error) {
+        console.error('Error al actualizar el monto del grupo:', error.response?.data?.message || error.message);
+        throw new Error(error.response?.data?.message || 'Error al actualizar el monto del grupo');
+    }
+};
+
+// Servicio para obtener el monto actual de un grupo
+export const getMontoActualGrupo = async (idServicio, idGrupo) => {
+    try {
+        const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/monto-actual`);
+        return response.data; // Devuelve el monto actual
+    } catch (error) {
+        console.error('Error al obtener el monto actual del grupo:', error.response?.data?.message || error.message);
+        throw new Error(error.response?.data?.message || 'Error al obtener el monto actual del grupo');
+    }
+};

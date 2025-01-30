@@ -1,8 +1,8 @@
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { useState } from 'react';
-import { editarMontoServicio } from '../../../../services/HistorialMontoCuota';
+import { actualizarMontoGrupo, actualizarMontosVariosGrupos } from '../../../../services/HistorialMontoCuota';
 
-const ActualizarMontoModal = ({ grupos, show, onClose }) => {
+const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
   if (!grupos || grupos.length === 0) {
     return (
       <Modal show={show} onHide={onClose} centered>
@@ -21,39 +21,41 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
     );
   }
 
-  const [selectedGroups, setSelectedGroups] = useState([]); // IDs de los grupos seleccionados
+  const [selectedGroups, setSelectedGroups] = useState([]);
   const [newMonto, setNewMonto] = useState('');
   const [vigencia, setVigencia] = useState('');
-  const [pendingUpdates, setPendingUpdates] = useState([]); // [{ grupoId, nombre, monto, vigencia }]
+  const [pendingUpdates, setPendingUpdates] = useState([]);
 
   const handleAddUpdate = () => {
     if (!newMonto || !vigencia) {
       alert('Por favor, ingresa un monto y una fecha de vigencia válida.');
       return;
     }
-
+  
     const fechaActual = new Date().toISOString().split('T')[0];
     if (new Date(vigencia) < new Date(fechaActual)) {
       alert('La fecha de vigencia no puede ser menor a la fecha actual.');
       return;
     }
-
+  
+    console.log("Fecha actual:", fechaActual);
+    console.log("Fecha de vigencia seleccionada:", vigencia); // Verificar la fecha seleccionada
+  
     const newUpdates = selectedGroups.map((grupoId) => {
       const grupo = grupos.find((g) => g.id === grupoId);
-      return {
-        grupoId,
-        nombre: grupo?.nombre || 'Grupo desconocido',
-        monto: parseFloat(newMonto),
-        vigencia,
+      return { 
+        grupoId, 
+        nombre: grupo?.nombre || 'Grupo desconocido', 
+        monto: parseFloat(newMonto), 
+        vigencia: vigencia // Verificar la vigencia aquí también
       };
     });
-
+  
     setPendingUpdates((prev) => [...prev, ...newUpdates]);
     setSelectedGroups([]);
     setNewMonto('');
     setVigencia('');
   };
-
   const handleRemoveUpdate = (grupoId) => {
     setPendingUpdates((prev) => prev.filter((update) => update.grupoId !== grupoId));
   };
@@ -63,14 +65,40 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
       alert('No hay cambios para guardar.');
       return;
     }
-
+  
+    const fechaMinima = new Date();
+    fechaMinima.setDate(fechaMinima.getDate() + 1); // Fecha mínima es el día siguiente
+    const fechaInicio = new Date(vigencia);
+  
+    if (fechaInicio < fechaMinima) {
+      alert('La fecha de vigencia debe ser al menos para el día siguiente.');
+      return;
+    }
+  
     try {
-      await Promise.all(
-        pendingUpdates.map(({ grupoId, monto, vigencia }) =>
-          editarMontoServicio(grupoId, monto, vigencia)
-        )
-      );
-
+      if (pendingUpdates.length === 1) {
+        // Actualizar un solo grupo
+        const { grupoId, monto } = pendingUpdates[0];
+        const requestBody = { 
+          monto: parseFloat(monto), 
+          fechaInicio: new Date(vigencia).toISOString().split('T')[0] // Formato correcto de fecha
+        };
+        console.log(`Enviando a backend (1 grupo) -> URL: http://localhost:9001/api/servicios/${idServicio}/grupos/${grupoId}/monto`);
+        console.log('Body:', requestBody);
+  
+        await actualizarMontoGrupo(idServicio, grupoId, requestBody);
+      } else {
+        // Actualizar varios grupos
+        const idsGrupos = pendingUpdates.map((update) => update.grupoId);
+        const montoDTO = { monto: parseFloat(newMonto), fechaInicio: new Date(vigencia).toISOString().split('T')[0] }; // Formato correcto de fecha
+        const requestBody = { idsGrupos, montoDTO };
+  
+        console.log(`Enviando a backend (varios grupos) -> URL: http://localhost:9001/api/servicios/${idServicio}/grupos/monto`);
+        console.log('Body:', requestBody);
+  
+        await actualizarMontosVariosGrupos(idServicio, idsGrupos, requestBody);
+      }
+  
       alert('Montos actualizados con éxito');
       onClose();
     } catch (error) {
@@ -78,14 +106,7 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
       alert('Hubo un error al actualizar los montos.');
     }
   };
-
-  const handleGroupSelection = (grupoId) => {
-    setSelectedGroups((prev) =>
-      prev.includes(grupoId)
-        ? prev.filter((id) => id !== grupoId)
-        : [...prev, grupoId]
-    );
-  };
+  
 
   return (
     <Modal show={show} onHide={onClose} centered>
@@ -105,7 +126,7 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
                 checked={selectedGroups.includes(grupo.id) || pendingUpdates.some((update) => update.grupoId === grupo.id)}
                 onChange={() =>
                   !pendingUpdates.some((update) => update.grupoId === grupo.id) &&
-                  handleGroupSelection(grupo.id)
+                  setSelectedGroups((prev) => prev.includes(grupo.id) ? prev.filter((id) => id !== grupo.id) : [...prev, grupo.id])
                 }
                 disabled={pendingUpdates.some((update) => update.grupoId === grupo.id)}
               />
@@ -128,15 +149,14 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
               type="date"
               min={new Date().toISOString().split('T')[0]}
               value={vigencia}
-              onChange={(e) => setVigencia(e.target.value)}
+              onChange={(e) => {
+                setVigencia(e.target.value);
+                console.log("Fecha seleccionada:", e.target.value);  // Agregar el console log aquí
+              }}
             />
           </Form.Group>
 
-          <Button
-            variant="primary"
-            onClick={handleAddUpdate}
-            disabled={selectedGroups.length === 0 || !newMonto || !vigencia}
-          >
+          <Button variant="primary" onClick={handleAddUpdate} disabled={selectedGroups.length === 0 || !newMonto || !vigencia}>
             Agregar
           </Button>
         </Form>
@@ -148,11 +168,7 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
               {pendingUpdates.map(({ grupoId, nombre, monto, vigencia }) => (
                 <li key={grupoId} className="list-group-item d-flex justify-content-between align-items-center">
                   {nombre} - Monto: ${monto.toFixed(2)} - Vigencia: {vigencia}
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleRemoveUpdate(grupoId)}
-                  >
+                  <Button variant="danger" size="sm" onClick={() => handleRemoveUpdate(grupoId)}>
                     Eliminar
                   </Button>
                 </li>
@@ -162,14 +178,8 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
-          Cancelar
-        </Button>
-        <Button
-          variant="primary"
-          onClick={handleSaveMontos}
-          disabled={pendingUpdates.length === 0}
-        >
+        <Button variant="secondary" onClick={onClose}>Cancelar</Button>
+        <Button variant="primary" onClick={handleSaveMontos} disabled={pendingUpdates.length === 0}>
           Guardar todos
         </Button>
       </Modal.Footer>

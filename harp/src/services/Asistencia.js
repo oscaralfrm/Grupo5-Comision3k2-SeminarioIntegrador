@@ -50,15 +50,17 @@ export const createAsistencia = async (idClase) => {
 
 
 // Servicio para editar una asistencia existente
-export const editAsistencia = async (idAsistencia, asistio, observaciones) => {
+export const editAsistenciasClase = async (idClase, asistencias) => {
     try {
-        const response = await axios.put(`${API_URL}/asistencias/${idAsistencia}`, {asistio, observaciones});
-        return response.data;  // Suponiendo que la respuesta es la asistencia editada
+        const response = await axios.put(`${API_URL}/grupos/clases/${idClase}/asistencias`, asistencias);
+        return response.data; // Suponiendo que la respuesta es una confirmación o las asistencias actualizadas
     } catch (error) {
-        console.error("Error editing asistencia: ", error);
-        throw error;
+        console.error("Error editing asistencias: ", error.response?.data?.message || error.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage);
     }
 };
+
 
 // Servicio para eliminar una asistencia por su ID
 export const deleteAsistencia = async (idAsistencia) => {
