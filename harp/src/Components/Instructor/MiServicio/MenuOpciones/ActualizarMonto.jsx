@@ -1,6 +1,9 @@
-import { Modal, Button, Form } from 'react-bootstrap';
-import { useState } from 'react';
-import { actualizarMontoGrupo, actualizarMontosVariosGrupos } from '../../../../services/HistorialMontoCuota';
+import { Modal, Button, Form } from "react-bootstrap";
+import { useState } from "react";
+import {
+  actualizarMontoGrupo,
+  actualizarMontosVariosGrupos,
+} from "../../../../services/HistorialMontoCuota";
 
 const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
   if (!grupos || grupos.length === 0) {
@@ -21,92 +24,71 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
     );
   }
 
-  const [selectedGroups, setSelectedGroups] = useState([]);
-  const [newMonto, setNewMonto] = useState('');
-  const [vigencia, setVigencia] = useState('');
   const [pendingUpdates, setPendingUpdates] = useState([]);
+  const [selectedGroups, setSelectedGroups] = useState([]);
+  const [newMonto, setNewMonto] = useState("");
+  const [vigencia, setVigencia] = useState("");
 
   const handleAddUpdate = () => {
-    if (!newMonto || !vigencia) {
-      alert('Por favor, ingresa un monto y una fecha de vigencia válida.');
+    if (!newMonto || !vigencia || selectedGroups.length === 0) {
+      alert("Por favor, ingresa un monto, una fecha de vigencia válida y selecciona al menos un grupo.");
       return;
     }
-  
-    const fechaActual = new Date().toISOString().split('T')[0];
-    if (new Date(vigencia) < new Date(fechaActual)) {
-      alert('La fecha de vigencia no puede ser menor a la fecha actual.');
+
+    const fechaActual = new Date().toISOString().split("T")[0];
+
+    if (vigencia <= fechaActual) {
+      alert("La fecha de vigencia debe ser mayor a la fecha actual.");
       return;
     }
-  
-    console.log("Fecha actual:", fechaActual);
-    console.log("Fecha de vigencia seleccionada:", vigencia); // Verificar la fecha seleccionada
-  
-    const newUpdates = selectedGroups.map((grupoId) => {
-      const grupo = grupos.find((g) => g.id === grupoId);
-      return { 
-        grupoId, 
-        nombre: grupo?.nombre || 'Grupo desconocido', 
-        monto: parseFloat(newMonto), 
-        vigencia: vigencia // Verificar la vigencia aquí también
-      };
-    });
-  
-    setPendingUpdates((prev) => [...prev, ...newUpdates]);
+
+    const newUpdate = {
+      idsGrupos: [...selectedGroups],
+      montoDTO: {
+        monto: parseFloat(newMonto),
+        fechaInicio: vigencia, // Directamente en formato YYYY-MM-DD
+      },
+    };
+
+    setPendingUpdates((prev) => [...prev, newUpdate]);
     setSelectedGroups([]);
-    setNewMonto('');
-    setVigencia('');
+    setNewMonto("");
+    setVigencia("");
   };
-  const handleRemoveUpdate = (grupoId) => {
-    setPendingUpdates((prev) => prev.filter((update) => update.grupoId !== grupoId));
+
+  const handleRemoveUpdate = (index) => {
+    setPendingUpdates((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSaveMontos = async () => {
     if (pendingUpdates.length === 0) {
-      alert('No hay cambios para guardar.');
+      alert("No hay cambios para guardar.");
       return;
     }
-  
-    const fechaMinima = new Date();
-    fechaMinima.setDate(fechaMinima.getDate() + 1); // Fecha mínima es el día siguiente
-    const fechaInicio = new Date(vigencia);
-  
-    if (fechaInicio < fechaMinima) {
-      alert('La fecha de vigencia debe ser al menos para el día siguiente.');
-      return;
-    }
-  
+
     try {
-      if (pendingUpdates.length === 1) {
-        // Actualizar un solo grupo
-        const { grupoId, monto } = pendingUpdates[0];
-        const requestBody = { 
-          monto: parseFloat(monto), 
-          fechaInicio: new Date(vigencia).toISOString().split('T')[0] // Formato correcto de fecha
-        };
-        console.log(`Enviando a backend (1 grupo) -> URL: http://localhost:9001/api/servicios/${idServicio}/grupos/${grupoId}/monto`);
-        console.log('Body:', requestBody);
-  
-        await actualizarMontoGrupo(idServicio, grupoId, requestBody);
-      } else {
-        // Actualizar varios grupos
-        const idsGrupos = pendingUpdates.map((update) => update.grupoId);
-        const montoDTO = { monto: parseFloat(newMonto), fechaInicio: new Date(vigencia).toISOString().split('T')[0] }; // Formato correcto de fecha
-        const requestBody = { idsGrupos, montoDTO };
-  
-        console.log(`Enviando a backend (varios grupos) -> URL: http://localhost:9001/api/servicios/${idServicio}/grupos/monto`);
-        console.log('Body:', requestBody);
-  
-        await actualizarMontosVariosGrupos(idServicio, idsGrupos, montoDTO);
+      for (const update of pendingUpdates) {
+        console.log(`Enviando actualización -> ${JSON.stringify(update)}`);
+        await actualizarMontosVariosGrupos(idServicio, update.idsGrupos, update.montoDTO);
       }
-  
-      alert('Montos actualizados con éxito');
+
+      alert("Montos actualizados con éxito");
       onClose();
     } catch (error) {
-      console.error('Error al actualizar los montos:', error.message);
-      alert('Hubo un error al actualizar los montos.');
+      console.error("Error al actualizar los montos:", error);
+      alert("Hubo un error al actualizar los montos.");
     }
   };
-  
+
+  const pendingGroupIds = pendingUpdates.flatMap(update => update.idsGrupos); // Extraer los IDs de los grupos pendientes de actualización
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   return (
     <Modal show={show} onHide={onClose} centered>
@@ -123,12 +105,15 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
                 type="checkbox"
                 label={grupo.nombre}
                 value={grupo.id}
-                checked={selectedGroups.includes(grupo.id) || pendingUpdates.some((update) => update.grupoId === grupo.id)}
+                checked={selectedGroups.includes(grupo.id)}
                 onChange={() =>
-                  !pendingUpdates.some((update) => update.grupoId === grupo.id) &&
-                  setSelectedGroups((prev) => prev.includes(grupo.id) ? prev.filter((id) => id !== grupo.id) : [...prev, grupo.id])
+                  setSelectedGroups((prev) =>
+                    prev.includes(grupo.id)
+                      ? prev.filter((id) => id !== grupo.id)
+                      : [...prev, grupo.id]
+                  )
                 }
-                disabled={pendingUpdates.some((update) => update.grupoId === grupo.id)}
+                disabled={pendingGroupIds.includes(grupo.id)} // Deshabilitar si el grupo ya está en pendingUpdates
               />
             ))}
           </Form.Group>
@@ -147,12 +132,9 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
             <Form.Label>Fecha de vigencia:</Form.Label>
             <Form.Control
               type="date"
-              min={new Date().toISOString().split('T')[0]}
+              min={new Date().toISOString().split("T")[0]}
               value={vigencia}
-              onChange={(e) => {
-                setVigencia(e.target.value);
-                console.log("Fecha seleccionada:", e.target.value);  // Agregar el console log aquí
-              }}
+              onChange={(e) => setVigencia(e.target.value)}
             />
           </Form.Group>
 
@@ -165,10 +147,13 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
           <div className="mt-4">
             <h5>Cambios pendientes:</h5>
             <ul className="list-group">
-              {pendingUpdates.map(({ grupoId, nombre, monto, vigencia }) => (
-                <li key={grupoId} className="list-group-item d-flex justify-content-between align-items-center">
-                  {nombre} - Monto: ${monto.toFixed(2)} - Vigencia: {vigencia}
-                  <Button variant="danger" size="sm" onClick={() => handleRemoveUpdate(grupoId)}>
+              {pendingUpdates.map(({ idsGrupos, montoDTO }, index) => (
+                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                  {/* Mostrar nombres de los grupos */}
+                  Grupos: {idsGrupos.map(id => grupos.find(grupo => grupo.id === id)?.nombre).join(", ")} - 
+                  Monto: ${montoDTO.monto.toFixed(2)} - 
+                  Vigencia: {formatDate(montoDTO.fechaInicio)}
+                  <Button variant="danger" size="sm" onClick={() => handleRemoveUpdate(index)}>
                     Eliminar
                   </Button>
                 </li>
