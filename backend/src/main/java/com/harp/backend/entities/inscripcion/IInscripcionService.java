@@ -16,9 +16,9 @@ public interface IInscripcionService {
     public void deleteInscripcion(Long idInscripcion);
     public Inscripcion findInscripcion(Long idInscripcion);
     //public Inscripcion editInscripcion(Long idInscripcion, InscripcionDTO inscripcionDTO);
-    public void aceptarInscripcion(Long idInstructor, Long idServicio, Long idInscripcion, LocalDate fechaInicioActividad);
+    public void aceptarInscripcion(Long idServicio, Long idInscripcion, LocalDate fechaInicioActividad);
     public void agregarCuotaAInscripcion(Inscripcion inscripcion, Cuota cuotaCreada);
-    public void rechazarInscripcion(Long idInscripcion);
+    public void rechazarInscripcion(Long idInscripcion, String motivo);
     public void finalizarInscripcion(Long idInscripcion);
     //List<Inscripcion> findInscripcionesDeServicio(Long idServicio);
     public List<Cuota> obtenerHistorialCuotasInscripcion(Long idInscripcion);

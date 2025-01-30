@@ -54,12 +54,6 @@ public class ServicioService implements IServicioService {
     @Autowired
     private ClaseService claseService;
 
-//    @Autowired
-//    private IInscripcionService inscripcionService;
-
-//    @Autowired
-//    private AlumnoService alumnoService;
-
     // PAGINADO
     public Page<Servicio> getAllServicios(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);

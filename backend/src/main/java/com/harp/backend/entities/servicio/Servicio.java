@@ -455,7 +455,7 @@ public class Servicio {
         List<List<Object>> alumnosConSusCuotas = new ArrayList<>();
         List<Alumno> alumnosActuales =  this.obtenerAlumnosActuales();
         for (Alumno unAlumno : alumnosActuales) {
-            List<Cuota> susCuotas = unAlumno.obtenerUltimasCuotas();
+            List<Cuota> susCuotas = unAlumno.obtenerCuotasPendientesDeEsteServicio(this);
             List<Object> unAlumnoConSusCuotas = List.of(unAlumno, susCuotas);
             alumnosConSusCuotas.add(unAlumnoConSusCuotas);
         }
