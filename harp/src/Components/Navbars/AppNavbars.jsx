@@ -7,10 +7,11 @@ import NavbarRegisterChooser from '../RegistroSesion/NavbarRegistrerChooser/Navb
 import NavbarServicio from '../Instructor/MiServicio/NavbarInstructor/NavbarServicios/NavbarServicio.jsx';
 import NavbarSimple from './NavbarSimple.jsx';
 import { IoIosLogIn } from 'react-icons/io';
+import NavbarAlumno from './NavbarAlumno.jsx';
 
 const AppNavbar = () => {
   const location = useLocation();
-  const { idInstructor, idServicio } = useParams();
+  const { idInstructor, idServicio, idAlumno } = useParams();
 
   // Define condiciones para mostrar las Navbars
   const isPrincipalRoute = location.pathname === '/';
@@ -21,6 +22,7 @@ const AppNavbar = () => {
   const isCreateServiceRoute = location.pathname === `/instructor/${idInstructor}/crear-servicio`;
   const isNavbarSimple = location.pathname === `/instructor/${idInstructor}/editar-usuario`;
   const isRegisterRoute = location.pathname.startsWith('/registro');
+  const isAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicios`; // Nueva condición para alumnos
 
   return (
     <>
@@ -38,6 +40,10 @@ const AppNavbar = () => {
       {isRegisterRoute && <NavbarRegisterChooser />}
       {isInstructorService && <NavbarServicio /> }
       {isLogin && <NavbarRegisterChooser /> }
+
+      {/* Navbar Placeholder de los Alumnos... */}
+      {isAlumnoRoute && <NavbarAlumno /> }
+
     </>
   );
 };
