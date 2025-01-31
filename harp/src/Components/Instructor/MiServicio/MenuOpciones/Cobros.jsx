@@ -34,7 +34,7 @@ const Cobros = ({ id }) => {
   const idInscripcion = queryParams.get('alumno') || null;  // Si no hay filtro, toma una cadena vacía
 
   const [idInscripcionUrl, setIdInscripcionUrl] = useState(idInscripcion); // Establecer el filtro con el valor de la URL
-  
+
 
   // Funciones para manejar el estado de los modales
   const handleCloseMontoModal = () => setShowMontoModal(false);
@@ -48,14 +48,24 @@ const Cobros = ({ id }) => {
   // Cargar inscripciones
   useEffect(() => {
     const cargarInscripciones = async () => {
-      try {
-        const data = await getInscripcionesDeServicio(idServicio, true, false);
-        setInscripciones(data);
-      } catch (error) {
-        console.error("Error al cargar inscripciones:", error);
+      if (idInscripcionUrl != null) {
+        try {
+          const data = [await traerUnaInscripcion(idInscripcionUrl)];
+          setInscripciones(data);
+        } catch (error) {
+          console.error("Error al cargar inscripciones:", error);
+        }
+      } else {
+        try {
+          const data = await getInscripcionesDeServicio(idServicio, true, false);
+          setInscripciones(data);
+        } catch (error) {
+          console.error("Error al cargar inscripciones:", error);
+        }
       }
     };
     cargarInscripciones();
+    console.log("Inscripciones", inscripciones);
   }, [idServicio]);
 
   // Cargar grupos
@@ -103,27 +113,6 @@ const Cobros = ({ id }) => {
     // SI hay un filtro en la url obtenemos solo una inscripcion y las cuotas de esa incripcion
     try {
       if (inscripciones.length === 0) return;
-
-      if (idInscripcionUrl != null) {
-        const inscripcion = await traerUnaInscripcion(idInscripcionUrl);
-        const { alumno, grupo, id } = inscripcion;
-        try {
-          const cuotas = await obtenerCuotasDeInscripcion(idServicio, idInscripcionUrl);
-          const cuotasConGrupo =  [
-            { ...alumno, nombreGrupo: grupo ? grupo.nombre : "Sin Grupo" },
-            cuotas.map((cuota) => ({
-              ...cuota,
-              idInscripcion: idInscripcionUrl,
-              cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
-            })),
-          ];
-        } catch (error) {
-          console.error(`Error al obtener cuotas para el alumno ${alumno.id}:`, error);
-          return null;
-        }
-      }      
-
-      // Si no hay un idInscripcion en la url entonces usamos todas las inscripciones del servicio
       const cuotasConGrupo = await Promise.all(
         inscripciones.map(async (inscripcion) => {
           const { alumno, grupo, id } = inscripcion;
@@ -143,7 +132,6 @@ const Cobros = ({ id }) => {
           }
         })
       );
-
       setCuotas(cuotasConGrupo.filter(Boolean)); // Filtra los resultados nulos
     } catch (error) {
       console.error("Error al traer las cuotas:", error);
@@ -153,9 +141,7 @@ const Cobros = ({ id }) => {
   // Obtener cuotas
   // Obtener cuotas
   useEffect(() => {
-    if (inscripciones.length > 0) {
       fetchCuotas();
-    }
   }, [inscripciones, idServicio]);
 
   // Filtros de cuotas
