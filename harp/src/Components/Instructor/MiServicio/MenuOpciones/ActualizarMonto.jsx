@@ -1,5 +1,6 @@
 import { Modal, Button, Form } from "react-bootstrap";
 import { useState } from "react";
+import { format, parseISO } from "date-fns";
 import {
   actualizarMontoGrupo,
   actualizarMontosVariosGrupos,
@@ -84,7 +85,8 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
   const pendingGroupIds = pendingUpdates.flatMap(update => update.idsGrupos); // Extraer los IDs de los grupos pendientes de actualización
 
   const formatDate = (dateString) => {
-    return dateString;
+    const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date correctamente
+    return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
   };
 
     // Filtrar los montos programados
