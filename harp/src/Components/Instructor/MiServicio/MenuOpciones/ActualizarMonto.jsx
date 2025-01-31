@@ -4,6 +4,7 @@ import { format, parseISO } from "date-fns";
 import {
   actualizarMontoGrupo,
   actualizarMontosVariosGrupos,
+  getMontosProgramadosDeHistorial
 } from "../../../../services/HistorialMontoCuota";
 
 const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
@@ -88,18 +89,7 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
     const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date correctamente
     return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
   };
-
-    // Filtrar los montos programados
-    const getMontosProgramados = (historialMontos) => {
-      // Obtener la fecha actual en formato YYYY-MM-DD según la zona horaria local
-      const fechaActual = new Date();
-      const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
-  
-      return historialMontos.filter((monto) => monto.fechaInicio > fechaActualLocal);
-    };
     
-
-
   return (
     <Modal show={show} onHide={onClose} centered>
       <Modal.Header closeButton>
@@ -123,7 +113,7 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
                       : [...prev, grupo.id]
                   )
                 }
-                disabled={pendingGroupIds.includes(grupo.id) || getMontosProgramados(grupo.historialMontos).length > 0} // Deshabilitar si el grupo ya está en pendingUpdates
+                disabled={pendingGroupIds.includes(grupo.id) || getMontosProgramadosDeHistorial(grupo.historialMontos).length > 0} // Deshabilitar si el grupo ya está en pendingUpdates
               />
             ))}
           </Form.Group>
@@ -177,7 +167,7 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
         <div className="mt-4">
           <h5>Montos programados:</h5>
           {grupos.map((grupo) => {
-            const montosProgramados = getMontosProgramados(grupo.historialMontos);
+            const montosProgramados = getMontosProgramadosDeHistorial(grupo.historialMontos);
             return montosProgramados.length > 0 ? (
               <div key={grupo.id}>
                 <h6>{grupo.nombre}</h6>

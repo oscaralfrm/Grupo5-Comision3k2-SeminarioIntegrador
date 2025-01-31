@@ -6,8 +6,10 @@ import { getGruposDeServicio, createGrupoConHorarios } from "../../../../service
 import { getAlumnosDeGrupo } from "../../../../services/Alumno";
 import CrearGrupoModal from "./ModalCrearGrupo";
 import EditarGrupoModal from "./ModalEditarGrupo";
+import { getMontoActualGrupoDeHistorial } from "../../../../services/HistorialMontoCuota";
+import { armarStringPrecioYFrecuenciaCobro } from "../../../../services/frecuenciaPago";
 
-function GruposServicio() {
+function GruposServicio({frecuenciaCobro}) {
   const { idServicio } = useParams();
   const [grupos, setGrupos] = useState([]);
   const [cuposLibres, setCuposLibres] = useState({});
@@ -63,6 +65,11 @@ function GruposServicio() {
     }
     setCuposLibres(nuevosCuposLibres);
   };
+
+  const getPrecioYFrecuencia = (historialMontos) => {
+    const montoActual = getMontoActualGrupoDeHistorial(historialMontos).monto;
+    return armarStringPrecioYFrecuenciaCobro(montoActual, frecuenciaCobro.cantCiclo, frecuenciaCobro.unidadCiclo);
+  }
 
   useEffect(() => {
     if (grupos.length > 0) {
@@ -147,6 +154,7 @@ function GruposServicio() {
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
+                    <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo.historialMontos) || "No disponible"}</Card.Text>
                   </Card.Body>
                 </Card>
               </Col>
@@ -173,6 +181,7 @@ function GruposServicio() {
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
+                    <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo.historialMontos) }</Card.Text>
                   </Card.Body>
                 </Card>
               </Col>

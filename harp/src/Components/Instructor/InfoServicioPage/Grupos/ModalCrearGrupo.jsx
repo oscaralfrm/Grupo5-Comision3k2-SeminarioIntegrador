@@ -4,6 +4,7 @@ import { createGrupoConHorarios } from '../../../../services/Grupo';
 
 const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, grupos}) => {
   const [nombreGrupo, setNombreGrupo] = useState('');
+  const [monto, setMonto] = useState(null);
   const [diaSemana, setDiaSemana] = useState('');
   const [horaInicio, setHoraInicio] = useState('');
   const [horaFin, setHoraFin] = useState('');
@@ -69,6 +70,16 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
       alert('Debe seleccionar el tipo de clase.');
       return;
     }
+    
+    if (!monto) {
+      alert('El precio del grupo es obligatorio.');
+      return;
+    }
+
+    if (monto <= 0) {
+      alert('El precio ingresado no es válido.');
+      return;
+    }
 
     if (tipoClase === 'Grupal' && cantMaxCupos < 2) {
       alert('Las clases grupales deben tener al menos 2 cupos.');
@@ -80,7 +91,7 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
       return;
     }
     try {
-        await createGrupoConHorarios(nombreGrupo, ultimoNumeroGrupo+1, cantMaxCupos, horarios, idServicio);
+        await createGrupoConHorarios(nombreGrupo, ultimoNumeroGrupo+1, cantMaxCupos, horarios, idServicio, monto);
     } catch (error) {
         alert(error.message); // El componente decide cómo manejar el error
     }
@@ -105,6 +116,17 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
               value={nombreGrupo}
               onChange={(e) => setNombreGrupo(e.target.value)}
               placeholder="Nombre del grupo"
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Precio</Form.Label>
+            <Form.Control
+              type="text"
+              value={monto}
+              onChange={(e) => setMonto(e.target.value)}
+              placeholder="Precio"
               required
             />
           </Form.Group>

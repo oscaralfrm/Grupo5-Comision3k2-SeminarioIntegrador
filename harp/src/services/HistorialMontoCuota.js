@@ -41,6 +41,24 @@ export const getMontosProgramadosServicio = async (idServicio) => {
     }
 };
 
+
+export const getMontosProgramadosDeHistorial = (historialMontos) => {
+  // Obtener la fecha actual en formato YYYY-MM-DD según la zona horaria local
+  const fechaActual = new Date();
+  const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
+
+  return historialMontos.filter((monto) => monto.fechaInicio > fechaActualLocal);
+};
+
+export const getMontoActualGrupoDeHistorial = (historialMontos) => {
+    // Obtener la fecha actual en formato YYYY-MM-DD según la zona horaria local
+    const fechaActual = new Date();
+    const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
+    console.log("en get monto actual");
+
+    return historialMontos.find((monto) => fechaActualLocal >= monto.fechaInicio && (monto.fechaFin >= fechaActualLocal || monto.fechaFin == null));
+};
+
 export const getHistorialMontosServicio = async (idServicio) => {
     try {
         const response = await axios.get(`${API_URL}/${idServicio}/historial-montos`);

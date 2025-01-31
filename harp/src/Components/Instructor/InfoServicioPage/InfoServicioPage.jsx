@@ -22,6 +22,7 @@ const InfoServicioPage = () => {
       }
     };
     fetchServicio();
+    console.log("Frecuencia", serviceData);
   }, [idServicio]);
 
   return (
@@ -37,7 +38,7 @@ const InfoServicioPage = () => {
         {/* Columna izquierda: Acerca de las clases */}
 
         <Col>
-          <GruposServicio />
+          <GruposServicio frecuenciaCobro={serviceData?.tipoFrecuenciaPago} />
         </Col>
         {/* Columna derecha: Montos del servicio */}
         <Col md={6}>
