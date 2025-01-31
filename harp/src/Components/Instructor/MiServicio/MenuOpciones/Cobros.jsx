@@ -5,10 +5,11 @@ import { pagarCuota, obtenerCuotasDeInscripcion } from "../../../../services/Cuo
 import { useParams } from "react-router-dom";
 import { getGruposDeServicio } from "../../../../services/Grupo.js";
 import { getMontoActualGrupo } from "../../../../services/HistorialMontoCuota.js";
-import { getInscripcionesDeServicio } from "../../../../services/Inscripcion.js";
+import { getInscripcionesDeServicio, traerUnaInscripcion } from "../../../../services/Inscripcion.js";
 import ActualizarMontoModal from "./ActualizarMonto.jsx";
 import HistorialPagoModal from "./HistorialPago.jsx";
 import { getHistorialCuotasDeAlumno } from "../../../../services/Alumno.js"
+import { useLocation } from 'react-router-dom';
 
 const Cobros = ({ id }) => {
   // Estados principales
@@ -27,6 +28,13 @@ const Cobros = ({ id }) => {
   const [inscripciones, setInscripciones] = useState([]);
   const [showMontoModal, setShowMontoModal] = useState(false);
   const { idServicio } = useParams();
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const idInscripcion = queryParams.get('alumno') || null;  // Si no hay filtro, toma una cadena vacía
+
+  const [idInscripcionUrl, setIdInscripcionUrl] = useState(idInscripcion); // Establecer el filtro con el valor de la URL
+  
 
   // Funciones para manejar el estado de los modales
   const handleCloseMontoModal = () => setShowMontoModal(false);
@@ -92,9 +100,30 @@ const Cobros = ({ id }) => {
 
 
   const fetchCuotas = async () => {
+    // SI hay un filtro en la url obtenemos solo una inscripcion y las cuotas de esa incripcion
     try {
       if (inscripciones.length === 0) return;
 
+      if (idInscripcionUrl != null) {
+        const inscripcion = await traerUnaInscripcion(idInscripcionUrl);
+        const { alumno, grupo, id } = inscripcion;
+        try {
+          const cuotas = await obtenerCuotasDeInscripcion(idServicio, idInscripcionUrl);
+          const cuotasConGrupo =  [
+            { ...alumno, nombreGrupo: grupo ? grupo.nombre : "Sin Grupo" },
+            cuotas.map((cuota) => ({
+              ...cuota,
+              idInscripcion: idInscripcionUrl,
+              cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
+            })),
+          ];
+        } catch (error) {
+          console.error(`Error al obtener cuotas para el alumno ${alumno.id}:`, error);
+          return null;
+        }
+      }      
+
+      // Si no hay un idInscripcion en la url entonces usamos todas las inscripciones del servicio
       const cuotasConGrupo = await Promise.all(
         inscripciones.map(async (inscripcion) => {
           const { alumno, grupo, id } = inscripcion;
