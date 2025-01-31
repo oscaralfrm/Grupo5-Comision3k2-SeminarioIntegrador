@@ -55,7 +55,7 @@ public class Grupo {
 
     @OneToMany
     @JoinColumn(name = "grupo_id")
-    @JsonIgnore
+
     private Set<MontoServicio> historialMontos = new HashSet<>();
 /*
     @ManyToMany

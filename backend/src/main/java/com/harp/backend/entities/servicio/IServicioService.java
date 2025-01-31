@@ -40,4 +40,6 @@ public interface IServicioService {
     void desactivarAsistencias(Long idServicio);
     List<Clase> findClasesFechaDeServicio(Long idServicio, LocalDate fecha);
     List<Clase> findClasesDeServicio(Long idServicio);
+    List<MontoServicio>  obtenerMontosProgramadosFuturosGruposDeServicio(Long idServicio);
+    void editarDescripcionDeServicio(Long idServicio, String nuevaDescripcion);
 }

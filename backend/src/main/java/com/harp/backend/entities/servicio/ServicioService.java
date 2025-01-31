@@ -310,4 +310,16 @@ public class ServicioService implements IServicioService {
         Servicio servicio = this.findServicio(idServicio);
         return servicio.findAlumnosConSusUltimasCuotas();
     }
+
+    public List<MontoServicio> obtenerMontosProgramadosFuturosGruposDeServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        List<MontoServicio> montosProgramados = servicio.obtenerMontosProgramadosGrupos();
+        return montosProgramados;
+    }
+
+    public void editarDescripcionDeServicio(Long idServicio, String nuevaDescripcion) {
+        Servicio servicio = this.findServicio(idServicio);
+        servicio.setDescripcion(nuevaDescripcion);
+        servicioRepository.save(servicio);
+    }
 }

@@ -277,6 +277,10 @@ public class Inscripcion {
         return (this.estado == EstadoInscripcion.EnCurso);
     }
 
+    public boolean estaEnCursoOAceptada() {
+        return (this.estaEnCurso() || this.estaAceptada());
+    }
+
     public boolean estaPendiente() {
         return (this.estado == EstadoInscripcion.PendienteAceptacion);
     }

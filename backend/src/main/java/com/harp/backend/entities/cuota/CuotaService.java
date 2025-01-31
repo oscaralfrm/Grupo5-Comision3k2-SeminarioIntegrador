@@ -319,6 +319,8 @@ public class CuotaService implements ICuotaService {
         Instructor instructor = instructorService.findInstructorDeEsteServicio(servicio);
         Inscripcion inscripcion = servicio.obtenerInscripcionById(idInscripcion);
 
+        //Inscripcion inscripcion = inscripcionService.findInscripcion(idInscripcion);
+        //Cuota cuota = this.findCuota(idCuota);
         Cuota cuota = inscripcion.obtenerCuotaConEsteId(idCuota);
 
         if ( ! ( cuota.esPendiente() || cuota.esVencida() ) )  {

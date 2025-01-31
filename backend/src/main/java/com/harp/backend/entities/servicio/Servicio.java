@@ -248,6 +248,9 @@ public class Servicio {
         return this.grupos.stream().map(Grupo::obtenerMontoActual).toList();
     }
 
+    public List<MontoServicio> obtenerMontosProgramadosGrupos() {
+        return this.grupos.stream().map(Grupo::obtenerMontoFuturo).toList();
+    }
 
     public boolean tieneInscripcionesActivas() {
         return ( ! this.obtenerInscripcionesVigentes().isEmpty() );
@@ -352,12 +355,12 @@ public class Servicio {
 
 
     public List<Alumno> obtenerAlumnosActuales() {
-        return inscripciones.stream().filter(Inscripcion::estaEnCurso).map(Inscripcion::getAlumno).toList();
+        return inscripciones.stream().filter(Inscripcion::estaEnCursoOAceptada).map(Inscripcion::getAlumno).toList();
     }
 
     public List<Alumno> obtenerAlumnosActualesDeGrupo(Grupo grupo) {
         return inscripciones.stream()
-                .filter(i -> i.estaEnCurso() && i.esDeEsteGrupo(grupo))
+                .filter(i -> i.estaEnCursoOAceptada() && i.esDeEsteGrupo(grupo))
                 .map(Inscripcion::getAlumno)
                 .toList();
     }

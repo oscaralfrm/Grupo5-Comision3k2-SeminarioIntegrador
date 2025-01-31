@@ -53,6 +53,13 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(grupos);
     };
 
+    // GET montos progarmados de los grupos
+    @GetMapping("/{idServicio}/grupos/montos-programados")
+    public ResponseEntity<List<MontoServicio>> traerMontosProgramadosDeGruposDeServicio(@PathVariable @Min(1) Long idServicio) {
+        List<MontoServicio> montosGrupos = servicioService.obtenerMontosProgramadosFuturosGruposDeServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(montosGrupos);
+    };
+
     // POST
     @PostMapping
     public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicioDTO) {
@@ -123,6 +130,14 @@ public class ServicioController {
                                                          @RequestBody LocalDate fechaInicio) {
         servicioService.setFechaInicioServicio(idServicio, fechaInicio);
         return  ResponseEntity.ok("Se configuró el inicio del servicio");
+    }
+
+    // EDITAR DESCRIPCION
+    @PutMapping("/{idServicio}/editar-descripcion")
+    public ResponseEntity<String> editarDescripcionDeServicio(@PathVariable @Min(1) Long idServicio,
+                                                         @RequestBody EditarDescripcionRequest editarDescripcionRequest) {
+        servicioService.editarDescripcionDeServicio(idServicio, editarDescripcionRequest.getDescripcion());
+        return  ResponseEntity.ok("Se editó la descripción del servicio.");
     }
 
 //    @GetMapping("/{idServicio}/monto-actual")
