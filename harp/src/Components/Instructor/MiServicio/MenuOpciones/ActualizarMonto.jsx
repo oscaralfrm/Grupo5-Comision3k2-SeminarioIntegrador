@@ -35,9 +35,10 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
       return;
     }
 
-    const fechaActual = new Date().toISOString().split("T")[0];
+    const fechaActual = new Date();
+    const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
 
-    if (vigencia <= fechaActual) {
+    if (vigencia <= fechaActualLocal) {
       alert("La fecha de vigencia debe ser mayor a la fecha actual.");
       return;
     }
@@ -83,12 +84,19 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
   const pendingGroupIds = pendingUpdates.flatMap(update => update.idsGrupos); // Extraer los IDs de los grupos pendientes de actualización
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    return dateString;
   };
+
+    // Filtrar los montos programados
+    const getMontosProgramados = (historialMontos) => {
+      // Obtener la fecha actual en formato YYYY-MM-DD según la zona horaria local
+      const fechaActual = new Date();
+      const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
+  
+      return historialMontos.filter((monto) => monto.fechaInicio > fechaActualLocal);
+    };
+    
+
 
   return (
     <Modal show={show} onHide={onClose} centered>
@@ -113,7 +121,7 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
                       : [...prev, grupo.id]
                   )
                 }
-                disabled={pendingGroupIds.includes(grupo.id)} // Deshabilitar si el grupo ya está en pendingUpdates
+                disabled={pendingGroupIds.includes(grupo.id) || getMontosProgramados(grupo.historialMontos).length > 0} // Deshabilitar si el grupo ya está en pendingUpdates
               />
             ))}
           </Form.Group>
@@ -150,8 +158,8 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
               {pendingUpdates.map(({ idsGrupos, montoDTO }, index) => (
                 <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
                   {/* Mostrar nombres de los grupos */}
-                  Grupos: {idsGrupos.map(id => grupos.find(grupo => grupo.id === id)?.nombre).join(", ")} - 
-                  Monto: ${montoDTO.monto.toFixed(2)} - 
+                  Grupos: {idsGrupos.map(id => grupos.find(grupo => grupo.id === id)?.nombre).join(", ")} -
+                  Monto: ${montoDTO.monto.toFixed(2)} -
                   Vigencia: {formatDate(montoDTO.fechaInicio)}
                   <Button variant="danger" size="sm" onClick={() => handleRemoveUpdate(index)}>
                     Eliminar
@@ -161,6 +169,30 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
             </ul>
           </div>
         )}
+
+
+        {/* Nueva sección: Montos programados */}
+        <div className="mt-4">
+          <h5>Montos programados:</h5>
+          {grupos.map((grupo) => {
+            const montosProgramados = getMontosProgramados(grupo.historialMontos);
+            return montosProgramados.length > 0 ? (
+              <div key={grupo.id}>
+                <h6>{grupo.nombre}</h6>
+                <ul className="list-group">
+                  {montosProgramados.map((monto, index) => (
+                    <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                      Monto: ${monto.monto.toFixed(2)} -
+                      Vigencia: {formatDate(monto.fechaInicio)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null;
+          })}
+        </div>
+
+
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>Cancelar</Button>

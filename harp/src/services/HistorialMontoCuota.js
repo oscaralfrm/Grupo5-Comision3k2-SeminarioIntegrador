@@ -32,7 +32,7 @@ export const getMontosActualesServicio = async (idServicio) => {
 
 export const getMontosProgramadosServicio = async (idServicio) => {
     try {
-        const response = await axios.get(`${API_URL}/${idServicio}/montos-programados`);
+        const response = await axios.get(`${API_URL}/${idServicio}/grupos/montos-programados`);
         return response.data;
     } catch (error) {
         console.error('Error al obtener el servicio', error.response.data.message);
