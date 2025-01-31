@@ -17,6 +17,7 @@ const Cobros = ({ id }) => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedCuota, setSelectedCuota] = useState(null);
   const [groupFilter, setGroupFilter] = useState("");
+  const [studentFilter, setStudentFilter] = useState("");  // Filtro por nombre de alumno
   const [paymentFilter, setPaymentFilter] = useState("");
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [paymentDate, setPaymentDate] = useState("");
@@ -67,7 +68,7 @@ const Cobros = ({ id }) => {
     const fetchMontos = async () => {
       try {
         if (!grupos || grupos.length === 0) return;
-  
+
         const montos = await Promise.all(
           grupos.map(async (grupo) => {
             try {
@@ -79,16 +80,16 @@ const Cobros = ({ id }) => {
             }
           })
         );
-  
+
         setMonto(montos.filter(Boolean)); // Filtra valores nulos
       } catch (error) {
         console.error("Error al traer los montos de los grupos:", error);
       }
     };
-  
+
     fetchMontos();
   }, [idServicio, grupos]);
-  
+
 
   const fetchCuotas = async () => {
     try {
@@ -122,7 +123,7 @@ const Cobros = ({ id }) => {
 
   // Obtener cuotas
   // Obtener cuotas
-useEffect(() => {
+  useEffect(() => {
     if (inscripciones.length > 0) {
       fetchCuotas();
     }
@@ -132,15 +133,19 @@ useEffect(() => {
   const filteredCuotas = cuotas.filter(([student, cuotasStudent]) =>
     cuotasStudent.some((cuota) => {
       const estadoActual = cuota.cambiosEstado[0]?.estadoCuota;
+      const nombreCompleto = `${student.usuario.nombre} ${student.usuario.apellido}`;
+
       return (
         (groupFilter === "" || student.nombreGrupo === groupFilter) &&
         (paymentFilter === "" ||
           (paymentFilter === "Pendiente" && estadoActual === "Pendiente") ||
           (paymentFilter === "Abonada" && estadoActual === "Abonada") ||
-          (paymentFilter === "Vencida" && estadoActual === "Vencida"))
+          (paymentFilter === "Vencida" && estadoActual === "Vencida")) &&
+        (studentFilter === "" || nombreCompleto.toLowerCase().includes(studentFilter.toLowerCase()))  // Filtro por nombre
       );
     })
   );
+
 
   // Funciones de manejo de pagos
   // En tu componente Cobros
@@ -192,12 +197,12 @@ useEffect(() => {
       className="responsive-container"
       style={{
         height: "100vh", // Ocupar toda la altura de la pantalla
-    paddingTop: "15vh", // Ajusta si es necesario
-    paddingLeft: "3rem",
-    paddingRight: "3rem",
-    width: "100%",
-    overflow: "hidden", // Previene el scroll vertical
-    boxSizing: "border-box",
+        paddingTop: "15vh", // Ajusta si es necesario
+        paddingLeft: "3rem",
+        paddingRight: "3rem",
+        width: "100%",
+        overflow: "hidden", // Previene el scroll vertical
+        boxSizing: "border-box",
       }}
     >
       {/* Título */}
@@ -207,7 +212,7 @@ useEffect(() => {
       >
         Cobros
       </h1>
-  
+
       {/* Botón Actualizar Monto */}
       <div className="d-flex justify-content-end mb-4">
         <Button
@@ -225,12 +230,22 @@ useEffect(() => {
           Actualizar Monto
         </Button>
       </div>
-  
+
       {/* Contenedor de Filtros */}
       <div className="mb-4">
         <Row className="d-flex justify-content-between align-items-center">
+          {/* Filtro por Nombre de Alumno */}
+          <Col md={4} className="p-0 pe-2">
+            <Form.Control
+              type="text"
+              placeholder="Filtrar por Nombre"
+              value={studentFilter}
+              onChange={(e) => setStudentFilter(e.target.value)}
+              style={{ width: "100%" }}
+            />
+          </Col>
           {/* Filtro por Grupo */}
-          <Col md={6} className="p-0 pe-2">
+          <Col md={4} className="p-0 pe-2">
             <Form.Control
               as="select"
               onChange={(e) => setGroupFilter(e.target.value)}
@@ -246,7 +261,7 @@ useEffect(() => {
             </Form.Control>
           </Col>
           {/* Filtro por Estado de Pago */}
-          <Col md={6} className="p-0 ps-2">
+          <Col md={4} className="p-0 ps-2">
             <Form.Control
               as="select"
               onChange={(e) => setPaymentFilter(e.target.value)}
@@ -262,7 +277,9 @@ useEffect(() => {
           </Col>
         </Row>
       </div>
-  
+
+
+
       {/* Tabla */}
       <div style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}>
         <Table striped bordered hover responsive="sm" className="w-100">
@@ -288,16 +305,15 @@ useEffect(() => {
                   <td>{student.nombreGrupo}</td>
                   <td>
                     <span
-                      className={`badge bg-${
-                        cuota.cambiosEstado[0].estadoCuota === "Pendiente"
-                          ? "warning"
-                          : cuota.cambiosEstado[0].estadoCuota === "Abonada"
+                      className={`badge bg-${cuota.cambiosEstado[0].estadoCuota === "Pendiente"
+                        ? "warning"
+                        : cuota.cambiosEstado[0].estadoCuota === "Abonada"
                           ? "success"
                           : cuota.cambiosEstado[0].estadoCuota === "Anulada" ||
                             cuota.cambiosEstado[0].estadoCuota === "Vencida"
-                          ? "danger"
-                          : "secondary"
-                      }`}
+                            ? "danger"
+                            : "secondary"
+                        }`}
                     >
                       {cuota.cambiosEstado[0].estadoCuota}
                     </span>
@@ -339,7 +355,7 @@ useEffect(() => {
           </tbody>
         </Table>
       </div>
-  
+
       {/* Modales */}
       <Modal show={showAddPayment} onHide={handleCloseAddPayment} centered>
         <Modal.Header closeButton>
@@ -403,7 +419,7 @@ useEffect(() => {
           </Button>
         </Modal.Footer>
       </Modal>
-  
+
       <ActualizarMontoModal
         show={showMontoModal}
         onClose={handleCloseMontoModal}
@@ -420,5 +436,4 @@ useEffect(() => {
     </div>
   );
 }
-  export default Cobros;
-  
+export default Cobros;
