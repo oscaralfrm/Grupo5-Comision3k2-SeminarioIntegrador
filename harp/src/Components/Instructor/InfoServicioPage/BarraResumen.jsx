@@ -6,7 +6,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { getServicioById, definirFechaInicioDeServicio, updateServicio } from '../../../services/Servicio';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getAlumnosDeServicio } from '../../../services/Alumno';
-import { getMontosActualesServicio } from '../../../services/HistorialMontoCuota';
+import { getMontoActualGrupoDeHistorial } from '../../../services/HistorialMontoCuota';
+import { getGruposDeServicio } from '../../../services/Grupo';
+import { armarStringPrecioYFrecuenciaCobro } from '../../../services/frecuenciaPago';
 
 const BarraResumen = ({ idServicio }) => {
   const [serviceData, setServiceData] = useState(null);
@@ -14,9 +16,10 @@ const BarraResumen = ({ idServicio }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [alumnos, setAlumnos] = useState([]);
   const [montos, setMontos] = useState([]);
+  const [grupos, setGrupos] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
-  const {idInstructor} = useParams();
+  const { idInstructor } = useParams();
 
   useEffect(() => {
     const fetchServicio = async () => {
@@ -30,8 +33,13 @@ const BarraResumen = ({ idServicio }) => {
         const alumnosInscritos = await getAlumnosDeServicio(idServicio);
         setAlumnos(alumnosInscritos);
 
-        const montosActuales = await getMontosActualesServicio(idServicio);
+        const grupos = await getGruposDeServicio(idServicio);
+        setGrupos(grupos);
+
+        const montosActuales = grupos.map(grupo => getMontoActualGrupoDeHistorial(grupo.historialMontos).monto);
         setMontos(montosActuales);
+
+
       } catch (error) {
         console.error('Error al obtener los datos del servicio:', error);
       }
@@ -82,6 +90,53 @@ const BarraResumen = ({ idServicio }) => {
     navigate(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`);
   };
 
+  const getPrecioMinimo = () => {
+    const tipoFrecuenciaPago = serviceData.tipoFrecuenciaPago;
+    const montoMinimo = Math.min(...montos);
+    return armarStringPrecioYFrecuenciaCobro(montoMinimo,
+      tipoFrecuenciaPago.cantCiclo, tipoFrecuenciaPago.unidadCiclo);
+  }
+
+  const calcularFrecuenciasSemanales = () => {
+    const frecuencias = grupos.map(grupo => grupo.horarios.length);
+    
+    // Usamos Set para obtener solo las frecuencias únicas
+    const frecuenciasUnicas = [...new Set(frecuencias)];
+  
+    // Mapeamos las frecuencias para que tengan el formato correcto
+    const frecuenciasFormateadas = frecuenciasUnicas.map(frecuencia => {
+      return `${frecuencia} ${frecuencia === 1 ? "vez" : "veces"} por semana`;
+    });
+  
+    // Unimos las frecuencias formateadas en un string con comas
+    return frecuenciasFormateadas.join(", ");
+  };
+
+  const calcularHorasSemanales = () => {
+    // Calcular las horas semanales de cada grupo
+    const horasSemanales = grupos.map(grupo => {
+      // Sumar las duraciones de los horarios de un grupo
+      const totalHoras = grupo.horarios.reduce((total, horario) => {
+        // Convertimos las horas en formato "HH:mm" a minutos y calculamos la duración
+        const horaInicio = new Date(`1970-01-01T${horario.horaInicio}:00`);
+        const horaFin = new Date(`1970-01-01T${horario.horaFin}:00`);
+        const duracion = (horaFin - horaInicio) / (1000 * 60); // Duración en minutos
+        console.log(duracion);
+        return total + duracion; // Acumulamos la duración total
+      }, 0);
+  
+      // Convertir las horas a un valor en horas
+      return totalHoras / 60; // Regresamos el valor en horas
+    });
+  
+    // Usamos un Set para obtener solo las horas semanales únicas
+    const horasUnicas = [...new Set(horasSemanales)];
+  
+    // Unir las horas semanales únicas en un string separado por comas
+    return horasUnicas.join(", ");
+  };
+  
+  
   if (!serviceData) return <p>Cargando datos del servicio...</p>;
 
   return (
@@ -119,31 +174,31 @@ const BarraResumen = ({ idServicio }) => {
           </Col>
           <Col className="d-flex flex-column align-items-center">
             <FaClock size={25} className="mb-2 text-success" />
-            <p className="mb-1 fw-bold">Frecuencia:</p>
-            <p>{serviceData.tipoFrecuenciaPago?.nombre || 'No definida'}</p>
+            <p className="mb-1 fw-bold">Clases:</p>
+            <p>{calcularFrecuenciasSemanales() || 'No definida'}</p>
           </Col>
           <Col className="d-flex flex-column align-items-center">
             <FaCoins size={25} className="mb-2 text-warning" />
             <p className="mb-1 fw-bold">Desde:</p>
-            <p>{serviceData.monto ? `$${serviceData.monto}` : 'No definido'}</p>
+            <p>{getPrecioMinimo() ?? "No definido"}</p>
           </Col>
           <Col className="d-flex flex-column align-items-center">
             <FaUserAlt size={25} className="mb-2 text-info" />
             <p className="mb-1 fw-bold">Inscriptos:</p>
             <p>{alumnos.length} alumnos</p>
           </Col>
-          {serviceData.fechaInicio && 
-          <Col className="d-flex flex-column align-items-center">
-            <i
-              className="bi bi-binoculars-fill mb-2 text-primary"
-              style={{ fontSize: '25px' }}
-            />
-            <p className="mb-1 fw-bold">Actividad</p>
-            <Button variant="primary" size="sm" onClick={handleViewActivity}>
-              Ver Actividad
-            </Button>
-          </Col> }
-         
+          {serviceData.fechaInicio &&
+            <Col className="d-flex flex-column align-items-center">
+              <i
+                className="bi bi-binoculars-fill mb-2 text-primary"
+                style={{ fontSize: '25px' }}
+              />
+              <p className="mb-1 fw-bold">Actividad</p>
+              <Button variant="primary" size="sm" onClick={handleViewActivity}>
+                Ver Actividad
+              </Button>
+            </Col>}
+
         </Row>
       </Card>
 

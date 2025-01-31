@@ -18,18 +18,6 @@ export const addMontoToServicio = async (monto, cantVecesSemanales, fechaInicio,
     }
 };
 
-
-export const getMontosActualesServicio = async (idServicio) => {
-    try {
-        const response = await axios.get(`${API_URL}/${idServicio}/monto-actual`);
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener el servicio', error.response.data.message);
-        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
-        throw new Error(errorMessage); // Pasa el mensaje al componente
-    }
-};
-
 export const getMontosProgramadosServicio = async (idServicio) => {
     try {
         const response = await axios.get(`${API_URL}/${idServicio}/grupos/montos-programados`);

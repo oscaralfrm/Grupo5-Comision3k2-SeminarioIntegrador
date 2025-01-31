@@ -116,9 +116,9 @@ function ServiceHeader({ serviceData, setServiceData }) {
               {serviceData?.nombre}
             </h4>
           </div>
-          
+
           {/* Adjusting margins for consistent space */}
-          <Col md="6" className="" style={{ width:"100%" }}>
+          <Col md="6" className="" style={{ width: "100%" }}>
             <div className="d-flex justify-content-between align-items-center">
               <p className=" mt-3">
                 <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
@@ -142,12 +142,15 @@ function ServiceHeader({ serviceData, setServiceData }) {
           <p className="mb-3">
             <strong>Instructor:</strong> {instructor?.usuario.nombre} {instructor?.usuario.apellido}
           </p>
-          <p>
+          {/*
+             <p>
             <strong>Descripción:</strong> {serviceData?.descripcion}
           </p>
+          */}
+
 
           {/* Publicar Servicio section */}
-          <Col md="6" className="mb-2" style={{ width:"100%" }}>
+          <Col md="6" className="mb-2" style={{ width: "100%" }}>
             <div className="ms-auto d-flex align-items-center">
               <strong className="me-2">Publicar Servicio:</strong>
               <Form>
@@ -175,7 +178,7 @@ function ServiceHeader({ serviceData, setServiceData }) {
           </Col>
         </Col>
       </Row>
-      {/*<BarraResumen idServicio={idServicio}/>*/}
+      <BarraResumen idServicio={idServicio} />
     </Card>
   );
 }

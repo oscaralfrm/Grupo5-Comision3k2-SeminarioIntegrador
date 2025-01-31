@@ -3,35 +3,52 @@ import ServiceHeader from "./SeviceHeader";
 import GruposServicio from "./Grupos/GruposServicio";
 import MontosServicio from "./Monto/MontosServicio";
 import ReviewCarousel from "../MiServicio/MenuOpciones/Dashboard/Reseñas";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Button, Container } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { getServicioById } from "../../../services/Servicio";
+import { FaCog } from "react-icons/fa";
+import Descripcion from "./Descripcion/Descripcion";
 
 const InfoServicioPage = () => {
   const { idServicio } = useParams();
   const [serviceData, setServiceData] = useState(null);
   const navigate = useNavigate();
 
+
+  const fetchServicio = async () => {
+    try {
+      const data = await getServicioById(idServicio);
+      setServiceData(data);
+    } catch (error) {
+      console.error("Error al traer el servicio:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchServicio = async () => {
-      try {
-        const data = await getServicioById(idServicio);
-        setServiceData(data);
-      } catch (error) {
-        console.error("Error al traer el servicio:", error);
-      }
-    };
     fetchServicio();
     console.log("Frecuencia", serviceData);
   }, [idServicio]);
 
+
+  const handleEditClick = () => {
+    navigate("/edit-descripcion"); // Navigate to edit service page
+  };
+
   return (
-    <div className="container mt-4" style={{ fontFamily: "Roboto"}}>
+    <div className="container mt-4" style={{ fontFamily: "Roboto" }}>
       {/* Servicio Header */}
       <ServiceHeader
         serviceData={serviceData}
         setServiceData={setServiceData}
       />
+
+
+      <Row className="mt-4 align-items-center">
+        <Col>
+        <Descripcion descripcion={serviceData?.descripcion} fetchServicio={fetchServicio} />
+        </Col>
+      </Row>
+
 
       {/* Acerca de las clases y Montos */}
       <Row className="mt-4">
@@ -39,10 +56,6 @@ const InfoServicioPage = () => {
 
         <Col>
           <GruposServicio frecuenciaCobro={serviceData?.tipoFrecuenciaPago} />
-        </Col>
-        {/* Columna derecha: Montos del servicio */}
-        <Col md={6}>
-          <MontosServicio />
         </Col>
       </Row>
 
@@ -54,31 +67,10 @@ const InfoServicioPage = () => {
           </div>
         </Col>
 
-        <Col
-          className="col-6"
-          style={{
-            backgroundColor: "white",
-            padding: "20px",
-            borderRadius: "20px",
-            boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-            maxWidth: "100%",
-            margin: "auto",
-            fontFamily: "Roboto",
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "#1E1B4B",
-              padding: "10px",
-              borderRadius: "20px",
-              color: "white",
-            }}
-          >
-            <h4 className="fw-blod mb-2 mt-2 text-center">
-              Acerca de las clases
-            </h4>
-          </div>
-          <p className="mt-3">{serviceData?.descripcion}</p>
+        {/* Columna derecha: Montos del servicio */}
+        <Col md={6}>
+          {/*<MontosServicio />*/}
+
         </Col>
       </Row>
     </div>

@@ -6,7 +6,6 @@ import { getServicioById } from "../../../../services/Servicio";
 import ModalActualizarMontos from "./ModalActualizarMontos";
 import {
   addMontoToServicio,
-  getMontosActualesServicio,
   getMontosProgramadosServicio,
 } from "../../../../services/HistorialMontoCuota";
 import { getGruposDeServicio } from "../../../../services/Grupo";
@@ -65,8 +64,8 @@ function MontosServicio() {
         const servicio = await getServicioById(idServicio);
         setServiceData(servicio);
 
-        const montos = await getMontosActualesServicio(idServicio);
-        setFrequencies(montos);
+        //const montos = await getMontosActualesServicio(idServicio);
+        //setFrequencies(montos);
 
         const programados = await getMontosProgramadosServicio(idServicio);
         setProgramados(programados);

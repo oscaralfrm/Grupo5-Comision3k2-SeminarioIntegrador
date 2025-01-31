@@ -66,6 +66,18 @@ export const updateServicio = async (idServicio, servicioDTO) => {
     }
 };
 
+// Función para editar la descripcion de un servicio
+export const editarDescripcionDeServicio = async (idServicio, nuevaDescripcion) => {
+    try {
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/editar-descripcion`, {descripcion: nuevaDescripcion});
+        console.log(response);
+        return response.data;
+    } catch (error) {
+        console.error('Error al editar la descripción', error);
+        throw error;
+    }
+};
+
 
 export const activarAsistencias = async (idServicio) => {
     try {

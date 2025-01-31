@@ -5,13 +5,14 @@ import { getAlumnosDeServicio } from "../../../../../services/Alumno.js";
 const StudentsCard = () => {
   const [expanded, setExpanded] = useState(false);
   const [students, setStudents] = useState([]);
-  const { idServicio } = useParams();
+  const { idServicio, idInstructor } = useParams();
 
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
         const data = await getAlumnosDeServicio(idServicio);
         setStudents(data);
+        console.log(data);
       } catch (error) {
         console.error("Error al traer los alumnos:", error);
       }
@@ -66,7 +67,7 @@ const StudentsCard = () => {
 
         {/* Botón Ir a Alumnos */}
         <Link
-          to={`/instructor/1/servicio/${idServicio}/alumnos`}
+          to={`/instructor/${idInstructor}/servicio/${idServicio}/alumnos`}
           style={{
             backgroundColor: "#4F46E5",
             color: "white",
