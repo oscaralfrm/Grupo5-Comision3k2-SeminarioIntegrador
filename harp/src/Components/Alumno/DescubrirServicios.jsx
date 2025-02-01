@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getDetallesDeServicio } from "../../services/Instructor";
+import { getDetallesDeServicio } from "../../services/Servicio";
 import { Card, Button, Spinner, Row, Col } from "react-bootstrap";
 import placeholderImage from "../../assets/placeholderForServices.png";
 
