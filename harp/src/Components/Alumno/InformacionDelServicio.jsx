@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom"; // Importar useNavigate
 import { getDetallesDeServicio } from "../../services/Servicio";
+import { useParams, useNavigate } from "react-router-dom";
+import { getDetallesDeServicio } from "../../services/Servicio"; // Asegúrate de que la importación sea correcta
 import { Card, Button, Spinner, Row, Col } from "react-bootstrap";
 import placeholderImage from "../../assets/placeholderForServices.png";
 
 const InformacionDelServicio = () => {
     const { idServicio } = useParams();
-    const navigate = useNavigate(); // Inicializa useNavigate
+    const navigate = useNavigate();
     const [servicio, setServicio] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -38,7 +40,6 @@ const InformacionDelServicio = () => {
         return <div className="text-center mt-5 text-danger">Servicio no encontrado</div>;
     }
 
-    // Función para manejar la redirección al hacer clic en el botón
     const handleVerMas = () => {
         navigate(`/alumno/${idServicio}/servicios/${idServicio}/detalles`); // Cambia la ruta según sea necesario
     };
@@ -68,8 +69,8 @@ const InformacionDelServicio = () => {
                     <Card className="shadow-sm rounded-4 mb-4">
                         <Card.Body>
                             <Card.Title>Detalles del Servicio</Card.Title>
-                            <Card.Text><strong>Duración Total:</strong> {servicio.duracion || "No disponible"}</Card.Text>
-                            <Card.Text><strong>Cupos Disponibles:</strong> {servicio.cuposLibres || "No disponible"}</Card.Text>
+                            <Card.Text><strong>Duración Total:</strong> {servicio.duracionTotalMeses || "No disponible"}</Card.Text>
+                            <Card.Text><strong>Cupos Disponibles:</strong> {servicio.cantMaxAlumnos || "No disponible"}</Card.Text>
                         </Card.Body>
                     </Card>
                 </Col>
