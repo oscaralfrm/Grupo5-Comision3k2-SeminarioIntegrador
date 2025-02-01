@@ -50,14 +50,13 @@ export default function EditServicioForm() {
         setValue("categoria", response.categoria.nombre);
         setValue("frecuenciaCuotas", frecuenciaCuotasObj.frecuenciaCuotas);
         setValue("duracionCuotasPersonalizada", frecuenciaCuotasObj.duracionCuotasPersonalizada);
-        setValue("clasePrueba", response.clasePrueba ? "sí" : "no");
-        setValue("asistencias", response.asistencia ? "sí" : "no");
+        setValue("clasePrueba", response.claseDePrueba ? "sí" : "no");
+        setValue("asistencias", response.asistenciasActivas ? "sí" : "no");
         setValue("incluyeInscripcion", response.montoInscripcion > 0 ? "si" : "no");
         setValue("montoInscripcion", response.montoInscripcion);
         setValue("pagoInscripcion", response.pagoAnticipadoDeMontoInscripcion ? "anticipado" : "incluido en la cuota");
         setValue("fechaLimitePago", response.tipoFrecuenciaPago.diaLimitePago);
         setValue("ciclos", response.tipoFrecuenciaPago.tipoCiclo == "SegunCalendario" ? "En fechas fijas" : "Según Inscripción");
-        
       } catch (error) {
         console.error("Error al obtener el servicio:", error);
       }
@@ -166,7 +165,13 @@ export default function EditServicioForm() {
                 <Cobros register={register} errors={errors} formData={formData} goToNextTab={goToNextTab} goToPreviousTab={goToPreviousTab} />
               </Tab>
               <Tab eventKey="modalidad" title="Modalidad">
-                <Modalidad register={register} errors={errors} formData={formData} goToPreviousTab={goToPreviousTab} isValid={isValid} />
+                <Modalidad 
+                    register={register} 
+                    errors={errors} 
+                    formData={formData} 
+                    goToPreviousTab={goToPreviousTab} 
+                    isValid={isValid} 
+                    nombreBoton={"Editar"}/>
               </Tab>
             </Tabs>
           </form>

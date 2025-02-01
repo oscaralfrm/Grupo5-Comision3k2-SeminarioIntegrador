@@ -44,7 +44,11 @@ export const getMontoActualGrupoDeHistorial = (historialMontos) => {
     const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
     console.log("en get monto actual");
 
-    return historialMontos.find((monto) => fechaActualLocal >= monto.fechaInicio && (monto.fechaFin >= fechaActualLocal || monto.fechaFin == null));
+    if (historialMontos.length == 1) {
+        return historialMontos[0];
+    }
+
+    return historialMontos.find((monto) => (fechaActualLocal >= monto.fechaInicio || monto.fechaInicio == null) && (monto.fechaFin >= fechaActualLocal || monto.fechaFin == null));
 };
 
 export const getHistorialMontosServicio = async (idServicio) => {

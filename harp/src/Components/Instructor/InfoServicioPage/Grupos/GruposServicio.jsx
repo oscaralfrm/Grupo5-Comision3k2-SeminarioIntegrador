@@ -11,9 +11,8 @@ import { armarStringPrecioYFrecuenciaCobro } from "../../../../services/frecuenc
 import ModalActualizarMontos from "../Monto/ModalActualizarMontos";
 import ActualizarMontoModal from "../../MiServicio/MenuOpciones/ActualizarMonto";
 
-function GruposServicio({ frecuenciaCobro }) {
+function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
   const { idServicio } = useParams();
-  const [grupos, setGrupos] = useState([]);
   const [cuposLibres, setCuposLibres] = useState({});
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null); // Nuevo estado
   const [showModalEdit, setShowModalEdit] = useState(false);
@@ -22,13 +21,11 @@ function GruposServicio({ frecuenciaCobro }) {
   const [ultimoNumeroGrupo, setUltimoNumeroGrupo] = useState(0);
 
   const fetchGrupos = async () => {
-    const data = await getGruposDeServicio(idServicio);
-    setGrupos(data);
-    setUltimoNumeroGrupo(calcularUltimoNumeroGrupo());
+    console.log("hay grupos", grupos.length > 0 )
   };
 
   useEffect(() => {
-    fetchGrupos();
+    setUltimoNumeroGrupo(calcularUltimoNumeroGrupo());
   }, [idServicio]);
 
 
@@ -71,7 +68,14 @@ function GruposServicio({ frecuenciaCobro }) {
 
   const getPrecioYFrecuencia = (historialMontos) => {
     const montoActual = getMontoActualGrupoDeHistorial(historialMontos).monto;
-    return armarStringPrecioYFrecuenciaCobro(montoActual, frecuenciaCobro.cantCiclo, frecuenciaCobro.unidadCiclo);
+
+
+    // Validamos que frecuenciaCobro y su unidadCiclo existan
+    if (!frecuenciaCobro || !frecuenciaCobro.unidadCiclo) {
+      return "No disponible";
+    }
+
+    return armarStringPrecioYFrecuenciaCobro(montoActual, frecuenciaCobro?.cantCiclo, frecuenciaCobro?.unidadCiclo);
   }
 
   useEffect(() => {
@@ -113,7 +117,7 @@ function GruposServicio({ frecuenciaCobro }) {
 
   const handleCerrarModalCrear = () => {
     setShowModalCrear(false);
-    fetchGrupos();
+    fetchServicio();
   };
 
   const handleCerrarModalEdit = () => {
@@ -145,9 +149,12 @@ function GruposServicio({ frecuenciaCobro }) {
           }}>
           Grupos y Horarios
         </h2>
-        <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleActualizarPrecio}>
-          Actualizar precio
-        </Button>
+        { grupos.length > 0 &&
+             <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleActualizarPrecio}>
+             Actualizar precio
+           </Button>
+        }
+       
         <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleCrearGrupo}>
           Crear Grupo
         </Button>
@@ -198,7 +205,7 @@ function GruposServicio({ frecuenciaCobro }) {
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
-                    <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo.historialMontos)}</Card.Text>
+                    <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo?.historialMontos)}</Card.Text>
                   </Card.Body>
                 </Card>
               </Col>
@@ -212,9 +219,8 @@ function GruposServicio({ frecuenciaCobro }) {
       <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos} />
 
       {/* Modal para Actualizar precio */}
-      <ActualizarMontoModal idServicio={idServicio}  grupos={grupos}  show={showModalActualizarPrecio} onClose={handleCerrarModalActualizarPrecio}  />
-
-
+        <ActualizarMontoModal idServicio={idServicio} grupos={grupos} show={showModalActualizarPrecio} onClose={handleCerrarModalActualizarPrecio} />
+      
 
       {/* Modal para Editar Grupo */}
       <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchGrupos} />

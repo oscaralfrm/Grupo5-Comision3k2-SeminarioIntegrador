@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Button, Modal } from 'react-bootstrap';
 import { FaRegCalendarAlt, FaUserAlt, FaCoins, FaClock } from 'react-icons/fa';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { getServicioById, definirFechaInicioDeServicio, updateServicio } from '../../../services/Servicio';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getAlumnosDeServicio } from '../../../services/Alumno';
@@ -10,35 +8,20 @@ import { getMontoActualGrupoDeHistorial } from '../../../services/HistorialMonto
 import { getGruposDeServicio } from '../../../services/Grupo';
 import { armarStringPrecioYFrecuenciaCobro } from '../../../services/frecuenciaPago';
 
-const BarraResumen = ({ idServicio }) => {
-  const [serviceData, setServiceData] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
   const [alumnos, setAlumnos] = useState([]);
   const [montos, setMontos] = useState([]);
-  const [grupos, setGrupos] = useState([]);
-  const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
-  const { idInstructor } = useParams();
+  const { idInstructor, idServicio } = useParams();
 
   useEffect(() => {
     const fetchServicio = async () => {
       try {
-        console.log('Fetching servicio data for ID:', idServicio); // Log para verificar el ID del servicio
-        const data = await getServicioById(idServicio);
-
-        console.log('Servicio data fetched:', data); // Log de los datos obtenidos
-        setServiceData(data);
-
         const alumnosInscritos = await getAlumnosDeServicio(idServicio);
         setAlumnos(alumnosInscritos);
 
-        const grupos = await getGruposDeServicio(idServicio);
-        setGrupos(grupos);
-
         const montosActuales = grupos.map(grupo => getMontoActualGrupoDeHistorial(grupo.historialMontos).monto);
         setMontos(montosActuales);
-
 
       } catch (error) {
         console.error('Error al obtener los datos del servicio:', error);
@@ -47,29 +30,6 @@ const BarraResumen = ({ idServicio }) => {
 
     if (idServicio) fetchServicio();
   }, [idServicio]);
-
-  const handleOpenModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
-
-  const handleSaveDate = async () => {
-    if (!selectedDate) return;
-
-    try {
-      console.log('Guardando nueva fecha:', selectedDate); // Log para ver qué fecha se está guardando
-      setIsSaving(true);
-      await definirFechaInicioDeServicio(idServicio, selectedDate.toISOString().split('T')[0]);
-      setServiceData((prev) => ({
-        ...prev,
-        fechaInicio: selectedDate.toISOString().split('T')[0],
-      }));
-      handleCloseModal();
-    } catch (error) {
-      console.error('Error al guardar la fecha:', error);
-      alert('Error al guardar la fecha');
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   const handleSuspendService = async () => {
     try {
@@ -160,15 +120,8 @@ const BarraResumen = ({ idServicio }) => {
               </>
             ) : (
               <>
-                <p className="mb-1 fw-bold">Fecha Inicio</p>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="mb-2"
-                  onClick={handleOpenModal}
-                >
-                  Configurar
-                </Button>
+                <p className="mb-1 fw-bold">Fecha Inicio:</p>
+                <p>Sin definir</p>
               </>
             )}
           </Col>
@@ -201,37 +154,6 @@ const BarraResumen = ({ idServicio }) => {
 
         </Row>
       </Card>
-
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Configurar Fecha de Inicio</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Selecciona una fecha de inicio para el servicio:</p>
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => {
-              console.log('Fecha seleccionada:', date); // Log para verificar la fecha seleccionada
-              setSelectedDate(date);
-            }}
-            minDate={new Date()}
-            dateFormat="yyyy-MM-dd"
-            className="form-control"
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cancelar
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSaveDate}
-            disabled={isSaving || !selectedDate}
-          >
-            {isSaving ? 'Guardando...' : 'Guardar'}
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 };

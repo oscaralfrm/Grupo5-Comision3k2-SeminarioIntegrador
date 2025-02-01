@@ -11,8 +11,7 @@ import {
 import BarraResumen from "./BarraResumen";
 import { getInstructorById } from "../../../services/Instructor";
 
-function ServiceHeader({ serviceData, setServiceData }) {
-  console.log("Service data en Service Header", serviceData);
+function ServiceHeader({ serviceData, setServiceData, grupos }) {
   const { idServicio } = useParams();
   const { idInstructor } = useParams();
   const [instructor, setInstructor] = useState(null);
@@ -149,7 +148,7 @@ function ServiceHeader({ serviceData, setServiceData }) {
           */}
 
 
-          {/* Publicar Servicio section */}
+          {/* Publicar Servicio section 
           <Col md="6" className="mb-2" style={{ width: "100%" }}>
             <div className="ms-auto d-flex align-items-center">
               <strong className="me-2">Publicar Servicio:</strong>
@@ -176,9 +175,10 @@ function ServiceHeader({ serviceData, setServiceData }) {
               </Form>
             </div>
           </Col>
+          */}
         </Col>
       </Row>
-      <BarraResumen idServicio={idServicio} />
+      <BarraResumen serviceData={serviceData} setServiceData={setServiceData} grupos={grupos}/>
     </Card>
   );
 }

@@ -178,6 +178,7 @@ export default function ServicioForm() {
                   formData={formData}
                   goToPreviousTab={goToPreviousTab}
                   isValid={isValid}
+                  nombreBoton={"Registrar"}
                 />
               </Tab>
             </Tabs>
