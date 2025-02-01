@@ -73,14 +73,15 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
       }
     };
     fetchInscripciones();
-  }, [idServicio]);
+    setInscriptionsSwitchActive(habilitadas);
+  }, [idServicio, habilitadas]);
 
   const handleDetailClick = (enroll) => {
     setSelectedEnrollment({
       ...enroll,
       dni: enroll.alumno.usuario.dni,
       phone: enroll.alumno.usuario.telefono,
-      email: enroll.alumno.usuario.usuario.email,
+      email: enroll.alumno.usuario.email,
       seniority: calcularAntiguedadComoTexto(enroll.alumno.usuario.fechaRegistro),
       courses: 3,
       paymentsUpToDate: true,
@@ -104,7 +105,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
   };
 
   const handleReject = (enroll) => {
-    const aceptado = rechazarInscripcion(enroll.id);
+    const aceptado = rechazarInscripcion(idServicio, enroll.id);
     setRejectedEnrollments([...rejectedEnrollments, enroll]);
     handleCloseDetail();
   };

@@ -109,9 +109,9 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   };
   
   // Rechazar una inscripción
-  export const rechazarInscripcion = async (idInscripcion) => {
+  export const rechazarInscripcion = async (idServicio, idInscripcion) => {
     try {
-      const response = await axios.put(`${API_URL}/inscripciones/${idInscripcion}/rechazar`);
+      const response = await axios.put(`${API_URL}/${idServicio}/inscripciones/${idInscripcion}/rechazar`, "Sin motivo");
       return response.data;
     } catch (error) {
       console.error("Error al rechazar la inscripción:", error);

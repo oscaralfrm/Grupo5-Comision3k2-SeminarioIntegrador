@@ -6,14 +6,19 @@ import { getGruposDeServicio, createGrupoConHorarios } from "../../../../service
 import { getAlumnosDeGrupo } from "../../../../services/Alumno";
 import CrearGrupoModal from "./ModalCrearGrupo";
 import EditarGrupoModal from "./ModalEditarGrupo";
+import { getMontoActualGrupoDeHistorial } from "../../../../services/HistorialMontoCuota";
+import { armarStringPrecioYFrecuenciaCobro } from "../../../../services/frecuenciaPago";
+import ModalActualizarMontos from "../Monto/ModalActualizarMontos";
+import ActualizarMontoModal from "../../MiServicio/MenuOpciones/ActualizarMonto";
 
-function GruposServicio() {
+function GruposServicio({ frecuenciaCobro }) {
   const { idServicio } = useParams();
   const [grupos, setGrupos] = useState([]);
   const [cuposLibres, setCuposLibres] = useState({});
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null); // Nuevo estado
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalCrear, setShowModalCrear] = useState(false);
+  const [showModalActualizarPrecio, setShowModalActualizarPrecio] = useState(false);
   const [ultimoNumeroGrupo, setUltimoNumeroGrupo] = useState(0);
 
   const fetchGrupos = async () => {
@@ -41,12 +46,12 @@ function GruposServicio() {
     if (!grupos || grupos.length === 0) {
       return 0;
     }
-  
+
     // Utilizar reduce para encontrar el máximo número de grupo
     const numeroMaximo = grupos.reduce((max, grupo) => {
       return Math.max(max, grupo.numero);
     }, 0);
-  
+
     return numeroMaximo;
   };
 
@@ -63,6 +68,11 @@ function GruposServicio() {
     }
     setCuposLibres(nuevosCuposLibres);
   };
+
+  const getPrecioYFrecuencia = (historialMontos) => {
+    const montoActual = getMontoActualGrupoDeHistorial(historialMontos).monto;
+    return armarStringPrecioYFrecuenciaCobro(montoActual, frecuenciaCobro.cantCiclo, frecuenciaCobro.unidadCiclo);
+  }
 
   useEffect(() => {
     if (grupos.length > 0) {
@@ -92,6 +102,15 @@ function GruposServicio() {
     setShowModalCrear(true);
   };
 
+  const handleActualizarPrecio = () => {
+    setShowModalActualizarPrecio(true);
+  };
+
+  const handleCerrarModalActualizarPrecio = () => {
+    setShowModalActualizarPrecio(false);
+    fetchGrupos();
+  };
+
   const handleCerrarModalCrear = () => {
     setShowModalCrear(false);
     fetchGrupos();
@@ -103,34 +122,39 @@ function GruposServicio() {
   };
 
   return (
-    <Container 
-      className="p-3" 
-      style={{ 
-        maxWidth: "100%", 
-        margin: "auto", 
-        fontFamily: "Roboto", 
+    <Container
+      className="p-3"
+      style={{
+        maxWidth: "100%",
+        margin: "auto",
+        fontFamily: "Roboto",
         backgroundColor: "white",
         padding: "20px",
         borderRadius: "20px",
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         minHeight: "100%"
-        
-        }}>
-                          
+
+      }}>
+
       <div className="mb-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1E1B4B", borderRadius: "8px", padding: "15px" }}>
-        <h2 className="text-center" 
-          style={{ color: "white", 
-                  fontFamily: "Roboto", 
-                  fontSize: "1.5em" }}>
+        <h2 className="text-center"
+          style={{
+            color: "white",
+            fontFamily: "Roboto",
+            fontSize: "1.5em"
+          }}>
           Grupos y Horarios
         </h2>
+        <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleActualizarPrecio}>
+          Actualizar precio
+        </Button>
         <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleCrearGrupo}>
           Crear Grupo
         </Button>
       </div>
 
       <Row>
-        <Col md={6} className="mb-4">
+        <Col md={individuales.length > 0 ? 6 : 12} className="mb-4">
           <h5 className="text-start">Clases Grupales</h5>
           {grupales.length > 0 ? (
             grupales.map((grupo) => (
@@ -147,6 +171,7 @@ function GruposServicio() {
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
+                    <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo.historialMontos) || "No disponible"}</Card.Text>
                   </Card.Body>
                 </Card>
               </Col>
@@ -156,10 +181,10 @@ function GruposServicio() {
           )}
         </Col>
 
-        <Col md={6} className="mb-4">
-          <h5 className="text-start">Clases Individuales</h5>
-          {individuales.length > 0 ? (
-            individuales.map((grupo) => (
+        {individuales.length > 0 && (
+          <Col md={6} className="mb-4">
+            <h5 className="text-start">Clases Individuales</h5>
+            {individuales.map((grupo) => (
               <Col xs={12} key={grupo.id} className="mb-3">
                 <Card className="h-100">
                   <Card.Body>
@@ -173,21 +198,26 @@ function GruposServicio() {
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
+                    <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo.historialMontos)}</Card.Text>
                   </Card.Body>
                 </Card>
               </Col>
-            ))
-          ) : (
-            <p>No hay grupos con clases individuales disponibles.</p>
-          )}
-        </Col>
+            ))}
+          </Col>
+        )}
       </Row>
 
+
       {/* Modal para Crear Grupo */}
-      <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos}/>
-      
+      <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos} />
+
+      {/* Modal para Actualizar precio */}
+      <ActualizarMontoModal idServicio={idServicio}  grupos={grupos}  show={showModalActualizarPrecio} onClose={handleCerrarModalActualizarPrecio}  />
+
+
+
       {/* Modal para Editar Grupo */}
-      <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchGrupos}/>
+      <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchGrupos} />
 
     </Container>
   );

@@ -1,8 +1,13 @@
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
-import { useState } from 'react';
-import { editarMontoServicio } from '../../../../services/HistorialMontoCuota';
+import { Modal, Button, Form } from "react-bootstrap";
+import { useState } from "react";
+import { format, parseISO } from "date-fns";
+import {
+  actualizarMontoGrupo,
+  actualizarMontosVariosGrupos,
+  getMontosProgramadosDeHistorial
+} from "../../../../services/HistorialMontoCuota";
 
-const ActualizarMontoModal = ({ grupos, show, onClose }) => {
+const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
   if (!grupos || grupos.length === 0) {
     return (
       <Modal show={show} onHide={onClose} centered>
@@ -21,72 +26,70 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
     );
   }
 
-  const [selectedGroups, setSelectedGroups] = useState([]); // IDs de los grupos seleccionados
-  const [newMonto, setNewMonto] = useState('');
-  const [vigencia, setVigencia] = useState('');
-  const [pendingUpdates, setPendingUpdates] = useState([]); // [{ grupoId, nombre, monto, vigencia }]
+  const [pendingUpdates, setPendingUpdates] = useState([]);
+  const [selectedGroups, setSelectedGroups] = useState([]);
+  const [newMonto, setNewMonto] = useState("");
+  const [vigencia, setVigencia] = useState("");
 
   const handleAddUpdate = () => {
-    if (!newMonto || !vigencia) {
-      alert('Por favor, ingresa un monto y una fecha de vigencia válida.');
+    if (!newMonto || !vigencia || selectedGroups.length === 0) {
+      alert("Por favor, ingresa un monto, una fecha de vigencia válida y selecciona al menos un grupo.");
       return;
     }
 
-    const fechaActual = new Date().toISOString().split('T')[0];
-    if (new Date(vigencia) < new Date(fechaActual)) {
-      alert('La fecha de vigencia no puede ser menor a la fecha actual.');
+    const fechaActual = new Date();
+    const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
+
+    if (vigencia <= fechaActualLocal) {
+      alert("La fecha de vigencia debe ser mayor a la fecha actual.");
       return;
     }
 
-    const newUpdates = selectedGroups.map((grupoId) => {
-      const grupo = grupos.find((g) => g.id === grupoId);
-      return {
-        grupoId,
-        nombre: grupo?.nombre || 'Grupo desconocido',
+    const newUpdate = {
+      idsGrupos: [...selectedGroups],
+      montoDTO: {
         monto: parseFloat(newMonto),
-        vigencia,
-      };
-    });
+        fechaInicio: vigencia, // Directamente en formato YYYY-MM-DD
+      },
+    };
 
-    setPendingUpdates((prev) => [...prev, ...newUpdates]);
+    setPendingUpdates((prev) => [...prev, newUpdate]);
     setSelectedGroups([]);
-    setNewMonto('');
-    setVigencia('');
+    setNewMonto("");
+    setVigencia("");
   };
 
-  const handleRemoveUpdate = (grupoId) => {
-    setPendingUpdates((prev) => prev.filter((update) => update.grupoId !== grupoId));
+  const handleRemoveUpdate = (index) => {
+    setPendingUpdates((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSaveMontos = async () => {
     if (pendingUpdates.length === 0) {
-      alert('No hay cambios para guardar.');
+      alert("No hay cambios para guardar.");
       return;
     }
 
     try {
-      await Promise.all(
-        pendingUpdates.map(({ grupoId, monto, vigencia }) =>
-          editarMontoServicio(grupoId, monto, vigencia)
-        )
-      );
+      for (const update of pendingUpdates) {
+        console.log(`Enviando actualización -> ${JSON.stringify(update)}`);
+        await actualizarMontosVariosGrupos(idServicio, update.idsGrupos, update.montoDTO);
+      }
 
-      alert('Montos actualizados con éxito');
+      alert("Montos actualizados con éxito");
       onClose();
     } catch (error) {
-      console.error('Error al actualizar los montos:', error.message);
-      alert('Hubo un error al actualizar los montos.');
+      console.error("Error al actualizar los montos:", error);
+      alert("Hubo un error al actualizar los montos.");
     }
   };
 
-  const handleGroupSelection = (grupoId) => {
-    setSelectedGroups((prev) =>
-      prev.includes(grupoId)
-        ? prev.filter((id) => id !== grupoId)
-        : [...prev, grupoId]
-    );
-  };
+  const pendingGroupIds = pendingUpdates.flatMap(update => update.idsGrupos); // Extraer los IDs de los grupos pendientes de actualización
 
+  const formatDate = (dateString) => {
+    const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date correctamente
+    return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
+  };
+    
   return (
     <Modal show={show} onHide={onClose} centered>
       <Modal.Header closeButton>
@@ -102,12 +105,15 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
                 type="checkbox"
                 label={grupo.nombre}
                 value={grupo.id}
-                checked={selectedGroups.includes(grupo.id) || pendingUpdates.some((update) => update.grupoId === grupo.id)}
+                checked={selectedGroups.includes(grupo.id)}
                 onChange={() =>
-                  !pendingUpdates.some((update) => update.grupoId === grupo.id) &&
-                  handleGroupSelection(grupo.id)
+                  setSelectedGroups((prev) =>
+                    prev.includes(grupo.id)
+                      ? prev.filter((id) => id !== grupo.id)
+                      : [...prev, grupo.id]
+                  )
                 }
-                disabled={pendingUpdates.some((update) => update.grupoId === grupo.id)}
+                disabled={pendingGroupIds.includes(grupo.id) || getMontosProgramadosDeHistorial(grupo.historialMontos).length > 0} // Deshabilitar si el grupo ya está en pendingUpdates
               />
             ))}
           </Form.Group>
@@ -126,17 +132,13 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
             <Form.Label>Fecha de vigencia:</Form.Label>
             <Form.Control
               type="date"
-              min={new Date().toISOString().split('T')[0]}
+              min={new Date().toISOString().split("T")[0]}
               value={vigencia}
               onChange={(e) => setVigencia(e.target.value)}
             />
           </Form.Group>
 
-          <Button
-            variant="primary"
-            onClick={handleAddUpdate}
-            disabled={selectedGroups.length === 0 || !newMonto || !vigencia}
-          >
+          <Button variant="primary" onClick={handleAddUpdate} disabled={selectedGroups.length === 0 || !newMonto || !vigencia}>
             Agregar
           </Button>
         </Form>
@@ -145,14 +147,13 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
           <div className="mt-4">
             <h5>Cambios pendientes:</h5>
             <ul className="list-group">
-              {pendingUpdates.map(({ grupoId, nombre, monto, vigencia }) => (
-                <li key={grupoId} className="list-group-item d-flex justify-content-between align-items-center">
-                  {nombre} - Monto: ${monto.toFixed(2)} - Vigencia: {vigencia}
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleRemoveUpdate(grupoId)}
-                  >
+              {pendingUpdates.map(({ idsGrupos, montoDTO }, index) => (
+                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                  {/* Mostrar nombres de los grupos */}
+                  Grupos: {idsGrupos.map(id => grupos.find(grupo => grupo.id === id)?.nombre).join(", ")} -
+                  Monto: ${montoDTO.monto.toFixed(2)} -
+                  Vigencia: {formatDate(montoDTO.fechaInicio)}
+                  <Button variant="danger" size="sm" onClick={() => handleRemoveUpdate(index)}>
                     Eliminar
                   </Button>
                 </li>
@@ -160,16 +161,34 @@ const ActualizarMontoModal = ({ grupos, show, onClose }) => {
             </ul>
           </div>
         )}
+
+
+        {/* Nueva sección: Montos programados */}
+        <div className="mt-4">
+          <h5>Montos programados:</h5>
+          {grupos.map((grupo) => {
+            const montosProgramados = getMontosProgramadosDeHistorial(grupo.historialMontos);
+            return montosProgramados.length > 0 ? (
+              <div key={grupo.id}>
+                <h6>{grupo.nombre}</h6>
+                <ul className="list-group">
+                  {montosProgramados.map((monto, index) => (
+                    <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                      Monto: ${monto.monto.toFixed(2)} -
+                      Vigencia: {formatDate(monto.fechaInicio)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null;
+          })}
+        </div>
+
+
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
-          Cancelar
-        </Button>
-        <Button
-          variant="primary"
-          onClick={handleSaveMontos}
-          disabled={pendingUpdates.length === 0}
-        >
+        <Button variant="secondary" onClick={onClose}>Cancelar</Button>
+        <Button variant="primary" onClick={handleSaveMontos} disabled={pendingUpdates.length === 0}>
           Guardar todos
         </Button>
       </Modal.Footer>

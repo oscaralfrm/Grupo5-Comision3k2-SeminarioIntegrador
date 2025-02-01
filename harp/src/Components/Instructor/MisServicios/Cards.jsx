@@ -104,7 +104,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
                   {servicio.nombre}
                 </h4>
                 <p className="card-text" style={{ fontSize: "0.9em", color: "#333", lineHeight: "1.4" }}>
-                  {servicio.descripcion}
+                  {/*servicio.descripcion*/}
                 </p>
                 <tr></tr>
               </div>

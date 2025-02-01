@@ -1,6 +1,6 @@
 import axios from './axiosConfig.js';
 
-const BASE_URL = 'http://localhost:9001/api/users/login';
+const BASE_URL = '/users/login';
 
 // Frontend service
 export const iniciarSesion = async (email, contrasena) => {
