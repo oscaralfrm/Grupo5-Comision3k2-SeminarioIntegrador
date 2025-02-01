@@ -201,3 +201,28 @@ export const getDetallesDeServicio = async (idServicio) => {
         throw error;
     }
 };
+
+// Método para obtener todos los servicios sin paginación
+// En Servicio.js
+export const getAllServiciosSinPaginacion = async () => {
+    try {
+        const response = await axios.get(`${API_URL}servicios`);
+        // Verifica si la respuesta es un array
+        return Array.isArray(response.data) ? response.data : [];
+    } catch (error) {
+        console.error('Error al obtener los servicios', error.response.data);
+        return []; // Retorna un array vacío en caso de error
+    }
+};
+
+// Función para obtener todos los servicios con paginación
+export const getAllServiciosConPaginacionPrueba = async (page = 1, size = 10) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios?page=${page}&size=${size}`);
+        // Acceder a response.data.content para obtener los servicios
+        return Array.isArray(response.data.content) ? response.data.content : [];
+    } catch (error) {
+        console.error('Error al obtener los servicios', error);
+        throw error;
+    }
+};
