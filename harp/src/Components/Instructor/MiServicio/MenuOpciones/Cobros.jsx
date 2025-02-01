@@ -10,6 +10,7 @@ import ActualizarMontoModal from "./ActualizarMonto.jsx";
 import HistorialPagoModal from "./HistorialPago.jsx";
 import { getHistorialCuotasDeAlumno } from "../../../../services/Alumno.js"
 import { useLocation } from 'react-router-dom';
+//import Pagos from "../../../Alumno/MenuOpciones/Dashboard/Pagos.jsx";
 
 const Cobros = ({ id }) => {
   // Estados principales
@@ -448,6 +449,7 @@ const Cobros = ({ id }) => {
         onClose={handleClosePaymentHistory}
         student={selectedStudent}
       />
+     {/*  <Pagos handleAddPayment={handleAddPayment} /> */}
     </div>
   );
 }

@@ -20,6 +20,8 @@ import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Confi
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
 import DescubrirServicios from "./Components/Alumno/DescubrirServicios.jsx";
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
+import ServicioAlumno from "./Components/Alumno/MenuOpciones/ServicioAlumno.jsx";
+//import Servicio0 from "./Components/Alumno/MenuOpciones/Servicio.jsx";
 
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
@@ -85,6 +87,11 @@ function App() {
           <Route 
             path="alumno/:idAlumno/servicios" 
             element={<><AppNavbar /><DescubrirServicios /></>} 
+          />
+
+          <Route 
+            path="alumno/:idAlumno/servicios/:idServicio/mi-servicio" 
+            element={<><AppNavbar /><ServicioAlumno /></>} 
           />
 
           <Route path= "instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo/></>}/>

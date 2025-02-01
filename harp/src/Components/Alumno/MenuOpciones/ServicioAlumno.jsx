@@ -1,36 +1,40 @@
 import React, { useState , useEffect} from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import InfoCard from "../MenuOpciones/Dashboard/InfoServicio";
-import Enrollments from "../MenuOpciones/Dashboard/Inscripciones";
-import Cobros from "../MenuOpciones/Dashboard/Cobros";
-import StudentsCard from "../MenuOpciones/Dashboard/Alumnos";
+import InfoCardAlumno from "./Dashboard/InfoServicioAlumno";
+//import Enrollments from "./Dashboard/Inscripciones";
+import Pagos from "./Dashboard/Pagos";
+// import StudentsCard from "../MenuOpciones/Dashboard/Alumnos";
 import { Container, Row, Col } from "react-bootstrap";
-import { getServicioById } from "../../../../services/Servicio";
-import ClassesCard from "./Dashboard/Clases";
+import { getServicioById } from "../../../services/Servicio";
+import ClassesCardAlumno from "./Dashboard/ClasesAlumno";
 
-const Servicio0 = () => {
+const ServicioAlumno = () => {
   const [serviceData, setServiceData] = useState(null);
   const navigate = useNavigate();
-  const { idInstructor } = useParams();
+  const { idAlumno } = useParams();
   const {idServicio} = useParams();
+  const [nombreServicio, setNombreServicio] = useState("Mi Servicio");
 
   const handleNavigate = () => {
-    navigate(`/instructor/${idInstructor}/servicios`);
+    navigate(`/alumno/${idAlumno}/servicios`);
   };
 
   const fetchServicio = async () => {
     try {
       const data = await getServicioById(idServicio);
       setServiceData(data);
+      if (data?.nombre) {
+        setNombreServicio(data.nombre); // Actualiza el título con el nombre del servicio
+      }
     } catch (error) {
-      console.error('Error al traer el servicio:', error);
+      console.error("Error al traer el servicio:", error);
     }
   };
 
   useEffect(() => {
     fetchServicio();
   }, [idServicio]);
-  
+
 
   return (
     <Container fluid className="py-4" style={{ fontFamily: "Roboto", color: "#1E1B4B", marginTop: "6rem" }}>
@@ -52,10 +56,10 @@ const Servicio0 = () => {
           }}
           className="d-none d-md-block" // Mostrar solo en pantallas grandes
         >
-          Mis Servicios
+          Descubrir Servicios
         </button>
 
-        <h1 className="text-center fw-bold mb-5">Mi Servicio</h1> {/* Título en el centro */}
+        <h1 className="text-center fw-bold mb-5">{nombreServicio}</h1> {/* Título en el centro */}
       </div>
 
       {/* Botón "Mis Servicios" en pantallas pequeñas */}
@@ -73,30 +77,30 @@ const Servicio0 = () => {
             cursor: "pointer",
           }}
         >
-          Mis Servicios
+          Descubrir Servicios
         </button>
       </div>
 
       <Row className="g-4">
         {/* Columna Izquierda */}
         <Col xs={12} md={4}>
-          <InfoCard serviceData={serviceData} setServiceData={setServiceData}/>
-          <StudentsCard />
+          <InfoCardAlumno serviceData={serviceData} setServiceData={setServiceData}/>
+          {/* <StudentsCard /> */}
         </Col>
 
         {/* Columna Central */}
         <Col xs={12} md={4}>
-        <ClassesCard asistenciasActivas={serviceData?.asistenciasActivas} fetchServicio={fetchServicio}/>
-          <Enrollments habilitadas={serviceData?.inscripcionesAbiertas} fetchServicio={fetchServicio} />
+        <ClassesCardAlumno asistenciasActivas={serviceData?.asistenciasActivas} fetchServicio={fetchServicio}/>
+          {/* <Enrollments habilitadas={serviceData?.inscripcionesAbiertas} fetchServicio={fetchServicio} /> */}
         </Col>
 
         {/* Columna Derecha */}
         <Col xs={12} md={4}>
-          <Cobros />
+          <Pagos />
         </Col>
       </Row>
     </Container>
   );
 };
 
-export default Servicio0;
+export default ServicioAlumno;
