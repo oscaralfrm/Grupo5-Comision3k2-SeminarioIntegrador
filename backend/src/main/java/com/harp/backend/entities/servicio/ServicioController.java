@@ -94,6 +94,20 @@ public class ServicioController {
         return  ResponseEntity.ok("Se habilitaron las inscripciones");
     }
 
+    // PUBLICAR
+    @PutMapping("/{idServicio}/publicar")
+    public ResponseEntity<String> publicar(@PathVariable @Min(1) Long idServicio,
+                                           @RequestBody LocalDate fechaInicio) {
+        servicioService.publicarServicio(idServicio, fechaInicio);
+        return  ResponseEntity.ok("Se publicó el servicio");
+    }
+
+    @GetMapping("/{idServicio}/se-puede-publicar")
+    public ResponseEntity<Boolean> publicar(@PathVariable @Min(1) Long idServicio) {
+        boolean sePuedePublicar = servicioService.sePuedePublicarServicio(idServicio);
+        return  ResponseEntity.ok(sePuedePublicar);
+    }
+
     // EDITAR
     @PutMapping("/{idServicio}/inscripciones/deshabilitar")
     public ResponseEntity<String> deshabilitarInscripciones(@PathVariable @Min(1) Long idServicio) {

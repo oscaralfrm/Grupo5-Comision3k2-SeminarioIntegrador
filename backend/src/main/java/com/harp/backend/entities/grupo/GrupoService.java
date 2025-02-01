@@ -103,7 +103,27 @@ public class GrupoService implements IGrupoService {
         servicioService.agregarGrupoAServicio(nuevoGrupo, servicio);
 
         // Agregamos el monto al grupo
-        MontoServicio nuevoMonto = montoService.createMontoGrupo(grupoDTO.getMonto(), LocalDate.now());
+        // Si el servicio tiene fecha inicio y todavia no inicio entonces la fecha de inicio del monto es la fecha inicio del servicio
+        // Si el servicio no tiene fecha inicio entonces se crea con fecha inicio null y luego se setteara
+        // Si el servicio ya inicio entonces se crea con fecha inicio la actual
+        LocalDate fechaInicioMonto;
+        if (servicio.tieneFechaInicio() ) {
+            if ( ! servicio.yaInicio()) {
+                // Si el servicio ya tiene fecha inicio configurada y no inicio
+                // será a partir de esa fecha que se comenzará a cobrar
+                fechaInicioMonto = servicio.getFechaInicio();
+            } else {
+                // Si el servicio ya inició entonces tiene fecha de inicio
+                // el grupo que se esta creando es nuevo por lo que se comenzara a cobrar desde el dia de hoy
+                fechaInicioMonto = LocalDate.now();
+            }
+        } else {
+            // El servicio todavia no inicio y no se configuró la fecha inicio
+            // La fecha del monto se configurara junto con la fecha de inicio del servicio
+            fechaInicioMonto = null;
+        };
+
+        MontoServicio nuevoMonto = montoService.createMontoGrupo(grupoDTO.getMonto(), fechaInicioMonto);
         grupoCreado.agregarMontoAHistorial(nuevoMonto);
 
         List<HorarioDTO> horariosDTO = grupoDTO.getHorarios();
@@ -148,6 +168,7 @@ public class GrupoService implements IGrupoService {
         // llamamos a claseService y le generamos las asistencias
         // seria mejor que todos estos servicios los llamaramos desde servicioService
         // y que aca solo nos llegue el servicio
+        // REVISAR SI SE LLAMA CUANDO SE INICIE REALMENTE EL SERVICIO
         if (servicio.isAsistenciasActivas() && servicio.tieneFechaInicio()) {
             // Creamos las clases a partir de la fecha inicio del servicio
             // Cuando setteamos la fecha inicio tambien deberiamos crear las clases

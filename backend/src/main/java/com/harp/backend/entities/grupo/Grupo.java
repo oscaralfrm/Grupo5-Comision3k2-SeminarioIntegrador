@@ -110,6 +110,9 @@ public class Grupo {
     }
 
     public MontoServicio obtenerMontoActual() {
+        if (historialMontos.size() == 1) {
+            return historialMontos.iterator().next();
+        }
         return historialMontos.stream().filter(MontoServicio::esMontoActual).findFirst().orElse(null);
     }
 

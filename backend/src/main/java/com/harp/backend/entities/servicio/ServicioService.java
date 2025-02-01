@@ -7,6 +7,9 @@ import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.ClaseService;
 import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.cuota.Cuota;
+import com.harp.backend.entities.frecuenciaPago.TipoCiclo;
+import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
+import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPagoService;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
@@ -33,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ServicioService implements IServicioService {
@@ -53,6 +57,9 @@ public class ServicioService implements IServicioService {
 
     @Autowired
     private ClaseService claseService;
+
+    @Autowired
+    private TipoFrecuenciaPagoService tipoFrecuenciaPagoService;
 
     // PAGINADO
     public Page<Servicio> getAllServicios(Integer page, Integer size) {
@@ -131,16 +138,36 @@ public class ServicioService implements IServicioService {
     }
 
     @Override
-    public Servicio editServicio(Long idServicio, ServicioDTO servicioDTO) {
+    public Servicio editServicio(Long idServicio, ServicioDTO dto) {
         // VALIDAR: si cambio frecuencia de pago, u otros campos
+        Servicio servicio = findServicio(idServicio);
 
-        Servicio servicioExistente = findServicio(idServicio);
-        Servicio servicioRecibido = servicioConverter.dtoToEntity(servicioDTO);
-        System.out.println("servicio recibido" + servicioRecibido);
-        servicioExistente = servicioRecibido;
-        servicioExistente.setId(idServicio);
+        servicio.setNombre(dto.getNombre());
+        servicio.setDescripcion(dto.getDescripcion());
+        servicio.setLogoURL(dto.getLogoURL());
+        servicio.setUbicacion(dto.getUbicacion());
+        servicio.setCantMaxAlumnosPorGrupo(dto.getCantMaxAlumnosPorGrupo());
+        //servicio.setCantHorariosPorGrupo(dto.getCantHorariosPorGrupo());
+        servicio.setDuracionTotalMeses(dto.getDuracionTotalMeses());
+        //servicio.setFechaInicio(dto.getFechaInicio());
+        //servicio.setFechaFin(dto.getFechaFin());
+        //servicio.setPublico(dto.isPublico());
+        //servicio.setCantDiasCiclo(dto.getCantDiasCiclo());
+        servicio.setDiaLimitePago(dto.getDiaLimitePago());
+        servicio.setClaseDePrueba(dto.isClaseDePrueba());
+        servicio.setAsistenciasActivas(dto.isAsistenciasActivas());
+        servicio.setMontoInscripcion(dto.getMontoInscripcion());
 
-        return servicioRepository.save(servicioExistente);
+        //Definir manualmente los atributos que son otros objetos
+        servicio.setCategoria(categoriaService.findCategoriaByNombre(dto.getCategoria()));
+        servicio.setModalidadInscripcion(Modalidad.valueOf(dto.getTipoModalidad()));
+
+        servicio.getTipoFrecuenciaPago().setCantCiclo(dto.getCantCiclo());
+        servicio.getTipoFrecuenciaPago().setUnidadCiclo(dto.getUnidadCiclo());
+        servicio.getTipoFrecuenciaPago().setDiaLimitePago(dto.getDiaLimitePago());
+        servicio.getTipoFrecuenciaPago().setTipoCiclo(dto.getTipoCiclo());
+
+        return servicioRepository.save(servicio);
     };
 
     public void agregarGrupoAServicio(Grupo grupo, Servicio servicioExistente) {
@@ -238,22 +265,51 @@ public class ServicioService implements IServicioService {
 
     public void setFechaInicioServicio(Long idServicio, LocalDate fechaInicio) {
         Servicio servicio = this.findServicio(idServicio);
-        if (servicio.yaInicio() && servicio.tieneInscripcionesActivas()) {
-            throw new UnsupportedOperationException("No se puede modificar la fecha inicio del servicio.");
+
+        // ACA ver, si hay solicitudes de inscripcion tampoco se deberia poder cambiar la fecha inicio
+        // o revisar si hay que cambiar las inscripciones
+        if (servicio.yaInicio() && servicio.tieneAlumnosConInscripcionesActivas()) {
+            throw new UnsupportedOperationException("No se puede modificar la fecha inicio del servicio porque el ya inició y hay alumnos inscriptos.");
         }
+
         servicio.setFechaInicio(fechaInicio);
         servicioRepository.save(servicio);
 
-        // le setteamos la fecha de inicio a los montos primeros
-        for (MontoServicio monto : servicio.obtenerMontosActualesGrupos()) {
-            //monto.setFechaInicio(servicio.getFechaInicio());
-            montoService.cambiarFechaInicioMontoServicio(monto, servicio.getFechaInicio());
+        // Cambiamos la fecha inicio de los montos de los grupos
+        if (servicio.esDeModalidadAGrupo()) {
+            // le setteamos la fecha de inicio a los montos primeros
+            // REVISAR: SI SE PASA LA FECHA INICIO DEL SERVICIO
+            // el iniciar settea la fecha inicio servicio a null de vuelta
+            // y los montos de cada grupo que se habian setteado para empezar en esa fecha tambien se deberian settear a null?
+            for (MontoServicio monto : servicio.obtenerMontosActualesGrupos()) {
+                //monto.setFechaInicio(servicio.getFechaInicio());
+                montoService.cambiarFechaInicioMontoServicio(monto, servicio.getFechaInicio());
+            }
         }
 
         // Luego creamos las clases
-        if (servicio.tieneInscripcionesActivas()) {
+        if (servicio.isAsistenciasActivas()) {
             claseService.crearClasesParaSemanaSiguente(servicio, fechaInicio);
         }
+    }
+
+    @Transactional
+    public void publicarServicio(Long idServicio, LocalDate fechaInicio) {
+        this.habilitarInscripciones(idServicio);
+        this.setFechaInicioServicio(idServicio, fechaInicio);
+    }
+
+    public boolean sePuedePublicarServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        if (servicio.isPublico()) {
+            return false;
+        }
+        if (servicio.getModalidadInscripcion().equals(Modalidad.AGrupo)) {
+            if ( ! servicio.tieneGrupos() || ! servicio.tieneMontoEnTodosSusGrupos() ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void activarAsistencias(Long idServicio) {

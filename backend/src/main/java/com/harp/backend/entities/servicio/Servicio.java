@@ -198,6 +198,7 @@ public class Servicio {
 //    }
 
     public boolean tieneMontoEnTodosSusGrupos() {
+        System.out.println("grupos" + this.getGrupos());
         return this.grupos.stream().allMatch(Grupo::tieneMontoActualConfigurado);
     }
 
@@ -252,7 +253,7 @@ public class Servicio {
         return this.grupos.stream().map(Grupo::obtenerMontoFuturo).toList();
     }
 
-    public boolean tieneInscripcionesActivas() {
+    public boolean tieneAlumnosConInscripcionesActivas() {
         return ( ! this.obtenerInscripcionesVigentes().isEmpty() );
     }
 

@@ -42,4 +42,6 @@ public interface IServicioService {
     List<Clase> findClasesDeServicio(Long idServicio);
     List<MontoServicio>  obtenerMontosProgramadosFuturosGruposDeServicio(Long idServicio);
     void editarDescripcionDeServicio(Long idServicio, String nuevaDescripcion);
+    void publicarServicio(Long idServicio, LocalDate fechaInicio);
+    boolean sePuedePublicarServicio(Long idServicio);
 }
