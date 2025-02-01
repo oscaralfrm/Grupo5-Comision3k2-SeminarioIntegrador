@@ -56,7 +56,7 @@ function ServiceHeader({ serviceData, setServiceData }) {
   };
 
   const handleEditClick = () => {
-    navigate("/edit-service"); // Navigate to edit service page
+    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`); // Navigate to edit service page
   };
 
   return (

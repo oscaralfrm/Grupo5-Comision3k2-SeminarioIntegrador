@@ -20,6 +20,7 @@ import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Confi
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
 import DescubrirServicios from "./Components/Alumno/DescubrirServicios.jsx";
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
+import EditServicioForm from "./Components/Instructor/EditServicio/EditServicio.jsx";
 
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
@@ -28,7 +29,7 @@ function App() {
     <div className="d-flex flex-column min-vh-100">
       <BrowserRouter>
         <Routes>
-          
+
           <Route path="/" element={<><AppNavbar /><PaginaDeInicio /></>} />
           <Route path="login" element={<><AppNavbar /><LoginForm /></>} />
           <Route path="registro" element={<><AppNavbar /><RegisterFormChooser /></>} />
@@ -43,6 +44,11 @@ function App() {
           <Route
             path="instructor/:idInstructor/crear-servicio"
             element={<><AppNavbar /><ServicioForm /></>}
+          />
+
+          <Route
+            path="instructor/:idInstructor/servicio/:idServicio/editar-servicio"
+            element={<><AppNavbar /><EditServicioForm /></>}
           />
 
           <Route
@@ -65,16 +71,16 @@ function App() {
             path="instructor/:idInstructor/servicio/:idServicio/mi-servicio/clase/:idClase/asistencias"
             element={<><AppNavbar /><Asistencias /></>}
           />
-          <Route 
-            path= "instructor/:idInstructor/servicios" 
+          <Route
+            path="instructor/:idInstructor/servicios"
             element={<><AppNavbar /><Dashboard /></>}
           />
-          <Route 
-            path= "instructor/:idInstructor/servicio/:idServicio/info-servicio" 
+          <Route
+            path="instructor/:idInstructor/servicio/:idServicio/info-servicio"
             element={<><AppNavbar /><InfoServicioPage /></>}
           />
-          <Route 
-            path= "instructor/:idInstructor/editar-usuario" 
+          <Route
+            path="instructor/:idInstructor/editar-usuario"
             element={<><AppNavbar /><EditUsuario /></>}
           />
 
@@ -82,12 +88,12 @@ function App() {
           // Para alumnos...
 
 
-          <Route 
-            path="alumno/:idAlumno/servicios" 
-            element={<><AppNavbar /><DescubrirServicios /></>} 
+          <Route
+            path="alumno/:idAlumno/servicios"
+            element={<><AppNavbar /><DescubrirServicios /></>}
           />
 
-          <Route path= "instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo/></>}/>
+          <Route path="instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo /></>} />
           {/* <Route path="instructor/:idInstructor/servicio/:idServicio/configuracion/crear-grupo" element={<><AppNavbar /><CrearGrupo /></>} /> */}
 
         </Routes>
