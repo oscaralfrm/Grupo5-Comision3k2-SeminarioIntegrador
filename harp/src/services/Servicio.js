@@ -157,3 +157,47 @@ export const calcularIngresosDeServicioEnCadaMesDelAñoActual = async (idServici
     }
 };
 
+// Función para obtener un servicio por su ID con toda la información relevante
+export const getDetallesDeServicio = async (idServicio) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}`);
+        const servicio = response.data;
+
+        if (!servicio) {
+            throw new Error("Servicio no encontrado");
+        }
+
+        return {
+            id: servicio.id,
+            nombre: servicio.nombre,
+            descripcion: servicio.descripcion,
+            logoURL: servicio.logoURL,
+            ubicacion: servicio.ubicacion,
+            categoria: servicio.categoria,
+            cantMaxAlumnosPorGrupo: servicio.cantMaxAlumnosPorGrupo,
+            cantMaxAlumnos: servicio.cantMaxAlumnos,
+            cantVecesSemanales: servicio.cantVecesSemanales,
+            fechaCreacion: servicio.fechaCreacion,
+            duracionTotalMeses: servicio.duracionTotalMeses,
+            fechaInicio: servicio.fechaInicio,
+            fechaFin: servicio.fechaFin,
+            activo: servicio.activo,
+            publico: servicio.publico,
+            inscripcionesAbiertas: servicio.inscripcionesAbiertas,
+            cantDiasCiclo: servicio.cantDiasCiclo,
+            diaLimitePago: servicio.diaLimitePago,
+            tipoFrecuenciaPago: servicio.tipoFrecuenciaPago,
+            modalidadInscripcion: servicio.modalidadInscripcion,
+            claseDePrueba: servicio.claseDePrueba,
+            asistenciasActivas: servicio.asistenciasActivas,
+            pagoAnticipadoDeMontoInscripcion: servicio.pagoAnticipadoDeMontoInscripcion,
+            pagoAnticipadoDePrimeraCuota: servicio.pagoAnticipadoDePrimeraCuota,
+            diasDeAntelacionPago: servicio.diasDeAntelacionPago,
+            montoInscripcion: servicio.montoInscripcion
+        };
+        
+    } catch (error) {
+        console.error("Error al obtener detalles del servicio", error);
+        throw error;
+    }
+};

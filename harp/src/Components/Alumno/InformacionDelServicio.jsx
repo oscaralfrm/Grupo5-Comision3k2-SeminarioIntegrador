@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // Importar useNavigate
 import { getDetallesDeServicio } from "../../services/Instructor";
 import { Card, Button, Spinner, Row, Col } from "react-bootstrap";
 import placeholderImage from "../../assets/placeholderForServices.png";
 
 const InformacionDelServicio = () => {
     const { idServicio } = useParams();
+    const navigate = useNavigate(); // Inicializa useNavigate
     const [servicio, setServicio] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -37,6 +38,11 @@ const InformacionDelServicio = () => {
         return <div className="text-center mt-5 text-danger">Servicio no encontrado</div>;
     }
 
+    // Función para manejar la redirección al hacer clic en el botón
+    const handleVerMas = () => {
+        navigate(`/alumno/${idServicio}/servicios/${idServicio}/detalles`); // Cambia la ruta según sea necesario
+    };
+
     return (
         <div className="container mt-5">
             <Card className="shadow-lg rounded-4 mb-4">
@@ -50,7 +56,9 @@ const InformacionDelServicio = () => {
                     <Card.Title className="text-center" style={{ color: "#1E1B4B" }}>{servicio.nombre}</Card.Title>
                     <Card.Text className="mt-3">{servicio.descripcion}</Card.Text>
                     <div className="d-flex justify-content-center gap-3">
-                        <Button style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}>Inscribirme</Button>
+                        <Button onClick={handleVerMas} style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}>
+                            Ver Más
+                        </Button>
                         <Button variant="secondary" onClick={() => window.history.back()}>Volver</Button>
                     </div>
                 </Card.Body>

@@ -105,3 +105,14 @@ export const getAllServicios = async () => {
     throw error;
   }
 };
+
+
+export const getServicioById = async (idServicio) => {
+  try {
+    const response = await axios.get(`/servicios/${idServicio}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching servicio with ID ${idServicio}:`, error);
+    throw error;
+  }
+};

@@ -19,6 +19,8 @@ import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboar
 import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Configuracion.jsx";
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
 import DescubrirServicios from "./Components/Alumno/DescubrirServicios.jsx";
+import InformacionDelServicio from "./Components/Alumno/InformacionDelServicio.jsx"; // <-- Importación corregida
+
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
 import ServicioAlumno from "./Components/Alumno/MenuOpciones/ServicioAlumno.jsx";
 //import Servicio0 from "./Components/Alumno/MenuOpciones/Servicio.jsx";
@@ -30,7 +32,7 @@ function App() {
     <div className="d-flex flex-column min-vh-100">
       <BrowserRouter>
         <Routes>
-          
+
           <Route path="/" element={<><AppNavbar /><PaginaDeInicio /></>} />
           <Route path="login" element={<><AppNavbar /><LoginForm /></>} />
           <Route path="registro" element={<><AppNavbar /><RegisterFormChooser /></>} />
@@ -67,16 +69,16 @@ function App() {
             path="instructor/:idInstructor/servicio/:idServicio/mi-servicio/clase/:idClase/asistencias"
             element={<><AppNavbar /><Asistencias /></>}
           />
-          <Route 
-            path= "instructor/:idInstructor/servicios" 
+          <Route
+            path="instructor/:idInstructor/servicios"
             element={<><AppNavbar /><Dashboard /></>}
           />
-          <Route 
-            path= "instructor/:idInstructor/servicio/:idServicio/info-servicio" 
+          <Route
+            path="instructor/:idInstructor/servicio/:idServicio/info-servicio"
             element={<><AppNavbar /><InfoServicioPage /></>}
           />
-          <Route 
-            path= "instructor/:idInstructor/editar-usuario" 
+          <Route
+            path="instructor/:idInstructor/editar-usuario"
             element={<><AppNavbar /><EditUsuario /></>}
           />
 
@@ -84,9 +86,9 @@ function App() {
           // Para alumnos...
 
 
-          <Route 
-            path="alumno/:idAlumno/servicios" 
-            element={<><AppNavbar /><DescubrirServicios /></>} 
+          <Route
+            path="alumno/:idAlumno/servicios"
+            element={<><AppNavbar /><DescubrirServicios /></>}
           />
 
           <Route 
@@ -95,6 +97,13 @@ function App() {
           />
 
           <Route path= "instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo/></>}/>
+<Route
+    path="alumno/:idAlumno/servicios/:idServicio/detalles"
+    element={<><AppNavbar /><InformacionDelServicio /></>}
+/>
+
+
+          <Route path="instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo /></>} />
           {/* <Route path="instructor/:idInstructor/servicio/:idServicio/configuracion/crear-grupo" element={<><AppNavbar /><CrearGrupo /></>} /> */}
 
         </Routes>
