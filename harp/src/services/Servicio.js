@@ -58,10 +58,10 @@ export const getServicioById = async (idServicio) => {
 // Función para actualizar un servicio
 export const updateServicio = async (idServicio, servicioDTO) => {
     try {
-        const response = await axios.put(`${API_URL}servicios/${idServicio}/activar-asistencias`);
+        const response = await axios.put(`${API_URL}servicios/${idServicio}`, servicioDTO);
         return response.data;
     } catch (error) {
-        console.error('Error al activar asistencias', error);
+        console.error('Error al editar el servicio', error);
         throw error;
     }
 };
@@ -112,6 +112,29 @@ export const definirFechaInicioDeServicio = async (idServicio, fechaInicio) => {
     }
 };
 
+export const publicarServicio = async (idServicio, fechaInicio) => {
+    try {
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/publicar`, fechaInicio);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
+    }
+};
+
+
+
+export const sePuedePublicarServicio = async (idServicio) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/se-puede-publicar`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
+    }
+};
 
 // Función para calcular la duración total de un servicio
 export const calcularDuracionTotalDiasServicio = async (idServicio) => {

@@ -24,6 +24,7 @@ import InformacionDelServicio from "./Components/Alumno/InformacionDelServicio.j
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
 import ServicioAlumno from "./Components/Alumno/MenuOpciones/ServicioAlumno.jsx";
 //import Servicio0 from "./Components/Alumno/MenuOpciones/Servicio.jsx";
+import EditServicioForm from "./Components/Instructor/EditServicio/EditServicio.jsx";
 
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
@@ -47,6 +48,11 @@ function App() {
           <Route
             path="instructor/:idInstructor/crear-servicio"
             element={<><AppNavbar /><ServicioForm /></>}
+          />
+
+          <Route
+            path="instructor/:idInstructor/servicio/:idServicio/editar-servicio"
+            element={<><AppNavbar /><EditServicioForm /></>}
           />
 
           <Route
