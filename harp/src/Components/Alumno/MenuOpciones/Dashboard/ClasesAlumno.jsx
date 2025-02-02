@@ -1,23 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getClasesDeServicio } from "../../../../services/Clase";
+import { getServicioById } from "../../../../services/Servicio";
 
-const ClassesCardAlumno = ({ asistenciasActivas, fetchServicio }) => {
-  const [classes, setClasses] = useState([]); // Contendrá todas las clases
+const ClassesCardAlumno = ({ asistenciasActivas }) => {
+  const [classes, setClasses] = useState([]);
   const [expanded, setExpanded] = useState(false);
+  const [clasesCompletadas, setClasesCompletadas] = useState(0);
+  const [servicioIniciado, setServicioIniciado] = useState(false);
+  const [fechaInicioServicio, setFechaInicioServicio] = useState(null);
   const { idServicio } = useParams();
 
-  // Fetching classes from the service
   useEffect(() => {
     const fetchClases = async () => {
       try {
+        console.log("Obteniendo clases del servicio con ID:", idServicio);
         const data = await getClasesDeServicio(idServicio);
+        console.log("Clases obtenidas:", data);
         setClasses(data);
+
+        const today = new Date();
+        let completadas = 0;
+
+        data.forEach(cls => {
+          const fechaClase = new Date(cls.fecha);
+          if (fechaClase < today) {
+            completadas += 1;
+          }
+        });
+
+        console.log("Clases completadas:", completadas);
+        setClasesCompletadas(completadas);
+
       } catch (error) {
-        console.error('Error al traer las clases:', error);
+        console.error("Error al traer las clases:", error);
       }
     };
+
+    const fetchServicio = async () => {
+      try {
+        console.log("Obteniendo datos del servicio con ID:", idServicio);
+        const servicio = await getServicioById(idServicio);
+        console.log("Datos del servicio obtenidos:", servicio);
+
+        const fechaInicio = new Date(servicio.fechaInicio);
+        setFechaInicioServicio(fechaInicio);
+        setServicioIniciado(fechaInicio <= new Date());
+        console.log("Fecha de inicio del servicio:", fechaInicio);
+        console.log("¿El servicio ya comenzó?", fechaInicio <= new Date());
+
+      } catch (error) {
+        console.error("Error al obtener el servicio:", error);
+      }
+    };
+
     fetchClases();
+    fetchServicio();
   }, [idServicio]);
 
   const handleExpandToggle = () => {
@@ -68,20 +106,10 @@ const ClassesCardAlumno = ({ asistenciasActivas, fetchServicio }) => {
         )}
       </div>
 
-      <style>
-        {`
-          @media (max-width: 500px) {
-            .responsive-container {
-              flex-direction: column;
-              align-items: center;
-              text-align: center;
-            }
-            .responsive-container h2 {
-              text-align: center;
-            }
-          }
-        `}
-      </style>
+      <div style={{ textAlign: "center", marginTop: "15px" }}>
+        <p>Clases completadas: {clasesCompletadas} / {classes.length}</p>
+        <p>Estado del curso: {servicioIniciado ? "Activo" : "Por comenzar"}</p>
+      </div>
 
       {asistenciasActivas ? (
         <>

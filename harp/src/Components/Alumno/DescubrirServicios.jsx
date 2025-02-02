@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getDetallesDeServicio } from "../../services/Servicio";
-import { Card, Button, Spinner, Row, Col } from "react-bootstrap";
+// import { getDetallesDeServicio } from "../../services/Servicio";
 import placeholderImage from "../../assets/placeholderForServices.png";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import { getAllServicios } from "../../services/Servicio";
-import placeholderImage from '../../assets/placeholderForServices.png';
 
 const DescubrirServicios = () => {
     const { idAlumno } = useParams();

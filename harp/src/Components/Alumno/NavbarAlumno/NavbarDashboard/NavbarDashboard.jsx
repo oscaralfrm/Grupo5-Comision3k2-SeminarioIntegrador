@@ -115,10 +115,10 @@ function NavbarAlumnoDash() {
                 Alumnos
               </Nav.Link>
               <Nav.Link
-                href={`/instructor/${idAlumno}/servicio/${idServicio}/cobros`}
+                href={`/alumno/${idAlumno}/servicio/${idServicio}/pagos`}
                 style={{ color: "white" }}
               >
-                Cobros
+                Pagos
               </Nav.Link>
   
               <NavDropdown
