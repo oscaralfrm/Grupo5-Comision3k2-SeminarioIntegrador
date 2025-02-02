@@ -180,3 +180,72 @@ export const calcularIngresosDeServicioEnCadaMesDelAñoActual = async (idServici
     }
 };
 
+// Función para obtener un servicio por su ID con toda la información relevante
+export const getDetallesDeServicio = async (idServicio) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}`);
+        const servicio = response.data;
+
+        if (!servicio) {
+            throw new Error("Servicio no encontrado");
+        }
+
+        return {
+            id: servicio.id,
+            nombre: servicio.nombre,
+            descripcion: servicio.descripcion,
+            logoURL: servicio.logoURL,
+            ubicacion: servicio.ubicacion,
+            categoria: servicio.categoria,
+            cantMaxAlumnosPorGrupo: servicio.cantMaxAlumnosPorGrupo,
+            cantMaxAlumnos: servicio.cantMaxAlumnos,
+            cantVecesSemanales: servicio.cantVecesSemanales,
+            fechaCreacion: servicio.fechaCreacion,
+            duracionTotalMeses: servicio.duracionTotalMeses,
+            fechaInicio: servicio.fechaInicio,
+            fechaFin: servicio.fechaFin,
+            activo: servicio.activo,
+            publico: servicio.publico,
+            inscripcionesAbiertas: servicio.inscripcionesAbiertas,
+            cantDiasCiclo: servicio.cantDiasCiclo,
+            diaLimitePago: servicio.diaLimitePago,
+            tipoFrecuenciaPago: servicio.tipoFrecuenciaPago,
+            modalidadInscripcion: servicio.modalidadInscripcion,
+            claseDePrueba: servicio.claseDePrueba,
+            asistenciasActivas: servicio.asistenciasActivas,
+            pagoAnticipadoDeMontoInscripcion: servicio.pagoAnticipadoDeMontoInscripcion,
+            pagoAnticipadoDePrimeraCuota: servicio.pagoAnticipadoDePrimeraCuota,
+            diasDeAntelacionPago: servicio.diasDeAntelacionPago,
+            montoInscripcion: servicio.montoInscripcion
+        };
+        
+    } catch (error) {
+        console.error("Error al obtener detalles del servicio", error);
+        throw error;
+    }
+};
+
+// Método para obtener todos los servicios sin paginación
+// En Servicio.js
+export const getAllServiciosSinPaginacion = async () => {
+    try {
+        const response = await axios.get(`${API_URL}servicios`);
+        // Verifica si la respuesta es un array
+        return Array.isArray(response.data) ? response.data : [];
+    } catch (error) {
+        console.error('Error al obtener los servicios', error.response.data);
+        return []; // Retorna un array vacío en caso de error
+    }
+};
+
+// Función para obtener todos los servicios con paginación
+export const getAllServiciosConPaginacionPrueba = async (page = 1, size = 10) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios?page=${page}&size=${size}`);
+        // Acceder a response.data.content para obtener los servicios
+        return Array.isArray(response.data.content) ? response.data.content : [];
+    } catch (error) {
+        console.error('Error al obtener los servicios', error);
+        throw error;
+    }
+};

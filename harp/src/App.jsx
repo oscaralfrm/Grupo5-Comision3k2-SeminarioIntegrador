@@ -19,6 +19,8 @@ import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboar
 import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Configuracion.jsx";
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
 import DescubrirServicios from "./Components/Alumno/DescubrirServicios.jsx";
+import InformacionDelServicio from "./Components/Alumno/InformacionDelServicio.jsx"; // <-- Importación corregida
+
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
 import EditServicioForm from "./Components/Instructor/EditServicio/EditServicio.jsx";
 
@@ -92,6 +94,12 @@ function App() {
             path="alumno/:idAlumno/servicios"
             element={<><AppNavbar /><DescubrirServicios /></>}
           />
+
+<Route
+    path="alumno/:idAlumno/servicios/:idServicio/detalles"
+    element={<><AppNavbar /><InformacionDelServicio /></>}
+/>
+
 
           <Route path="instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo /></>} />
           {/* <Route path="instructor/:idInstructor/servicio/:idServicio/configuracion/crear-grupo" element={<><AppNavbar /><CrearGrupo /></>} /> */}
