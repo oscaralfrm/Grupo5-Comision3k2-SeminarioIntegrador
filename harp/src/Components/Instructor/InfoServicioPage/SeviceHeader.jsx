@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Form, Button } from "react-bootstrap";
 import { FaStar, FaRegStar, FaCog } from "react-icons/fa";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { getServicioById } from "../../../services/Servicio";
 import {
   deshabilitarInscripcionesDeServicio,
@@ -139,7 +139,19 @@ function ServiceHeader({ serviceData, setServiceData, grupos }) {
           </Col>
 
           <p className="mb-3">
-            <strong>Instructor:</strong> {instructor?.usuario.nombre} {instructor?.usuario.apellido}
+            <strong>Instructor:</strong>{" "}
+            <Link
+              to={`/instructor/${instructor?.id}/informacion`}
+              className="text-primary text-decoration-none fw-bold"
+              style={{ cursor: "pointer" }}
+            >
+              {instructor?.usuario.nombre} {instructor?.usuario.apellido}
+            </Link>
+          </p>
+
+
+          <p className=" mt-3">
+            <strong>Clase de prueba:</strong> {serviceData?.claseDePrueba == true ? "Gratis" : "No incluida"}
           </p>
           {/*
              <p>
@@ -178,7 +190,7 @@ function ServiceHeader({ serviceData, setServiceData, grupos }) {
           */}
         </Col>
       </Row>
-      <BarraResumen serviceData={serviceData} setServiceData={setServiceData} grupos={grupos}/>
+      <BarraResumen serviceData={serviceData} setServiceData={setServiceData} grupos={grupos} />
     </Card>
   );
 }

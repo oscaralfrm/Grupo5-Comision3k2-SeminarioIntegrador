@@ -38,3 +38,47 @@ export const armarStringPrecioYFrecuenciaCobro = (monto, cantCiclo, unidadCiclo)
   return `$${monto} ${frecuencia}`;
 };
 
+
+export const armarStringFrecuenciaCobro = (cantCiclo, unidadCiclo) => {
+  const unidades = {
+    MONTHS: { singular: "mes", plural: "meses", especial: "Mensual" },
+    WEEKS: { singular: "semana", plural: "semanas", especial: "Semanal" },
+    DAYS: { singular: "día", plural: "días", especial: "Diario" },
+  };
+
+  let frecuencia = "Sin definir";
+
+  if (cantCiclo != null && unidadCiclo != null) {
+    const { singular, plural, especial } = unidades[unidadCiclo];
+
+    frecuencia = cantCiclo === 1 ? especial : `Cada ${cantCiclo} ${plural}`;
+  }
+
+  return frecuencia;
+};
+
+
+export const armarStringDiaLimite = (diaLimite, tipoCiclo, cantCiclo, unidadCiclo) => {
+  const unidades = {
+    MONTHS: { singular: "mes", plural: "meses", especial: "Mensual" },
+    WEEKS: { singular: "semana", plural: "semanas", especial: "Semanal" }
+  };
+
+  let frecuencia = "Sin definir";
+
+  if (cantCiclo != null && unidadCiclo != null) {
+    const { singular, plural, especial } = unidades[unidadCiclo];
+
+    frecuencia = cantCiclo === 1 && tipoCiclo == "SegunCalendario" ? ` ${diaLimite}  de cada ${singular}` : `Primeros ${diaLimite} días de cada ciclo`;
+  }
+
+  return frecuencia;
+};
+
+export const armarStringTipoCiclo = (tipoCiclo) => {
+if (tipoCiclo == "SegunCalendario") {
+  return "Según calendario";
+} else {
+  return "Según inscripción"
+}
+};

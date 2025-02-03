@@ -82,7 +82,7 @@ const InfoServicioPage = () => {
           </div>
         </Col>
         <Col md={6}>
-          {/*<MontosServicio />*/}
+          <MontosServicio />
         </Col>
       </Row>
 

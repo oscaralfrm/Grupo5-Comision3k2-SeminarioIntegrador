@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Button, Modal } from 'react-bootstrap';
+import { Card, Row, Col, Button } from 'react-bootstrap';
 import { FaRegCalendarAlt, FaUserAlt, FaCoins, FaClock } from 'react-icons/fa';
-import { getServicioById, definirFechaInicioDeServicio, updateServicio } from '../../../services/Servicio';
-import { useNavigate, useParams } from 'react-router-dom';
 import { getAlumnosDeServicio } from '../../../services/Alumno';
 import { getMontoActualGrupoDeHistorial } from '../../../services/HistorialMontoCuota';
-import { getGruposDeServicio } from '../../../services/Grupo';
+import { updateServicio } from '../../../services/Servicio';
+import { useNavigate, useParams } from 'react-router-dom';
 import { armarStringPrecioYFrecuenciaCobro } from '../../../services/frecuenciaPago';
 
 const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
   const [alumnos, setAlumnos] = useState([]);
   const [montos, setMontos] = useState([]);
+  const [precioMin, setPrecioMin] = useState("Sin definir");
+  const [frecuencias, setFrecuencias] = useState("");
   const navigate = useNavigate();
   const { idInstructor, idServicio } = useParams();
 
@@ -19,27 +20,37 @@ const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
       try {
         const alumnosInscritos = await getAlumnosDeServicio(idServicio);
         setAlumnos(alumnosInscritos);
-
-        const montosActuales = grupos.map(grupo => getMontoActualGrupoDeHistorial(grupo.historialMontos).monto);
-        setMontos(montosActuales);
-
       } catch (error) {
-        console.error('Error al obtener los datos del servicio:', error);
+        console.error('Error al obtener los alumnos del servicio:', error);
       }
     };
 
     if (idServicio) fetchServicio();
   }, [idServicio]);
 
+  useEffect(() => {
+    if (grupos.length > 0) {
+      const montosActuales = grupos.map(
+        grupo => getMontoActualGrupoDeHistorial(grupo.historialMontos)?.monto ?? 0
+      );
+      setMontos(montosActuales);
+    } else {
+      setMontos([]);
+    }
+  }, [grupos]);
+
+  useEffect(() => {
+    if (montos.length > 0 && serviceData?.tipoFrecuenciaPago) {
+      setPrecioMin(getPrecioMinimo());
+    } else {
+      setPrecioMin("Sin definir");
+    }
+  }, [montos, serviceData]);
+
   const handleSuspendService = async () => {
     try {
-      console.log('Suspending service with ID:', idServicio); // Log para verificar el ID del servicio
       await updateServicio(idServicio, { fechaInicio: null });
-      console.log('Servicio suspendido correctamente'); // Log para confirmar que se suspendió
-      setServiceData((prev) => ({
-        ...prev,
-        fechaInicio: null,
-      }));
+      setServiceData(prev => ({ ...prev, fechaInicio: null }));
     } catch (error) {
       console.error('Error al suspender el servicio:', error);
       alert('Error al suspender el servicio');
@@ -51,110 +62,70 @@ const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
   };
 
   const getPrecioMinimo = () => {
-    const tipoFrecuenciaPago = serviceData.tipoFrecuenciaPago;
+    if (!serviceData?.tipoFrecuenciaPago || montos.length === 0) {
+      return "Sin definir";
+    }
+
     const montoMinimo = Math.min(...montos);
-    return armarStringPrecioYFrecuenciaCobro(montoMinimo,
-      tipoFrecuenciaPago.cantCiclo, tipoFrecuenciaPago.unidadCiclo);
-  }
+    return armarStringPrecioYFrecuenciaCobro(
+      montoMinimo,
+      serviceData.tipoFrecuenciaPago.cantCiclo,
+      serviceData.tipoFrecuenciaPago.unidadCiclo
+    );
+  };
 
   const calcularFrecuenciasSemanales = () => {
-    const frecuencias = grupos.map(grupo => grupo.horarios.length);
-    
-    // Usamos Set para obtener solo las frecuencias únicas
-    const frecuenciasUnicas = [...new Set(frecuencias)];
-  
-    // Mapeamos las frecuencias para que tengan el formato correcto
-    const frecuenciasFormateadas = frecuenciasUnicas.map(frecuencia => {
-      return `${frecuencia} ${frecuencia === 1 ? "vez" : "veces"} por semana`;
-    });
-  
-    // Unimos las frecuencias formateadas en un string con comas
-    return frecuenciasFormateadas.join(", ");
+    const frecuencias = [...new Set(grupos.map(grupo => grupo.horarios.length))].sort((a, b) => a - b);
+    if (frecuencias.length === 0) return "No definida";
+    if (frecuencias.length === 1) return `${frecuencias[0]} ${frecuencias[0] === 1 ? "vez" : "veces"} por semana`;
+    return `${frecuencias.slice(0, -1).join(", ")} o ${frecuencias.at(-1)} veces por semana`;
   };
 
-  const calcularHorasSemanales = () => {
-    // Calcular las horas semanales de cada grupo
-    const horasSemanales = grupos.map(grupo => {
-      // Sumar las duraciones de los horarios de un grupo
-      const totalHoras = grupo.horarios.reduce((total, horario) => {
-        // Convertimos las horas en formato "HH:mm" a minutos y calculamos la duración
-        const horaInicio = new Date(`1970-01-01T${horario.horaInicio}:00`);
-        const horaFin = new Date(`1970-01-01T${horario.horaFin}:00`);
-        const duracion = (horaFin - horaInicio) / (1000 * 60); // Duración en minutos
-        console.log(duracion);
-        return total + duracion; // Acumulamos la duración total
-      }, 0);
-  
-      // Convertir las horas a un valor en horas
-      return totalHoras / 60; // Regresamos el valor en horas
-    });
-  
-    // Usamos un Set para obtener solo las horas semanales únicas
-    const horasUnicas = [...new Set(horasSemanales)];
-  
-    // Unir las horas semanales únicas en un string separado por comas
-    return horasUnicas.join(", ");
-  };
-  
-  
+  useEffect(() => {
+    setFrecuencias(calcularFrecuenciasSemanales());
+  }, [grupos]);
+
   if (!serviceData) return <p>Cargando datos del servicio...</p>;
 
   return (
-    <>
-      <Card className="mb-4 p-3">
-        <Row className="text-center text-md-start align-items-center">
+    <Card className="mb-4 p-3">
+      <Row className="text-center text-md-start align-items-center">
+        <Col className="d-flex flex-column align-items-center">
+          <FaRegCalendarAlt size={25} className="mb-2 mt-2 text-primary" />
+          <p className="mb-1 fw-bold">Fecha Inicio:</p>
+          <p>{serviceData.fechaInicio || "Sin definir"}</p>
+          {serviceData.fechaInicio && (
+            <Button variant="warning" size="sm" className="mb-3" onClick={handleSuspendService}>
+              Suspender
+            </Button>
+          )}
+        </Col>
+        <Col className="d-flex flex-column align-items-center text-center">
+          <FaClock size={25} className="mb-2 text-success" />
+          <p className="mb-1 fw-bold">Clases:</p>
+          <p>{frecuencias}</p>
+        </Col>
+        <Col className="d-flex flex-column align-items-center">
+          <FaCoins size={25} className="mb-2 text-warning" />
+          <p className="mb-1 fw-bold">Desde:</p>
+          <p>{precioMin}</p>
+        </Col>
+        <Col className="d-flex flex-column align-items-center">
+          <FaUserAlt size={25} className="mb-2 text-info" />
+          <p className="mb-1 fw-bold">Inscriptos:</p>
+          <p>{alumnos.length} alumnos</p>
+        </Col>
+        {serviceData.fechaInicio && (
           <Col className="d-flex flex-column align-items-center">
-            <FaRegCalendarAlt size={25} className="mb-2 mt-2 text-primary" />
-            {serviceData.fechaInicio ? (
-              <>
-                <p className="mb-1 fw-bold">Fecha Inicio:</p>
-                <p>{serviceData.fechaInicio}</p>
-                <Button
-                  variant="warning"
-                  size="sm"
-                  className="mb-3"
-                  onClick={handleSuspendService}
-                >
-                  Suspender
-                </Button>
-              </>
-            ) : (
-              <>
-                <p className="mb-1 fw-bold">Fecha Inicio:</p>
-                <p>Sin definir</p>
-              </>
-            )}
+            <i className="bi bi-binoculars-fill mb-2 text-primary" style={{ fontSize: '25px' }} />
+            <p className="mb-1 fw-bold">Actividad</p>
+            <Button variant="primary" size="sm" onClick={handleViewActivity}>
+              Ver Actividad
+            </Button>
           </Col>
-          <Col className="d-flex flex-column align-items-center">
-            <FaClock size={25} className="mb-2 text-success" />
-            <p className="mb-1 fw-bold">Clases:</p>
-            <p>{calcularFrecuenciasSemanales() || 'No definida'}</p>
-          </Col>
-          <Col className="d-flex flex-column align-items-center">
-            <FaCoins size={25} className="mb-2 text-warning" />
-            <p className="mb-1 fw-bold">Desde:</p>
-            <p>{getPrecioMinimo() ?? "No definido"}</p>
-          </Col>
-          <Col className="d-flex flex-column align-items-center">
-            <FaUserAlt size={25} className="mb-2 text-info" />
-            <p className="mb-1 fw-bold">Inscriptos:</p>
-            <p>{alumnos.length} alumnos</p>
-          </Col>
-          {serviceData.fechaInicio &&
-            <Col className="d-flex flex-column align-items-center">
-              <i
-                className="bi bi-binoculars-fill mb-2 text-primary"
-                style={{ fontSize: '25px' }}
-              />
-              <p className="mb-1 fw-bold">Actividad</p>
-              <Button variant="primary" size="sm" onClick={handleViewActivity}>
-                Ver Actividad
-              </Button>
-            </Col>}
-
-        </Row>
-      </Card>
-    </>
+        )}
+      </Row>
+    </Card>
   );
 };
 

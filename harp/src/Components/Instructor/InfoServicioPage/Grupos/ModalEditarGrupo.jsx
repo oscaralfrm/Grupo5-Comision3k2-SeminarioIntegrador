@@ -11,7 +11,7 @@ const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, id
     const [diaSemana, setDiaSemana] = useState('');
     const [horaInicio, setHoraInicio] = useState('');
     const [horaFin, setHoraFin] = useState('');
-    const [cantMaxCupos, setCantMaxCupos] = useState(grupo?.cantMaxCupos || 0);
+    const [cantMaxCupos, setCantMaxCupos] = useState(grupo?.cantMaxCupos || null);
     const [error, setError] = useState(null);
     const [horariosEnEdicion, setHorariosEnEdicion] = useState({});
     const [horariosEditados, setHorariosEditados] = useState({});
@@ -132,6 +132,7 @@ const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, id
         // Limpiar el array de horarios a agregar
         setHorariosAAgregar([]);
 
+        setCantMaxCupos(null);
         onGrupoEditado();
     };
 
@@ -179,6 +180,7 @@ const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, id
             ...horariosEnEdicion,
             [index]: false,
         });
+        setCantMaxCupos(null);
     };
 
     return (

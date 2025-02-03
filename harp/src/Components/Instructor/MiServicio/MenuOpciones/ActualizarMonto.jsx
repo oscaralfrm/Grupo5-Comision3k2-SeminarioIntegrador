@@ -4,7 +4,8 @@ import { format, parseISO } from "date-fns";
 import {
   actualizarMontoGrupo,
   actualizarMontosVariosGrupos,
-  getMontosProgramadosDeHistorial
+  definirSiGrupoSePuedeActualizarPrecio,
+  getMontoProgramadoDeHistorial
 } from "../../../../services/HistorialMontoCuota";
 
 const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
@@ -71,10 +72,8 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
 
     try {
       for (const update of pendingUpdates) {
-        console.log(`Enviando actualización -> ${JSON.stringify(update)}`);
         await actualizarMontosVariosGrupos(idServicio, update.idsGrupos, update.montoDTO);
       }
-
       alert("Montos actualizados con éxito");
       onClose();
     } catch (error) {
@@ -113,7 +112,7 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
                       : [...prev, grupo.id]
                   )
                 }
-                disabled={pendingGroupIds.includes(grupo.id) || getMontosProgramadosDeHistorial(grupo.historialMontos).length > 0} // Deshabilitar si el grupo ya está en pendingUpdates
+                disabled={pendingGroupIds.includes(grupo.id) || ! definirSiGrupoSePuedeActualizarPrecio(grupo)} // Deshabilitar si el grupo ya está en pendingUpdates
               />
             ))}
           </Form.Group>
@@ -167,7 +166,7 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
         <div className="mt-4">
           <h5>Montos programados:</h5>
           {grupos.map((grupo) => {
-            const montosProgramados = getMontosProgramadosDeHistorial(grupo.historialMontos);
+            const montosProgramados = getMontoProgramadoDeHistorial(grupo.historialMontos);
             return montosProgramados.length > 0 ? (
               <div key={grupo.id}>
                 <h6>{grupo.nombre}</h6>

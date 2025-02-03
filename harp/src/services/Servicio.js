@@ -249,3 +249,14 @@ export const getAllServiciosConPaginacionPrueba = async (page = 1, size = 10) =>
         throw error;
     }
 };
+
+export const addMontoInscripcionToServicio = async (idServicio, monto, pagoAnticipado) => {
+    try {
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/monto-inscripcion`, {monto, pagoAnticipado});
+        // Acceder a response.data.content para obtener los servicios
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener los servicios', error);
+        throw error;
+    }
+}

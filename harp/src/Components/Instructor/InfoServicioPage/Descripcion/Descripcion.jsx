@@ -82,7 +82,7 @@ function Descripcion({ descripcion, fetchServicio }) {
                 </h2>
             </div>
 
-            <p className="mt-3" style={{ whiteSpace: "pre-wrap" }}>
+            <p className="mt-3" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", }}>
                 {descripcion}
             </p>
 

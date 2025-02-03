@@ -29,17 +29,11 @@ export default function EditServicioForm() {
 
   // Obtener el servicio para editar
   useEffect(() => {
-    const fetchCategorias = async () => {
-      try {
-        const response = await getAllCategorias();
-        setCategorias(response);
-      } catch (error) {
-        console.error("Error al obtener las categorías:", error);
-      }
-    };
-
     const fetchServicio = async () => {
       try {
+        const response1 = await getAllCategorias();
+        setCategorias(response1);
+
         const response = await getServicioById(idServicio); // Obtener el servicio desde el backend
         // Rellenar los valores del formulario con los datos del servicio
         const frecuenciaCuotasObj = obtenerFrecuenciaCuotas(response.tipoFrecuenciaPago.cantCiclo, response.tipoFrecuenciaPago.unidadCiclo)
@@ -62,7 +56,6 @@ export default function EditServicioForm() {
       }
     };
 
-    fetchCategorias();
     fetchServicio();
   }, [idServicio, setValue]);
 
@@ -115,7 +108,7 @@ export default function EditServicioForm() {
       idInstructor: idInstructor,
       descripcion: data.descripcion,
       ubicacion: data.ubicacion,
-      categoria: data.categoria,
+      categoria: data.categoria.nombre,
       tipoCiclo:
         data.ciclos === "Mismas Fechas"
           ? "SegunCalendario"
