@@ -66,7 +66,7 @@ export default function Modalidad({
         >
           &#8592;
         </span>
-        { nombreBoton == "Crear" &&  
+        { nombreBoton == "Registrar" &&  
               <Button
               type="submit"
               variant="primary"
