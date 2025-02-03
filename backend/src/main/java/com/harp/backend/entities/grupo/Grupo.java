@@ -106,6 +106,9 @@ public class Grupo {
 //    }
 
     public boolean tieneMontoProgramadoFuturo() {
+        if (this.historialMontos.size() == 1) {
+            return false;
+        }
         return historialMontos.stream().anyMatch(MontoServicio::esMontoProgramadoFuturo);
     }
 

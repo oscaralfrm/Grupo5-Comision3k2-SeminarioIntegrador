@@ -247,4 +247,11 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     }
 
+    @PutMapping("/{idServicio}/monto-inscripcion")
+    public ResponseEntity<String> findSeviciosByNombre(@PathVariable Long idServicio,
+                                                       @RequestBody MontoInscripcionDTO montoInscripcionDTO) {
+        servicioService.configurarMontoInscripcionServicio(idServicio, montoInscripcionDTO);
+        return ResponseEntity.ok("Se configuró el monto de inscripción del servicio.");
+    }
+
 }

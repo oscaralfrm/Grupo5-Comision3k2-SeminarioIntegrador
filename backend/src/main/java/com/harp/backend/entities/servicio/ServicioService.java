@@ -378,4 +378,11 @@ public class ServicioService implements IServicioService {
         servicio.setDescripcion(nuevaDescripcion);
         servicioRepository.save(servicio);
     }
+
+    public void configurarMontoInscripcionServicio(Long idServicio, MontoInscripcionDTO montoInscripcionDTO) {
+        Servicio servicio = this.findServicio(idServicio);
+        servicio.setMontoInscripcion(montoInscripcionDTO.getMonto());
+        servicio.setPagoAnticipadoDeMontoInscripcion(montoInscripcionDTO.isPagoAnticipado());
+        servicioRepository.save(servicio);
+    }
 }

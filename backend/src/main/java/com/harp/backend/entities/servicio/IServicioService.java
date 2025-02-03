@@ -44,4 +44,5 @@ public interface IServicioService {
     void editarDescripcionDeServicio(Long idServicio, String nuevaDescripcion);
     void publicarServicio(Long idServicio, LocalDate fechaInicio);
     boolean sePuedePublicarServicio(Long idServicio);
+    void configurarMontoInscripcionServicio(Long idServicio, MontoInscripcionDTO montoInscripcionDTO);
 }
