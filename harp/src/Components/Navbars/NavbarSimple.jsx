@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Navbar, Dropdown } from "react-bootstrap";
 import img from "../../assets/LogoHarp420.png"; // Ruta del logo
 import profileImg from "../../assets/profile.png"; // Ruta de la imagen de perfil
@@ -7,8 +7,20 @@ import profileImg from "../../assets/profile.png"; // Ruta de la imagen de perfi
 export default function NavbarSimple() {
   const navigate = useNavigate();
   const {idInstructor} = useParams();
+  const location = useLocation();
   const handleLogoClick = () => {
     navigate("/");
+  };
+
+  const handleBackClick = () => {
+    console.log("ruta", location.state?.from );
+    if (location.state?.from === `/instructor/${idInstructor}/crear-servicio`) {
+      navigate(`/instructor/${idInstructor}/servicios`);
+    } else if (location.state?.from === `/instructor/${idInstructor}/editar-servicio`){
+      navigate(`/instructor/${idInstructor}/servicios`);
+    } else {
+      navigate(-1);
+    }
   };
 
   return (
@@ -37,7 +49,7 @@ export default function NavbarSimple() {
           {/* Flecha de regreso */}
           <button
             className="btn"
-            onClick={() => window.history.back()}
+            onClick={handleBackClick}
             style={{
               border: "none",
               background: "none",

@@ -4,7 +4,7 @@ import { getInstructorById } from "../../../services/Instructor";
 
 const CourseCards = ({ servicios, Instructorid }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const serviciosPerPage = 6;
+  const serviciosPerPage = 5;
   const [selectedServicio, setSelectedServicio] = useState(null);
   const [highlightedCourseId, setHighlightedCourseId] = useState(null);
   const [instructor, setInstructor] = useState(null);

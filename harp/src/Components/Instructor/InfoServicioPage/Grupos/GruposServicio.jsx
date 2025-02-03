@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Container, Button, Modal, Form } from "react-bootstrap";
-import { FaCog } from "react-icons/fa";
+import { FaCog, FaExclamationCircle } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
 import { getGruposDeServicio, createGrupoConHorarios } from "../../../../services/Grupo";
 import { getAlumnosDeGrupo } from "../../../../services/Alumno";
 import CrearGrupoModal from "./ModalCrearGrupo";
 import EditarGrupoModal from "./ModalEditarGrupo";
-import { getMontoActualGrupoDeHistorial } from "../../../../services/HistorialMontoCuota";
+import { definirSiServicioSePuedeActualizarPrecio, getMontoActualGrupoDeHistorial, getMontoProgramadoDeHistorial } from "../../../../services/HistorialMontoCuota";
 import { armarStringPrecioYFrecuenciaCobro } from "../../../../services/frecuenciaPago";
 import ModalActualizarMontos from "../Monto/ModalActualizarMontos";
 import ActualizarMontoModal from "../../MiServicio/MenuOpciones/ActualizarMonto";
+import { format, parseISO } from "date-fns";
+import GrupoHorariosMontos from "./GrupoHorariosMontos";
 
 function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
   const { idServicio } = useParams();
@@ -19,14 +21,28 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
   const [showModalCrear, setShowModalCrear] = useState(false);
   const [showModalActualizarPrecio, setShowModalActualizarPrecio] = useState(false);
   const [ultimoNumeroGrupo, setUltimoNumeroGrupo] = useState(0);
+  const [montosProgramados, setMontosProgramados] = useState(0);
+  const [sePuedeActualizarPrecio, setSePuedeActualizarPrecio] = useState(false);
 
-  const fetchGrupos = async () => {
-    console.log("hay grupos", grupos.length > 0 )
+
+  const obtenerMontosProgramadosPorGrupo = async (grupos) => {
+    const montosPorGrupo = {};
+
+    for (const grupo of grupos) {
+      const montoProgramado = await getMontoProgramadoDeHistorial(grupo.historialMontos);
+      montosPorGrupo[grupo.id] = montoProgramado[0];
+    }
+
+    console.log("montos", montosPorGrupo);
+    setMontosProgramados(montosPorGrupo);
   };
+
 
   useEffect(() => {
     setUltimoNumeroGrupo(calcularUltimoNumeroGrupo());
-  }, [idServicio]);
+    obtenerMontosProgramadosPorGrupo(grupos);
+    setSePuedeActualizarPrecio(definirSiServicioSePuedeActualizarPrecio(grupos));
+  }, [idServicio, grupos]);
 
 
   const calcularCuposLibres = async (grupo) => {
@@ -36,6 +52,14 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
     return cuposLibres > 0
       ? `${cuposLibres} cupo(s) libre(s)`
       : "Sin cupos libres";
+  };
+
+  // Formato de fecha
+  const formatDate = (dateString) => {
+    if (dateString != null) {
+      const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date correctamente
+      return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
+    }
   };
 
   const calcularUltimoNumeroGrupo = () => {
@@ -67,6 +91,11 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
   };
 
   const getPrecioYFrecuencia = (historialMontos) => {
+
+    if (!historialMontos || historialMontos.length === 0) {
+      return "No disponible";
+    }
+
     const montoActual = getMontoActualGrupoDeHistorial(historialMontos).monto;
 
 
@@ -110,9 +139,9 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
     setShowModalActualizarPrecio(true);
   };
 
-  const handleCerrarModalActualizarPrecio = () => {
+  const handleCerrarModalActualizarPrecio = async () => {
+    await fetchServicio();
     setShowModalActualizarPrecio(false);
-    fetchGrupos();
   };
 
   const handleCerrarModalCrear = () => {
@@ -122,7 +151,7 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
 
   const handleCerrarModalEdit = () => {
     setShowModalEdit(false);
-    fetchGrupos();
+    fetchServicio();
   };
 
   return (
@@ -149,22 +178,40 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
           }}>
           Grupos y Horarios
         </h2>
-        { grupos.length > 0 &&
-             <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleActualizarPrecio}>
-             Actualizar precio
-           </Button>
+        {sePuedeActualizarPrecio &&
+          <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleActualizarPrecio}>
+            Actualizar precio
+          </Button>
         }
-       
-        <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleCrearGrupo}>
+        <Button
+          variant="link"
+          style={{
+            backgroundColor: "#4F46E5",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "4px",
+            textDecoration: "none",
+            fontSize: "14px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px", // Espacio entre texto y icono
+          }}
+          onClick={handleCrearGrupo}
+        >
           Crear Grupo
+          {grupos.length === 0 && <FaExclamationCircle style={{ color: "yellow", fontSize: "18px" }} />}
         </Button>
       </div>
 
       <Row>
-        <Col md={individuales.length > 0 ? 6 : 12} className="mb-4">
-          <h5 className="text-start">Clases Grupales</h5>
-          {grupales.length > 0 ? (
-            grupales.map((grupo) => (
+
+        {grupos.length == 0 &&
+          <p>No hay grupos configurados.</p>}
+
+        {grupales.length > 0 && (
+          <Col md={individuales.length > 0 ? 6 : 12} className="mb-4">
+            <h5 className="text-start">Clases Grupales</h5>
+            {grupales.map((grupo) => (
               <Col xs={12} key={grupo.id} className="mb-3">
                 <Card className="h-100">
                   <Card.Body>
@@ -179,17 +226,21 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
                     <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo.historialMontos) || "No disponible"}</Card.Text>
+                    {montosProgramados[grupo.id] != null &&
+                      <Card.Text className="fw-bold mt-2">
+                        {montosProgramados[grupo.id]
+                          ? `$${montosProgramados[grupo.id].monto} desde ${formatDate(montosProgramados[grupo.id].fechaInicio)}`
+                          : "Monto no disponible"}
+                      </Card.Text>
+                    }
                   </Card.Body>
                 </Card>
               </Col>
-            ))
-          ) : (
-            <p>No hay grupos con clases grupales disponibles.</p>
-          )}
-        </Col>
+            ))}
+          </Col>)}
 
         {individuales.length > 0 && (
-          <Col md={6} className="mb-4">
+          <Col md={grupales.length > 0 ? 6 : 12} className="mb-4">
             <h5 className="text-start">Clases Individuales</h5>
             {individuales.map((grupo) => (
               <Col xs={12} key={grupo.id} className="mb-3">
@@ -206,12 +257,21 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
                     <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo?.historialMontos)}</Card.Text>
+                    {montosProgramados[grupo.id] != null &&
+                      <Card.Text className="fw-bold mt-2">
+                        {montosProgramados[grupo.id]
+                          ? `$${montosProgramados[grupo.id].monto} desde ${montosProgramados[grupo.id].fechaInicio}`
+                          : "Monto no disponible"}
+                      </Card.Text>
+                    }
                   </Card.Body>
                 </Card>
               </Col>
             ))}
           </Col>
         )}
+
+
       </Row>
 
 
@@ -219,11 +279,11 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
       <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos} />
 
       {/* Modal para Actualizar precio */}
-        <ActualizarMontoModal idServicio={idServicio} grupos={grupos} show={showModalActualizarPrecio} onClose={handleCerrarModalActualizarPrecio} />
-      
+      <ActualizarMontoModal idServicio={idServicio} grupos={grupos} show={showModalActualizarPrecio} onClose={handleCerrarModalActualizarPrecio} />
+
 
       {/* Modal para Editar Grupo */}
-      <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchGrupos} />
+      <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchServicio} />
 
     </Container>
   );

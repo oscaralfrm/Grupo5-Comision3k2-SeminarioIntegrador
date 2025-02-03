@@ -5,8 +5,9 @@ const API_URL = '/servicios';
 // Función para agregar un monto a un servicio
 export const addMontoToServicio = async (monto, cantVecesSemanales, fechaInicio, idServicio) => {
     try {
-        const response = await axios.post(`${API_URL}/${idServicio}/monto`, 
-            {   monto,
+        const response = await axios.post(`${API_URL}/${idServicio}/monto`,
+            {
+                monto,
                 cantVecesSemanales,
                 fechaInicio
             });
@@ -29,13 +30,17 @@ export const getMontosProgramadosServicio = async (idServicio) => {
     }
 };
 
+export const getMontoProgramadoDeHistorial = (historialMontos) => {
 
-export const getMontosProgramadosDeHistorial = (historialMontos) => {
-  // Obtener la fecha actual en formato YYYY-MM-DD según la zona horaria local
-  const fechaActual = new Date();
-  const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
+    if (historialMontos.length == 1) {
+        return [];
+    }
+    // Obtener la fecha actual en formato YYYY-MM-DD según la zona horaria local
+    const fechaActual = new Date();
+    const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
 
-  return historialMontos.filter((monto) => monto.fechaInicio > fechaActualLocal);
+    console.log(historialMontos);
+    return historialMontos.filter((monto) => monto.fechaInicio > fechaActualLocal);
 };
 
 export const getMontoActualGrupoDeHistorial = (historialMontos) => {
@@ -48,6 +53,7 @@ export const getMontoActualGrupoDeHistorial = (historialMontos) => {
         return historialMontos[0];
     }
 
+    console.log(historialMontos);
     return historialMontos.find((monto) => (fechaActualLocal >= monto.fechaInicio || monto.fechaInicio == null) && (monto.fechaFin >= fechaActualLocal || monto.fechaFin == null));
 };
 
@@ -65,7 +71,7 @@ export const getHistorialMontosServicio = async (idServicio) => {
 
 export const editarMontoServicio = async (idMonto, monto, fechaInicio, cantVecesSemanales) => {
     try {
-        const response = await axios.put(`${API_URL}/historiales-montos/${idMonto}`, {monto, fechaInicio, cantVecesSemanales});
+        const response = await axios.put(`${API_URL}/historiales-montos/${idMonto}`, { monto, fechaInicio, cantVecesSemanales });
         return response.data;
     } catch (error) {
         console.error('Error al obtener el servicio', error.response ? error.response.data : error.message);
@@ -119,3 +125,44 @@ export const getMontoActualGrupo = async (idServicio, idGrupo) => {
         throw new Error(error.response?.data?.message || 'Error al obtener el monto actual del grupo');
     }
 };
+
+export const definirSiGrupoSePuedeActualizarPrecio  = (grupo) => {
+    const montoActual = getMontoActualGrupoDeHistorial(grupo.historialMontos) ;
+    const fechaActual = new Date().toLocaleDateString("en-CA"); 
+
+    // Si el monto actual tiene una fecha inicio que es mayor a la actual no se puede actualizar todavia 
+    if (montoActual.fechaInicio == null){
+        return false;
+    }
+    if ( montoActual.fechaInicio >= fechaActual ) {
+        console.log("La fecha inicio es mayor a al actual");
+        
+        return false;
+    } else {
+        // Si la fechaInicio es anterior a la actual entonces se ve si
+        // Si ya tiene un monto configurado entonces no se puede actualizar precio
+        const montoProgramado = getMontoProgramadoDeHistorial(grupo.historialMontos);
+        if (montoProgramado.length != 0) {
+            console.log("Ya hay un monto programado");
+            return false;
+        }
+    }
+    return true;
+};
+
+
+export const definirSiServicioSePuedeActualizarPrecio  = (grupos) => {
+    
+    if (grupos.length == 0) {
+        console.log("NO hay grupos");
+        return false;
+    }
+    for (const grupo of grupos) {
+        if ( definirSiGrupoSePuedeActualizarPrecio(grupo)) {
+            return true;
+        }
+    }
+    return false;
+};
+
+
