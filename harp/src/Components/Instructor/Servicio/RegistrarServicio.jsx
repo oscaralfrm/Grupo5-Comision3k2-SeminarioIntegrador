@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getAllCategorias } from "../../../services/Categoria";
 import { createServicio } from "../../../services/Servicio";
 import General from "./Tabs/General";
@@ -14,6 +14,7 @@ export default function ServicioForm() {
   const [categorias, setCategorias] = useState([]);
   const { idInstructor } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     register,
@@ -98,9 +99,11 @@ export default function ServicioForm() {
 
     try {
       const response = await createServicio(servicioDTO);
+      
       alert("Servicio creado con éxito");
       navigate(
-        `/instructor/${idInstructor}/servicio/${response.id}/info-servicio`
+        `/instructor/${idInstructor}/servicio/${response.id}/info-servicio`,
+        {state: {from: window.location.pathname}}
       );
     } catch (error) {
       console.error("Error al crear el servicio:", error);

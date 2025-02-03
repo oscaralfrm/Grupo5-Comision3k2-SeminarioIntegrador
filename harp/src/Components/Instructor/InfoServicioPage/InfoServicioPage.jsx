@@ -55,11 +55,12 @@ const InfoServicioPage = () => {
     >
       {/* Renderizamos ServiceHeader solo si serviceData ya está definido */}
       {serviceData ? (
-        <ServiceHeader serviceData={serviceData} setServiceData={setServiceData} grupos={grupos}/>
+        <ServiceHeader serviceData={serviceData} setServiceData={setServiceData} grupos={grupos} />
       ) : (
         <p>Cargando servicio...</p>
       )}
 
+      {/*
       <Row className="mt-4 align-items-center">
         <Col>
           <Descripcion
@@ -68,21 +69,26 @@ const InfoServicioPage = () => {
           />
         </Col>
       </Row>
+       */}
 
       <Row className="mt-4">
         <Col>
           <GruposServicio grupos={grupos} fetchServicio={fetchServicio} frecuenciaCobro={serviceData?.tipoFrecuenciaPago || {}} />
         </Col>
       </Row>
-
-      <Row className="mt-4 align-items-center">
-        <Col className="col-6 d-flex justify-content-center">
-          <div className="w-100 d-flex justify-content-center">
-            {/*<ReviewCarousel />*/}
+      <Row className="mt-4 align-items-stretch">
+        <Col md={6} className="d-flex">
+          <div className="w-100"> {/* Contenedor interno que se ajusta al tamaño */}
+            <Descripcion
+              descripcion={serviceData?.descripcion}
+              fetchServicio={fetchServicio}
+            />
           </div>
         </Col>
-        <Col md={6}>
-          <MontosServicio />
+        <Col md={6} className="d-flex">
+          <div className="w-100">
+            <MontosServicio />
+          </div>
         </Col>
       </Row>
 

@@ -23,6 +23,7 @@ const AppNavbar = () => {
   const isNavbarSimple = location.pathname === `/instructor/${idInstructor}/editar-usuario`;
   const isRegisterRoute = location.pathname.startsWith('/registro');
   const isAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicios`; // Nueva condición para alumnos
+  const isEditService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`);
 
   return (
     <>
@@ -34,6 +35,7 @@ const AppNavbar = () => {
 
       {/* Muestra NavbarServicio en la ruta de creación de servicio */}
       {isCreateServiceRoute && <NavbarServicio />}
+      {isEditService && <NavbarSimple />}
       {isNavbarSimple && <NavbarSimple/>}
       {isConfigService &&<NavbarSimple/>}
       {/* Muestra NavbarRegisterChooser en rutas de registro */}

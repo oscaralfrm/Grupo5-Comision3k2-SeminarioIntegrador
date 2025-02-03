@@ -128,9 +128,12 @@ export const getMontoActualGrupo = async (idServicio, idGrupo) => {
 
 export const definirSiGrupoSePuedeActualizarPrecio  = (grupo) => {
     const montoActual = getMontoActualGrupoDeHistorial(grupo.historialMontos) ;
-    const fechaActual = new Date().toLocaleDateString("en-CA");; 
+    const fechaActual = new Date().toLocaleDateString("en-CA"); 
 
     // Si el monto actual tiene una fecha inicio que es mayor a la actual no se puede actualizar todavia 
+    if (montoActual.fechaInicio == null){
+        return false;
+    }
     if ( montoActual.fechaInicio >= fechaActual ) {
         console.log("La fecha inicio es mayor a al actual");
         

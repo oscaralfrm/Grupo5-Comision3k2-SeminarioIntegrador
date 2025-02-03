@@ -6,6 +6,7 @@ import { getMontoActualGrupoDeHistorial } from '../../../services/HistorialMonto
 import { updateServicio } from '../../../services/Servicio';
 import { useNavigate, useParams } from 'react-router-dom';
 import { armarStringPrecioYFrecuenciaCobro } from '../../../services/frecuenciaPago';
+import { format, parseISO } from "date-fns";
 
 const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
   const [alumnos, setAlumnos] = useState([]);
@@ -74,6 +75,14 @@ const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
     );
   };
 
+  // Formato de fecha
+  const formatDate = (dateString) => {
+    if (dateString != null) {
+      const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date correctamente
+      return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
+    }
+  };
+
   const calcularFrecuenciasSemanales = () => {
     const frecuencias = [...new Set(grupos.map(grupo => grupo.horarios.length))].sort((a, b) => a - b);
     if (frecuencias.length === 0) return "No definida";
@@ -93,7 +102,7 @@ const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
         <Col className="d-flex flex-column align-items-center">
           <FaRegCalendarAlt size={25} className="mb-2 mt-2 text-primary" />
           <p className="mb-1 fw-bold">Fecha Inicio:</p>
-          <p>{serviceData.fechaInicio || "Sin definir"}</p>
+          <p>{formatDate(serviceData.fechaInicio) || "Sin definir"}</p>
           {serviceData.fechaInicio && (
             <Button variant="warning" size="sm" className="mb-3" onClick={handleSuspendService}>
               Suspender
