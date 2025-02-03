@@ -4,6 +4,8 @@ import { omit } from 'lodash';
 import { FaPencilAlt, FaTrash, FaCheck, FaTimes } from 'react-icons/fa'; // Importa los iconos
 import { agregarHorariosAGrupo, deleteGrupo, editGrupo } from '../../../../services/Grupo';
 import { editHorario } from '../../../../services/Horario';
+import { yaInicio } from '../../../../services/Servicio';
+import { getMontoActualGrupoDeHistorial } from '../../../../services/HistorialMontoCuota';
 
 const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, idServicio }) => {
     const [nombreGrupo, setNombreGrupo] = useState(grupo?.nombre || '');
@@ -12,6 +14,7 @@ const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, id
     const [horaInicio, setHoraInicio] = useState('');
     const [horaFin, setHoraFin] = useState('');
     const [cantMaxCupos, setCantMaxCupos] = useState(grupo?.cantMaxCupos || null);
+    const [monto, setMonto] = useState();
     const [error, setError] = useState(null);
     const [horariosEnEdicion, setHorariosEnEdicion] = useState({});
     const [horariosEditados, setHorariosEditados] = useState({});
@@ -23,6 +26,9 @@ const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, id
             setNombreGrupo(grupo.nombre);
             setHorarios(grupo.horarios);
             setCantMaxCupos(grupo.cantMaxAlumnos);
+
+            const montoActual = getMontoActualGrupoDeHistorial(grupo.historialMontos);
+            setMonto(montoActual.monto);
         }
     }, [grupo]);
 
@@ -56,7 +62,7 @@ const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, id
 
         // Crear un objeto con el formato esperado por el backend
         const nuevoHorario = {
-            diaSemana: {nombre: diaSemana},
+            diaSemana: { nombre: diaSemana },
             horaInicio,
             horaFin,
         };
@@ -94,7 +100,7 @@ const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, id
             return;
         }
 
-        const grupoActualizado = { nombre: nombreGrupo, numero: grupo.numero, cantMaxCupos };
+        const grupoActualizado = { nombre: nombreGrupo, numero: grupo.numero, cantMaxCupos, monto: monto };
 
         try {
             await editGrupo(grupo.id, grupoActualizado);
@@ -122,7 +128,7 @@ const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, id
                 nombreDiaSemana: horario.diaSemana.nombre,
                 horaInicio: horario.horaInicio,
                 horaFin: horario.horaFin,
-              }));
+            }));
             await agregarHorariosAGrupo(horariosTransformados, grupo.id, idServicio);
         }
 
@@ -212,6 +218,21 @@ const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, id
                             required
                         />
                     </Form.Group>
+
+                    {/*  Si el grupo tiene un solo precio definido y su fecha inicio es mas adelante o null se puede editar */}
+                        <Form.Group className="mb-3">
+                            <Form.Label>Precio</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={monto}
+                                onChange={(e) => setMonto(e.target.value)}
+                                placeholder="Precio"
+                                required
+                                disabled={! (grupo?.historialMontos.length == 1 && ! yaInicio(grupo.historialMontos[0].fechaInicio) )} 
+                            />
+                        </Form.Group>
+                    
+
 
                     <Form.Label>Horarios</Form.Label>
                     <ListGroup className="mb-3">

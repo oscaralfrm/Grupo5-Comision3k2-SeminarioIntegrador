@@ -102,7 +102,7 @@ const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
         </Col>
         <Col className="d-flex flex-column align-items-center text-center">
           <FaClock size={25} className="mb-2 text-success" />
-          <p className="mb-1 fw-bold">Clases:</p>
+          <p className="mb-1 fw-bold">Frecuencia clases:</p>
           <p>{frecuencias}</p>
         </Col>
         <Col className="d-flex flex-column align-items-center">

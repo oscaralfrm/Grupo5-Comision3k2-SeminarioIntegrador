@@ -59,7 +59,7 @@ export default function ServicioForm() {
       case "diario":
         return { cantidad: 1, unidad: "DAYS" };
   
-      case "OTROS":
+      case "otros":
         if (duracionCuotasPersonalizada % 7 === 0) {
           return { cantidad: duracionCuotasPersonalizada / 7, unidad: "WEEKS" };
         } else {

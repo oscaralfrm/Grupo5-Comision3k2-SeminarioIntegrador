@@ -75,6 +75,7 @@ export const getGruposDeServicio = async (idServicio) => {
 // Servicio para editar un grupo
 export const editGrupo = async (idGrupo, grupoDTO) => {
     try {
+        console.log(grupoDTO);
         const response = await axios.put(`${API_URL}/grupos/${idGrupo}`, grupoDTO);
         return response.data;  // Suponiendo que la respuesta es el grupo editado
     } catch (error) {

@@ -260,3 +260,13 @@ export const addMontoInscripcionToServicio = async (idServicio, monto, pagoAntic
         throw error;
     }
 }
+
+export const yaInicio = (fechaInicio) => {
+    const fechaActual = new Date().toLocaleDateString("en-CA");
+    if (fechaInicio == null) {
+        return false;
+    }
+    console.log("fehca inicio", fechaInicio);
+    console.log("fechaactual", fechaActual);
+    return fechaActual >= fechaInicio;
+};

@@ -4,7 +4,7 @@ import { format, parseISO } from "date-fns";
 import { pagarCuota, obtenerCuotasDeInscripcion } from "../../../../services/Cuota.js";
 import { useParams } from "react-router-dom";
 import { getGruposDeServicio } from "../../../../services/Grupo.js";
-import { getMontoActualGrupo } from "../../../../services/HistorialMontoCuota.js";
+import { definirSiServicioSePuedeActualizarPrecio, getMontoActualGrupo } from "../../../../services/HistorialMontoCuota.js";
 import { getInscripcionesDeServicio, traerUnaInscripcion } from "../../../../services/Inscripcion.js";
 import ActualizarMontoModal from "./ActualizarMonto.jsx";
 import HistorialPagoModal from "./HistorialPago.jsx";
@@ -27,6 +27,7 @@ const Cobros = ({ id }) => {
   const [grupos, setGrupos] = useState([]);
   const [inscripciones, setInscripciones] = useState([]);
   const [showMontoModal, setShowMontoModal] = useState(false);
+  const [sePuedeActualizarPrecio, setSePuedeActualizarPrecio] = useState(false);
   const { idServicio } = useParams();
 
   const location = useLocation();
@@ -74,6 +75,8 @@ const Cobros = ({ id }) => {
       try {
         const response = await getGruposDeServicio(idServicio);
         setGrupos(response);
+
+        setSePuedeActualizarPrecio(definirSiServicioSePuedeActualizarPrecio(grupos));
       } catch (error) {
         console.error("Error al obtener los grupos:", error);
       }
@@ -229,6 +232,7 @@ const Cobros = ({ id }) => {
       </h1>
 
       {/* Botón Actualizar Monto */}
+      {sePuedeActualizarPrecio && 
       <div className="d-flex justify-content-end mb-4">
         <Button
           variant="primary"
@@ -242,9 +246,10 @@ const Cobros = ({ id }) => {
           }}
           onClick={() => setShowMontoModal(true)}
         >
-          Actualizar Monto
+          Actualizar Precios
         </Button>
       </div>
+      } 
 
       {/* Contenedor de Filtros */}
       <div className="mb-4">
