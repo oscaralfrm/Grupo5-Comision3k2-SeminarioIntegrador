@@ -131,7 +131,7 @@ useEffect(() => {
       setProximoMonto(null); // Elimina el monto programado después de aplicarlo
       setFechaVigenciaProximoMonto(null); // Limpia la fecha de vigencia del próximo monto
     }
-  }, 60000); // Cada 60 segundos
+  }, 1); // Cada 60 segundos
 
   return () => clearInterval(interval);
 }, [proximoMonto, fechaVigenciaProximoMonto]); // Dependencias actualizadas
@@ -199,7 +199,7 @@ console.log(cuotasVencidas); // Verifica el filtro de cuotas vencidas
 
   const tileClassName = ({ date, view }) => {
     if (view === "month" && servicio?.diaLimitePago && date.getDate() === servicio.diaLimitePago) {
-      return "highlight";
+      return "highlight-day";
     }
     return null;
   };
@@ -287,13 +287,13 @@ console.log(cuotasVencidas); // Verifica el filtro de cuotas vencidas
           <button
             onClick={() => handleAddPayment(idAlumno, cuotasPendientes)}
             style={{
-              backgroundColor: "#4F46E5",
-              color: "white",
-              padding: "5px 10px",
-              borderRadius: "4px",
-              border: "none",
-              cursor: "pointer",
-              marginLeft: "10px",
+              backgroundColor: "#28a745", // Cambiado a verde
+                    color: "white",
+                    padding: "5px 10px",
+                    borderRadius: "4px",
+                    border: "none",
+                    cursor: "pointer",
+                    marginLeft: "10px",
             }}
           >
             Pagar
@@ -358,6 +358,17 @@ console.log(cuotasVencidas); // Verifica el filtro de cuotas vencidas
         <h3 style={{ color: "#1E1B4B", fontSize: "1.4rem" }}>Calendario de Pagos</h3>
         <Calendar tileClassName={tileClassName} />
       </div>
+
+      {/* Estilos para el día límite de pago */}
+      <style>
+        {`
+          .highlight-day {
+            background-color: #ffcccc;
+            border-radius: 50%;
+            color: #dc3545;
+          }
+        `}
+      </style>
     </div>
   );
 };

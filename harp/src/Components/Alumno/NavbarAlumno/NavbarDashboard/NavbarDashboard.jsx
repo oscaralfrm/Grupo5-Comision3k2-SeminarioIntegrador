@@ -108,12 +108,12 @@ function NavbarAlumnoDash() {
               >
                 Mi Servicio
               </Nav.Link>
-              <Nav.Link
+          {/*     <Nav.Link
                 href={`/instructor/${idAlumno}/servicio/${idServicio}/alumnos`}
                 style={{ color: "white" }}
               >
                 Alumnos
-              </Nav.Link>
+              </Nav.Link> */}
               <Nav.Link
                 href={`/alumno/${idAlumno}/servicio/${idServicio}/pagos`}
                 style={{ color: "white" }}
