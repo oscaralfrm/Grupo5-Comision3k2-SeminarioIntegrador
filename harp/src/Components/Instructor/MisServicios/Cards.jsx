@@ -127,7 +127,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
                 </button>
                 <button
                   onClick={() => handleGoToService(servicio.id)}
-                  className="btn btn-secondary"
+                  className="btn btn-primary"
                   style={{
                     backgroundColor: "#4F46E5",
                     color: "white",
