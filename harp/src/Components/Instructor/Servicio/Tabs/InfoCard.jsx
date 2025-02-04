@@ -3,7 +3,7 @@ import React from "react";
 export default function ResumenServicio({ formData }) {
   // Función para convertir a mayúsculas el primer carácter
   const capitalizeFirstLetter = (str) => {
-    if (!str) return str;
+    if (typeof str !== "string") return "";
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 

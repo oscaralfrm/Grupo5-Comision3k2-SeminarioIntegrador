@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getClasesDeServicio } from "../../../../../services/Clase.js";
 
 const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
   const [classes, setClasses] = useState([]); // Contendrá todas las clases
   const [expanded, setExpanded] = useState(false);
-  const { idServicio } = useParams();
-
+  const { idInstructor, idServicio } = useParams();
+  const navegate = useNavigate();
   // Fetching classes from the service
   useEffect(() => {
     const fetchClases = async () => {
@@ -103,6 +103,7 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
               {classes.slice(0, expanded ? classes.length : 1).map((cls) => (
                 <div
                   key={cls.id}
+                  onClick={()=>navegate(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio/clase/${cls.id}/asistencias`)}
                   style={{
                     display: "flex",
                     justifyContent: "space-between",

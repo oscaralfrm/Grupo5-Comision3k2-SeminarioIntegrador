@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from './axiosConfig.js';
 
 // Éstos son los servicios de asistencias...
 
@@ -10,12 +10,23 @@ Clase.js
 
 */
 
-const API_URL = 'http://localhost:9001/api/servicios/grupos/clases'; // Esta es la configuración base para las Asistencias en el Backend
+const API_URL = '/servicios/grupos/clases'; // Esta es la configuración base para las Asistencias en el Backend
 
 // Servicio para obtener todas las asistencias
 export const getAllAsistencias = async () => {
     try {
         const response = await axios.get(`${API_URL}/asistencias`);
+        return response.data; 
+    } catch (error) {
+        console.error("Error fetching asistencias: ", error);
+        throw error;
+    }
+};
+
+// Servicio para obtener todas las asistencias
+export const getAsistenciasDeClase = async (idClase) => {
+    try {
+        const response = await axios.get(`${API_URL}/${idClase}/asistencias`);
         return response.data; 
     } catch (error) {
         console.error("Error fetching asistencias: ", error);
@@ -36,23 +47,23 @@ export const getAsistenciaById = async (idAsistencia) => {
 
 // POST... ESTO ES NUEVO JULI, ES EL POST PARA CREAR UNA ASISTENCIA, tiene que funcionar cuando el Instructor apriete el botón de "Guardar"
 // OJO ESTE MÉTODO ES NUEVO...
-export const createAsistencia = async (idClase) => {
-    try {
-
-        const response = await axios.post(`${API_URL}/asistencias/${idClase}`);
-        return response.data; // 
-
-    } catch (error) {
-        console.error("Error fetching asistencia by ID: ", error);
-        throw error;
-    }
-}
+//export const createAsistencia = async (idClase) => {
+//    try {
+//
+ //       const response = await axios.post(`${API_URL}/asistencias/${idClase}`);
+//        return response.data; // 
+//
+//    } catch (error) {
+//        console.error("Error fetching asistencia by ID: ", error);
+//        throw error;
+//    }
+//}
 
 
 // Servicio para editar una asistencia existente
 export const editAsistenciasClase = async (idClase, asistencias) => {
     try {
-        const response = await axios.put(`${API_URL}/grupos/clases/${idClase}/asistencias`, asistencias);
+        const response = await axios.put(`${API_URL}/${idClase}/asistencias`, asistencias);
         return response.data; // Suponiendo que la respuesta es una confirmación o las asistencias actualizadas
     } catch (error) {
         console.error("Error editing asistencias: ", error.response?.data?.message || error.message);
