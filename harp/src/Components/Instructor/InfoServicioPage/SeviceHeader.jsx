@@ -55,7 +55,9 @@ function ServiceHeader({ serviceData, setServiceData, grupos }) {
   };
 
   const handleEditClick = () => {
-    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`); // Navigate to edit service page
+    navigate(
+      `/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`
+    ); // Navigate to edit service page
   };
 
   return (
@@ -68,24 +70,9 @@ function ServiceHeader({ serviceData, setServiceData, grupos }) {
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         maxWidth: "100%",
         margin: "auto",
-        marginTop: "80px"
+        marginTop: "80px",
       }}
     >
-      {/* Edit Button */}
-      <Button
-        variant="light"
-        className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
-        onClick={handleEditClick}
-        style={{
-          backgroundColor: "#1E1B4B",
-          border: "none",
-          top: "10px",
-          right: "10px",
-        }}
-      >
-        <FaCog color="white" size={20} />
-      </Button>
-
       <Row className="align-items-center text-center text-md-start g-3">
         {/* Service Logo */}
         <Col
@@ -102,15 +89,35 @@ function ServiceHeader({ serviceData, setServiceData, grupos }) {
         </Col>
 
         {/* Service Info */}
-        <Col md="8">
+        <Col md="9" className="d-flex flex-column">
           <div
             style={{
               backgroundColor: "#1E1B4B",
               padding: "10px",
-              borderRadius: "20px",
+              borderTopLeftRadius: "20px",
+              borderTopRightRadius: "10px",
+              borderBottomLeftRadius: "20px",
+              borderBottomRightRadius: "20px",
               color: "white",
+              position: "relative",
             }}
           >
+            {/* Edit Button */}
+            <Button
+              variant="light"
+              className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
+              onClick={handleEditClick}
+              style={{
+                backgroundColor: "#1E1B4B",
+                border: "none",
+                top: "-7px",
+                right: "0px",
+                zIndex: 10, // Asegura que el botón esté encima de otros elementos
+              }}
+            >
+              <FaCog color="white" size={20} />
+            </Button>
+
             <h4 className="fw-bold mb-2 mt-2 text-center">
               {serviceData?.nombre}
             </h4>
@@ -149,16 +156,15 @@ function ServiceHeader({ serviceData, setServiceData, grupos }) {
             </Link>
           </p>
 
-
           <p className=" mt-3">
-            <strong>Clase de prueba:</strong> {serviceData?.claseDePrueba == true ? "Gratis" : "No incluida"}
+            <strong>Clase de prueba:</strong>{" "}
+            {serviceData?.claseDePrueba == true ? "Gratis" : "No incluida"}
           </p>
           {/*
              <p>
             <strong>Descripción:</strong> {serviceData?.descripcion}
           </p>
           */}
-
 
           {/* Publicar Servicio section 
           <Col md="6" className="mb-2" style={{ width: "100%" }}>
@@ -190,7 +196,11 @@ function ServiceHeader({ serviceData, setServiceData, grupos }) {
           */}
         </Col>
       </Row>
-      <BarraResumen serviceData={serviceData} setServiceData={setServiceData} grupos={grupos} />
+      <BarraResumen
+        serviceData={serviceData}
+        setServiceData={setServiceData}
+        grupos={grupos}
+      />
     </Card>
   );
 }
