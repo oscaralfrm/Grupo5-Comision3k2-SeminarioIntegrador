@@ -7,7 +7,7 @@ import { obtenerCuotasDeInscripcion } from "../../../../services/Cuota";
 import { getMontoActualGrupo, getHistorialMontosGrupo } from "../../../../services/HistorialMontoCuota";
 import { getServicioById } from "../../../../services/Servicio";
 import { getInscripcionesDeAlumno } from "../../../../services/Alumno"; // Asegúrate de tener importado este servicio
-import { getMontosProgramadosDeHistorial } from "../../../../services/HistorialMontoCuota";
+import { getMontoProgramadoDeHistorial } from "../../../../services/HistorialMontoCuota";
 
 const Pagos = (props) => {
   const { handleAddPayment } = props; 
@@ -95,7 +95,7 @@ const Pagos = (props) => {
           console.log("Historial: ", historial);
   
           // Buscar el próximo monto programado en el historial
-          const montosFuturos = getMontosProgramadosDeHistorial(historial);
+          const montosFuturos = getMontoProgramadoDeHistorial(historial);
           if (montosFuturos.length > 0) {
             const siguienteMonto = montosFuturos.reduce((min, current) =>
               new Date(current.fechaInicio) < new Date(min.fechaInicio) ? current : min
@@ -262,13 +262,13 @@ console.log(cuotasVencidas); // Verifica el filtro de cuotas vencidas
   {proximoMonto ? (
     <div style={{ backgroundColor: "#FFF3CD", padding: "10px", borderRadius: "8px", borderLeft: "5px solid #D97706", marginBottom: "10px" }}>
       <p style={{ color: "#D97706", fontWeight: "bold", margin: 0 }}>
-        ⚠️ Desde el <strong>{new Date(fechaVigenciaProximoMonto).toLocaleDateString("es-ES")}</strong>, el monto será de
+        ⚠️ Desde el <strong>{new Date(fechaVigenciaProximoMonto).toLocaleDateString("es-ES")}</strong>, el precio será de
         <strong> ${proximoMonto}</strong>.
       </p>
     </div>
   ) : (
     <p style={{ color: "#6B7280", fontStyle: "italic", textAlign: "center" }}>
-      ❌ Todavía no hay un nuevo monto programado.
+      ❌ El precio no ha sido actualizado.
     </p>
   )}
 </div>

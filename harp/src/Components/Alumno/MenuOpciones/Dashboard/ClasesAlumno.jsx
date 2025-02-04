@@ -13,6 +13,7 @@ const ClassesCardAlumno = ({ asistenciasActivas }) => {
   const [fechaInicioServicio, setFechaInicioServicio] = useState(null);
   const [inscripciones, setInscripciones] = useState([]); // Inscripciones totales
   const [claseHoy, setClaseHoy] = useState(null); // Clase del día actual
+  const {idAlumno} = useParams();
 
   const { idServicio } = useParams();
 
@@ -55,13 +56,20 @@ const ClassesCardAlumno = ({ asistenciasActivas }) => {
       console.log("Clases futuras:", clasesFuturas);
       console.log("Inscripciones totales:", inscripcionesTotales);
 
+      // Calcular clases completadas
+      const hoy = new Date();
+      const completadas = clasesTotales.filter(cls => new Date(cls.fecha) < hoy).length;
+      setClasesCompletadas(completadas);
+
+      // Ordenar clases futuras de más cercana a más lejana
+      const clasesFuturasOrdenadas = clasesFuturas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+      setClasesFuturas(clasesFuturasOrdenadas);
+
       // Actualizar estados
       setClasses(clasesTotales);
-      setClasesFuturas(clasesFuturas);
       setInscripciones(inscripcionesTotales);
 
       // Encontrar la clase del día actual
-      const hoy = new Date();
       const claseDeHoy = clasesTotales.find(cls => {
         const fechaClase = new Date(cls.fecha);
         return fechaClase.toDateString() === hoy.toDateString();
@@ -121,16 +129,19 @@ const ClassesCardAlumno = ({ asistenciasActivas }) => {
         }}>Clases</h2>
 
         {asistenciasActivas && (
-          <Link to="" style={{
+          <Link
+          to={`/alumno/${idAlumno}/servicio/${idServicio}/mi-servicio/asistencias`}
+          style={{
             backgroundColor: "#4F46E5",
             color: "white",
             padding: "10px 20px",
             borderRadius: "4px",
             textDecoration: "none",
             fontSize: "14px"
-          }}>
-            Historial
-          </Link>
+          }}
+        >
+          Historial
+        </Link>
         )}
       </div>
 
@@ -152,7 +163,7 @@ const ClassesCardAlumno = ({ asistenciasActivas }) => {
         <div>
           <p style={{ margin: 0, fontSize: "0.9em" }}>Clases completadas</p>
           <p style={{ margin: 0, fontWeight: "bold", fontSize: "1em" }}>
-            {clasesCompletadas} / {classes.length}
+            {clasesCompletadas}
           </p>
         </div>
         <div>

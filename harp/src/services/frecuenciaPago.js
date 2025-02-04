@@ -30,12 +30,12 @@ export const armarStringPrecioYFrecuenciaCobro = (monto, cantCiclo, unidadCiclo)
     WEEKS: { singular: "semana", plural: "semanas", especial: "semanal" },
     DAYS: { singular: "día", plural: "días", especial: "diario" },
   };
-
+  if(unidadCiclo){
   const { singular, plural, especial } = unidades[unidadCiclo];
 
   const frecuencia = cantCiclo === 1 ? especial : `cada ${cantCiclo} ${plural}`;
 
-  return `$${monto} ${frecuencia}`;
+  return `$${monto} ${frecuencia}`;}
 };
 
 

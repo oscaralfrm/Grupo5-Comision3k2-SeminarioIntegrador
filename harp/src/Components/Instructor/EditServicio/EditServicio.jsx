@@ -206,7 +206,8 @@ export default function EditServicioForm() {
                 }}
                 className="col-12 col-md-6 col-lg-12 mt-4 mt-md-0 mb-3"
             >
-                <ResumenServicio formData={formData} />
+                {Object.keys(formData).length > 0 && <ResumenServicio formData={formData} />}
+
             </div>
         </div>
     );

@@ -112,6 +112,8 @@ function App() {
           <Route path="instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo /></>} />
           {/* <Route path="instructor/:idInstructor/servicio/:idServicio/configuracion/crear-grupo" element={<><AppNavbar /><CrearGrupo /></>} /> */}
 
+          {/* //</Routes><Route path="alumno/${idAlumno}/servicio/${idServicio}/mi-servicio/asistencias"}></Route> */}
+
         </Routes>
       </BrowserRouter>
     </div>

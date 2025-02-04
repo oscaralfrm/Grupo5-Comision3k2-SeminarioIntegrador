@@ -1,12 +1,12 @@
 import React, { useState , useEffect} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InfoCardAlumno from "./Dashboard/InfoServicioAlumno";
-//import Enrollments from "./Dashboard/Inscripciones";
 import Pagos from "./Dashboard/Pagos";
 // import StudentsCard from "../MenuOpciones/Dashboard/Alumnos";
 import { Container, Row, Col } from "react-bootstrap";
 import { getServicioById } from "../../../services/Servicio";
 import ClassesCardAlumno from "./Dashboard/ClasesAlumno";
+import Notifications from "./Dashboard/NotificacionesAlumnos";
 
 const ServicioAlumno = () => {
   const [serviceData, setServiceData] = useState(null);
@@ -91,7 +91,7 @@ const ServicioAlumno = () => {
         {/* Columna Central */}
         <Col xs={12} md={4}>
         <ClassesCardAlumno asistenciasActivas={serviceData?.asistenciasActivas} fetchServicio={fetchServicio}/>
-          {/* <Enrollments habilitadas={serviceData?.inscripcionesAbiertas} fetchServicio={fetchServicio} /> */}
+          <Notifications />
         </Col>
 
         {/* Columna Derecha */}

@@ -8,8 +8,8 @@ import CrearGrupoModal from "./ModalCrearGrupo";
 import EditarGrupoModal from "./ModalEditarGrupo";
 import { definirSiServicioSePuedeActualizarPrecio, getMontoActualGrupoDeHistorial, getMontoProgramadoDeHistorial } from "../../../../services/HistorialMontoCuota";
 import { armarStringPrecioYFrecuenciaCobro } from "../../../../services/frecuenciaPago";
-import ModalActualizarMontos from "../Monto/ModalActualizarMontos";
-import ActualizarMontoModal from "../../MiServicio/MenuOpciones/ActualizarMonto";
+//import ModalActualizarMontos from "../Monto/ModalActualizarMontos";
+//import ActualizarMontoModal from "../../MiServicio/MenuOpciones/ActualizarMonto";
 import { format, parseISO } from "date-fns";
 import GrupoHorariosMontos from "./GrupoHorariosMontos";
 
@@ -279,7 +279,7 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
       <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos} />
 
       {/* Modal para Actualizar precio */}
-      <ActualizarMontoModal idServicio={idServicio} grupos={grupos} show={showModalActualizarPrecio} onClose={handleCerrarModalActualizarPrecio} />
+      {/* <ActualizarMontoModal idServicio={idServicio} grupos={grupos} show={showModalActualizarPrecio} onClose={handleCerrarModalActualizarPrecio} /> */}
 
 
       {/* Modal para Editar Grupo */}

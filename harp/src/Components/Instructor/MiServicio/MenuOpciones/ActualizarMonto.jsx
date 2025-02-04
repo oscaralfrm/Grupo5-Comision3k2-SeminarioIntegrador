@@ -5,7 +5,7 @@ import {
   actualizarMontoGrupo,
   actualizarMontosVariosGrupos,
   definirSiGrupoSePuedeActualizarPrecio,
-  getMontoProgramadoDeHistorial
+  getMontoProgramadoDeHistorial,
 } from "../../../../services/HistorialMontoCuota";
 
 const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
@@ -82,13 +82,13 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
     }
   };
 
-  const pendingGroupIds = pendingUpdates.flatMap(update => update.idsGrupos); // Extraer los IDs de los grupos pendientes de actualización
+  const pendingGroupIds = pendingUpdates.flatMap((update) => update.idsGrupos); // Extraer los IDs de los grupos pendientes de actualización
 
   const formatDate = (dateString) => {
     const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date correctamente
     return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
   };
-    
+
   return (
     <Modal show={show} onHide={onClose} centered>
       <Modal.Header closeButton>
@@ -98,23 +98,33 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
         <Form>
           <Form.Group className="mb-3">
             <Form.Label>Selecciona los grupos:</Form.Label>
-            {grupos.map((grupo) => (
-              <Form.Check
-                key={grupo.id}
-                type="checkbox"
-                label={grupo.nombre}
-                value={grupo.id}
-                checked={selectedGroups.includes(grupo.id)}
-                onChange={() =>
-                  setSelectedGroups((prev) =>
-                    prev.includes(grupo.id)
-                      ? prev.filter((id) => id !== grupo.id)
-                      : [...prev, grupo.id]
-                  )
-                }
-                disabled={pendingGroupIds.includes(grupo.id) || ! definirSiGrupoSePuedeActualizarPrecio(grupo)} // Deshabilitar si el grupo ya está en pendingUpdates
-              />
-            ))}
+            {grupos.map((grupo) => {
+              // Verifica si el grupo y su historialMontos están definidos
+              if (!grupo || !grupo.historialMontos) {
+                return null; // Si no están definidos, no renderices este grupo
+              }
+
+              return (
+                <Form.Check
+                  key={grupo.id}
+                  type="checkbox"
+                  label={grupo.nombre}
+                  value={grupo.id}
+                  checked={selectedGroups.includes(grupo.id)}
+                  onChange={() =>
+                    setSelectedGroups((prev) =>
+                      prev.includes(grupo.id)
+                        ? prev.filter((id) => id !== grupo.id)
+                        : [...prev, grupo.id]
+                    )
+                  }
+                  disabled={
+                    pendingGroupIds.includes(grupo.id) ||
+                    !definirSiGrupoSePuedeActualizarPrecio(grupo)
+                  }
+                />
+              );
+            })}
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -137,7 +147,11 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
             />
           </Form.Group>
 
-          <Button variant="primary" onClick={handleAddUpdate} disabled={selectedGroups.length === 0 || !newMonto || !vigencia}>
+          <Button
+            variant="primary"
+            onClick={handleAddUpdate}
+            disabled={selectedGroups.length === 0 || !newMonto || !vigencia}
+          >
             Agregar
           </Button>
         </Form>
@@ -147,11 +161,13 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
             <h5>Cambios pendientes:</h5>
             <ul className="list-group">
               {pendingUpdates.map(({ idsGrupos, montoDTO }, index) => (
-                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                <li
+                  key={index}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                >
                   {/* Mostrar nombres de los grupos */}
-                  Grupos: {idsGrupos.map(id => grupos.find(grupo => grupo.id === id)?.nombre).join(", ")} -
-                  Monto: ${montoDTO.monto.toFixed(2)} -
-                  Vigencia: {formatDate(montoDTO.fechaInicio)}
+                  Grupos: {idsGrupos.map((id) => grupos.find((grupo) => grupo.id === id)?.nombre).join(", ")} -
+                  Monto: ${montoDTO.monto.toFixed(2)} - Vigencia: {formatDate(montoDTO.fechaInicio)}
                   <Button variant="danger" size="sm" onClick={() => handleRemoveUpdate(index)}>
                     Eliminar
                   </Button>
@@ -161,20 +177,25 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
           </div>
         )}
 
-
         {/* Nueva sección: Montos programados */}
         <div className="mt-4">
           <h5>Montos programados:</h5>
           {grupos.map((grupo) => {
+            if (!grupo || !grupo.historialMontos) {
+              return null; // Si no están definidos, no renderices este grupo
+            }
+
             const montosProgramados = getMontoProgramadoDeHistorial(grupo.historialMontos);
             return montosProgramados.length > 0 ? (
               <div key={grupo.id}>
                 <h6>{grupo.nombre}</h6>
                 <ul className="list-group">
                   {montosProgramados.map((monto, index) => (
-                    <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                      Monto: ${monto.monto.toFixed(2)} -
-                      Vigencia: {formatDate(monto.fechaInicio)}
+                    <li
+                      key={index}
+                      className="list-group-item d-flex justify-content-between align-items-center"
+                    >
+                      Monto: ${monto.monto.toFixed(2)} - Vigencia: {formatDate(monto.fechaInicio)}
                     </li>
                   ))}
                 </ul>
@@ -182,11 +203,11 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
             ) : null;
           })}
         </div>
-
-
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>Cancelar</Button>
+        <Button variant="secondary" onClick={onClose}>
+          Cancelar
+        </Button>
         <Button variant="primary" onClick={handleSaveMontos} disabled={pendingUpdates.length === 0}>
           Guardar todos
         </Button>
