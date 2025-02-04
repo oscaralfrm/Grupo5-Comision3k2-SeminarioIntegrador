@@ -75,7 +75,10 @@ function MontosServicio() {
         style={{
           backgroundColor: "#1E1B4B",
           padding: "10px",
-          borderRadius: "20px",
+          borderTopLeftRadius: "20px",
+          borderTopRightRadius: "10px",
+          borderBottomLeftRadius: "20px",
+          borderBottomRightRadius: "20px",
           color: "white",
           position:"relative"
         }}
@@ -88,8 +91,8 @@ function MontosServicio() {
           style={{
             backgroundColor: "#1E1B4B",
             border: "none",
-            top: "-10px",
-            right: "10px",
+            top: "-7px",
+            right: "0px",
             zIndex: 10, // Asegura que el botón esté encima de otros elementos
           }}
         >
