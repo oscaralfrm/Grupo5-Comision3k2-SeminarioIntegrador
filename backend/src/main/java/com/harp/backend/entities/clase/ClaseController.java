@@ -25,6 +25,12 @@ public class ClaseController {
     @Autowired
     private IAlumnoService alumnoService;
 
+    @GetMapping("/clases/{idClase}")
+    public ResponseEntity<Clase> getUnaClase(@PathVariable @Min(1) Long idClase) {
+        Clase clase = claseService.findClase(idClase);
+        return  ResponseEntity.status(HttpStatus.OK).body(clase);
+    }
+
     @PutMapping("/clases/{idClase}")
     public ResponseEntity<String> editarObservacionClase(@PathVariable @Min(1) Long idClase, @RequestBody ClaseDTO claseDTO) {
         claseService.editClase(idClase, claseDTO);
