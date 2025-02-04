@@ -32,6 +32,15 @@ public class NotificacionService implements INotificacionService {
         return notificacionRepository.findByInstructorDestinatarioIdAndServicioId(idInstructor, idServicio);
     };
 
+    public List<Notificacion> findNotificacionesDeInstructor(Long idInstructor) {
+        return notificacionRepository.findByInstructorDestinatarioId(idInstructor);
+    };
+
+    public List<Notificacion> findNotificacionesDeAlumno(Long idAlumno) {
+        return notificacionRepository.findByAlumnoDestinatarioId(idAlumno);
+    };
+
+
     public Notificacion createNotificacion(Servicio servicio, Instructor instructor, Alumno alumno, String titulo, String mensaje) {
         if (! (instructor == null || alumno == null)) {
             throw new UnsupportedOperationException("La notificacion tener un único destinatario");
