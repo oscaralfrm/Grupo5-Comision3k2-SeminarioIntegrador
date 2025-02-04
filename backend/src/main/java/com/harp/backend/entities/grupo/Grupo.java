@@ -285,6 +285,14 @@ public class Grupo {
     public List<Clase> getClasesEn(LocalDate fecha) {
         return this.clases.stream().filter(c -> c.esEn(fecha)).toList();
     }
+
+    public List<Clase> getClasesFuturas() {
+        return this.clases.stream().filter(c -> c.esFutura()).toList();
+    }
+
+    public List<Clase> getClasesAnteriores() {
+        return this.clases.stream().filter(c -> ! c.esFutura()).toList();
+    }
 }
 
 

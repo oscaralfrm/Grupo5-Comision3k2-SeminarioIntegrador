@@ -2,6 +2,9 @@ package com.harp.backend.entities.grupo;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.AlumnoService;
+import com.harp.backend.entities.asistencia.Asistencia;
+import com.harp.backend.entities.asistencia.AsistenciaResumenDTO;
+import com.harp.backend.entities.asistencia.AsistenciaService;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
@@ -55,6 +58,9 @@ public class GrupoService implements IGrupoService {
 
     @Autowired
     private NotificacionService notificacionService;
+
+    @Autowired
+    private AsistenciaService asistenciaService;
 
     //Lo usamos en la generacion de clases automaticas
     @Override
@@ -398,8 +404,34 @@ public class GrupoService implements IGrupoService {
         Grupo grupoExistente = this.findGrupo(idGrupo);
         grupoExistente.setNombre(grupoDTO.getNombre());
         grupoExistente.setCantMaxAlumnos(grupoDTO.getCantMaxCupos());
+        if (grupoDTO.getMonto() != null && grupoDTO.getMonto() != 0) {
+            obtenerMontoActualGrupo(grupoExistente.getId()).setMonto(grupoDTO.getMonto());
+        }
         return grupoRepository.save(grupoExistente);
     };
+
+    public List<Asistencia> obtenerAsistenciasDeAlumnoYGrupo(Long idAlumno, Long idGrupo) {
+        Alumno alumno = alumnoService.findAlumno(idAlumno);
+        Grupo grupo = this.findGrupo(idGrupo);
+        // Obtengo la inscripcion, el grupo de la inscripcion, las clases del grupo, y filtro las asistencias que son de ese alumno
+        Inscripcion inscripcion = alumno.obtenerInscripcionDeEsteGrupo(grupo);
+
+        List<Asistencia> asistenciasDeEsteAlumnoYGrupo = grupo.getClases().stream().map(clase ->
+            asistenciaService.findAsistenciaDeAlumnoAndClase(alumno, clase)
+                ).filter(asistencia -> asistencia != null) // Filtra las clases que no tengan asistencia
+                .toList();
+
+        return asistenciasDeEsteAlumnoYGrupo;
+    }
+
+    public AsistenciaResumenDTO calcularAsistenciasEInasistencias(Long idAlumno, Long idGrupo) {
+        List<Asistencia> asistencias = this.obtenerAsistenciasDeAlumnoYGrupo(idAlumno, idGrupo);
+        int totalAsistencias = asistencias.size();
+        int cantAsistencias = (int) asistencias.stream().filter(Asistencia::isAsistio).count();
+        int cantInasistencias = totalAsistencias - cantAsistencias;
+        AsistenciaResumenDTO resumen = asistenciaService.createResumenAsistenciaDTO(idAlumno, idGrupo, cantAsistencias, cantInasistencias);
+        return resumen;
+    }
 
 //    @Override
 //    public void agregarAlumnoAGrupo(Alumno alumno, Long idGrupo) {

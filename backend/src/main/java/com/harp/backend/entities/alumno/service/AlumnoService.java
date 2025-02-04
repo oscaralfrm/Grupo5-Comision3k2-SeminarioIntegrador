@@ -3,6 +3,8 @@ package com.harp.backend.entities.alumno.service;
 import com.harp.backend.entities.alumno.dto.AlumnoDTO;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.repository.IAlumnoRepository;
+import com.harp.backend.entities.asistencia.Asistencia;
+import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.perfil.model.Perfil;
@@ -12,12 +14,11 @@ import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.service.IUsuarioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,4 +104,21 @@ public class AlumnoService implements IAlumnoService {
         return alumno.obtenerHistorialCuotasEsteServicio(servicio);
     }
 
+    public Map<Long, List<Clase>>  obtenerClasesDeAlumno(Long idAlumno, boolean proximas, boolean anteriores) {
+        Alumno alumno = this.findAlumno(idAlumno);
+        List<Inscripcion> inscripciones = alumno.obtenerInscripcionesVigentes();
+
+        Map<Long, List<Clase>> clasesPorGrupo = new HashMap<>();
+        for (Inscripcion inscripcion : inscripciones) {
+            if (proximas && ! anteriores) {
+                clasesPorGrupo.put(inscripcion.getGrupo().getId(), inscripcion.getGrupo().getClasesFuturas());
+            } else if (anteriores && !proximas) {
+                clasesPorGrupo.put(inscripcion.getGrupo().getId(), inscripcion.getGrupo().getClasesAnteriores());
+            } else {
+                clasesPorGrupo.put(inscripcion.getGrupo().getId(), inscripcion.getGrupo().getClases().stream().toList());
+            }
+        }
+
+        return clasesPorGrupo;
+    }
 }
