@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,6 +32,9 @@ public class ServicioController {
 
     @Autowired
     private IServicioService servicioService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     // GET DE TODOS
     @GetMapping
@@ -79,16 +83,39 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(montosGrupos);
     };
 
-    // POST
-    @PostMapping
-    public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicioDTO) {
-        //System.out.println(servicioDTO);
-        // REVISAR: Obtener el id del Instructor loggeado de la manera correcta
-        //Long idInstructorLoggeado = Long.valueOf(1);
-        Long idInstructorLoggeado = servicioDTO.getIdInstructor(); // cambiar en el front
+//    // POST
+//    @PostMapping
+//    public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicioDTO) {
+//        Long idInstructorLoggeado = servicioDTO.getIdInstructor(); // cambiar en el front
+//        Servicio nuevoServicio = servicioService.createServicio(servicioDTO, idInstructorLoggeado);
+//
+//        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio); // 201 CREATED
+//    }
+
+    // Indica que este endpoint consume multipart/form-data
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<Servicio> crearServicio(
+            @ModelAttribute ServicioDTO servicioDTO) {
+
+        MultipartFile logo = servicioDTO.getLogo();
+        System.out.println("Servicio recibido: " + servicioDTO);
+        System.out.println("Archivo recibido: " + (logo != null ? logo.getOriginalFilename() : "No se envió archivo"));
+        // Si se envió un archivo, se procesa y se almacena a través de un servicio especializado
+        if (logo != null && !logo.isEmpty()) {
+            // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
+            // y retornar la URL donde se encuentra
+            String logoUrl = fileStorageService.storeFile(logo);
+            // Se asigna la URL al DTO para que el servicio la use
+            servicioDTO.setLogoURL(logoUrl);
+        }
+
+        // Se extrae el id del instructor (suponiendo que viene en el DTO)
+        Long idInstructorLoggeado = servicioDTO.getIdInstructor();
+        // Se crea el servicio utilizando el DTO modificado (con la URL del logo, en caso de haberla)
         Servicio nuevoServicio = servicioService.createServicio(servicioDTO, idInstructorLoggeado);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio); // 201 CREATED
+        // Se retorna el objeto creado con un status 201 (CREATED)
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio);
     }
 
     // ELIMINAR

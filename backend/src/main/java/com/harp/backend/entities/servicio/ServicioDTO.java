@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -29,6 +30,7 @@ public class ServicioDTO {
     private String descripcion;
 
     private String logoURL;
+    private MultipartFile logo;
 
     private String ubicacion;
 
