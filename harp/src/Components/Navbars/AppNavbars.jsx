@@ -7,10 +7,11 @@ import NavbarRegisterChooser from '../RegistroSesion/NavbarRegistrerChooser/Navb
 import NavbarServicio from '../Instructor/MiServicio/NavbarInstructor/NavbarServicios/NavbarServicio.jsx';
 import NavbarSimple from './NavbarSimple.jsx';
 import { IoIosLogIn } from 'react-icons/io';
+import NavbarAlumno from './NavbarAlumno.jsx';
 
 const AppNavbar = () => {
   const location = useLocation();
-  const { idInstructor, idServicio } = useParams();
+  const { idInstructor, idServicio, idAlumno } = useParams();
 
   // Define condiciones para mostrar las Navbars
   const isPrincipalRoute = location.pathname === '/';
@@ -21,6 +22,10 @@ const AppNavbar = () => {
   const isCreateServiceRoute = location.pathname === `/instructor/${idInstructor}/crear-servicio`;
   const isNavbarSimple = location.pathname === `/instructor/${idInstructor}/editar-usuario`;
   const isRegisterRoute = location.pathname.startsWith('/registro');
+  const isAlumnoRoute = location.pathname === `/alumno/${idAlumno}/inscripciones`; 
+  const isDescubrirRoute = location.pathname === `/alumno/${idAlumno}/descubrir-servicios`; 
+  const isInfoServicioAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicio/${idServicio}/info-servicio`; 
+  const isEditService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`);
 
   return (
     <>
@@ -32,12 +37,18 @@ const AppNavbar = () => {
 
       {/* Muestra NavbarServicio en la ruta de creación de servicio */}
       {isCreateServiceRoute && <NavbarServicio />}
+      {isEditService && <NavbarSimple />}
       {isNavbarSimple && <NavbarSimple/>}
       {isConfigService &&<NavbarSimple/>}
       {/* Muestra NavbarRegisterChooser en rutas de registro */}
       {isRegisterRoute && <NavbarRegisterChooser />}
       {isInstructorService && <NavbarServicio /> }
       {isLogin && <NavbarRegisterChooser /> }
+
+      {/* Navbar Placeholder de los Alumnos... */}
+      {isAlumnoRoute && <NavbarSimple /> }
+      {isDescubrirRoute && <NavbarSimple /> }
+      {isInfoServicioAlumnoRoute && <NavbarSimple />}
     </>
   );
 };

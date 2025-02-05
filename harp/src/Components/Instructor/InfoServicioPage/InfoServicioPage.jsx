@@ -3,83 +3,126 @@ import ServiceHeader from "./SeviceHeader";
 import GruposServicio from "./Grupos/GruposServicio";
 import MontosServicio from "./Monto/MontosServicio";
 import ReviewCarousel from "../MiServicio/MenuOpciones/Dashboard/Reseñas";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Button } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
-import { getServicioById } from "../../../services/Servicio";
+import { getServicioById, sePuedePublicarServicio } from "../../../services/Servicio";
+import Descripcion from "./Descripcion/Descripcion";
+import ModalPublicarServicio from "./ModalPublicarServicio";
+import { getGruposDeServicio } from "../../../services/Grupo";
 
 const InfoServicioPage = () => {
   const { idServicio } = useParams();
   const [serviceData, setServiceData] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [canPublish, setCanPublish] = useState(true);
+  const [grupos, setGrupos] = useState([]);
+
   const navigate = useNavigate();
 
+  const fetchServicio = async () => {
+    try {
+      const data = await getServicioById(idServicio);
+      const sePuedePublicar = await sePuedePublicarServicio(idServicio);
+      setServiceData(data);
+      setCanPublish(sePuedePublicar);
+
+      const gruposData = await getGruposDeServicio(idServicio);
+      setGrupos(gruposData);
+    } catch (error) {
+      console.error("Error al traer el servicio:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchServicio = async () => {
-      try {
-        const data = await getServicioById(idServicio);
-        setServiceData(data);
-      } catch (error) {
-        console.error("Error al traer el servicio:", error);
-      }
-    };
     fetchServicio();
   }, [idServicio]);
 
+  // Para ver cuando se actualiza el serviceData
+  useEffect(() => {
+    console.log("serviceData actualizado:", serviceData);
+  }, [serviceData]);
+
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
   return (
-    <div className="container mt-4" style={{ fontFamily: "Roboto"}}>
-      {/* Servicio Header */}
-      <ServiceHeader
+    <div
+      className="container mt-4"
+      style={{
+        fontFamily: "Roboto",
+        paddingBottom: canPublish ? "100px" : "0",
+      }}
+    >
+      {/* Renderizamos ServiceHeader solo si serviceData ya está definido */}
+      {serviceData ? (
+        <ServiceHeader serviceData={serviceData} sePuedeEditar={true} />
+      ) : (
+        <p>Cargando servicio...</p>
+      )}
+
+      {/*
+      <Row className="mt-4 align-items-center">
+        <Col>
+          <Descripcion
+            descripcion={serviceData?.descripcion}
+            fetchServicio={fetchServicio}
+          />
+        </Col>
+      </Row>
+       */}
+
+      <Row className="mt-4">
+        <Col>
+          <GruposServicio grupos={grupos} fetchServicio={fetchServicio} frecuenciaCobro={serviceData?.tipoFrecuenciaPago || {}} sePuedeEditar={true} />
+        </Col>
+      </Row>
+      <Row className="mt-4 align-items-stretch">
+        <Col md={6} className="d-flex">
+          <div className="w-100"> {/* Contenedor interno que se ajusta al tamaño */}
+            <Descripcion
+              descripcion={serviceData?.descripcion}
+              fetchServicio={fetchServicio}
+              sePuedeEditar={true}
+            />
+          </div>
+        </Col>
+        <Col md={6} className="d-flex">
+          <div className="w-100">
+            <MontosServicio sePuedeEditar={true}/>
+          </div>
+        </Col>
+      </Row>
+
+      <ModalPublicarServicio
+        handleCloseModal={handleCloseModal}
+        fetchServicio={fetchServicio}
         serviceData={serviceData}
         setServiceData={setServiceData}
+        showModal={showModal}
       />
 
-      {/* Acerca de las clases y Montos */}
-      <Row className="mt-4">
-        {/* Columna izquierda: Acerca de las clases */}
-
-        <Col>
-          <GruposServicio />
-        </Col>
-        {/* Columna derecha: Montos del servicio */}
-        <Col md={6}>
-          <MontosServicio />
-        </Col>
-      </Row>
-
-      {/* Reseñas */}
-      <Row className="mt-4 align-items-center">
-        <Col className="col-6 align-items-center d-flex justify-content-center">
-          <div className="align-items-center d-flex justify-content-center w-100">
-            <ReviewCarousel />
-          </div>
-        </Col>
-
-        <Col
-          className="col-6"
+      {canPublish && (
+        <div
           style={{
-            backgroundColor: "white",
-            padding: "20px",
-            borderRadius: "20px",
-            boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-            maxWidth: "100%",
-            margin: "auto",
-            fontFamily: "Roboto",
+            position: "fixed",
+            bottom: "20px",
+            left: 0,
+            right: 0,
+            display: "flex",
+            justifyContent: "center",
+            zIndex: 1000,
           }}
         >
-          <div
-            style={{
-              backgroundColor: "#1E1B4B",
-              padding: "10px",
-              borderRadius: "20px",
-              color: "white",
-            }}
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={handleOpenModal}
+            className="px-5 py-3 fw-bold"
           >
-            <h4 className="fw-blod mb-2 mt-2 text-center">
-              Acerca de las clases
-            </h4>
-          </div>
-          <p className="mt-3">{serviceData?.descripcion}</p>
-        </Col>
-      </Row>
+            Publicar
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

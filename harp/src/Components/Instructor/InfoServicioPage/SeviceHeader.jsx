@@ -2,61 +2,34 @@
 import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Form, Button } from "react-bootstrap";
 import { FaStar, FaRegStar, FaCog } from "react-icons/fa";
-import { useParams, useNavigate } from "react-router-dom";
-import { getServicioById } from "../../../services/Servicio";
-import {
-  deshabilitarInscripcionesDeServicio,
-  habilitarInscripcionesDeServicio,
-} from "../../../services/Inscripcion";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import BarraResumen from "./BarraResumen";
-import { getInstructorById } from "../../../services/Instructor";
+import { obtenerInstructorDeServicio } from "../../../services/Instructor";
+import { getGruposDeServicio } from "../../../services/Grupo";
 
-function ServiceHeader({ serviceData, setServiceData }) {
-  console.log("Service data en Service Header", serviceData);
-  const { idServicio } = useParams();
-  const { idInstructor } = useParams();
+function ServiceHeader({ serviceData, sePuedeEditar }) {
   const [instructor, setInstructor] = useState(null);
+  const [grupos, setGrupos] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInstructor = async () => {
       try {
-        const data = await getInstructorById(idInstructor);
+        const data = await obtenerInstructorDeServicio(serviceData?.id);
         setInstructor(data);
+        const gruposData = await getGruposDeServicio(serviceData?.id);
+        setGrupos(gruposData);
       } catch (error) {
         console.error("Error al traer el instructor:", error);
       }
     };
     fetchInstructor();
-  }, [idInstructor]);
-
-  const toggleInscriptions = async () => {
-    const newStatus = !serviceData?.inscripcionesAbiertas;
-    const confirmationMessage = newStatus
-      ? "¿Está seguro de que desea habilitar las inscripciones?"
-      : "¿Está seguro de que desea deshabilitar las inscripciones?";
-
-    if (window.confirm(confirmationMessage)) {
-      try {
-        newStatus
-          ? await habilitarInscripcionesDeServicio(idServicio)
-          : await deshabilitarInscripcionesDeServicio(idServicio);
-        setServiceData((prevState) => ({
-          ...prevState,
-          inscripcionesAbiertas: newStatus,
-        }));
-      } catch (error) {
-        console.error(
-          "Error al cambiar el estado de las inscripciones:",
-          error.message
-        );
-        alert(error.message); // El componente decide cómo manejar el error
-      }
-    }
-  };
+  }, [serviceData]);
 
   const handleEditClick = () => {
-    navigate("/edit-service"); // Navigate to edit service page
+    navigate(
+      `/instructor/${instructor.id}/servicio/${serviceData?.id}/editar-servicio`
+    ); // Navigate to edit service page
   };
 
   return (
@@ -69,24 +42,9 @@ function ServiceHeader({ serviceData, setServiceData }) {
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         maxWidth: "100%",
         margin: "auto",
-        marginTop: "80px"
+        marginTop: "80px",
       }}
     >
-      {/* Edit Button */}
-      <Button
-        variant="light"
-        className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
-        onClick={handleEditClick}
-        style={{
-          backgroundColor: "#1E1B4B",
-          border: "none",
-          top: "10px",
-          right: "10px",
-        }}
-      >
-        <FaCog color="white" size={20} />
-      </Button>
-
       <Row className="align-items-center text-center text-md-start g-3">
         {/* Service Logo */}
         <Col
@@ -94,7 +52,7 @@ function ServiceHeader({ serviceData, setServiceData }) {
           className="d-flex justify-content-center  align-items-center"
         >
           <img
-            src="https://via.placeholder.com/120"
+            src={serviceData.logoURL|| "https://via.placeholder.com/120"} 
             alt="Logo del servicio"
             className="rounded-circle"
             width="120"
@@ -103,22 +61,44 @@ function ServiceHeader({ serviceData, setServiceData }) {
         </Col>
 
         {/* Service Info */}
-        <Col md="8">
+        <Col md="9" className="d-flex flex-column">
           <div
             style={{
               backgroundColor: "#1E1B4B",
               padding: "10px",
-              borderRadius: "20px",
+              borderTopLeftRadius: "20px",
+              borderTopRightRadius: "10px",
+              borderBottomLeftRadius: "20px",
+              borderBottomRightRadius: "20px",
               color: "white",
+              position: "relative",
             }}
           >
+            {/* Edit Button */}
+            { sePuedeEditar &&
+              <Button
+              variant="light"
+              className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
+              onClick={handleEditClick}
+              style={{
+                backgroundColor: "#1E1B4B",
+                border: "none",
+                top: "-7px",
+                right: "0px",
+                zIndex: 10, // Asegura que el botón esté encima de otros elementos
+              }}
+            >
+              <FaCog color="white" size={20} />
+            </Button>
+            }
+
             <h4 className="fw-bold mb-2 mt-2 text-center">
               {serviceData?.nombre}
             </h4>
           </div>
-          
+
           {/* Adjusting margins for consistent space */}
-          <Col md="6" className="" style={{ width:"100%" }}>
+          <Col md="6" className="" style={{ width: "100%" }}>
             <div className="d-flex justify-content-between align-items-center">
               <p className=" mt-3">
                 <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
@@ -140,14 +120,28 @@ function ServiceHeader({ serviceData, setServiceData }) {
           </Col>
 
           <p className="mb-3">
-            <strong>Instructor:</strong> {instructor?.usuario.nombre} {instructor?.usuario.apellido}
-          </p>
-          <p>
-            <strong>Descripción:</strong> {serviceData?.descripcion}
+            <strong>Instructor:</strong>{" "}
+            <Link
+              to={`/instructor/${instructor?.id}/informacion`}
+              className="text-primary text-decoration-none fw-bold"
+              style={{ cursor: "pointer" }}
+            >
+              {instructor?.usuario.nombre} {instructor?.usuario.apellido}
+            </Link>
           </p>
 
-          {/* Publicar Servicio section */}
-          <Col md="6" className="mb-2" style={{ width:"100%" }}>
+          <p className=" mt-3">
+            <strong>Clase de prueba:</strong>{" "}
+            {serviceData?.claseDePrueba == true ? "Gratis" : "No incluida"}
+          </p>
+          {/*
+             <p>
+            <strong>Descripción:</strong> {serviceData?.descripcion}
+          </p>
+          */}
+
+          {/* Publicar Servicio section 
+          <Col md="6" className="mb-2" style={{ width: "100%" }}>
             <div className="ms-auto d-flex align-items-center">
               <strong className="me-2">Publicar Servicio:</strong>
               <Form>
@@ -173,9 +167,14 @@ function ServiceHeader({ serviceData, setServiceData }) {
               </Form>
             </div>
           </Col>
+          */}
         </Col>
       </Row>
-      {/*<BarraResumen idServicio={idServicio}/>*/}
+      <BarraResumen
+        serviceData={serviceData}
+        grupos={grupos}
+        sePuedeEditar={sePuedeEditar}
+      />
     </Card>
   );
 }

@@ -34,8 +34,10 @@ export const LoginForm = () => {
                 console.log('Instructores obtenidos:', instructores); // Log de todos los instructores
                 
                 // Buscar el instructor cuyo id coincide con el id del usuario
+                console.log("Id: ", instructores[0].usuario.id)
                 const instructor = instructores.find(instructor => instructor.usuario.id === id); // Comparar con el id del usuario
                 if (instructor) {
+                    console.log(instructor);
                     const userProfileId = instructor.id; // Usar el id del instructor directamente
                     console.log('ID del instructor encontrado:', userProfileId); // Log del idInstructor
                     navigate(`/instructor/${userProfileId}/servicios`);
@@ -52,7 +54,7 @@ export const LoginForm = () => {
                 if (alumno) {
                     const userProfileId = alumno.id; // Usar el id del alumno directamente
                     console.log('ID del alumno encontrado:', userProfileId); // Log del idAlumno
-                    navigate(`/alumno/${userProfileId}/dashboard`);
+                    navigate(`/alumno/${userProfileId}/servicios`);
                 } else {
                     console.error('Alumno no encontrado');
                     setErrorMessage('No se encontró el alumno.');

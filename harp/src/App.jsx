@@ -18,7 +18,14 @@ import Dashboard from "./Components/Instructor/MisServicios/MisServicios.jsx";
 import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/Grupos.jsx";
 import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Configuracion.jsx";
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
+import DescubrirServicios from "./Components/Alumno/DescubrirServicios.jsx";
+import InformacionDelServicio from "./Components/Alumno/InformacionDelServicio.jsx"; // <-- Importación corregida
+
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
+import EditServicioForm from "./Components/Instructor/EditServicio/EditServicio.jsx";
+import MisInscripciones from "./Components/Alumno/Cursos/MisInscripciones.jsx";
+import InfoServicioAlumno from "./Components/Alumno/InfoServicioAlumno.jsx";
+
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
 function App() {
@@ -26,6 +33,7 @@ function App() {
     <div className="d-flex flex-column min-vh-100">
       <BrowserRouter>
         <Routes>
+
           <Route path="/" element={<><AppNavbar /><PaginaDeInicio /></>} />
           <Route path="login" element={<><AppNavbar /><LoginForm /></>} />
           <Route path="registro" element={<><AppNavbar /><RegisterFormChooser /></>} />
@@ -34,9 +42,17 @@ function App() {
             element={<><AppNavbar /><RegisterFormInstructor /></>}
           />
           <Route path="registro/alumno" element={<><AppNavbar /><RegisterFormStudent /></>} />
+
+          // Para instructor...
+
           <Route
             path="instructor/:idInstructor/crear-servicio"
             element={<><AppNavbar /><ServicioForm /></>}
+          />
+
+          <Route
+            path="instructor/:idInstructor/servicio/:idServicio/editar-servicio"
+            element={<><AppNavbar /><EditServicioForm /></>}
           />
 
           <Route
@@ -59,25 +75,40 @@ function App() {
             path="instructor/:idInstructor/servicio/:idServicio/mi-servicio/clase/:idClase/asistencias"
             element={<><AppNavbar /><Asistencias /></>}
           />
-          <Route 
-            path= "instructor/:idInstructor/servicios" 
+          <Route
+            path="instructor/:idInstructor/servicios"
             element={<><AppNavbar /><Dashboard /></>}
           />
-          <Route 
-            path= "instructor/:idInstructor/servicio/:idServicio/info-servicio" 
+          <Route
+            path="instructor/:idInstructor/servicio/:idServicio/info-servicio"
             element={<><AppNavbar /><InfoServicioPage /></>}
           />
-          <Route 
-            path= "instructor/:idInstructor/editar-usuario" 
+          <Route
+            path="instructor/:idInstructor/editar-usuario"
             element={<><AppNavbar /><EditUsuario /></>}
           />
 
 
-          /* Componente de Creación de Grupos. Observar que se puede llegar al mismo por varias rutas. Una desde la creación del servicio y otra 
-          desde la configuración.
-           */
+          // Para alumnos...
 
-          <Route path= "instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo/></>}/>
+
+          <Route
+            path="alumno/:idAlumno/descubrir-servicios"
+            element={<><AppNavbar /><DescubrirServicios /></>}
+          />
+
+          <Route
+            path="alumno/:idAlumno/inscripciones"
+            element={<><AppNavbar /><MisInscripciones /></>}
+          />
+
+          <Route
+            path="alumno/:idAlumno/servicio/:idServicio/info-servicio"
+            element={<><AppNavbar /><InfoServicioAlumno /></>}
+          />
+
+
+          <Route path="instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo /></>} />
           {/* <Route path="instructor/:idInstructor/servicio/:idServicio/configuracion/crear-grupo" element={<><AppNavbar /><CrearGrupo /></>} /> */}
 
         </Routes>

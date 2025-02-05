@@ -9,7 +9,7 @@ import { calcularAntiguedadComoTexto, calcularEdad } from "./Dashboard/Inscripci
 
 const Alumnos = () => {
   const navigate = useNavigate();
-  const { idServicio } = useParams();
+  const { idServicio, idInstructor } = useParams();
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [filters, setFilters] = useState({ name: "", dni: "", group: "" });
@@ -56,6 +56,10 @@ const Alumnos = () => {
       ...prevFilters,
       [name]: value,
     }));
+  };
+
+  const handleShowPayments = (inscripcion) => {
+    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/cobros?alumno=${encodeURIComponent(inscripcion.id)}`);
   };
 
   return (
@@ -199,7 +203,7 @@ const Alumnos = () => {
                       </Button>
                       <Button
                         variant="primary"
-                        onClick={() => handleShowPayments(inscripcion.alumno)}
+                        onClick={() => handleShowPayments(inscripcion)}
                       >
                         Pagos
                       </Button>

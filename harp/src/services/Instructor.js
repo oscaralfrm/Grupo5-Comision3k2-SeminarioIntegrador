@@ -86,3 +86,43 @@ export const iniciarSesion = async (email, contrasena) => {
   }
 };
 
+export const getAllServicios = async () => {
+  try {
+    const instructores = await getAllInstructores();
+    const servicios = await Promise.all(
+      instructores.map(async (instructor) => {
+        const serviciosInstructor = await getServiciosDeInstructor(instructor.id);
+        return serviciosInstructor.map((servicio) => ({
+          ...servicio,
+          instructorId: instructor.id,
+          instructorNombre: instructor.nombre,
+        }));
+      })
+    );
+    return servicios.flat();
+  } catch (error) {
+    console.error('Error al obtener servicios:', error);
+    throw error;
+  }
+};
+
+
+export const getServicioById = async (idServicio) => {
+  try {
+    const response = await axios.get(`/servicios/${idServicio}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching servicio with ID ${idServicio}:`, error);
+    throw error;
+  }
+};
+
+export const obtenerInstructorDeServicio = async (idServicio) => {
+  try {
+    const response = await axios.get(`/servicios/${idServicio}/instructor`);
+    return response.data; // Instructor
+  } catch (error) {
+    console.error("Error al obtener el instructor del servicio:", error);
+    throw error;
+  }
+};

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form, Modal } from "react-bootstrap";
-import { format } from "date-fns";
-import { pagarCuota, traerUltimasCuotasDeServicio } from "../../../../services/Cuota.js";
+import { format, parseISO } from "date-fns";
+import { pagarCuota, obtenerCuotasDeInscripcion } from "../../../../services/Cuota.js";
 import { useParams } from "react-router-dom";
 import { getGruposDeServicio } from "../../../../services/Grupo.js";
-import { getMontosActualesServicio } from "../../../../services/HistorialMontoCuota.js";
-import { getInscripcionesDeServicio } from "../../../../services/Inscripcion.js";
+import { definirSiServicioSePuedeActualizarPrecio, getMontoActualGrupo } from "../../../../services/HistorialMontoCuota.js";
+import { getInscripcionesDeServicio, traerUnaInscripcion } from "../../../../services/Inscripcion.js";
 import ActualizarMontoModal from "./ActualizarMonto.jsx";
 import HistorialPagoModal from "./HistorialPago.jsx";
 import { getHistorialCuotasDeAlumno } from "../../../../services/Alumno.js"
+import { useLocation } from 'react-router-dom';
 
 const Cobros = ({ id }) => {
   // Estados principales
@@ -17,6 +18,7 @@ const Cobros = ({ id }) => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedCuota, setSelectedCuota] = useState(null);
   const [groupFilter, setGroupFilter] = useState("");
+  const [studentFilter, setStudentFilter] = useState("");  // Filtro por nombre de alumno
   const [paymentFilter, setPaymentFilter] = useState("");
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [paymentDate, setPaymentDate] = useState("");
@@ -25,7 +27,15 @@ const Cobros = ({ id }) => {
   const [grupos, setGrupos] = useState([]);
   const [inscripciones, setInscripciones] = useState([]);
   const [showMontoModal, setShowMontoModal] = useState(false);
+  const [sePuedeActualizarPrecio, setSePuedeActualizarPrecio] = useState(false);
   const { idServicio } = useParams();
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const idInscripcion = queryParams.get('alumno') || null;  // Si no hay filtro, toma una cadena vacía
+
+  const [idInscripcionUrl, setIdInscripcionUrl] = useState(idInscripcion); // Establecer el filtro con el valor de la URL
+
 
   // Funciones para manejar el estado de los modales
   const handleCloseMontoModal = () => setShowMontoModal(false);
@@ -39,14 +49,24 @@ const Cobros = ({ id }) => {
   // Cargar inscripciones
   useEffect(() => {
     const cargarInscripciones = async () => {
-      try {
-        const data = await getInscripcionesDeServicio(idServicio, true, false);
-        setInscripciones(data);
-      } catch (error) {
-        console.error("Error al cargar inscripciones:", error);
+      if (idInscripcionUrl != null) {
+        try {
+          const data = [await traerUnaInscripcion(idInscripcionUrl)];
+          setInscripciones(data);
+        } catch (error) {
+          console.error("Error al cargar inscripciones:", error);
+        }
+      } else {
+        try {
+          const data = await getInscripcionesDeServicio(idServicio, true, false);
+          setInscripciones(data);
+        } catch (error) {
+          console.error("Error al cargar inscripciones:", error);
+        }
       }
     };
     cargarInscripciones();
+    console.log("Inscripciones", inscripciones);
   }, [idServicio]);
 
   // Cargar grupos
@@ -55,6 +75,8 @@ const Cobros = ({ id }) => {
       try {
         const response = await getGruposDeServicio(idServicio);
         setGrupos(response);
+
+        setSePuedeActualizarPrecio(definirSiServicioSePuedeActualizarPrecio(grupos));
       } catch (error) {
         console.error("Error al obtener los grupos:", error);
       }
@@ -64,71 +86,94 @@ const Cobros = ({ id }) => {
 
   // Cargar monto
   useEffect(() => {
-    const fetchMonto = async () => {
+    const fetchMontos = async () => {
       try {
-        const data = await getMontosActualesServicio(idServicio);
-        setMonto(data);
+        if (!grupos || grupos.length === 0) return;
+
+        const montos = await Promise.all(
+          grupos.map(async (grupo) => {
+            try {
+              const monto = await getMontoActualGrupo(idServicio, grupo.id);
+              return { idGrupo: grupo.id, nombreGrupo: grupo.nombre, monto };
+            } catch (error) {
+              console.error(`Error al obtener el monto del grupo ${grupo.id}:`, error);
+              return null;
+            }
+          })
+        );
+
+        setMonto(montos.filter(Boolean)); // Filtra valores nulos
       } catch (error) {
-        console.error("Error al traer los servicios del instructor:", error);
+        console.error("Error al traer los montos de los grupos:", error);
       }
     };
-    fetchMonto();
-  }, []);
+
+    fetchMontos();
+  }, [idServicio, grupos]);
+
+
+  const fetchCuotas = async () => {
+    // SI hay un filtro en la url obtenemos solo una inscripcion y las cuotas de esa incripcion
+    try {
+      if (inscripciones.length === 0) return;
+      const cuotasConGrupo = await Promise.all(
+        inscripciones.map(async (inscripcion) => {
+          const { alumno, grupo, id } = inscripcion;
+          try {
+            const cuotas = await obtenerCuotasDeInscripcion(idServicio, id);
+            return [
+              { ...alumno, nombreGrupo: grupo ? grupo.nombre : "Sin Grupo" },
+              cuotas.map((cuota) => ({
+                ...cuota,
+                idInscripcion: id,
+                cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
+              })),
+            ];
+          } catch (error) {
+            console.error(`Error al obtener cuotas para el alumno ${alumno.id}:`, error);
+            return null;
+          }
+        })
+      );
+      setCuotas(cuotasConGrupo.filter(Boolean)); // Filtra los resultados nulos
+    } catch (error) {
+      console.error("Error al traer las cuotas:", error);
+    }
+  }
 
   // Obtener cuotas
+  // Obtener cuotas
   useEffect(() => {
-    const fetchCuotas = async () => {
-      try {
-        const data = await traerUltimasCuotasDeServicio(idServicio);
-        if (inscripciones.length === 0) return;
-
-        const cuotasConGrupo = data.map(([alumno, cuotas]) => {
-          const inscripcion = inscripciones.find((ins) => ins.alumno.id === alumno.id);
-          const grupoNombre = inscripcion ? inscripcion.grupo.nombre : "Sin Grupo";
-
-          return [
-            { ...alumno, nombreGrupo: grupoNombre },
-            cuotas.map((cuota) => ({
-              ...cuota,
-              cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
-            })),
-          ];
-        });
-
-        setCuotas(cuotasConGrupo);
-      } catch (error) {
-        console.error("Error al traer las cuotas:", error);
-      }
-    };
-
-    if (inscripciones.length > 0) {
       fetchCuotas();
-    }
   }, [inscripciones, idServicio]);
 
   // Filtros de cuotas
   const filteredCuotas = cuotas.filter(([student, cuotasStudent]) =>
     cuotasStudent.some((cuota) => {
       const estadoActual = cuota.cambiosEstado[0]?.estadoCuota;
+      const nombreCompleto = `${student.usuario.nombre} ${student.usuario.apellido}`;
+
       return (
         (groupFilter === "" || student.nombreGrupo === groupFilter) &&
         (paymentFilter === "" ||
           (paymentFilter === "Pendiente" && estadoActual === "Pendiente") ||
           (paymentFilter === "Abonada" && estadoActual === "Abonada") ||
-          (paymentFilter === "Vencida" && estadoActual === "Vencida"))
+          (paymentFilter === "Vencida" && estadoActual === "Vencida")) &&
+        (studentFilter === "" || nombreCompleto.toLowerCase().includes(studentFilter.toLowerCase()))  // Filtro por nombre
       );
     })
   );
 
+
   // Funciones de manejo de pagos
   // En tu componente Cobros
-  const handleShowPaymentHistory = async (student) => {
+  const handleShowPaymentHistory = async (student, cuota) => {
     setSelectedStudent(student);
     setShowPaymentHistory(true);
 
     // Llamar al servicio para obtener el historial de cuotas
     try {
-      const historial = await getHistorialCuotasDeAlumno(student.id, idServicio); // Suponiendo que student tiene id
+      const historial = await getHistorialCuotasDeAlumno(cuota.idInscripcion, idServicio); // Suponiendo que student tiene id
       setSelectedStudent((prevStudent) => ({
         ...prevStudent,
         historialPagos: historial, // Agregar el historial a la información del alumno
@@ -146,7 +191,7 @@ const Cobros = ({ id }) => {
 
   const handleSavePayment = () => {
     try {
-      pagarCuota(idServicio, paymentMethod, selectedCuota.id);
+      pagarCuota(idServicio, selectedCuota.idInscripcion, selectedCuota.id, paymentMethod);
       fetchCuotas();
     } catch (error) {
       console.error("Error al guardar el pago:", error);
@@ -160,19 +205,22 @@ const Cobros = ({ id }) => {
   };
 
   // Formato de fecha
-  const formatDate = (date) => format(new Date(date), "dd/MM/yyyy");
+  const formatDate = (dateString) => {
+    const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date correctamente
+    return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
+  };
 
   return (
     <div
       className="responsive-container"
       style={{
         height: "100vh", // Ocupar toda la altura de la pantalla
-    paddingTop: "15vh", // Ajusta si es necesario
-    paddingLeft: "3rem",
-    paddingRight: "3rem",
-    width: "100%",
-    overflow: "hidden", // Previene el scroll vertical
-    boxSizing: "border-box",
+        paddingTop: "15vh", // Ajusta si es necesario
+        paddingLeft: "3rem",
+        paddingRight: "3rem",
+        width: "100%",
+        overflow: "hidden", // Previene el scroll vertical
+        boxSizing: "border-box",
       }}
     >
       {/* Título */}
@@ -182,8 +230,9 @@ const Cobros = ({ id }) => {
       >
         Cobros
       </h1>
-  
+
       {/* Botón Actualizar Monto */}
+      {sePuedeActualizarPrecio && 
       <div className="d-flex justify-content-end mb-4">
         <Button
           variant="primary"
@@ -197,15 +246,26 @@ const Cobros = ({ id }) => {
           }}
           onClick={() => setShowMontoModal(true)}
         >
-          Actualizar Monto
+          Actualizar Precios
         </Button>
       </div>
-  
+      } 
+
       {/* Contenedor de Filtros */}
       <div className="mb-4">
         <Row className="d-flex justify-content-between align-items-center">
+          {/* Filtro por Nombre de Alumno */}
+          <Col md={4} className="p-0 pe-2">
+            <Form.Control
+              type="text"
+              placeholder="Filtrar por Nombre"
+              value={studentFilter}
+              onChange={(e) => setStudentFilter(e.target.value)}
+              style={{ width: "100%" }}
+            />
+          </Col>
           {/* Filtro por Grupo */}
-          <Col md={6} className="p-0 pe-2">
+          <Col md={4} className="p-0 pe-2">
             <Form.Control
               as="select"
               onChange={(e) => setGroupFilter(e.target.value)}
@@ -221,7 +281,7 @@ const Cobros = ({ id }) => {
             </Form.Control>
           </Col>
           {/* Filtro por Estado de Pago */}
-          <Col md={6} className="p-0 ps-2">
+          <Col md={4} className="p-0 ps-2">
             <Form.Control
               as="select"
               onChange={(e) => setPaymentFilter(e.target.value)}
@@ -237,7 +297,9 @@ const Cobros = ({ id }) => {
           </Col>
         </Row>
       </div>
-  
+
+
+
       {/* Tabla */}
       <div style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}>
         <Table striped bordered hover responsive="sm" className="w-100">
@@ -263,16 +325,15 @@ const Cobros = ({ id }) => {
                   <td>{student.nombreGrupo}</td>
                   <td>
                     <span
-                      className={`badge bg-${
-                        cuota.cambiosEstado[0].estadoCuota === "Pendiente"
-                          ? "warning"
-                          : cuota.cambiosEstado[0].estadoCuota === "Abonada"
+                      className={`badge bg-${cuota.cambiosEstado[0].estadoCuota === "Pendiente"
+                        ? "warning"
+                        : cuota.cambiosEstado[0].estadoCuota === "Abonada"
                           ? "success"
                           : cuota.cambiosEstado[0].estadoCuota === "Anulada" ||
                             cuota.cambiosEstado[0].estadoCuota === "Vencida"
-                          ? "danger"
-                          : "secondary"
-                      }`}
+                            ? "danger"
+                            : "secondary"
+                        }`}
                     >
                       {cuota.cambiosEstado[0].estadoCuota}
                     </span>
@@ -293,7 +354,7 @@ const Cobros = ({ id }) => {
                         textDecoration: "none",
                         fontSize: "14px",
                       }}
-                      onClick={() => handleShowPaymentHistory(student)}
+                      onClick={() => handleShowPaymentHistory(student, cuota)}
                     >
                       Historial de Pago
                     </Button>
@@ -314,7 +375,7 @@ const Cobros = ({ id }) => {
           </tbody>
         </Table>
       </div>
-  
+
       {/* Modales */}
       <Modal show={showAddPayment} onHide={handleCloseAddPayment} centered>
         <Modal.Header closeButton>
@@ -378,13 +439,14 @@ const Cobros = ({ id }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-  
+
       <ActualizarMontoModal
         show={showMontoModal}
         onClose={handleCloseMontoModal}
         monto={monto}
         grupos={grupos}
         onSave={handleMontoSave} // Pasas la función aquí
+        idServicio={idServicio}
       />
       <HistorialPagoModal
         show={showPaymentHistory}
@@ -394,5 +456,4 @@ const Cobros = ({ id }) => {
     </div>
   );
 }
-  export default Cobros;
-  
+export default Cobros;

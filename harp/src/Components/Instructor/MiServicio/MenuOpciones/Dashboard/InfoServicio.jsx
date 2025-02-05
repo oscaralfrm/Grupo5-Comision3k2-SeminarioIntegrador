@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getServicioById } from "../../../../../services/Servicio.js";
 
-const InfoCard = ({serviceData, setServiceData}) => {
+const InfoCard = ({ serviceData, setServiceData }) => {
   const [showDetails, setShowDetails] = useState(true);
   //const [serviceData, setServiceData] = useState(null);
   const { idServicio } = useParams();
-  const {idInstructor} = useParams();
+  const { idInstructor } = useParams();
   const navigate = useNavigate();  // Hook para navegar
 
   const toggleDetails = () => setShowDetails(!showDetails);
@@ -86,7 +86,7 @@ const InfoCard = ({serviceData, setServiceData}) => {
           style={{
             color: "white",
             textAlign: "center",
-            justifyContent:"center",
+            justifyContent: "center",
             fontFamily: "Roboto",
             fontSize: "1.5rem",
           }}
@@ -94,16 +94,16 @@ const InfoCard = ({serviceData, setServiceData}) => {
           {serviceData?.nombre}
         </h2>
         {showDetails &&
-        <p
-          style={{
-            fontSize: "1em",
-            color: "white",
-            textAlign: "center",
-            marginBottom: "0px",
-          }}
-        >
-          {serviceData?.categoria?.nombre}
-        </p>}
+          <p
+            style={{
+              fontSize: "1em",
+              color: "white",
+              textAlign: "center",
+              marginBottom: "0px",
+            }}
+          >
+            {serviceData?.categoria?.nombre}
+          </p>}
       </div>
 
       {showDetails && (
@@ -111,9 +111,11 @@ const InfoCard = ({serviceData, setServiceData}) => {
           <p>
             <strong>Ubicación:</strong> {serviceData?.ubicacion}
           </p>
-          <p>
+          {/*
+            <p>
             <strong>Descripción:</strong> {serviceData?.descripcion}
           </p>
+          */}
           <p>
             <strong>Tipo de Servicio:</strong> {serviceData?.categoria?.nombre}
           </p>
@@ -130,12 +132,12 @@ const InfoCard = ({serviceData, setServiceData}) => {
             <strong>Asistencias:</strong> {serviceData?.asistenciasActivas === true ? "Activas" : "Inactivas"}
           </p>
           <p>
-            <strong>Clase prueba:</strong> {serviceData?.claseDePruba ===  1 ? "Si" : "No"}
+            <strong>Clase prueba:</strong> {serviceData?.claseDePruba === 1 ? "Si" : "No"}
           </p>
           <p>
-            <strong>Publicado:</strong> {serviceData?.publico === 1 ? "Si" : "No"} 
+            <strong>Publicado:</strong> {serviceData?.publico === 1 ? "Si" : "No"}
           </p>
-          
+
         </div>
       )}
 
@@ -149,8 +151,8 @@ const InfoCard = ({serviceData, setServiceData}) => {
           style={{
             ...buttonStyle,
             backgroundColor: "white",
-            color: "#4F46E5", 
-            borderColor: "#4F46E5", 
+            color: "#4F46E5",
+            borderColor: "#4F46E5",
             borderWidth: "2px",
             borderStyle: "solid",
           }}

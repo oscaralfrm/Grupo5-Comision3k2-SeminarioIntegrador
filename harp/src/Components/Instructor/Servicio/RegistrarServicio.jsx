@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getAllCategorias } from "../../../services/Categoria";
 import { createServicio } from "../../../services/Servicio";
 import General from "./Tabs/General";
@@ -14,6 +14,7 @@ export default function ServicioForm() {
   const [categorias, setCategorias] = useState([]);
   const { idInstructor } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     register,
@@ -48,25 +49,47 @@ export default function ServicioForm() {
     fetchCategorias();
   }, []);
 
+  function obtenerValoresCiclo(frecuenciaCuotas, duracionCuotasPersonalizada) {
+    switch (frecuenciaCuotas) {
+      case "mensual":
+        return { cantidad: 1, unidad: "MONTHS" };
+  
+      case "semanal":
+        return { cantidad: 1, unidad: "WEEKS" };
+  
+      case "diario":
+        return { cantidad: 1, unidad: "DAYS" };
+  
+      case "otros":
+        if (duracionCuotasPersonalizada % 7 === 0) {
+          return { cantidad: duracionCuotasPersonalizada / 7, unidad: "WEEKS" };
+        } else {
+          return { cantidad: duracionCuotasPersonalizada, unidad: "DAYS" };
+        }
+  
+      default:
+        throw new Error("Frecuencia de cobro no válida");
+    }
+  }
+
   const onSubmit = async (data) => {
+    console.log(data.logo);
+    console.log(data.logo[0]);
+    const ciclo = obtenerValoresCiclo( data.frecuenciaCuotas,data.duracionCuotasPersonalizada);
     const servicioDTO = {
       nombre: data.nombreServicio,
       idInstructor: idInstructor,
       descripcion: data.descripcion,
       ubicacion: data.ubicacion,
       categoria: data.categoria,
-      frecuenciaPagoId:
-        data.frecuenciaCuotas === "mensual"
-          ? data.ciclos === "Mismas Fechas"
-            ? 1
-            : 2
-          : null,
+      tipoCiclo:
+        data.ciclos === "Mismas Fechas"
+          ? "SegunCalendario"
+          : "SegunInscripcion",
       diaLimitePago:
         data.frecuenciaCuotas === "mensual" ? data.fechaLimitePago : null,
-      cantDiasCiclo:
-        data.frecuenciaCuotas === "otros"
-          ? data.duracionCuotasPersonalizada
-          : null,
+      cantCiclo: ciclo.cantidad,
+      unidadCiclo: ciclo.unidad,
       tipoModalidad:
         data.divideEnGrupos === "Sin clases" ? "AServicio" : "AGrupo",
       claseDePrueba: data.clasePrueba === "sí" ? true : false,
@@ -74,13 +97,16 @@ export default function ServicioForm() {
       montoInscripcion: data.montoInscripcion || 0,
       pagoAnticipadoDeMontoInscripcion:
         data.pagoInscripcion === "De forma Anticipada",
+      logo: data.logo[0],
     };
 
     try {
       const response = await createServicio(servicioDTO);
+      
       alert("Servicio creado con éxito");
       navigate(
-        `/instructor/${idInstructor}/servicio/${response.id}/info-servicio`
+        `/instructor/${idInstructor}/servicio/${response.id}/info-servicio`,
+        {state: {from: window.location.pathname}}
       );
     } catch (error) {
       console.error("Error al crear el servicio:", error);
@@ -158,6 +184,7 @@ export default function ServicioForm() {
                   formData={formData}
                   goToPreviousTab={goToPreviousTab}
                   isValid={isValid}
+                  nombreBoton={"Registrar"}
                 />
               </Tab>
             </Tabs>

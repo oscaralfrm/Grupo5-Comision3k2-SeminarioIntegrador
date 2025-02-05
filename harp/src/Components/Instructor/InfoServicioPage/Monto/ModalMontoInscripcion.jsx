@@ -34,7 +34,7 @@ function ModalMontoInscripcion({ showModal, setShowModal, handleRegister }) {
                 required: "El monto es obligatorio.",
                 min: {
                   value: 1,
-                  message: "El monto debe ser mayor a uno.",
+                  message: "El monto debe ser mayor a cero.",
                 },
               })}
               placeholder="Ingrese el monto"

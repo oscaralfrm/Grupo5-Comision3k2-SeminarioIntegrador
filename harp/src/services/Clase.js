@@ -6,7 +6,9 @@ const API_URL = 'http://localhost:9001/api/servicios/grupos'; // ESTE ES EL DEL 
 // Servicio para obtener una clase por su ID
 export const getClaseById = async (idClase) => {
     try {
+        console.log("idClase", idClase)
         const response = await axios.get(`${API_URL}/clases/${idClase}`);
+        console.log("idClase", idClase, response.data)
         return response.data;  // Suponiendo que la respuesta es la clase
     } catch (error) {
         console.error("Error fetching clase by ID: ", error);

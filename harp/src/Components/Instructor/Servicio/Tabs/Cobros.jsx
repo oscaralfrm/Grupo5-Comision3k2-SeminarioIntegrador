@@ -173,9 +173,10 @@ export default function Cobros({
               placeholder="$X"
               {...register("montoInscripcion", {
                 required: "El monto es obligatorio.",
-                valueAsNumber: true,
-                validate: (value) =>
-                  value > 0 || "El monto debe ser mayor a 0.",
+                min: {
+                  value: 1,
+                  message: "El monto debe ser mayor a cero.",
+                }
               })}
             />
             {errors.montoInscripcion && (

@@ -26,10 +26,10 @@ export const createGrupo = async (grupoDTO, idServicio) => {
 };
 
 // Servicio para crear un grupo con horarios
-export const createGrupoConHorarios = async (nombre, numero, cantMaxCupos, horarios, idServicio) => {
+export const createGrupoConHorarios = async (nombre, numero, cantMaxCupos, horarios, idServicio, monto) => {
     try {
         const response = await axios.post(`${API_URL}/${idServicio}/grupos`, 
-            { nombre, numero, cantMaxCupos, horarios });
+            { nombre, numero, cantMaxCupos, horarios, monto });
         return response.data; 
     } catch (error) {
         console.error('Error al crear grupo', error.response.data.message);
@@ -37,6 +37,7 @@ export const createGrupoConHorarios = async (nombre, numero, cantMaxCupos, horar
         throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
+
 
 // Servicio para eliminar un grupo por su ID
 export const deleteGrupo = async (idGrupo) => {
@@ -74,6 +75,7 @@ export const getGruposDeServicio = async (idServicio) => {
 // Servicio para editar un grupo
 export const editGrupo = async (idGrupo, grupoDTO) => {
     try {
+        console.log(grupoDTO);
         const response = await axios.put(`${API_URL}/grupos/${idGrupo}`, grupoDTO);
         return response.data;  // Suponiendo que la respuesta es el grupo editado
     } catch (error) {
