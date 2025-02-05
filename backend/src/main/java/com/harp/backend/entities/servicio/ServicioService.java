@@ -25,6 +25,7 @@ import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -67,6 +68,29 @@ public class ServicioService implements IServicioService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Servicio> listServicios = servicioRepository.findAll(pageable);
         return listServicios;
+    }
+
+    // PAGINADO Y PUBLICADOS
+    public Page<Servicio> getAllServiciosPublicados(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Servicio> listServicios = servicioRepository.findByPublicoTrue(pageable);
+        return listServicios;
+    }
+
+    // PAGINADO Y PUBLICADOS
+    public Page<Servicio> getAllServiciosPublicadosSinInscripcionAlumno(Integer page, Integer size, Long idAlumno) {
+        System.out.println("idAlumno" + idAlumno);
+        Page<Servicio> listServicios = this.getAllServiciosPublicados(page, size);
+        List<Servicio> serviciosFiltrados = listServicios.stream()
+                .filter(servicio -> ! servicio.tieneEsteAlumno(idAlumno)).toList();
+
+        // Crear una nueva página basada en la lista filtrada
+        Pageable pageable = PageRequest.of(page, size);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), serviciosFiltrados.size());
+
+        List<Servicio> subList = (start < end) ? serviciosFiltrados.subList(start, end) : List.of();
+        return new PageImpl<>(subList, pageable, serviciosFiltrados.size());
     }
 
     public List<Servicio> findServiciosAsistenciasActivas() {
@@ -395,5 +419,10 @@ public class ServicioService implements IServicioService {
     public void quitarReseñaDeServicio(Servicio servicio, Resenia resenia) {
         servicio.quitarResenia(resenia);
         servicioRepository.save(servicio);
+    }
+
+    public Instructor findInstructorDeServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        return instructorService.findInstructorDeEsteServicio(servicio);
     }
 }

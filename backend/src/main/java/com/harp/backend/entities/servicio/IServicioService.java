@@ -7,6 +7,7 @@ import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.instructor.Instructor;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
@@ -16,6 +17,8 @@ import java.util.Set;
 public interface IServicioService {
     //public List<Servicio> getAllServiciosDeInstructor(Long idServicio);
     public Servicio createServicio(ServicioDTO servicioDTO, Long idInstructorLoggeado);
+    public Page<Servicio> getAllServiciosPublicados(Integer page, Integer size);
+    public Page<Servicio> getAllServiciosPublicadosSinInscripcionAlumno(Integer page, Integer size, Long idAlumno);
     public void deleteServicio(Long idServicio);
     public Servicio findServicio(Long idServicio);
     public Servicio editServicio(Long idServicio, ServicioDTO servicioDTO);
@@ -45,4 +48,5 @@ public interface IServicioService {
     void publicarServicio(Long idServicio, LocalDate fechaInicio);
     boolean sePuedePublicarServicio(Long idServicio);
     void configurarMontoInscripcionServicio(Long idServicio, MontoInscripcionDTO montoInscripcionDTO);
+    public Instructor findInstructorDeServicio(Long idServicio);
 }

@@ -9,6 +9,8 @@ import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.inscripcion.InscripcionDTO;
+import com.harp.backend.entities.instructor.Instructor;
+import com.harp.backend.entities.instructor.InstructorService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,23 @@ public class ServicioController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
         Page<Servicio> servicios = servicioService.getAllServicios(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
+    @GetMapping("/publicos")
+    public ResponseEntity<Page<Servicio>> traerServiciosPublicos(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+        Page<Servicio> servicios = servicioService.getAllServiciosPublicados(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
+    @GetMapping("/publicos/sin-alumno/{idAlumno}")
+    public ResponseEntity<Page<Servicio>> traerServiciosPublicosSinAlumno(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @PathVariable Long idAlumno) {
+        Page<Servicio> servicios = servicioService.getAllServiciosPublicadosSinInscripcionAlumno(page, size, idAlumno);
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     };
 
@@ -254,4 +273,10 @@ public class ServicioController {
         return ResponseEntity.ok("Se configuró el monto de inscripción del servicio.");
     }
 
+    // obtener el instructor de un servicio
+    @GetMapping("/{idServicio}/instructor")
+    public ResponseEntity<Instructor> obtenerInstructorDeServicio(@PathVariable Long idServicio) {
+        Instructor instructor = servicioService.findInstructorDeServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(instructor);
+    };
 }

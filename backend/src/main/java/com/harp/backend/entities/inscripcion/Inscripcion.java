@@ -63,7 +63,6 @@ public class Inscripcion {
 
     @ManyToOne
     @JoinColumn(name = "servicio_id")
-    @JsonIgnore
     private Servicio servicio;
 
     @ManyToOne

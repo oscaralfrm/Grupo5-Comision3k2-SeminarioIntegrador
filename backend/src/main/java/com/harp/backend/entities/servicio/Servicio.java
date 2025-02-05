@@ -240,6 +240,10 @@ public class Servicio {
         return (grupos.contains(grupo));
     }
 
+    public boolean tieneEsteAlumno(Long idAlumno) {
+        return this.obtenerAlumnosActuales().stream().anyMatch(alumno -> alumno.tieneEsteId(idAlumno));
+    }
+
 //    public MontoServicio obtenerMontoActualConEstasVecesSemanales(int vecesSemanales) {
 //        for (MontoServicio monto : this.obtenerMontosActuales()) {
 //            if (monto.esDeEstasVecesSemanales(vecesSemanales)) {

@@ -155,4 +155,8 @@ public class Alumno {
         return usuario.getNombre() + " " + usuario.getApellido();
     }
 
+    public boolean tieneEsteId(Long id) {
+        return this.id.equals(id);
+    }
+
 }
