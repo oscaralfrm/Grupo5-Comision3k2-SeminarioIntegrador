@@ -16,6 +16,7 @@ import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.modalidad.Modalidad;
 import com.harp.backend.entities.pagos.Pago;
+import com.harp.backend.entities.resenia.Resenia;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
 import lombok.*;
@@ -163,6 +164,9 @@ public class Servicio {
     @Column(name = "monto_inscripcion")
     private double montoInscripcion;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "servicio_id")
+    private List<Resenia> resenias;
 
     public void desactivar() {
         this.setActivo(false);
@@ -464,5 +468,21 @@ public class Servicio {
             alumnosConSusCuotas.add(unAlumnoConSusCuotas);
         }
         return alumnosConSusCuotas;
+    }
+
+    public float calcularCalificacionPromedio() {
+        float cantidadResenias = this.resenias.size();
+        float sumatoriaResenias = this.resenias.stream().mapToInt(Resenia::getCalificacion)  // Obtener la calificación de cada reseña
+                .sum(); // Sumar todas las calificaciones
+        float promedio = sumatoriaResenias / cantidadResenias;
+        return promedio;
+    }
+
+    public void agregarResenia(Resenia resenia) {
+        resenias.add(resenia);
+    }
+
+    public void quitarResenia(Resenia resenia) {
+        resenias.remove(resenia);
     }
 }

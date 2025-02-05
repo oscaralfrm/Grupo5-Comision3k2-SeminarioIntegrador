@@ -20,6 +20,7 @@ import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.IEstrate
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.instructor.InstructorService;
 import com.harp.backend.entities.modalidad.Modalidad;
+import com.harp.backend.entities.resenia.Resenia;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -383,6 +384,16 @@ public class ServicioService implements IServicioService {
         Servicio servicio = this.findServicio(idServicio);
         servicio.setMontoInscripcion(montoInscripcionDTO.getMonto());
         servicio.setPagoAnticipadoDeMontoInscripcion(montoInscripcionDTO.isPagoAnticipado());
+        servicioRepository.save(servicio);
+    }
+
+    public void agregarReseñaAServicio(Servicio servicio, Resenia nuevaResenia) {
+        servicio.agregarResenia(nuevaResenia);
+        servicioRepository.save(servicio);
+    }
+
+    public void quitarReseñaDeServicio(Servicio servicio, Resenia resenia) {
+        servicio.quitarResenia(resenia);
         servicioRepository.save(servicio);
     }
 }
