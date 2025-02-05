@@ -80,19 +80,32 @@ const Pagos = (props) => {
         if (grupoId) {
           // Obtener el monto actual y la fecha de vigencia
           const montoActualData = await getMontoActualGrupo(idServicio, grupoId);
-          const montoActual = montoActualData ? montoActualData.monto : null;
-          const fechaInicio = montoActualData ? montoActualData.fechaInicio : null;
+          console.log("Monto actual del grupo:", montoActualData); // Depuración
+  
+          // Extraer el monto y la fecha de inicio
+          let montoActual;
+          let fechaInicio;
+  
+          if (montoActualData && typeof montoActualData === 'object') {
+            // Si montoActualData es un objeto, extraer el monto y la fecha
+            montoActual = montoActualData.monto;
+            fechaInicio = montoActualData.fechaInicio;
+          } else {
+            // Si montoActualData es un valor directo (el monto), usarlo directamente
+            montoActual = montoActualData;
+            fechaInicio = null; // No hay fecha de inicio en este caso
+          }
   
           // Actualiza el estado con el monto actual
           setMontoActual(montoActual);
           setFechaVigencia(fechaInicio);
-          console.log("Monto actual:", montoActual); // Monto actual del grupo
-          console.log("Fecha de vigencia actual:", fechaInicio); // Fecha de vigencia del monto actual
+          console.log("Monto actual:", montoActual); // Depuración
+          console.log("Fecha de vigencia actual:", fechaInicio); // Depuración
   
           // Obtener el historial de montos para ver los montos futuros
           const historial = await getHistorialMontosGrupo(idServicio, grupoId);
           setHistorialMontos(historial);
-          console.log("Historial: ", historial);
+          console.log("Historial: ", historial); // Depuración
   
           // Buscar el próximo monto programado en el historial
           const montosFuturos = getMontoProgramadoDeHistorial(historial);
@@ -105,13 +118,13 @@ const Pagos = (props) => {
   
             // Actualiza el estado con el próximo monto y su fecha de vigencia
             setProximoMonto(siguienteMonto1);
-            setFechaVigenciaProximoMonto(fechaInicioProximoMonto); // Guarda la fecha de vigencia del próximo monto
+            setFechaVigenciaProximoMonto(fechaInicioProximoMonto);
   
-            console.log("Siguiente Monto: ", siguienteMonto1);
-            console.log("Fecha de vigencia del próximo monto:", fechaInicioProximoMonto);
+            console.log("Siguiente Monto: ", siguienteMonto1); // Depuración
+            console.log("Fecha de vigencia del próximo monto:", fechaInicioProximoMonto); // Depuración
           } else {
             setProximoMonto(null);
-            setFechaVigenciaProximoMonto(null); // No hay próximo monto, limpiar la fecha de vigencia
+            setFechaVigenciaProximoMonto(null);
           }
         }
       } catch (error) {
@@ -122,19 +135,19 @@ const Pagos = (props) => {
     if (grupoId) fetchMontos();
   }, [idServicio, grupoId]);
   
-// Revisión automática cada minuto
-useEffect(() => {
-  const interval = setInterval(() => {
-    if (proximoMonto && new Date(fechaVigenciaProximoMonto) <= new Date()) {
-      setMontoActual(proximoMonto); // Aplica el próximo monto al monto actual
-      setFechaVigencia(fechaVigenciaProximoMonto); // Actualiza la fecha de vigencia con la fecha de inicio del próximo monto
-      setProximoMonto(null); // Elimina el monto programado después de aplicarlo
-      setFechaVigenciaProximoMonto(null); // Limpia la fecha de vigencia del próximo monto
-    }
-  }, 1); // Cada 60 segundos
-
-  return () => clearInterval(interval);
-}, [proximoMonto, fechaVigenciaProximoMonto]); // Dependencias actualizadas
+  // Revisión automática cada minuto para actualizar el monto cuando llegue la fecha de vigencia
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (proximoMonto && new Date(fechaVigenciaProximoMonto) <= new Date()) {
+        setMontoActual(proximoMonto); // Aplica el próximo monto al monto actual
+        setFechaVigencia(fechaVigenciaProximoMonto); // Actualiza la fecha de vigencia
+        setProximoMonto(null); // Elimina el monto programado después de aplicarlo
+        setFechaVigenciaProximoMonto(null); // Limpia la fecha de vigencia del próximo monto
+      }
+    }, 1000); // Revisa cada 60 segundos
+  
+    return () => clearInterval(interval);
+  }, [proximoMonto, fechaVigenciaProximoMonto]);
   
 
 
@@ -252,9 +265,11 @@ console.log(cuotasVencidas); // Verifica el filtro de cuotas vencidas
       </div>
 
       <div className="section">
-        <h3 style={{ color: "#1E1B4B", fontSize: "1.4rem", marginTop: "10px" }}>Precio Actual</h3>
-        <p style={{ fontWeight: "bold" }}>{montoActual ? `$${montoActual}` : "Cargando monto..."}</p>
-      </div>
+  <h3 style={{ color: "#1E1B4B", fontSize: "1.4rem", marginTop: "10px" }}>Precio Actual</h3>
+  <p style={{ fontWeight: "bold" }}>
+    {montoActual !== null && montoActual !== undefined ? `$${montoActual}` : "No disponible"}
+  </p>
+</div>
       <hr />
 
       <div className="section">

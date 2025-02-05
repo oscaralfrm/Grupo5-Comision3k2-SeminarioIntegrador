@@ -39,24 +39,20 @@ const Cobros = ({ id }) => {
   // Cargar inscripciones
   useEffect(() => {
     const cargarInscripciones = async () => {
-      if (idInscripcionUrl != null) {
-        try {
-          const data = [await traerUnaInscripcion(idInscripcionUrl)];
-          setInscripciones(data);
-        } catch (error) {
-          console.error("Error al cargar inscripciones:", error);
+      try {
+        let data;
+        if (idInscripcionUrl) {
+          data = [await traerUnaInscripcion(idInscripcionUrl)];
+        } else {
+          data = await getInscripcionesDeServicio(idServicio, true, false);
         }
-      } else {
-        try {
-          const data = await getInscripcionesDeServicio(idServicio, true, false);
-          setInscripciones(data);
-        } catch (error) {
-          console.error("Error al cargar inscripciones:", error);
-        }
+        setInscripciones(data);
+      } catch (error) {
+        console.error("Error al cargar inscripciones:", error);
       }
     };
     cargarInscripciones();
-  }, [idServicio]);
+  }, [idServicio, idInscripcionUrl]);
 
   // Cargar grupos
   useEffect(() => {
@@ -64,7 +60,7 @@ const Cobros = ({ id }) => {
       try {
         const response = await getGruposDeServicio(idServicio);
         setGrupos(response);
-        setSePuedeActualizarPrecio(definirSiServicioSePuedeActualizarPrecio(grupos));
+        setSePuedeActualizarPrecio(definirSiServicioSePuedeActualizarPrecio(response));
       } catch (error) {
         console.error("Error al obtener los grupos:", error);
       }
@@ -72,16 +68,17 @@ const Cobros = ({ id }) => {
     fetchGrupos();
   }, [idServicio]);
 
-  // Cargar monto
+  // Cargar montos de los grupos
   useEffect(() => {
     const fetchMontos = async () => {
       try {
         if (!grupos || grupos.length === 0) return;
-
+  
         const montos = await Promise.all(
           grupos.map(async (grupo) => {
             try {
               const monto = await getMontoActualGrupo(idServicio, grupo.id);
+              console.log(`Monto del grupo ${grupo.id}:`, monto); // Depuración
               return { idGrupo: grupo.id, nombreGrupo: grupo.nombre, monto };
             } catch (error) {
               console.error(`Error al obtener el monto del grupo ${grupo.id}:`, error);
@@ -89,13 +86,14 @@ const Cobros = ({ id }) => {
             }
           })
         );
-
+  
+        console.log("Montos cargados:", montos); // Depuración
         setMonto(montos.filter(Boolean));
       } catch (error) {
         console.error("Error al traer los montos de los grupos:", error);
       }
     };
-
+  
     fetchMontos();
   }, [idServicio, grupos]);
 
@@ -103,17 +101,21 @@ const Cobros = ({ id }) => {
   const fetchCuotas = async () => {
     try {
       if (inscripciones.length === 0) return;
+
       const cuotasConGrupo = await Promise.all(
         inscripciones.map(async (inscripcion) => {
           const { alumno, grupo, id } = inscripcion;
           try {
             const cuotas = await obtenerCuotasDeInscripcion(idServicio, id);
+            const montoGrupo = monto.find((m) => m.idGrupo === grupo.id)?.monto || 0;
+
             return [
-              { ...alumno, nombreGrupo: grupo ? grupo.nombre : "Sin Grupo" },
+              { ...alumno, nombreGrupo: grupo ? grupo.nombre : "Sin Grupo", idGrupo: grupo.id },
               cuotas.map((cuota) => ({
                 ...cuota,
                 idInscripcion: id,
                 cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
+                montoGrupo, // Agregamos el monto del grupo aquí
               })),
             ];
           } catch (error) {
@@ -122,6 +124,7 @@ const Cobros = ({ id }) => {
           }
         })
       );
+
       setCuotas(cuotasConGrupo.filter(Boolean));
     } catch (error) {
       console.error("Error al traer las cuotas:", error);
@@ -130,7 +133,7 @@ const Cobros = ({ id }) => {
 
   useEffect(() => {
     fetchCuotas();
-  }, [inscripciones, idServicio]);
+  }, [inscripciones, idServicio, monto]);
 
   // Filtros de cuotas
   const filteredCuotas = cuotas.filter(([student, cuotasStudent]) =>
@@ -171,11 +174,11 @@ const Cobros = ({ id }) => {
     setShowAddPayment(true);
   };
 
-    // Formato de fecha
-    const formatDate = (dateString) => {
-      const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date correctamente
-      return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
-    };
+  // Formato de fecha
+  const formatDate = (dateString) => {
+    const date = parseISO(dateString);
+    return format(date, "dd/MM/yyyy");
+  };
 
   return (
     <div
@@ -270,72 +273,79 @@ const Cobros = ({ id }) => {
               <th>Nombre</th>
               <th>Grupo</th>
               <th>Estado</th>
-              <th>Monto</th>
+              <th>Monto del Grupo</th>
               <th>Recargo</th>
-              <th>Método de Pago</th>
+              <th>Forma de Pago</th>
               <th>Fecha de Pago</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {filteredCuotas.map(([student, cuotasStudent]) =>
-              cuotasStudent.map((cuota) => (
-                <tr key={cuota.id}>
-                  <td>
-                    {student.usuario.nombre} {student.usuario.apellido}
-                  </td>
-                  <td>{student.nombreGrupo}</td>
-                  <td>
-                    <span
-                      className={`badge bg-${
-                        cuota.cambiosEstado[0].estadoCuota === "Pendiente"
-                          ? "warning"
-                          : cuota.cambiosEstado[0].estadoCuota === "Abonada"
-                          ? "success"
-                          : cuota.cambiosEstado[0].estadoCuota === "Anulada" ||
-                            cuota.cambiosEstado[0].estadoCuota === "Vencida"
-                          ? "danger"
-                          : "secondary"
-                      }`}
-                    >
-                      {cuota.cambiosEstado[0].estadoCuota}
-                    </span>
-                  </td>
-                  <td>${cuota.montoServicio.monto}</td>
-                  <td>${cuota.recargo || 0}</td>
-                  <td>{cuota.pago?.metodoPago.nombre || "N/A"}</td>
-                  <td>{cuota.pago ? formatDate(cuota.pago.fechaPago) : "N/A"}</td>
-                  <td>
-                    <Button
-                      variant="info"
-                      size="sm"
-                      style={{
-                        backgroundColor: "#4F46E5",
-                        color: "white",
-                        padding: "10px 20px",
-                        borderRadius: "4px",
-                        textDecoration: "none",
-                        fontSize: "14px",
-                      }}
-                      onClick={() => handleShowPaymentHistory(student, cuota)}
-                    >
-                      Historial de Pago
-                    </Button>
-                    {cuota.cambiosEstado[0].estadoCuota === "Pendiente" && (
-                      <Button
-                        variant="success"
-                        size="sm"
-                        className="ms-2"
-                        onClick={() => handleAddPayment(student, cuota)}
-                      >
-                        Pagar
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))
+  {filteredCuotas.map(([student, cuotasStudent]) =>
+    cuotasStudent.map((cuota) => {
+      const montoGrupo = monto.find((m) => m.idGrupo === student.idGrupo)?.monto || 0;
+      const montoValor = typeof montoGrupo === 'object' ? montoGrupo.monto : montoGrupo; // Extraer el valor correcto
+
+      console.log(`Monto del grupo para el alumno ${student.usuario.nombre}:`, montoValor); // Depuración
+
+      return (
+        <tr key={cuota.id}>
+          <td>
+            {student.usuario.nombre} {student.usuario.apellido}
+          </td>
+          <td>{student.nombreGrupo}</td>
+          <td>
+            <span
+              className={`badge bg-${
+                cuota.cambiosEstado[0].estadoCuota === "Pendiente"
+                  ? "warning"
+                  : cuota.cambiosEstado[0].estadoCuota === "Abonada"
+                  ? "success"
+                  : cuota.cambiosEstado[0].estadoCuota === "Anulada" ||
+                    cuota.cambiosEstado[0].estadoCuota === "Vencida"
+                  ? "danger"
+                  : "secondary"
+              }`}
+            >
+              {cuota.cambiosEstado[0].estadoCuota}
+            </span>
+          </td>
+          <td>${montoValor}</td> {/* Mostrar el monto del grupo */}
+          <td>${cuota.recargo || 0}</td>
+          <td>{cuota.pago?.metodoPago.nombre || "N/A"}</td>
+          <td>{cuota.pago ? formatDate(cuota.pago.fechaPago) : "N/A"}</td>
+          <td>
+            <Button
+              variant="info"
+              size="sm"
+              style={{
+                backgroundColor: "#4F46E5",
+                color: "white",
+                padding: "10px 20px",
+                borderRadius: "4px",
+                textDecoration: "none",
+                fontSize: "14px",
+              }}
+              onClick={() => handleShowPaymentHistory(student, cuota)}
+            >
+              Historial de Pago
+            </Button>
+            {cuota.cambiosEstado[0].estadoCuota === "Pendiente" && (
+              <Button
+                variant="success"
+                size="sm"
+                className="ms-2"
+                onClick={() => handleAddPayment(student, cuota)}
+              >
+                Pagar
+              </Button>
             )}
-          </tbody>
+          </td>
+        </tr>
+      );
+    })
+  )}
+</tbody>
         </Table>
       </div>
 

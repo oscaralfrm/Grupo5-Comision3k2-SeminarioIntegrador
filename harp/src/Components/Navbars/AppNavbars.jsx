@@ -9,6 +9,7 @@ import NavbarSimple from './NavbarSimple.jsx';
 import { IoIosLogIn } from 'react-icons/io';
 import NavbarAlumno from '../Alumno/NavbarAlumno/NavbarAlumno.jsx';
 import NavbarAlumnoDash from '../Alumno/NavbarAlumno/NavbarDashboard/NavbarDashboard.jsx';
+import NavbarAlumnoAtras from '../Alumno/NavbarAlumno/NavbarAtras.jsx';
 
 const AppNavbar = () => {
   const location = useLocation();
@@ -25,6 +26,7 @@ const AppNavbar = () => {
   const isRegisterRoute = location.pathname.startsWith('/registro');
   const isAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicios`; // Nueva condición para alumnos
   const isAlumnosDashRoute = location.pathname === `/alumno/${idAlumno}/servicios/${idServicio}/mi-servicio`
+  const isAlumnoAtrasRoute = location.pathname === `/alumno/${idAlumno}/servicios/${idServicio}/mi-servicio/asistencias`
   const isEditService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`);
 
   return (
@@ -49,6 +51,8 @@ const AppNavbar = () => {
       {isAlumnoRoute && <NavbarAlumno /> }
 
       {isAlumnosDashRoute && <NavbarAlumnoDash/>}
+
+      {isAlumnoAtrasRoute && <NavbarAlumnoAtras/>}
 
     </>
   );

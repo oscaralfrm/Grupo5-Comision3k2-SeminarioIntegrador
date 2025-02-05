@@ -118,14 +118,20 @@ export const actualizarMontoGrupo = async (idServicio, idGrupo, monto, fechaInic
 // Servicio para obtener el monto actual de un grupo
 export const getMontoActualGrupo = async (idServicio, idGrupo) => {
     try {
-        const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/monto-actual`);
-        return response.data; // Devuelve el monto actual
+      const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/monto-actual`);
+      console.log(`Monto actual del grupo ${idGrupo}:`, response.data); // Depuración
+  
+      // Si el backend devuelve un objeto, extrae el valor del monto
+      const monto = response.data?.monto || 0;
+      return monto;
     } catch (error) {
-        console.error('Error al obtener el monto actual del grupo:', error.response?.data?.message || error.message);
-        throw new Error(error.response?.data?.message || 'Error al obtener el monto actual del grupo');
+      console.error('Error al obtener el monto actual del grupo:', error.response?.data?.message || error.message);
+      console.warn(`No hay historial de montos para el grupo ${idGrupo}. Usando monto predeterminado: 0`); // Depuración
+      return 0; // Valor predeterminado si no hay historial
     }
-};
+  };
 
+  
 export const definirSiGrupoSePuedeActualizarPrecio = (grupo) => {
     // Verificar si el grupo o su historialMontos están definidos
     if (!grupo || !grupo.historialMontos || grupo.historialMontos.length === 0) {

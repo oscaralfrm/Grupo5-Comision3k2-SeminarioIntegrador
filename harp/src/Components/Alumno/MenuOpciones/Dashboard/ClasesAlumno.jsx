@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { getClasesFuturasDeGrupo, getClasesDeGrupo, getGruposDeServicio } from "../../../../services/Grupo";
 import { getServicioById } from "../../../../services/Servicio";
 import { getInscripcionesDeGrupo } from "../../../../services/Inscripcion";
+import { useNavigate } from "react-router-dom";
 
 const ClassesCardAlumno = ({ asistenciasActivas }) => {
   const [classes, setClasses] = useState([]); // Clases totales
@@ -14,6 +15,7 @@ const ClassesCardAlumno = ({ asistenciasActivas }) => {
   const [inscripciones, setInscripciones] = useState([]); // Inscripciones totales
   const [claseHoy, setClaseHoy] = useState(null); // Clase del día actual
   const {idAlumno} = useParams();
+  const navigate = useNavigate();
 
   const { idServicio } = useParams();
 
@@ -89,6 +91,10 @@ const ClassesCardAlumno = ({ asistenciasActivas }) => {
     setExpanded(!expanded);
   };
 
+  const handleNavigate = () => {
+    navigate(`/alumno/${idAlumno}/servicios/${idServicio}/mi-servicio/asistencias`);
+};
+
   // Función para formatear la fecha y hora de las clases
   const formatearClase = (clase) => {
     const fecha = new Date(clase.fecha);
@@ -129,19 +135,20 @@ const ClassesCardAlumno = ({ asistenciasActivas }) => {
         }}>Clases</h2>
 
         {asistenciasActivas && (
-          <Link
-          to={`/alumno/${idAlumno}/servicio/${idServicio}/mi-servicio/asistencias`}
+          <button
+          onClick={handleNavigate}
           style={{
-            backgroundColor: "#4F46E5",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "4px",
-            textDecoration: "none",
-            fontSize: "14px"
+              backgroundColor: "#4F46E5",
+              color: "white",
+              padding: "10px 20px",
+              borderRadius: "4px",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "14px"
           }}
-        >
+      >
           Historial
-        </Link>
+      </button>
         )}
       </div>
 
