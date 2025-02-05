@@ -153,4 +153,17 @@ public class ClaseService implements IClaseService {
         }
     }
 
+    public void eliminarClasesDeServicio(Servicio servicio) {
+        Set<Grupo> gruposServicio = servicio.getGrupos();
+        for (Grupo grupo : gruposServicio) {
+            this.eliminarClaseDeGrupo(grupo);
+        }
+    }
+
+    public void eliminarClaseDeGrupo(Grupo grupo) {
+        Set<Clase> clasesGrupo = grupo.getClases();
+        for (Clase clase : clasesGrupo) {
+            this.deleteClase(clase.getId());
+        }
+    }
 }

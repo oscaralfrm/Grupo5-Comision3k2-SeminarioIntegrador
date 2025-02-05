@@ -27,6 +27,12 @@ public class AsistenciaService implements IAsistenciaService{
         return asistenciaRepository.save(asistencia);
     };
 
+
+    public AsistenciaResumenDTO createResumenAsistenciaDTO(Long idAlumno, Long idGrupo, int cantAsistencias, int cantInasistencias) {
+        AsistenciaResumenDTO asistenciaResumenDTO = new AsistenciaResumenDTO(idAlumno, idGrupo, cantAsistencias, cantInasistencias);
+        return asistenciaResumenDTO;
+    };
+
     @Override
     public void deleteAsistencia(Long idAsistencia){
         Asistencia asistenciaExistente = this.findAsistencia(idAsistencia);
@@ -40,11 +46,12 @@ public class AsistenciaService implements IAsistenciaService{
     };
 
     public void deleteAsistenciasDeAlumnoAndClase(Alumno alumno, Clase clase) {
-        List<Asistencia> asistenciasAlumnoClase = findAsistenciasDeAlumnoAndClase(alumno, clase);
-        asistenciaRepository.deleteAllInBatch(asistenciasAlumnoClase);
+        Asistencia asistenciasAlumnoClase = findAsistenciaDeAlumnoAndClase(alumno, clase);
+        asistenciaRepository.delete(asistenciasAlumnoClase);
     }
 
-    public List<Asistencia> findAsistenciasDeAlumnoAndClase(Alumno alumno, Clase clase) {
+    public Asistencia findAsistenciaDeAlumnoAndClase(Alumno alumno, Clase clase) {
+        System.out.println("Asistencias " + asistenciaRepository.findByAlumnoAndClase(alumno, clase));
         return asistenciaRepository.findByAlumnoAndClase(alumno, clase);
     }
 
@@ -53,6 +60,7 @@ public class AsistenciaService implements IAsistenciaService{
         Asistencia asistenciaExistente = this.findAsistencia(idAsistencia);
         asistenciaExistente.setAsistio(asistio);
         asistenciaExistente.setObservaciones(observaciones);
+        System.out.println("id" + asistenciaExistente.getId() + "asistio" + asistenciaExistente.isAsistio());
         return asistenciaRepository.save(asistenciaExistente);
     };
 
@@ -71,4 +79,5 @@ public class AsistenciaService implements IAsistenciaService{
                         asistenciaDto.isAsistio(),
                         asistenciaDto.getObservaciones()));
     }
+
 }

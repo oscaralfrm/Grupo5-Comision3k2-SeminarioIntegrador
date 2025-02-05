@@ -2,6 +2,9 @@ package com.harp.backend.entities.grupo;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.AlumnoService;
+import com.harp.backend.entities.asistencia.Asistencia;
+import com.harp.backend.entities.asistencia.AsistenciaResumenDTO;
+import com.harp.backend.entities.asistencia.AsistenciaService;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
@@ -56,6 +59,9 @@ public class GrupoService implements IGrupoService {
     @Autowired
     private NotificacionService notificacionService;
 
+    @Autowired
+    private AsistenciaService asistenciaService;
+
     //Lo usamos en la generacion de clases automaticas
     @Override
     public List<Grupo> getAllGrupos() {
@@ -103,7 +109,27 @@ public class GrupoService implements IGrupoService {
         servicioService.agregarGrupoAServicio(nuevoGrupo, servicio);
 
         // Agregamos el monto al grupo
-        MontoServicio nuevoMonto = montoService.createMontoGrupo(grupoDTO.getMonto(), LocalDate.now());
+        // Si el servicio tiene fecha inicio y todavia no inicio entonces la fecha de inicio del monto es la fecha inicio del servicio
+        // Si el servicio no tiene fecha inicio entonces se crea con fecha inicio null y luego se setteara
+        // Si el servicio ya inicio entonces se crea con fecha inicio la actual
+        LocalDate fechaInicioMonto;
+        if (servicio.tieneFechaInicio() ) {
+            if ( ! servicio.yaInicio()) {
+                // Si el servicio ya tiene fecha inicio configurada y no inicio
+                // será a partir de esa fecha que se comenzará a cobrar
+                fechaInicioMonto = servicio.getFechaInicio();
+            } else {
+                // Si el servicio ya inició entonces tiene fecha de inicio
+                // el grupo que se esta creando es nuevo por lo que se comenzara a cobrar desde el dia de hoy
+                fechaInicioMonto = LocalDate.now();
+            }
+        } else {
+            // El servicio todavia no inicio y no se configuró la fecha inicio
+            // La fecha del monto se configurara junto con la fecha de inicio del servicio
+            fechaInicioMonto = null;
+        };
+
+        MontoServicio nuevoMonto = montoService.createMontoGrupo(grupoDTO.getMonto(), fechaInicioMonto);
         grupoCreado.agregarMontoAHistorial(nuevoMonto);
 
         List<HorarioDTO> horariosDTO = grupoDTO.getHorarios();
@@ -148,6 +174,7 @@ public class GrupoService implements IGrupoService {
         // llamamos a claseService y le generamos las asistencias
         // seria mejor que todos estos servicios los llamaramos desde servicioService
         // y que aca solo nos llegue el servicio
+        // REVISAR SI SE LLAMA CUANDO SE INICIE REALMENTE EL SERVICIO
         if (servicio.isAsistenciasActivas() && servicio.tieneFechaInicio()) {
             // Creamos las clases a partir de la fecha inicio del servicio
             // Cuando setteamos la fecha inicio tambien deberiamos crear las clases
@@ -377,8 +404,34 @@ public class GrupoService implements IGrupoService {
         Grupo grupoExistente = this.findGrupo(idGrupo);
         grupoExistente.setNombre(grupoDTO.getNombre());
         grupoExistente.setCantMaxAlumnos(grupoDTO.getCantMaxCupos());
+        if (grupoDTO.getMonto() != null && grupoDTO.getMonto() != 0) {
+            obtenerMontoActualGrupo(grupoExistente.getId()).setMonto(grupoDTO.getMonto());
+        }
         return grupoRepository.save(grupoExistente);
     };
+
+    public List<Asistencia> obtenerAsistenciasDeAlumnoYGrupo(Long idAlumno, Long idGrupo) {
+        Alumno alumno = alumnoService.findAlumno(idAlumno);
+        Grupo grupo = this.findGrupo(idGrupo);
+        // Obtengo la inscripcion, el grupo de la inscripcion, las clases del grupo, y filtro las asistencias que son de ese alumno
+        Inscripcion inscripcion = alumno.obtenerInscripcionDeEsteGrupo(grupo);
+
+        List<Asistencia> asistenciasDeEsteAlumnoYGrupo = grupo.getClases().stream().map(clase ->
+            asistenciaService.findAsistenciaDeAlumnoAndClase(alumno, clase)
+                ).filter(asistencia -> asistencia != null) // Filtra las clases que no tengan asistencia
+                .toList();
+
+        return asistenciasDeEsteAlumnoYGrupo;
+    }
+
+    public AsistenciaResumenDTO calcularAsistenciasEInasistencias(Long idAlumno, Long idGrupo) {
+        List<Asistencia> asistencias = this.obtenerAsistenciasDeAlumnoYGrupo(idAlumno, idGrupo);
+        int totalAsistencias = asistencias.size();
+        int cantAsistencias = (int) asistencias.stream().filter(Asistencia::isAsistio).count();
+        int cantInasistencias = totalAsistencias - cantAsistencias;
+        AsistenciaResumenDTO resumen = asistenciaService.createResumenAsistenciaDTO(idAlumno, idGrupo, cantAsistencias, cantInasistencias);
+        return resumen;
+    }
 
 //    @Override
 //    public void agregarAlumnoAGrupo(Alumno alumno, Long idGrupo) {

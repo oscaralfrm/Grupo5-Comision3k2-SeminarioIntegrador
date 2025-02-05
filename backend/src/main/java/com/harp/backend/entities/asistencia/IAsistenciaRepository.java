@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface IAsistenciaRepository extends JpaRepository<Asistencia, Long> {
-    List<Asistencia> findByAlumnoAndClase(Alumno alumno, Clase clase);
+    Asistencia findByAlumnoAndClase(Alumno alumno, Clase clase);
     List<Asistencia> findByClaseId(Long idClase);
 }

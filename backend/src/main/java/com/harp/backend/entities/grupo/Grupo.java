@@ -55,7 +55,7 @@ public class Grupo {
 
     @OneToMany
     @JoinColumn(name = "grupo_id")
-    @JsonIgnore
+
     private Set<MontoServicio> historialMontos = new HashSet<>();
 /*
     @ManyToMany
@@ -106,10 +106,16 @@ public class Grupo {
 //    }
 
     public boolean tieneMontoProgramadoFuturo() {
+        if (this.historialMontos.size() == 1) {
+            return false;
+        }
         return historialMontos.stream().anyMatch(MontoServicio::esMontoProgramadoFuturo);
     }
 
     public MontoServicio obtenerMontoActual() {
+        if (historialMontos.size() == 1) {
+            return historialMontos.iterator().next();
+        }
         return historialMontos.stream().filter(MontoServicio::esMontoActual).findFirst().orElse(null);
     }
 
@@ -278,6 +284,14 @@ public class Grupo {
 
     public List<Clase> getClasesEn(LocalDate fecha) {
         return this.clases.stream().filter(c -> c.esEn(fecha)).toList();
+    }
+
+    public List<Clase> getClasesFuturas() {
+        return this.clases.stream().filter(c -> c.esFutura()).toList();
+    }
+
+    public List<Clase> getClasesAnteriores() {
+        return this.clases.stream().filter(c -> ! c.esFutura()).toList();
     }
 }
 

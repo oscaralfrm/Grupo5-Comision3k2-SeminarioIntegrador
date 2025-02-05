@@ -1,0 +1,13 @@
+package com.harp.backend.entities.servicio;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class MontoInscripcionDTO {
+    private double monto;
+    private boolean pagoAnticipado;
+}

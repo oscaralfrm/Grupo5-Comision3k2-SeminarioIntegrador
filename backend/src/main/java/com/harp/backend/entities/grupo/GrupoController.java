@@ -2,6 +2,7 @@ package com.harp.backend.entities.grupo;
 
 
 import com.harp.backend.entities.alumno.model.Alumno;
+import com.harp.backend.entities.asistencia.AsistenciaResumenDTO;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
@@ -141,12 +142,11 @@ public class GrupoController {
         return ResponseEntity.status(HttpStatus.OK).body(montoGrupo);
     };
 
-        @GetMapping("/{idServicio}/grupos/{idGrupo}/historial-montos")
+    @GetMapping("/{idServicio}/grupos/{idGrupo}/historial-montos")
     public ResponseEntity<Set<MontoServicio>> traerHistorialMontosDeServicio(@PathVariable @Min(1) Long idGrupo) {
         Set<MontoServicio> montosGrupo = grupoService.obtenerHistorialMontosDeGrupo(idGrupo);
         return ResponseEntity.status(HttpStatus.OK).body(montosGrupo);
     };
-
 
     // POST CON HORARIOS DTOS
     @PostMapping("/{idServicio}/grupos/{idGrupo}/nuevos-horarios")

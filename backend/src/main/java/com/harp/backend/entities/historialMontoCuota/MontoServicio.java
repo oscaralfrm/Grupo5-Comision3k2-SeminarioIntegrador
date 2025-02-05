@@ -77,14 +77,29 @@ public class MontoServicio {
 
      public void setMonto(double monto) {
           // Solo se pueden modificar estos si la fecha actual es menor a la fecha inicio
-          if (! this.esMontoProgramadoFuturo()) {
+          // Si es el primer monto
+          if (! this.puedeSerModificado()) {
                throw new UnsupportedOperationException("El monto ya no puede ser modificado");
           }
           this.monto = monto;
      }
 
+     public boolean puedeSerModificado() {
+          LocalDate fechaActual = LocalDate.now();
+          if (fechaInicio == null) {
+               return true;
+          } else {
+               // Si la fecha inicio es mayor a la actual se puede modificar
+               return fechaInicio.isAfter(fechaActual);
+          }
+     }
+
      public boolean esMontoProgramadoFuturo() {
           LocalDate fechaActual = LocalDate.now();
+          // SI la fecha inicio es null es porque es el primer monto por lo que es el actual
+          // Si la fecha inicio es null es el monto actual, y no es programado
+          // lo que yo quiero es modificar el monto solo si es progrmado
+          // pero si es un falso progrmado no
           if (fechaInicio == null) {
                return false;
           } else {

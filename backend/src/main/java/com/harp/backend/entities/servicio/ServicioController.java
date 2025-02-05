@@ -9,6 +9,8 @@ import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.inscripcion.InscripcionDTO;
+import com.harp.backend.entities.instructor.Instructor;
+import com.harp.backend.entities.instructor.InstructorService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,12 +33,32 @@ public class ServicioController {
     @Autowired
     private IServicioService servicioService;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
     // GET DE TODOS
     @GetMapping
     public ResponseEntity<Page<Servicio>> traerServicios(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
         Page<Servicio> servicios = servicioService.getAllServicios(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
+    @GetMapping("/publicos")
+    public ResponseEntity<Page<Servicio>> traerServiciosPublicos(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+        Page<Servicio> servicios = servicioService.getAllServiciosPublicados(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
+    @GetMapping("/publicos/sin-alumno/{idAlumno}")
+    public ResponseEntity<Page<Servicio>> traerServiciosPublicosSinAlumno(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @PathVariable Long idAlumno) {
+        Page<Servicio> servicios = servicioService.getAllServiciosPublicadosSinInscripcionAlumno(page, size, idAlumno);
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     };
 
@@ -53,16 +76,46 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(grupos);
     };
 
-    // POST
-    @PostMapping
-    public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicioDTO) {
-        //System.out.println(servicioDTO);
-        // REVISAR: Obtener el id del Instructor loggeado de la manera correcta
-        //Long idInstructorLoggeado = Long.valueOf(1);
-        Long idInstructorLoggeado = servicioDTO.getIdInstructor(); // cambiar en el front
+    // GET montos progarmados de los grupos
+    @GetMapping("/{idServicio}/grupos/montos-programados")
+    public ResponseEntity<List<MontoServicio>> traerMontosProgramadosDeGruposDeServicio(@PathVariable @Min(1) Long idServicio) {
+        List<MontoServicio> montosGrupos = servicioService.obtenerMontosProgramadosFuturosGruposDeServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(montosGrupos);
+    };
+
+//    // POST
+//    @PostMapping
+//    public ResponseEntity<Servicio> crearServicio(@RequestBody @Valid ServicioDTO servicioDTO) {
+//        Long idInstructorLoggeado = servicioDTO.getIdInstructor(); // cambiar en el front
+//        Servicio nuevoServicio = servicioService.createServicio(servicioDTO, idInstructorLoggeado);
+//
+//        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio); // 201 CREATED
+//    }
+
+    // Indica que este endpoint consume multipart/form-data
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<Servicio> crearServicio(
+            @ModelAttribute ServicioDTO servicioDTO) {
+
+        MultipartFile logo = servicioDTO.getLogo();
+        System.out.println("Servicio recibido: " + servicioDTO);
+        System.out.println("Archivo recibido: " + (logo != null ? logo.getOriginalFilename() : "No se envió archivo"));
+        // Si se envió un archivo, se procesa y se almacena a través de un servicio especializado
+        if (logo != null && !logo.isEmpty()) {
+            // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
+            // y retornar la URL donde se encuentra
+            String logoUrl = fileStorageService.storeFile(logo);
+            // Se asigna la URL al DTO para que el servicio la use
+            servicioDTO.setLogoURL(logoUrl);
+        }
+
+        // Se extrae el id del instructor (suponiendo que viene en el DTO)
+        Long idInstructorLoggeado = servicioDTO.getIdInstructor();
+        // Se crea el servicio utilizando el DTO modificado (con la URL del logo, en caso de haberla)
         Servicio nuevoServicio = servicioService.createServicio(servicioDTO, idInstructorLoggeado);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio); // 201 CREATED
+        // Se retorna el objeto creado con un status 201 (CREATED)
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio);
     }
 
     // ELIMINAR
@@ -85,6 +138,20 @@ public class ServicioController {
     public ResponseEntity<String> habilitarInscripciones(@PathVariable @Min(1) Long idServicio) {
         servicioService.habilitarInscripciones(idServicio);
         return  ResponseEntity.ok("Se habilitaron las inscripciones");
+    }
+
+    // PUBLICAR
+    @PutMapping("/{idServicio}/publicar")
+    public ResponseEntity<String> publicar(@PathVariable @Min(1) Long idServicio,
+                                           @RequestBody LocalDate fechaInicio) {
+        servicioService.publicarServicio(idServicio, fechaInicio);
+        return  ResponseEntity.ok("Se publicó el servicio");
+    }
+
+    @GetMapping("/{idServicio}/se-puede-publicar")
+    public ResponseEntity<Boolean> publicar(@PathVariable @Min(1) Long idServicio) {
+        boolean sePuedePublicar = servicioService.sePuedePublicarServicio(idServicio);
+        return  ResponseEntity.ok(sePuedePublicar);
     }
 
     // EDITAR
@@ -123,6 +190,14 @@ public class ServicioController {
                                                          @RequestBody LocalDate fechaInicio) {
         servicioService.setFechaInicioServicio(idServicio, fechaInicio);
         return  ResponseEntity.ok("Se configuró el inicio del servicio");
+    }
+
+    // EDITAR DESCRIPCION
+    @PutMapping("/{idServicio}/editar-descripcion")
+    public ResponseEntity<String> editarDescripcionDeServicio(@PathVariable @Min(1) Long idServicio,
+                                                         @RequestBody EditarDescripcionRequest editarDescripcionRequest) {
+        servicioService.editarDescripcionDeServicio(idServicio, editarDescripcionRequest.getDescripcion());
+        return  ResponseEntity.ok("Se editó la descripción del servicio.");
     }
 
 //    @GetMapping("/{idServicio}/monto-actual")
@@ -218,4 +293,17 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     }
 
+    @PutMapping("/{idServicio}/monto-inscripcion")
+    public ResponseEntity<String> findSeviciosByNombre(@PathVariable Long idServicio,
+                                                       @RequestBody MontoInscripcionDTO montoInscripcionDTO) {
+        servicioService.configurarMontoInscripcionServicio(idServicio, montoInscripcionDTO);
+        return ResponseEntity.ok("Se configuró el monto de inscripción del servicio.");
+    }
+
+    // obtener el instructor de un servicio
+    @GetMapping("/{idServicio}/instructor")
+    public ResponseEntity<Instructor> obtenerInstructorDeServicio(@PathVariable Long idServicio) {
+        Instructor instructor = servicioService.findInstructorDeServicio(idServicio);
+        return ResponseEntity.status(HttpStatus.OK).body(instructor);
+    };
 }

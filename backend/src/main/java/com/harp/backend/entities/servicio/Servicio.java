@@ -16,6 +16,7 @@ import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.modalidad.Modalidad;
 import com.harp.backend.entities.pagos.Pago;
+import com.harp.backend.entities.resenia.Resenia;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
 import lombok.*;
@@ -163,6 +164,9 @@ public class Servicio {
     @Column(name = "monto_inscripcion")
     private double montoInscripcion;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "servicio_id")
+    private List<Resenia> resenias;
 
     public void desactivar() {
         this.setActivo(false);
@@ -198,6 +202,7 @@ public class Servicio {
 //    }
 
     public boolean tieneMontoEnTodosSusGrupos() {
+        System.out.println("grupos" + this.getGrupos());
         return this.grupos.stream().allMatch(Grupo::tieneMontoActualConfigurado);
     }
 
@@ -235,6 +240,10 @@ public class Servicio {
         return (grupos.contains(grupo));
     }
 
+    public boolean tieneEsteAlumno(Long idAlumno) {
+        return this.obtenerAlumnosActuales().stream().anyMatch(alumno -> alumno.tieneEsteId(idAlumno));
+    }
+
 //    public MontoServicio obtenerMontoActualConEstasVecesSemanales(int vecesSemanales) {
 //        for (MontoServicio monto : this.obtenerMontosActuales()) {
 //            if (monto.esDeEstasVecesSemanales(vecesSemanales)) {
@@ -248,8 +257,11 @@ public class Servicio {
         return this.grupos.stream().map(Grupo::obtenerMontoActual).toList();
     }
 
+    public List<MontoServicio> obtenerMontosProgramadosGrupos() {
+        return this.grupos.stream().map(Grupo::obtenerMontoFuturo).toList();
+    }
 
-    public boolean tieneInscripcionesActivas() {
+    public boolean tieneAlumnosConInscripcionesActivas() {
         return ( ! this.obtenerInscripcionesVigentes().isEmpty() );
     }
 
@@ -352,12 +364,12 @@ public class Servicio {
 
 
     public List<Alumno> obtenerAlumnosActuales() {
-        return inscripciones.stream().filter(Inscripcion::estaEnCurso).map(Inscripcion::getAlumno).toList();
+        return inscripciones.stream().filter(Inscripcion::estaEnCursoOAceptada).map(Inscripcion::getAlumno).toList();
     }
 
     public List<Alumno> obtenerAlumnosActualesDeGrupo(Grupo grupo) {
         return inscripciones.stream()
-                .filter(i -> i.estaEnCurso() && i.esDeEsteGrupo(grupo))
+                .filter(i -> i.estaEnCursoOAceptada() && i.esDeEsteGrupo(grupo))
                 .map(Inscripcion::getAlumno)
                 .toList();
     }
@@ -460,5 +472,21 @@ public class Servicio {
             alumnosConSusCuotas.add(unAlumnoConSusCuotas);
         }
         return alumnosConSusCuotas;
+    }
+
+    public float calcularCalificacionPromedio() {
+        float cantidadResenias = this.resenias.size();
+        float sumatoriaResenias = this.resenias.stream().mapToInt(Resenia::getCalificacion)  // Obtener la calificación de cada reseña
+                .sum(); // Sumar todas las calificaciones
+        float promedio = sumatoriaResenias / cantidadResenias;
+        return promedio;
+    }
+
+    public void agregarResenia(Resenia resenia) {
+        resenias.add(resenia);
+    }
+
+    public void quitarResenia(Resenia resenia) {
+        resenias.remove(resenia);
     }
 }

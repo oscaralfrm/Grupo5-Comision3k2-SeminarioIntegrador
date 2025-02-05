@@ -1,7 +1,10 @@
 package com.harp.backend.entities.alumno.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.harp.backend.entities.asistencia.Asistencia;
+import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.cuota.Cuota;
+import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.servicio.Servicio;
 //import com.harp.backend.entities.usuario.model.Usuario;
@@ -11,10 +14,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Setter
@@ -105,6 +105,16 @@ public class Alumno {
         return inscripcion.obtenerCuotasPendientes();
     }
 
+    public Set<Clase> obtenerClasesEsteGrupo(Grupo grupo) {
+        List<Inscripcion> inscripciones = this.obtenerInscripcionesVigentes();
+        for (Inscripcion inscripcion : inscripciones) {
+            if (inscripcion.esDeEsteGrupo(grupo)) {
+                return inscripcion.getGrupo().getClases();
+            }
+        }
+        throw new NoSuchElementException("No se encontró ninguna inscripción para el grupo con ID: " + grupo.getId());
+    }
+
     public List<Cuota> obtenerHistorialCuotasEsteServicio(Servicio servicio) {
         for (Inscripcion inscripcion : inscripciones) {
             if (inscripcion.esDeEsteServicio(servicio)){
@@ -132,8 +142,21 @@ public class Alumno {
         throw new NoSuchElementFoundException("El alumno no está inscripto a ese servicio");
     }
 
+    public Inscripcion obtenerInscripcionDeEsteGrupo(Grupo grupo) {
+        for (Inscripcion inscripcion : this.obtenerInscripcionesVigentes() ) {
+            if ( inscripcion.esDeEsteGrupo(grupo) ) {
+                return inscripcion;
+            }
+        }
+        throw new NoSuchElementFoundException("El alumno no está inscripto a ese grupo");
+    }
+
     public String getNombreCompleto() {
         return usuario.getNombre() + " " + usuario.getApellido();
+    }
+
+    public boolean tieneEsteId(Long id) {
+        return this.id.equals(id);
     }
 
 }

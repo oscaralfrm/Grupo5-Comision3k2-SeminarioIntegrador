@@ -63,7 +63,6 @@ public class Inscripcion {
 
     @ManyToOne
     @JoinColumn(name = "servicio_id")
-    @JsonIgnore
     private Servicio servicio;
 
     @ManyToOne
@@ -275,6 +274,10 @@ public class Inscripcion {
 
     public boolean estaEnCurso() {
         return (this.estado == EstadoInscripcion.EnCurso);
+    }
+
+    public boolean estaEnCursoOAceptada() {
+        return (this.estaEnCurso() || this.estaAceptada());
     }
 
     public boolean estaPendiente() {
