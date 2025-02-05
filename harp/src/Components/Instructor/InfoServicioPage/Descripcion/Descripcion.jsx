@@ -12,7 +12,7 @@ import { FaCog } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
 import { editarDescripcionDeServicio } from "../../../../services/Servicio";
 
-function Descripcion({ descripcion, fetchServicio }) {
+function Descripcion({ descripcion, fetchServicio, sePuedeEditar }) {
   const { idServicio } = useParams();
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [descripcionEditada, setDescripcionEditada] = useState(descripcion);
@@ -63,20 +63,22 @@ function Descripcion({ descripcion, fetchServicio }) {
         }}
       >
         {/* Edit Button */}
-        <Button
-          variant="light"
-          className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
-          onClick={handleEditClick}
-          style={{
-            backgroundColor: "#1E1B4B",
-            border: "none",
-            top: "-7px",
-            right: "0px",
-            zIndex: 10, // Asegura que el botón esté encima de otros elementos
-          }}
-        >
-          <FaCog color="white" size={20} />
-        </Button>
+        {sePuedeEditar &&
+          <Button
+            variant="light"
+            className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
+            onClick={handleEditClick}
+            style={{
+              backgroundColor: "#1E1B4B",
+              border: "none",
+              top: "-7px",
+              right: "0px",
+              zIndex: 10, // Asegura que el botón esté encima de otros elementos
+            }}
+          >
+            <FaCog color="white" size={20} />
+          </Button>
+        }
 
         <h4 className="fw-bold mb-2 mt-2 text-center">Acerca de las clases</h4>
       </div>

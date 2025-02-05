@@ -26,6 +26,8 @@ import ServicioAlumno from "./Components/Alumno/MenuOpciones/ServicioAlumno.jsx"
 //import Servicio0 from "./Components/Alumno/MenuOpciones/Servicio.jsx";
 import EditServicioForm from "./Components/Instructor/EditServicio/EditServicio.jsx";
 import AsistenciasAlumno from "./Components/Alumno/MenuOpciones/AsistenciasAlumno.jsx";
+import MisInscripciones from "./Components/Alumno/Cursos/MisInscripciones.jsx";
+import InfoServicioAlumno from "./Components/Alumno/InfoServicioAlumno.jsx";
 
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
@@ -94,7 +96,7 @@ function App() {
 
 
           <Route
-            path="alumno/:idAlumno/servicios"
+            path="alumno/:idAlumno/descubrir-servicios"
             element={<><AppNavbar /><DescubrirServicios /></>}
           />
 
@@ -108,6 +110,15 @@ function App() {
     path="alumno/:idAlumno/servicios/:idServicio/detalles"
     element={<><AppNavbar /><InformacionDelServicio /></>}
 />
+          <Route
+            path="alumno/:idAlumno/inscripciones"
+            element={<><AppNavbar /><MisInscripciones /></>}
+          />
+
+          <Route
+            path="alumno/:idAlumno/servicio/:idServicio/info-servicio"
+            element={<><AppNavbar /><InfoServicioAlumno /></>}
+          />
 
 
           <Route path="instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo /></>} />

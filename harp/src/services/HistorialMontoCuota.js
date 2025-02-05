@@ -131,25 +131,25 @@ export const getMontoActualGrupo = async (idServicio, idGrupo) => {
     }
   };
 
-  
-export const definirSiGrupoSePuedeActualizarPrecio = (grupo) => {
-    // Verificar si el grupo o su historialMontos están definidos
-    if (!grupo || !grupo.historialMontos || grupo.historialMontos.length === 0) {
-      console.log("No hay historial de montos para este grupo.");
-      return false;
+export const definirSiGrupoSePuedeActualizarPrecio  = (grupo) => {
+    const montoActual = getMontoActualGrupoDeHistorial(grupo.historialMontos) ;
+    const fechaActual = new Date().toLocaleDateString("en-CA"); 
+
+    if (!montoActual || !montoActual.fechaInicio) {
+        console.log("Monto actual no definido o sin fecha de inicio.");
+        return false;
+      }
+
+    // Si el monto actual tiene una fecha inicio que es mayor a la actual no se puede actualizar todavia 
+    if (montoActual.fechaInicio == null){
+        return false;
     }
-  
-    // Obtener el monto actual del historial
-    const montoActual = getMontoActualGrupoDeHistorial(grupo.historialMontos);
   
     // Verificar si el monto actual está definido y tiene una fecha de inicio válida
     if (!montoActual || !montoActual.fechaInicio) {
       console.log("El monto actual no tiene una fecha de inicio válida.");
       return false;
     }
-  
-    // Obtener la fecha actual en formato 'YYYY-MM-DD'
-    const fechaActual = new Date().toLocaleDateString("en-CA");
   
     // Si la fecha de inicio del monto actual es mayor o igual a la fecha actual, no se puede actualizar
     if (montoActual.fechaInicio >= fechaActual) {

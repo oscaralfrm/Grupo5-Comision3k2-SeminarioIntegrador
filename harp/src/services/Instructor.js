@@ -116,3 +116,13 @@ export const getServicioById = async (idServicio) => {
     throw error;
   }
 };
+
+export const obtenerInstructorDeServicio = async (idServicio) => {
+  try {
+    const response = await axios.get(`/servicios/${idServicio}/instructor`);
+    return response.data; // Instructor
+  } catch (error) {
+    console.error("Error al obtener el instructor del servicio:", error);
+    throw error;
+  }
+};

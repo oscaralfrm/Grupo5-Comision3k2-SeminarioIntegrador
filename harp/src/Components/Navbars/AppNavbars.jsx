@@ -27,6 +27,9 @@ const AppNavbar = () => {
   const isAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicios`; // Nueva condición para alumnos
   const isAlumnosDashRoute = location.pathname === `/alumno/${idAlumno}/servicios/${idServicio}/mi-servicio`
   const isAlumnoAtrasRoute = location.pathname === `/alumno/${idAlumno}/servicios/${idServicio}/mi-servicio/asistencias`
+  const isAlumnoRouteIns = location.pathname === `/alumno/${idAlumno}/inscripciones`; 
+  const isDescubrirRoute = location.pathname === `/alumno/${idAlumno}/descubrir-servicios`; 
+  const isInfoServicioAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicio/${idServicio}/info-servicio`; 
   const isEditService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`);
 
   return (
@@ -54,6 +57,9 @@ const AppNavbar = () => {
 
       {isAlumnoAtrasRoute && <NavbarAlumnoAtras/>}
 
+      {isAlumnoRouteIns && <NavbarSimple /> }
+      {isDescubrirRoute && <NavbarSimple /> }
+      {isInfoServicioAlumnoRoute && <NavbarSimple />}
     </>
   );
 };
