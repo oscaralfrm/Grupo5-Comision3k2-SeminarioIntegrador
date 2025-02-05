@@ -8,7 +8,7 @@ export default function ResumenServicio({ formData }) {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center " style={{marginTop:"11vh"}}>
+    <div className="d-flex justify-content-center align-items-center " style={{marginTop:"0vh"}}>
       <div className="col-sm-12 p-4">
         <div
           className="card shadow-lg rounded-3 bg-light"

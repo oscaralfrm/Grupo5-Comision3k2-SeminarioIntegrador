@@ -1,5 +1,12 @@
 import React from "react";
 
+const formatDate = (dateString) => {
+  const [year, month, day] = dateString.split("-");
+  return `${day}-${month}-${year}`;
+};
+
+
+
 export default function InfoCard({ formData }) {
   return (
     <div className=" d-flex justify-content-center align-items-center ">
@@ -53,20 +60,24 @@ export default function InfoCard({ formData }) {
                 {formData.dni}
               </span>
             </div>
-            <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>
-                Nombre de usuario:{" "}
-              </strong>
-              <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {formData.nombreUsuario}
-              </span>
-            </div>
+
             <div className="mb-3">
               <strong style={{ fontSize: "1.2rem" }}>
                 Fecha de Nacimiento:{" "}
               </strong>
               <span style={{ fontSize: "1.1rem", color: "#333" }}>
                 {formData.fechaNacimiento}
+              </span>
+              {/* <span style={{ fontSize: "1.1rem", color: "#333" }}>
+                {formatDate(formData.fechaNacimiento)}
+              </span> */}
+            </div>
+            <div className="mb-3">
+              <strong style={{ fontSize: "1.2rem" }}>
+                Nombre de usuario:{" "}
+              </strong>
+              <span style={{ fontSize: "1.1rem", color: "#333" }}>
+                {formData.nombreUsuario}
               </span>
             </div>
             <div className="mb-3">
