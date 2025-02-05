@@ -52,7 +52,7 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
           className="d-flex justify-content-center  align-items-center"
         >
           <img
-            src="https://via.placeholder.com/120"
+            src={serviceData.logoURL|| "https://via.placeholder.com/120"} 
             alt="Logo del servicio"
             className="rounded-circle"
             width="120"

@@ -44,10 +44,44 @@ export const getServicioByNombre = async (nombre) => {
     }
 };
 
+const transformarDTOaFormData = (servicioDTO) =>  {
+
+    // Creamos un objeto FormData para enviar tanto el JSON como el archivo
+  const formDataToSend = new FormData();
+  formDataToSend.append("nombre", servicioDTO.nombre);
+  formDataToSend.append("idInstructor", servicioDTO.idInstructor);
+  formDataToSend.append("descripcion", servicioDTO.descripcion);
+  formDataToSend.append("ubicacion", servicioDTO.ubicacion);
+  formDataToSend.append("categoria", servicioDTO.categoria);
+  formDataToSend.append("tipoCiclo", servicioDTO.tipoCiclo);
+  formDataToSend.append("diaLimitePago", servicioDTO.diaLimitePago);
+  formDataToSend.append("cantCiclo", servicioDTO.cantCiclo);
+  formDataToSend.append("unidadCiclo", servicioDTO.unidadCiclo);
+  formDataToSend.append("tipoModalidad", servicioDTO.tipoModalidad);
+  formDataToSend.append("claseDePrueba", servicioDTO.claseDePrueba);
+  formDataToSend.append("asistenciasActivas", servicioDTO.asistenciasActivas);
+  formDataToSend.append("montoInscripcion", servicioDTO.montoInscripcion);
+  formDataToSend.append("pagoAnticipadoDeMontoInscripcion", servicioDTO.pagoAnticipadoDeMontoInscripcion);
+
+  // Si se seleccionó un archivo, se agrega al FormData.
+  if (servicioDTO.logo) {
+    console.log(servicioDTO.logo)
+    formDataToSend.append("logo", servicioDTO.logo);
+  }
+
+  return formDataToSend;
+
+}
+
 // Función para crear un nuevo servicio
 export const createServicio = async (servicioDTO) => {
     try {
-        const response = await axios.post(`${API_URL}servicios`, servicioDTO);
+        const formDataToSend = transformarDTOaFormData(servicioDTO);
+        const response = await axios.post(
+            `${API_URL}servicios`,
+            formDataToSend,
+            { headers: { "Content-Type": "multipart/form-data" } }  // Est
+        );
         return response.data;
     } catch (error) {
         console.error('Error al crear servicio', error);

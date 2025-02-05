@@ -73,6 +73,8 @@ export default function ServicioForm() {
   }
 
   const onSubmit = async (data) => {
+    console.log(data.logo);
+    console.log(data.logo[0]);
     const ciclo = obtenerValoresCiclo( data.frecuenciaCuotas,data.duracionCuotasPersonalizada);
     const servicioDTO = {
       nombre: data.nombreServicio,
@@ -95,6 +97,7 @@ export default function ServicioForm() {
       montoInscripcion: data.montoInscripcion || 0,
       pagoAnticipadoDeMontoInscripcion:
         data.pagoInscripcion === "De forma Anticipada",
+      logo: data.logo[0],
     };
 
     try {
