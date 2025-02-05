@@ -8,7 +8,7 @@ import ModalMontoInscripcion from "./ModalMontoInscripcion";
 import { armarStringDiaLimite, armarStringFrecuenciaCobro, armarStringTipoCiclo } from "../../../../services/frecuenciaPago";
 import { FaStar, FaRegStar, FaCog } from "react-icons/fa";
 
-function MontosServicio() {
+function MontosServicio({ sePuedeEditar }) {
   const { idServicio, idInstructor } = useParams();
   const [serviceData, setServiceData] = useState(null);
   const [showMontoInscrip, setShowMontoInscrip] = useState(false);
@@ -80,24 +80,27 @@ function MontosServicio() {
           borderBottomLeftRadius: "20px",
           borderBottomRightRadius: "20px",
           color: "white",
-          position:"relative"
+          position: "relative"
         }}
       >
         {/* Edit Button */}
-        <Button
-          variant="light"
-          className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
-          onClick={handleEditClick}
-          style={{
-            backgroundColor: "#1E1B4B",
-            border: "none",
-            top: "-7px",
-            right: "0px",
-            zIndex: 10, // Asegura que el botón esté encima de otros elementos
-          }}
-        >
-          <FaCog color="white" size={20} />
-        </Button>
+        {sePuedeEditar &&
+          <Button
+            variant="light"
+            className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
+            onClick={handleEditClick}
+            style={{
+              backgroundColor: "#1E1B4B",
+              border: "none",
+              top: "-7px",
+              right: "0px",
+              zIndex: 10, // Asegura que el botón esté encima de otros elementos
+            }}
+          >
+            <FaCog color="white" size={20} />
+          </Button>
+        }
+
         <h4 className="fw-blod mb-2 mt-2 text-center">Modalidad Cobros</h4>
       </div>
       <br />
@@ -105,7 +108,8 @@ function MontosServicio() {
         <strong>Frecuencia de cobro:</strong>{" "}
         {armarStringFrecuenciaCobro(serviceData?.tipoFrecuenciaPago.cantCiclo, serviceData?.tipoFrecuenciaPago.unidadCiclo)}
       </p>
-      {serviceData?.diaLimitePago != 0 &&
+      {
+        serviceData?.diaLimitePago != 0 &&
         <p className="mb-1">
           <strong>Día limite:</strong> {armarStringDiaLimite(serviceData?.diaLimitePago, serviceData?.tipoFrecuenciaPago.tipoCiclo, serviceData?.tipoFrecuenciaPago.cantCiclo, serviceData?.tipoFrecuenciaPago.unidadCiclo)}
         </p>
@@ -115,56 +119,61 @@ function MontosServicio() {
       </p>
 
       <hr />
-      {serviceData && serviceData.montoInscripcion > 0 ? (
-        <>
-          <div>
-            <h5 className="fw-bold text-center">Inscripción</h5>
-          </div>
-          <Card className="mb-3 ">
-            <Card.Body>
-              <Row>
-                <Col md={8}>
-                  <p className="mb-1">
-                    <strong>Monto:</strong> ${serviceData.montoInscripcion}
-                  </p>
-                  <p className="mb-0">
-                    <strong>Modalidad de pago:</strong>{" "}
-                    {serviceData.pagoAnticipadoDeMontoInscripcion
-                      ? "Anticipado"
-                      : "Junto con la primera cuota"}
-                  </p>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-        </>
-      ) : (
-        <>
-          <div className="d-flex align-items-center justify-content-between">
-            <h5 className="fw-bold text-center">Inscripción </h5>
-          </div>
+      {
+        serviceData && serviceData.montoInscripcion > 0 ? (
+          <>
+            <div>
+              <h5 className="fw-bold text-center">Inscripción</h5>
+            </div>
+            <Card className="mb-3 ">
+              <Card.Body>
+                <Row>
+                  <Col md={8}>
+                    <p className="mb-1">
+                      <strong>Monto:</strong> ${serviceData.montoInscripcion}
+                    </p>
+                    <p className="mb-0">
+                      <strong>Modalidad de pago:</strong>{" "}
+                      {serviceData.pagoAnticipadoDeMontoInscripcion
+                        ? "Anticipado"
+                        : "Junto con la primera cuota"}
+                    </p>
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </>
+        ) : (
+          <>
+            <div className="d-flex align-items-center justify-content-between">
+              <h5 className="fw-bold text-center">Inscripción </h5>
+            </div>
 
-          {/* Mostrar solo si no hay monto de inscripción configurado */}
-          {!serviceData?.montoInscripcion && (
-            <Alert
-              variant="warning"
-              className="d-flex justify-content-between align-items-center"
-            >
-              <span>No hay monto de inscripción configurado.</span>
-              <Button
-                variant="primary"
-                onClick={() => {
-
-                  reset();
-                  setShowMontoInscrip(true);
-                }}
+            {/* Mostrar solo si no hay monto de inscripción configurado */}
+            {!serviceData?.montoInscripcion && (
+              <Alert
+                variant="warning"
+                className="d-flex justify-content-between align-items-center"
               >
-                Configurar
-              </Button>
-            </Alert>
-          )}
-        </>
-      )}
+                <span>No hay monto de inscripción configurado.</span>
+                {sePuedeEditar &&
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+
+                      reset();
+                      setShowMontoInscrip(true);
+                    }}
+                  >
+                    Configurar
+                  </Button>
+
+                }
+              </Alert>
+            )}
+          </>
+        )
+      }
       <div>
         <ModalMontoInscripcion
           showModal={showMontoInscrip}
@@ -173,7 +182,7 @@ function MontosServicio() {
 
         />
       </div>
-    </div>
+    </div >
   );
 }
 

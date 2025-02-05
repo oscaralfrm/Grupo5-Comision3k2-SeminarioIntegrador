@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
-import { getAllServicios } from "../../services/Servicio";
+import { getAllServiciosPublicosSinAlumno } from "../../services/Servicio";
 import placeholderImage from '../../assets/placeholderForServices.png';
 
 const DescubrirServicios = () => {
@@ -10,13 +10,13 @@ const DescubrirServicios = () => {
     const [servicios, setServicios] = useState([]);
     const [totalServicios, setTotalServicios] = useState(0);
     const [page, setPage] = useState(0);
-    const [size] = useState(5);
+    const [size] = useState(20);
     const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const fetchServicios = async () => {
             try {
-                const response = await getAllServicios(0, 1000);
+                const response = await getAllServiciosPublicosSinAlumno(0, 1000, idAlumno);
                 setServicios(response.content);
                 setTotalServicios(response.totalElements);
             } catch (error) {
@@ -34,7 +34,7 @@ const DescubrirServicios = () => {
 
     return (
         <Container style={{ marginTop: '80px' }}>
-            <Card style={{ backgroundColor: 'rgba(165, 180, 252, 0.5)', padding: '20px', borderRadius: '10px' }}>
+            <Card style={{ padding: '20px', borderRadius: '10px' }}>
                 <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#1E1B4B" }}>Descubrir Servicios</h2>
 
                 {/* Barra de búsqueda */}
@@ -45,7 +45,7 @@ const DescubrirServicios = () => {
                         value={searchTerm}
                         onChange={(e) => {
                             setSearchTerm(e.target.value);
-                            setPage(0); // Reset a la primera página al buscar
+                            setPage(0);
                         }}
                         style={{
                             padding: '10px',
@@ -57,14 +57,22 @@ const DescubrirServicios = () => {
                     />
                 </div>
 
-                <Row>
+                <Row className="justify-content-center">
                     {paginatedServicios.length === 0 ? (
                         <p>No se encontraron servicios.</p>
                     ) : (
                         paginatedServicios.map(servicio => (
-                            <Col xs={12} md={6} key={servicio.id}>
-                                <Card style={{ marginBottom: '20px', border: 'none' }}>
-                                    <Row className="g-0 align-items-center">
+                            <Col xs={12} md={10} key={servicio.id} style={{ marginBottom: '20px' }}>
+                                <Card
+                                    style={{
+                                        border: 'none',
+                                        backgroundColor: 'white',
+                                        borderRadius: '20px',
+                                        boxShadow: '0px 4px 19px rgba(0, 0, 0, 0.5)',
+                                        minHeight: '200px' // Aumenta la altura de cada card
+                                    }}
+                                >
+                                    <Row className="g-0 align-items-center h-100">
                                         <Col xs={12} md={4} className="text-center">
                                             <img
                                                 src={servicio.logoURL || placeholderImage}
@@ -72,22 +80,25 @@ const DescubrirServicios = () => {
                                                 style={{
                                                     width: '100%',
                                                     maxWidth: '120px',
-                                                    height: 'auto',
+                                                    height: '120px',
                                                     objectFit: 'cover',
                                                     borderRadius: '10px'
                                                 }}
                                             />
                                         </Col>
                                         <Col xs={12} md={8}>
-                                            <Card.Body className="d-flex flex-column">
-                                                <Card.Title className="mb-1">{servicio.nombre}</Card.Title>
-                                                <Card.Text className="text-muted small">{servicio.descripcion}</Card.Text>
-                                                <div className="d-flex flex-wrap justify-content-end mt-auto">
+                                            <Card.Body
+                                                className="d-flex flex-column justify-content-between"
+                                                style={{ padding: '20px 15px', minHeight: '150px' }}
+                                            >
+                                                <Card.Title className="mb-2">{servicio.nombre}</Card.Title>
+                                                <Card.Text className="text-muted small">{/* servicio.descripcion */}</Card.Text>
+                                                <div className="d-flex flex-wrap justify-content-end">
                                                     <Button
                                                         size="sm"
                                                         className="me-2 mb-2"
                                                         style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
-                                                        onClick={() => navigate(`/alumno/${idAlumno}/servicios/${servicio.id}/detalles`)}
+                                                        onClick={() => navigate(`/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`)}
                                                     >
                                                         Ver más
                                                     </Button>

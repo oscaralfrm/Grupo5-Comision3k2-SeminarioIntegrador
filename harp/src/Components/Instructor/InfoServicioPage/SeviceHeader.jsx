@@ -3,60 +3,32 @@ import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Form, Button } from "react-bootstrap";
 import { FaStar, FaRegStar, FaCog } from "react-icons/fa";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getServicioById } from "../../../services/Servicio";
-import {
-  deshabilitarInscripcionesDeServicio,
-  habilitarInscripcionesDeServicio,
-} from "../../../services/Inscripcion";
 import BarraResumen from "./BarraResumen";
-import { getInstructorById } from "../../../services/Instructor";
+import { obtenerInstructorDeServicio } from "../../../services/Instructor";
+import { getGruposDeServicio } from "../../../services/Grupo";
 
-function ServiceHeader({ serviceData, setServiceData, grupos }) {
-  const { idServicio } = useParams();
-  const { idInstructor } = useParams();
+function ServiceHeader({ serviceData, sePuedeEditar }) {
   const [instructor, setInstructor] = useState(null);
+  const [grupos, setGrupos] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInstructor = async () => {
       try {
-        const data = await getInstructorById(idInstructor);
+        const data = await obtenerInstructorDeServicio(serviceData?.id);
         setInstructor(data);
+        const gruposData = await getGruposDeServicio(serviceData?.id);
+        setGrupos(gruposData);
       } catch (error) {
         console.error("Error al traer el instructor:", error);
       }
     };
     fetchInstructor();
-  }, [idInstructor]);
-
-  const toggleInscriptions = async () => {
-    const newStatus = !serviceData?.inscripcionesAbiertas;
-    const confirmationMessage = newStatus
-      ? "¿Está seguro de que desea habilitar las inscripciones?"
-      : "¿Está seguro de que desea deshabilitar las inscripciones?";
-
-    if (window.confirm(confirmationMessage)) {
-      try {
-        newStatus
-          ? await habilitarInscripcionesDeServicio(idServicio)
-          : await deshabilitarInscripcionesDeServicio(idServicio);
-        setServiceData((prevState) => ({
-          ...prevState,
-          inscripcionesAbiertas: newStatus,
-        }));
-      } catch (error) {
-        console.error(
-          "Error al cambiar el estado de las inscripciones:",
-          error.message
-        );
-        alert(error.message); // El componente decide cómo manejar el error
-      }
-    }
-  };
+  }, [serviceData]);
 
   const handleEditClick = () => {
     navigate(
-      `/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`
+      `/instructor/${instructor.id}/servicio/${serviceData?.id}/editar-servicio`
     ); // Navigate to edit service page
   };
 
@@ -103,7 +75,8 @@ function ServiceHeader({ serviceData, setServiceData, grupos }) {
             }}
           >
             {/* Edit Button */}
-            <Button
+            { sePuedeEditar &&
+              <Button
               variant="light"
               className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
               onClick={handleEditClick}
@@ -117,6 +90,7 @@ function ServiceHeader({ serviceData, setServiceData, grupos }) {
             >
               <FaCog color="white" size={20} />
             </Button>
+            }
 
             <h4 className="fw-bold mb-2 mt-2 text-center">
               {serviceData?.nombre}
@@ -198,8 +172,8 @@ function ServiceHeader({ serviceData, setServiceData, grupos }) {
       </Row>
       <BarraResumen
         serviceData={serviceData}
-        setServiceData={setServiceData}
         grupos={grupos}
+        sePuedeEditar={sePuedeEditar}
       />
     </Card>
   );

@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { armarStringPrecioYFrecuenciaCobro } from '../../../services/frecuenciaPago';
 import { format, parseISO } from "date-fns";
 
-const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
+const BarraResumen = ({ serviceData, grupos, sePuedeEditar }) => {
   const [alumnos, setAlumnos] = useState([]);
   const [montos, setMontos] = useState([]);
   const [precioMin, setPrecioMin] = useState("Sin definir");
@@ -30,7 +30,7 @@ const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
   }, [idServicio]);
 
   useEffect(() => {
-    if (grupos.length > 0) {
+    if (grupos?.length > 0) {
       const montosActuales = grupos.map(
         grupo => getMontoActualGrupoDeHistorial(grupo.historialMontos)?.monto ?? 0
       );
@@ -51,7 +51,6 @@ const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
   const handleSuspendService = async () => {
     try {
       await updateServicio(idServicio, { fechaInicio: null });
-      setServiceData(prev => ({ ...prev, fechaInicio: null }));
     } catch (error) {
       console.error('Error al suspender el servicio:', error);
       alert('Error al suspender el servicio');
@@ -84,7 +83,7 @@ const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
   };
 
   const calcularFrecuenciasSemanales = () => {
-    const frecuencias = [...new Set(grupos.map(grupo => grupo.horarios.length))].sort((a, b) => a - b);
+    const frecuencias = [...new Set(grupos?.map(grupo => grupo?.horarios.length))].sort((a, b) => a - b);
     if (frecuencias.length === 0) return "No definida";
     if (frecuencias.length === 1) return `${frecuencias[0]} ${frecuencias[0] === 1 ? "vez" : "veces"} por semana`;
     return `${frecuencias.slice(0, -1).join(", ")} o ${frecuencias.at(-1)} veces por semana`;
@@ -102,8 +101,8 @@ const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
         <Col className="d-flex flex-column align-items-center">
           <FaRegCalendarAlt size={25} className="mb-2 mt-2 text-primary" />
           <p className="mb-1 fw-bold">Fecha Inicio:</p>
-          <p>{formatDate(serviceData.fechaInicio) || "Sin definir"}</p>
-          {serviceData.fechaInicio && (
+          <p>{formatDate(serviceData?.fechaInicio) || "Sin definir"}</p>
+          {serviceData?.fechaInicio && sePuedeEditar && (
             <Button variant="warning" size="sm" className="mb-3" onClick={handleSuspendService}>
               Suspender
             </Button>
@@ -124,10 +123,11 @@ const BarraResumen = ({ serviceData, setServiceData, grupos }) => {
           <p className="mb-1 fw-bold">Inscriptos:</p>
           <p>{alumnos.length} alumnos</p>
         </Col>
-        {serviceData.fechaInicio && (
+        {serviceData.fechaInicio && sePuedeEditar && (
           <Col className="d-flex flex-column align-items-center">
             <i className="bi bi-binoculars-fill mb-2 text-primary" style={{ fontSize: '25px' }} />
             <p className="mb-1 fw-bold">Actividad</p>
+            
             <Button variant="primary" size="sm" onClick={handleViewActivity}>
               Ver Actividad
             </Button>

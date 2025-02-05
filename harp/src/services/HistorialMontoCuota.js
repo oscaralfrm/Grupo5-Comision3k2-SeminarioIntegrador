@@ -130,6 +130,11 @@ export const definirSiGrupoSePuedeActualizarPrecio  = (grupo) => {
     const montoActual = getMontoActualGrupoDeHistorial(grupo.historialMontos) ;
     const fechaActual = new Date().toLocaleDateString("en-CA"); 
 
+    if (!montoActual || !montoActual.fechaInicio) {
+        console.log("Monto actual no definido o sin fecha de inicio.");
+        return false;
+      }
+
     // Si el monto actual tiene una fecha inicio que es mayor a la actual no se puede actualizar todavia 
     if (montoActual.fechaInicio == null){
         return false;

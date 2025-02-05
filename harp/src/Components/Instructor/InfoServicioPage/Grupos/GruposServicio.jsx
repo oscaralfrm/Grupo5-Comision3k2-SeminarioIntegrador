@@ -13,7 +13,7 @@ import ActualizarMontoModal from "../../MiServicio/MenuOpciones/ActualizarMonto"
 import { format, parseISO } from "date-fns";
 import GrupoHorariosMontos from "./GrupoHorariosMontos";
 
-function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
+function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar }) {
   const { idServicio } = useParams();
   const [cuposLibres, setCuposLibres] = useState({});
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null); // Nuevo estado
@@ -178,33 +178,35 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
           }}>
           Grupos y Horarios
         </h2>
-        {sePuedeActualizarPrecio &&
-          <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleActualizarPrecio}>
-            Actualizar precio
+        {sePuedeEditar && sePuedeActualizarPrecio &&
+            <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleActualizarPrecio}>
+              Actualizar precio
+            </Button>
+          }
+          {sePuedeEditar &&
+          <Button
+            variant="link"
+            style={{
+              backgroundColor: "#4F46E5",
+              color: "white",
+              padding: "10px 20px",
+              borderRadius: "4px",
+              textDecoration: "none",
+              fontSize: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px", // Espacio entre texto y icono
+            }}
+            onClick={handleCrearGrupo}
+          >
+            Crear Grupo
+            {grupos.length === 0 && <FaExclamationCircle style={{ color: "yellow", fontSize: "18px" }} />}
           </Button>
         }
-        <Button
-          variant="link"
-          style={{
-            backgroundColor: "#4F46E5",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "4px",
-            textDecoration: "none",
-            fontSize: "14px",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px", // Espacio entre texto y icono
-          }}
-          onClick={handleCrearGrupo}
-        >
-          Crear Grupo
-          {grupos.length === 0 && <FaExclamationCircle style={{ color: "yellow", fontSize: "18px" }} />}
-        </Button>
+      
       </div>
 
       <Row>
-
         {grupos.length == 0 &&
           <p>No hay grupos configurados.</p>}
 
@@ -219,9 +221,11 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
                       <span className="text-muted small me-4">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
+                    {sePuedeEditar &&
                     <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
                       <FaCog color="white" size={10} />
-                    </Button>
+                    </Button> 
+                     }
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
@@ -250,9 +254,11 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos }) {
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
                       <span className="text-muted small">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
+                    {sePuedeEditar &&
                     <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
                       <FaCog color="white" size={10} />
                     </Button>
+                     }
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}

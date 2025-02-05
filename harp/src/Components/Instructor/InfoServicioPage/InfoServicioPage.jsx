@@ -55,7 +55,7 @@ const InfoServicioPage = () => {
     >
       {/* Renderizamos ServiceHeader solo si serviceData ya está definido */}
       {serviceData ? (
-        <ServiceHeader serviceData={serviceData} setServiceData={setServiceData} grupos={grupos} />
+        <ServiceHeader serviceData={serviceData} sePuedeEditar={true} />
       ) : (
         <p>Cargando servicio...</p>
       )}
@@ -73,7 +73,7 @@ const InfoServicioPage = () => {
 
       <Row className="mt-4">
         <Col>
-          <GruposServicio grupos={grupos} fetchServicio={fetchServicio} frecuenciaCobro={serviceData?.tipoFrecuenciaPago || {}} />
+          <GruposServicio grupos={grupos} fetchServicio={fetchServicio} frecuenciaCobro={serviceData?.tipoFrecuenciaPago || {}} sePuedeEditar={true} />
         </Col>
       </Row>
       <Row className="mt-4 align-items-stretch">
@@ -82,12 +82,13 @@ const InfoServicioPage = () => {
             <Descripcion
               descripcion={serviceData?.descripcion}
               fetchServicio={fetchServicio}
+              sePuedeEditar={true}
             />
           </div>
         </Col>
         <Col md={6} className="d-flex">
           <div className="w-100">
-            <MontosServicio />
+            <MontosServicio sePuedeEditar={true}/>
           </div>
         </Col>
       </Row>

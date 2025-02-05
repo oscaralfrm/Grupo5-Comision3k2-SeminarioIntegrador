@@ -13,6 +13,27 @@ export const getAllServicios = async (page, size) => {
     }
 };
 
+// Función para obtener todos los servicios con paginación
+export const getAllServiciosPublicos = async (page, size) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/publicos?page=${page}&size=${size}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener los servicios', error);
+        throw error;
+    }
+};
+
+export const getAllServiciosPublicosSinAlumno = async (page, size, idAlumno) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/publicos/sin-alumno/${idAlumno}?page=${page}&size=${size}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener los servicios', error);
+        throw error;
+    }
+};
+
 export const getServicioByNombre = async (nombre) => {
     try {
         const response = await axios.get(`${API_URL}servicios/by-nombre/${nombre}`);
