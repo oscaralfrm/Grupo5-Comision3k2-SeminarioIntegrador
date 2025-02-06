@@ -73,9 +73,10 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   };
   
   // Crear una inscripción
-  export const crearInscripcion = async (idServicio, idGrupo, idsHorarios) => {
+  export const crearInscripcion = async (idAlumno, idServicio, idGrupo, idsHorarios) => {
     try {
-      const response = await axios.post(`${API_URL}/${idServicio}/inscribir`, {idGrupo, idsHorarios});
+      console.log(idAlumno, idServicio, idGrupo, idsHorarios);
+      const response = await axios.post(`${API_URL}/${idServicio}/inscribir`, {idAlumno, idGrupo, idsHorarios});
       return response.data;
     } catch (error) {
       console.error("Error al crear la inscripción:", error);

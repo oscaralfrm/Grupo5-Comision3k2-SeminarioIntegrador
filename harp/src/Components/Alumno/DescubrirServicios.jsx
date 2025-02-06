@@ -28,10 +28,11 @@ const DescubrirServicios = () => {
     }, []);
 
     const filteredServicios = servicios.filter(servicio =>
-        servicio.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        servicio.nombre?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const paginatedServicios = filteredServicios.slice(page * size, (page + 1) * size);
+    const totalPages = Math.ceil(filteredServicios.length / size);
 
     return (
         <Container style={{ marginTop: '80px' }}>
@@ -70,51 +71,49 @@ const DescubrirServicios = () => {
                                         backgroundColor: 'white',
                                         borderRadius: '20px',
                                         boxShadow: '0px 4px 19px rgba(0, 0, 0, 0.5)',
-                                        minHeight: '200px' // Aumenta la altura de cada card
+                                        minHeight: '200px'
                                     }}
                                 >
-                                    <Row className="g-0 align-items-center h-100">
-                                        <Col xs={12} md={4} className="text-center">
-                                            <img
-                                                src={servicio.logoURL || placeholderImage}
-                                                alt={servicio.nombre}
-                                                style={{
-                                                    width: '100%',
-                                                    maxWidth: '120px',
-                                                    height: '120px',
-                                                    objectFit: 'cover',
-                                                    borderRadius: '10px'
-                                                }}
-                                            />
-                                        </Col>
-                                        <Col xs={12} md={8}>
-                                            <Card.Body
-                                                className="d-flex flex-column justify-content-between"
-                                                style={{ padding: '20px 15px', minHeight: '150px' }}
-                                            >
-                                                <Card.Title className="mb-2">{servicio.nombre}</Card.Title>
-                                                <Card.Text className="text-muted small">{/* servicio.descripcion */}</Card.Text>
-                                                <div className="d-flex flex-wrap justify-content-end">
-                                                    <Button
-                                                        size="sm"
-                                                        className="me-2 mb-2"
-                                                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
-                                                        onClick={() => navigate(`/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`)}
-                                                    >
-                                                        Ver más
-                                                    </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        className="mb-2"
-                                                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
-                                                        onClick={() => navigate(`/alumno/${idAlumno}/servicios/${servicio.id}/inscribirme`)}
-                                                    >
-                                                        Inscribirme
-                                                    </Button>
-                                                </div>
-                                            </Card.Body>
-                                        </Col>
-                                    </Row>
+                                    <Card.Header style={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 'bold', padding: '15px' }}>
+                                        {servicio.nombre}
+                                    </Card.Header>
+                                    <Card.Body>
+                                        <Row className="g-0 align-items-center h-100">
+                                            <Col xs={12} md={4} className="text-center">
+                                            
+                                                <img
+                                                    src={servicio.logoURL || placeholderImage}
+                                                    alt={servicio.nombre}
+                                                    style={{
+                                                        width: '100%',
+                                                        maxWidth: '120px',
+                                                        height: '120px',
+                                                        objectFit: 'cover',
+                                                        borderRadius: '10px'
+                                                    }}
+                                                />
+
+                                            </Col>
+                                            <Col xs={12} md={8}>
+                                                <Card.Body style={{ padding: '20px 15px' }}>
+                                                    <p><strong>Instructor:</strong> {servicio.instructor}</p>
+                                                    <p><strong>Categoría:</strong> {servicio.categoria?.nombre}</p>
+                                                    <p><strong>Ubicación:</strong> {servicio.ubicacion}</p>
+                                                    <p><strong>Calificación:</strong> {servicio.calificacion}</p>
+                                                    <div className="d-flex flex-wrap justify-content-end">
+                                                        <Button
+                                                            size="sm"
+                                                            className="me-2 mb-2"
+                                                            style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
+                                                            onClick={() => navigate(`/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`)}
+                                                        >
+                                                            Ver más
+                                                        </Button>
+                                                    </div>
+                                                </Card.Body>
+                                            </Col>
+                                        </Row>
+                                    </Card.Body>
                                 </Card>
                             </Col>
                         ))
@@ -122,23 +121,25 @@ const DescubrirServicios = () => {
                 </Row>
 
                 {/* Paginación */}
-                <div className="pagination d-flex justify-content-center mt-3">
-                    <Button
-                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
-                        disabled={page === 0}
-                        onClick={() => setPage(prev => Math.max(prev - 1, 0))}
-                    >
-                        Anterior
-                    </Button>
-                    <span className="mx-3">Página {page + 1} de {Math.ceil(filteredServicios.length / size)}</span>
-                    <Button
-                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
-                        disabled={page >= Math.ceil(filteredServicios.length / size) - 1}
-                        onClick={() => setPage(prev => prev + 1)}
-                    >
-                        Siguiente
-                    </Button>
-                </div>
+                {totalPages > 1 && (
+                    <div className="pagination d-flex justify-content-center mt-3">
+                        <Button
+                            style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
+                            disabled={page === 0}
+                            onClick={() => setPage(prev => Math.max(prev - 1, 0))}
+                        >
+                            Anterior
+                        </Button>
+                        <span className="mx-3">Página {page + 1} de {totalPages}</span>
+                        <Button
+                            style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
+                            disabled={page >= totalPages - 1}
+                            onClick={() => setPage(prev => prev + 1)}
+                        >
+                            Siguiente
+                        </Button>
+                    </div>
+                )}
             </Card>
         </Container>
     );

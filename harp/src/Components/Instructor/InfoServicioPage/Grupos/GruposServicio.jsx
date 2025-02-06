@@ -12,9 +12,10 @@ import { armarStringPrecioYFrecuenciaCobro } from "../../../../services/frecuenc
 //import ActualizarMontoModal from "../../MiServicio/MenuOpciones/ActualizarMonto";
 import { format, parseISO } from "date-fns";
 import GrupoHorariosMontos from "./GrupoHorariosMontos";
+import { crearInscripcion } from "../../../../services/Inscripcion";
 
 function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar }) {
-  const { idServicio } = useParams();
+  const { idServicio, idAlumno } = useParams();
   const [cuposLibres, setCuposLibres] = useState({});
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null); // Nuevo estado
   const [showModalEdit, setShowModalEdit] = useState(false);
@@ -23,6 +24,7 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
   const [ultimoNumeroGrupo, setUltimoNumeroGrupo] = useState(0);
   const [montosProgramados, setMontosProgramados] = useState(0);
   const [sePuedeActualizarPrecio, setSePuedeActualizarPrecio] = useState(false);
+  const navigate = useNavigate();
 
 
   const obtenerMontosProgramadosPorGrupo = async (grupos) => {
@@ -131,6 +133,28 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
     );
   };
 
+  const handleInscribirseClick = async (grupo) => {
+    const confirmacion = window.confirm(`¿Está seguro que desea solicitar una inscripción para el grupo "${grupo.nombre}"?`);
+    
+    if (confirmacion) {
+      try {
+        // Llamar al servicio crearInscripcion
+        await crearInscripcion(idAlumno, idServicio, grupo.id, []);
+  
+        // Mostrar mensaje de éxito
+        alert('La solicitud de inscripción se ha enviado al instructor, quien la evaluará en los próximos días.');
+        navigate(`/alumno/${idAlumno}/inscripciones`)
+      } catch (error) {
+        // Mostrar un mensaje en caso de error
+        alert('Hubo un problema al enviar la solicitud de inscripción. Por favor, inténtelo nuevamente.');
+      }
+    } else {
+      // Si el usuario cancela, no hace nada
+      console.log('Inscripción cancelada');
+    }
+  };
+
+
   const handleCrearGrupo = () => {
     setShowModalCrear(true);
   };
@@ -179,11 +203,11 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
           Grupos y Horarios
         </h2>
         {sePuedeEditar && sePuedeActualizarPrecio &&
-            <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleActualizarPrecio}>
-              Actualizar precio
-            </Button>
-          }
-          {sePuedeEditar &&
+          <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleActualizarPrecio}>
+            Actualizar precio
+          </Button>
+        }
+        {sePuedeEditar &&
           <Button
             variant="link"
             style={{
@@ -203,7 +227,7 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
             {grupos.length === 0 && <FaExclamationCircle style={{ color: "yellow", fontSize: "18px" }} />}
           </Button>
         }
-      
+
       </div>
 
       <Row>
@@ -215,17 +239,26 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
             <h5 className="text-start">Clases Grupales</h5>
             {grupales.map((grupo) => (
               <Col xs={12} key={grupo.id} className="mb-3">
-                <Card className="h-100">
+                <Card className="h-100 position-relative">
                   <Card.Body>
                     <div className="d-flex flex-column flex-md-row justify-content-between align-items-start">
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
                       <span className="text-muted small me-4">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
-                    {sePuedeEditar &&
-                    <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
-                      <FaCog color="white" size={10} />
-                    </Button> 
-                     }
+                    {sePuedeEditar ?
+                      <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
+                        <FaCog color="white" size={10} />
+                      </Button>
+                      :
+                      <Button
+                        size="sm"
+                        className="mb-2 position-absolute"
+                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }} // Posiciona el botón en la esquina inferior derecha
+                        onClick={() => handleInscribirseClick(grupo)}
+                      >
+                        Inscribirme
+                      </Button>
+                    }
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
@@ -239,6 +272,7 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                     }
                   </Card.Body>
                 </Card>
+
               </Col>
             ))}
           </Col>)}
@@ -248,30 +282,40 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
             <h5 className="text-start">Clases Individuales</h5>
             {individuales.map((grupo) => (
               <Col xs={12} key={grupo.id} className="mb-3">
-                <Card className="h-100">
+                <Card className="h-100 position-relative">
                   <Card.Body>
                     <div className="d-flex flex-column flex-md-row justify-content-between align-items-start">
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
-                      <span className="text-muted small">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
+                      <span className="text-muted small me-4">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
-                    {sePuedeEditar &&
-                    <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
-                      <FaCog color="white" size={10} />
-                    </Button>
-                     }
+                    {sePuedeEditar ?
+                      <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
+                        <FaCog color="white" size={10} />
+                      </Button>
+                      :
+                      <Button
+                        size="sm"
+                        className="mb-2 position-absolute"
+                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }} // Posiciona el botón en la esquina inferior derecha
+                        onClick={() => handleInscribirseClick(grupo)}
+                      >
+                        Inscribirme
+                      </Button>
+                    }
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
-                    <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo?.historialMontos)}</Card.Text>
+                    <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo.historialMontos) || "No disponible"}</Card.Text>
                     {montosProgramados[grupo.id] != null &&
                       <Card.Text className="fw-bold mt-2">
                         {montosProgramados[grupo.id]
-                          ? `$${montosProgramados[grupo.id].monto} desde ${montosProgramados[grupo.id].fechaInicio}`
+                          ? `$${montosProgramados[grupo.id].monto} desde ${formatDate(montosProgramados[grupo.id].fechaInicio)}`
                           : "Monto no disponible"}
                       </Card.Text>
                     }
                   </Card.Body>
                 </Card>
+
               </Col>
             ))}
           </Col>
