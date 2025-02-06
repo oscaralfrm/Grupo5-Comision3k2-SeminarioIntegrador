@@ -23,7 +23,7 @@ export const RegisterFormStudent = () => {
   const onSubmit = async (data) => {
     try {
       console.log(data)
-      const AlumnoCreado = await createAlumno(
+      const alumnoCreado = await createAlumno(
         data.nombre,
         data.apellido,
         data.dni,
@@ -34,7 +34,7 @@ export const RegisterFormStudent = () => {
         data.direccion,
         data.fechaNacimiento
       );
-      navigate(`/alumno/${AlumnoCreado.id}/descubrir-servicios`);
+      navigate(`/alumno/${alumnoCreado.id}/descubrir-servicios`);
     } catch (error) {
       console.error("Error:", error);
       alert("Hubo un problema al registrar el alumno. Por favor, inténtalo nuevamente.");

@@ -245,20 +245,22 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
                       <span className="text-muted small me-4">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
-                    {sePuedeEditar ?
+                    {sePuedeEditar &&
                       <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
                         <FaCog color="white" size={10} />
                       </Button>
-                      :
-                      <Button
+                       } 
+                      { ! sePuedeEditar && cuposLibres[grupo.id] != "Sin cupos libres" &&
+                        <Button
                         size="sm"
                         className="mb-2 position-absolute"
-                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }} // Posiciona el botón en la esquina inferior derecha
+                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }} 
                         onClick={() => handleInscribirseClick(grupo)}
                       >
                         Inscribirme
                       </Button>
-                    }
+                      } 
+                     
                     {ordenarPorDia(grupo.horarios).map((horario) => (
                       <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
                     ))}
@@ -288,11 +290,12 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
                       <span className="text-muted small me-4">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
-                    {sePuedeEditar ?
+                    {sePuedeEditar &&
                       <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
                         <FaCog color="white" size={10} />
                       </Button>
-                      :
+                     }
+                     { ! sePuedeEditar && cuposLibres[grupo.id] != "Sin cupos libres" &&
                       <Button
                         size="sm"
                         className="mb-2 position-absolute"
