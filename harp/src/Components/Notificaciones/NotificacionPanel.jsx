@@ -77,7 +77,7 @@ const NotificationPanel = ({ notifications, onMarkAsRead }) => {
                         <div className="d-flex justify-content-between align-items-start">
                           <div className="ms-2 me-auto">
                             <div className="fw-bold">{notif.titulo}</div>
-                            <div>{notif.mensaje}</div>
+                            <div>{notif?.servicio.nombre} : {notif.mensaje}</div>
                             <small className="text-muted">
                               {new Date(notif.fechaHoraEnvio).toLocaleString()}
                             </small>
@@ -112,7 +112,7 @@ const NotificationPanel = ({ notifications, onMarkAsRead }) => {
                         <div className="d-flex justify-content-between align-items-start">
                           <div className="ms-2 me-auto">
                             <div className="fw-bold">{notif.titulo}</div>
-                            <div>{notif.mensaje}</div>
+                            <div>{notif?.servicio.nombre} : {notif.mensaje}</div>
                             <small className="text-muted">
                               {new Date(notif.fechaHoraEnvio).toLocaleString()}
                             </small>
