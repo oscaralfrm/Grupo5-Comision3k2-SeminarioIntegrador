@@ -12,7 +12,7 @@ import {
   deshabilitarInscripcionesDeServicio,
 } from "../../../../../services/Inscripcion.js";
 import { useParams } from "react-router-dom";
-import EnrollmentModal from "./ModalAceptarInscripcion.jsx";
+import EnrollmentModal from "./ModalAceptarRechazarInscripcion.jsx";
 
 
 export function calcularEdad(fechaNacimiento) {

@@ -1,15 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Navbar, Dropdown, Container, Form, FormControl, Button } from "react-bootstrap";
 import img from "../../../../../assets/LogoHarp420.png"; // Ruta del logo
 import profileImg from "../../../../../assets/profile.png"; // Ruta de la imagen de perfil
+import { obtenerTodasLasNotificacionesDeInstructor } from "../../../../../services/Notificacion";
+import { Navbar, Dropdown, Container, Badge, ListGroup, Button, Card, Tab, Nav } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell, faCheck } from "@fortawesome/free-solid-svg-icons"; // Íconos necesario
+import NotificationPanel from "../../../../Notificaciones/NotificacionPanel";
 
 export default function NavbarServicio() {
   const navigate = useNavigate();
-  const {idInstructor} = useParams();
+  const { idInstructor } = useParams();
+  const [notificaciones, setNotificaciones] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
   const handleClick = () => {
     navigate('/');
   };
+
+  useEffect(() => {
+    const fetchNotificaciones = async () => {
+      try {
+        const notificaciones = await obtenerTodasLasNotificacionesDeInstructor(idInstructor);
+        setNotificaciones(notificaciones);
+        console.log(notificaciones);
+      } catch (error) {
+        console.error("Error al obtener las notificaciones:", error);
+      }
+    };
+
+    fetchNotificaciones();
+  }, [idInstructor]);
+
+  const hasUnreadNotifications = notificaciones.some(notif => !notif.leido);
+ 
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
@@ -43,6 +67,29 @@ export default function NavbarServicio() {
               }}
             />
           </Navbar.Brand>
+
+          {/* Campana de notificaciones */}
+          <div style={{ position: "relative", marginRight: "20px" }}>
+            <FontAwesomeIcon
+              icon={faBell}
+              style={{ color: hasUnreadNotifications ? "yellow" : "white", cursor: "pointer", fontSize: "24px" }}
+              onClick={() => setShowNotifications(!showNotifications)}
+            />
+            {hasUnreadNotifications && (
+              <Badge
+                bg="danger"
+                style={{
+                  position: "absolute",
+                  top: "-5px",
+                  right: "-5px",
+                  borderRadius: "50%",
+                  fontSize: "10px",
+                }}
+              >
+                !
+              </Badge>
+            )}
+          </div>
 
           {/* Menú de perfil a la derecha */}
           <Dropdown align="end">
@@ -78,6 +125,13 @@ export default function NavbarServicio() {
           </Dropdown>
         </Container>
       </Navbar>
+
+       {/* Panel de notificaciones */}
+      {showNotifications && (
+        <NotificationPanel
+          notifications={notificaciones}
+        />
+      )}
     </div>
   );
 }

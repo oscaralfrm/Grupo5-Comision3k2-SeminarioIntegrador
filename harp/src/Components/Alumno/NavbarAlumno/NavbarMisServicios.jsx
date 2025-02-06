@@ -6,6 +6,7 @@ import { faBell, faCheck } from "@fortawesome/free-solid-svg-icons"; // Íconos 
 import img from "../../../assets/LogoHarp420.png"; // Ruta del logo
 import profileImg from "../../../assets/profile.png"; // Ruta de la imagen de perfil
 import { obtenerTodasLasNotificacionesDeAlumno, leerNotificacion } from "../../../services/Notificacion"; // Asegúrate de importar correctamente los servicios
+import NotificationPanel from "../../Notificaciones/NotificacionPanel";
 
 export default function NavbarAlumnoMisServicios() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function NavbarAlumnoMisServicios() {
       try {
         const notificaciones = await obtenerTodasLasNotificacionesDeAlumno(idAlumno);
         setNotificaciones(notificaciones);
+        console.log(notificaciones);
       } catch (error) {
         console.error("Error al obtener las notificaciones:", error);
       }
@@ -26,21 +28,11 @@ export default function NavbarAlumnoMisServicios() {
     fetchNotificaciones();
   }, [idAlumno]);
 
-  const handleMarkAsRead = async (idNotificacion, servicioId) => {
-    try {
-      await leerNotificacion(servicioId, idNotificacion); // Marcar como leída en el backend
-      // Filtrar la notificación marcada como leída
-      setNotificaciones(notificaciones.filter(notif => notif.id !== idNotificacion));
-    } catch (error) {
-      console.error("Error al marcar la notificación como leída:", error);
-    }
-  };
-
   const handleClick = () => {
     navigate('/');
   };
 
-  const hasUnreadNotifications = notificaciones.some(notif => !notif.leida);
+  const hasUnreadNotifications = notificaciones.some(notif => !notif.leido);
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
@@ -131,45 +123,11 @@ export default function NavbarAlumnoMisServicios() {
         </Container>
       </Navbar>
 
-      {/* Lista de notificaciones */}
+      {/* Panel de notificaciones */}
       {showNotifications && (
-        <div
-          style={{
-            position: "fixed",
-            top: "60px",
-            right: "20px",
-            zIndex: 1050,
-            backgroundColor: "white",
-            borderRadius: "5px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            width: "300px",
-            padding: "10px",
-          }}
-        >
-          <ListGroup>
-            {notificaciones.length > 0 ? (
-              notificaciones.map((notif) => (
-                <ListGroup.Item key={notif.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ flex: 1 }}>
-                    <strong>{notif.titulo}</strong> {/* Título de la notificación */}
-                    <div>{notif.mensaje}</div> {/* Mensaje de la notificación */}
-                  </div>
-                  {!notif.leida && (
-                    <Button
-                      variant="success"
-                      size="sm"
-                      onClick={() => handleMarkAsRead(notif.id, notif.servicio_id)} // Botón "Marcar como leída"
-                    >
-                      <FontAwesomeIcon icon={faCheck} />
-                    </Button>
-                  )}
-                </ListGroup.Item>
-              ))
-            ) : (
-              <ListGroup.Item>No hay notificaciones</ListGroup.Item>
-            )}
-          </ListGroup>
-        </div>
+        <NotificationPanel
+          notifications={notificaciones}
+        />
       )}
     </div>
   );

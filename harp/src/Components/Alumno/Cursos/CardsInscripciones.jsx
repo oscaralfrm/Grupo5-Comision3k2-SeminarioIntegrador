@@ -26,8 +26,8 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
 
     const closeDetails = () => setselectedInscripcion(null);
 
-    const handleGoToService = (inscripcionId) => {
-        navigate(`/alumno/${idAlumno}/inscripciones/${inscripcionId}`);
+    const handleGoToService = (servicioId) => {
+        navigate(`/alumno/${idAlumno}/servicios/${servicioId}/mi-servicio`);
     };
 
     const handleDescubrirServicios = () => {
@@ -63,7 +63,7 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
                                 height: cardHeight,
                                 cursor: "pointer",
                             }}
-                            onClick={() => handleGoToService(inscripcion.id)}
+                            onClick={() => handleGoToService(inscripcion.servicio.id)}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = "scale(1.05)";
                                 e.currentTarget.style.boxShadow = "0px 8px 24px rgba(0, 0, 0, 0.5)";
