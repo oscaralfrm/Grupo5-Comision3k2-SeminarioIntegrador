@@ -26,8 +26,17 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
 
     const closeDetails = () => setselectedInscripcion(null);
 
-    const handleGoToService = (inscripcionId) => {
-        navigate(`/alumno/${idAlumno}/inscripciones/${inscripcionId}`);
+    const handleGoToService = (inscripcion) => {
+        if (inscripcion.estado == "Finalizada") {
+            if (inscripcion.servicio.publico) {
+                navigate(`/alumno/${idAlumno}/servicio/${inscripcion.servicio.id}/info-servicio`);
+            } else {
+                alert("El servicio ya no esta disponible.")
+            }
+            
+        } else if (inscripcion.estado == "EnCurso" || inscripcion.estado == "Aceptada") {
+            navigate(`/alumno/${idAlumno}/servicios/${inscripcion.servicio.id}/mi-servicio`);
+        }
     };
 
     const handleDescubrirServicios = () => {
@@ -63,7 +72,7 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
                                 height: cardHeight,
                                 cursor: "pointer",
                             }}
-                            onClick={() => handleGoToService(inscripcion.id)}
+                            onClick={() => handleGoToService(inscripcion)}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = "scale(1.05)";
                                 e.currentTarget.style.boxShadow = "0px 8px 24px rgba(0, 0, 0, 0.5)";

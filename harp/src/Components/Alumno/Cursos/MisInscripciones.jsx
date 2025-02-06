@@ -14,8 +14,11 @@ const MisInscripciones = () => {
     const fetchInscripciones = async () => {
       try {
         const data = await getInscripcionesDeAlumno(idAlumno);
-        setInscripciones(data);
-        setFilteredInscripciones(data);
+        const sinRechazadas = data.filter((inscripcion) =>
+          inscripcion.estado != "Rechazada");
+        
+        setInscripciones(sinRechazadas);
+        setFilteredInscripciones(sinRechazadas);
       } catch (error) {
         console.error("Error al traer las inscripciones del alumno:", error);
       }
@@ -76,7 +79,7 @@ const MisInscripciones = () => {
           <option value="">Todos los estados</option>
           <option value="EnCurso">En Curso</option>
           <option value="Aceptada">Aceptada</option>
-          <option value="Rechazada">Rechazada</option>
+          <option value="PendienteAceptacion">Pendiente Aceptación</option>
           <option value="Finalizada">Finalizada</option>
         </select>
         </div>

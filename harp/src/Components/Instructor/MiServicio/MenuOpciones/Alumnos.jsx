@@ -42,8 +42,8 @@ const Alumnos = () => {
       setFilteredInscripciones(
         inscripciones.filter((inscripcion) => {
           return (
-            inscripcion.alumno.usuario.nombre.toLowerCase().includes(filters.name.toLowerCase()) &&
-            inscripcion.alumno.usuario.dni.includes(filters.dni) &&
+            inscripcion?.alumno?.usuario?.nombre.toLowerCase().includes(filters.name.toLowerCase()) &&
+            inscripcion?.alumno?.usuario?.dni?.includes(filters.dni) &&
             (filters.group ? inscripcion.grupo.nombre === filters.group : true)
           );
         })
