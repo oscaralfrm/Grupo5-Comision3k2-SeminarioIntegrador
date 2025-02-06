@@ -174,7 +174,7 @@ public class ReseniaService implements IReseniaService {
     public ResumenReseniaDTO obtenerResumenReseniasDeServicio(Long idServicio) {
         Servicio servicio = servicioService.findServicio(idServicio);
         int cantResenias = this.getReseniasDeServicio(idServicio).size();
-        float calificacion = servicio.calcularCalificacionPromedio();
+        float calificacion = servicio.getCalificacionPromedio();
         int cantInscriptos = servicio.obtenerAlumnosActuales().size();
         return new ResumenReseniaDTO(idServicio, calificacion, cantResenias, cantInscriptos);
     }

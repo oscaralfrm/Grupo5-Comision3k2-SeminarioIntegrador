@@ -45,7 +45,7 @@ public class ServicioDTO {
     private TipoCiclo tipoCiclo;
 
     // SI es con fecha limite
-    private int diaLimitePago;
+    private Integer diaLimitePago;
 
     //Si es cada X cantidad de dias
     // private int cantDiasCiclo;

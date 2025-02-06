@@ -126,11 +126,32 @@ public class ServicioController {
     };
 
 
-    // EDITAR
-    @PutMapping("/{idServicio}")
-    public ResponseEntity<Servicio> editarServicio(@PathVariable @Min(1) Long idServicio, @RequestBody ServicioDTO servicioDTO) {
+//    // EDITAR
+//    @PutMapping("/{idServicio}")
+//    public ResponseEntity<Servicio> editarServicio(@PathVariable @Min(1) Long idServicio, @RequestBody ServicioDTO servicioDTO) {
+//        Servicio servicioEditado = servicioService.editServicio(idServicio, servicioDTO);
+//        return  ResponseEntity.status(HttpStatus.OK).body(servicioEditado);
+//    }
+
+    // Indica que este endpoint consume multipart/form-data
+    @PutMapping(value = "/{idServicio}", consumes = {"multipart/form-data"})
+    public ResponseEntity<Servicio> editarServicio(@PathVariable @Min(1) Long idServicio,
+                                                    @ModelAttribute ServicioDTO servicioDTO) {
+
+        MultipartFile logo = servicioDTO.getLogo();
+        System.out.println("Servicio recibido: " + servicioDTO);
+        System.out.println("Archivo recibido: " + (logo != null ? logo.getOriginalFilename() : "No se envió archivo"));
+        // Si se envió un archivo, se procesa y se almacena a través de un servicio especializado
+        if (logo != null && !logo.isEmpty()) {
+            // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
+            // y retornar la URL donde se encuentra
+            String logoUrl = fileStorageService.storeFile(logo);
+            // Se asigna la URL al DTO para que el servicio la use
+            servicioDTO.setLogoURL(logoUrl);
+        }
+
         Servicio servicioEditado = servicioService.editServicio(idServicio, servicioDTO);
-        return  ResponseEntity.status(HttpStatus.OK).body(servicioEditado);
+        return ResponseEntity.status(HttpStatus.OK).body(servicioEditado);
     }
 
     // EDITAR

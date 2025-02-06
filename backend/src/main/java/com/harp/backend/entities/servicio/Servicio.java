@@ -483,7 +483,10 @@ public class Servicio {
         return alumnosConSusCuotas;
     }
 
-    public float calcularCalificacionPromedio() {
+    public float getCalificacionPromedio() {
+        if (this.resenias.isEmpty()) {
+            return 0;
+        }
         float cantidadResenias = this.resenias.size();
         float sumatoriaResenias = this.resenias.stream().mapToInt(Resenia::getCalificacion)  // Obtener la calificación de cada reseña
                 .sum(); // Sumar todas las calificaciones

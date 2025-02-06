@@ -8,6 +8,7 @@ import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.exception.NoSuchElementFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,12 +33,14 @@ public class NotificacionService implements INotificacionService {
         return notificacionRepository.findByInstructorDestinatarioIdAndServicioId(idInstructor, idServicio);
     };
 
+    @Transactional
     public List<Notificacion> findNotificacionesDeInstructor(Long idInstructor) {
-        return notificacionRepository.findByInstructorDestinatarioId(idInstructor);
+        return notificacionRepository.findByInstructorDestinatarioIdOrderByFechaHoraEnvioDesc(idInstructor);
     };
 
+    @Transactional
     public List<Notificacion> findNotificacionesDeAlumno(Long idAlumno) {
-        return notificacionRepository.findByAlumnoDestinatarioId(idAlumno);
+        return notificacionRepository.findByAlumnoDestinatarioIdOrderByFechaHoraEnvioDesc(idAlumno);
     };
 
 
