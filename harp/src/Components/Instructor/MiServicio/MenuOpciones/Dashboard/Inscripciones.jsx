@@ -96,10 +96,10 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
     setSelectedEnrollment(null);
   };
 
-  const handleAccept = (enroll) => {
+  const handleAccept = async (enroll) => {
     const fechaActual = new Date();
     const fechaISO = fechaActual.toISOString().split('T')[0];
-    const aceptado = aceptarInscripcion(idServicio, enroll.id, fechaISO);
+    const aceptado = await aceptarInscripcion(idServicio, enroll.id, fechaISO);
     setAcceptedEnrollments([...acceptedEnrollments, enroll]);
     handleCloseDetail();
   };
