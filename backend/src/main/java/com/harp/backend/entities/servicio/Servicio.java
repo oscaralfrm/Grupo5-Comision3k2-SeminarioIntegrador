@@ -244,6 +244,10 @@ public class Servicio {
         return this.obtenerAlumnosActuales().stream().anyMatch(alumno -> alumno.tieneEsteId(idAlumno));
     }
 
+    public boolean tieneEsteAlumnoPendiente(Long idAlumno) {
+        return this.obtenerAlumnosPendientesAceptacion().stream().anyMatch(alumno -> alumno.tieneEsteId(idAlumno));
+    }
+
 //    public MontoServicio obtenerMontoActualConEstasVecesSemanales(int vecesSemanales) {
 //        for (MontoServicio monto : this.obtenerMontosActuales()) {
 //            if (monto.esDeEstasVecesSemanales(vecesSemanales)) {
@@ -365,6 +369,11 @@ public class Servicio {
 
     public List<Alumno> obtenerAlumnosActuales() {
         return inscripciones.stream().filter(Inscripcion::estaEnCursoOAceptada).map(Inscripcion::getAlumno).toList();
+    }
+
+
+    public List<Alumno> obtenerAlumnosPendientesAceptacion() {
+        return this.obtenerInscripcionesPendientes().stream().map(Inscripcion::getAlumno).toList();
     }
 
     public List<Alumno> obtenerAlumnosActualesDeGrupo(Grupo grupo) {

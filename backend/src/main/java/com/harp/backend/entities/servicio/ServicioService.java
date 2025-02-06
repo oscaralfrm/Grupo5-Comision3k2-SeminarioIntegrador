@@ -81,8 +81,11 @@ public class ServicioService implements IServicioService {
     public Page<Servicio> getAllServiciosPublicadosSinInscripcionAlumno(Integer page, Integer size, Long idAlumno) {
         System.out.println("idAlumno" + idAlumno);
         Page<Servicio> listServicios = this.getAllServiciosPublicados(page, size);
+
+        // SI el alumno no esta en el servicio y tampoco esta esperando que lo acepten entonces lo retornamos
         List<Servicio> serviciosFiltrados = listServicios.stream()
-                .filter(servicio -> ! servicio.tieneEsteAlumno(idAlumno)).toList();
+                .filter(servicio ->
+                        (  (! servicio.tieneEsteAlumno(idAlumno)) && (! servicio.tieneEsteAlumnoPendiente(idAlumno)) ) ).toList();
 
         // Crear una nueva página basada en la lista filtrada
         Pageable pageable = PageRequest.of(page, size);

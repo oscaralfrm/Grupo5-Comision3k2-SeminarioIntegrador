@@ -34,7 +34,7 @@ public class NotificacionController {
 
     @GetMapping("/alumnos/{idAlumno}/notificaciones")
     public ResponseEntity<List<Notificacion>> findAllNotificacionesDeAlumno(@PathVariable Long idAlumno) {
-        List<Notificacion> notificaciones = notificacionService.findNotificacionesDeInstructor(idAlumno);
+        List<Notificacion> notificaciones = notificacionService.findNotificacionesDeAlumno(idAlumno);
         return ResponseEntity.ok(notificaciones);
     }
 
