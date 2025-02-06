@@ -26,6 +26,11 @@ const Pagos = (props) => {
   const [fechaVigencia, setFechaVigencia] = useState(null);
   const [fechaVigenciaProximoMonto, setFechaVigenciaProximoMonto] = useState(null);
 
+  const parseDate = (dateString) => {
+    const [day, month, year] = dateString.split('/');
+    return new Date(`${year}-${month}-${day}`);
+  };
+
 
   useEffect(() => {
     const fetchServicio = async () => {
@@ -89,7 +94,7 @@ const Pagos = (props) => {
           if (montoActualData && typeof montoActualData === 'object') {
             // Si montoActualData es un objeto, extraer el monto y la fecha
             montoActual = montoActualData.monto;
-            fechaInicio = montoActualData.fechaInicio;
+            fechaInicio = parseDate(montoActualData.fechaInicio); // Parsear la fecha correctamente
           } else {
             // Si montoActualData es un valor directo (el monto), usarlo directamente
             montoActual = montoActualData;
@@ -114,7 +119,7 @@ const Pagos = (props) => {
               new Date(current.fechaInicio) < new Date(min.fechaInicio) ? current : min
             );
             const siguienteMonto1 = siguienteMonto ? siguienteMonto.monto : null;
-            const fechaInicioProximoMonto = siguienteMonto ? siguienteMonto.fechaInicio : null;
+            const fechaInicioProximoMonto = siguienteMonto ? parseDate(siguienteMonto.fechaInicio) : null; // Parsear la fecha correctamente
   
             // Actualiza el estado con el próximo monto y su fecha de vigencia
             setProximoMonto(siguienteMonto1);
@@ -138,7 +143,30 @@ const Pagos = (props) => {
   // Revisión automática cada minuto para actualizar el monto cuando llegue la fecha de vigencia
   useEffect(() => {
     const interval = setInterval(() => {
-      if (proximoMonto && new Date(fechaVigenciaProximoMonto) <= new Date()) {
+      const fechaActual = new Date();
+      const fechaVigenciaProximoMontoDate = new Date(fechaVigenciaProximoMonto);
+  
+      // Convertir ambas fechas a UTC para evitar problemas de zona horaria
+      const fechaActualUTC = new Date(
+        Date.UTC(
+          fechaActual.getFullYear(),
+          fechaActual.getMonth(),
+          fechaActual.getDate()
+        )
+      );
+      const fechaVigenciaUTC = new Date(
+        Date.UTC(
+          fechaVigenciaProximoMontoDate.getFullYear(),
+          fechaVigenciaProximoMontoDate.getMonth(),
+          fechaVigenciaProximoMontoDate.getDate()
+        )
+      );
+  
+      // Comparar solo el día, mes y año, ignorando la hora
+      const isSameDate =
+        fechaActualUTC.getTime() === fechaVigenciaUTC.getTime();
+  
+      if (proximoMonto && isSameDate) {
         setMontoActual(proximoMonto); // Aplica el próximo monto al monto actual
         setFechaVigencia(fechaVigenciaProximoMonto); // Actualiza la fecha de vigencia
         setProximoMonto(null); // Elimina el monto programado después de aplicarlo

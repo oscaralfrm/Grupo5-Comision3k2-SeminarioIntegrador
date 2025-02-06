@@ -16,7 +16,7 @@ const ServicioAlumno = () => {
   const [nombreServicio, setNombreServicio] = useState("Mi Servicio");
 
   const handleNavigate = () => {
-    navigate(`/alumno/${idAlumno}/servicios`);
+    navigate(`/alumno/${idAlumno}/descubrir-servicios`);
   };
 
   const fetchServicio = async () => {
