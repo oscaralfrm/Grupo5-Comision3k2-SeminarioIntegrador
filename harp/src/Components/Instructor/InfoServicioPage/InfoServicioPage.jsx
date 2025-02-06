@@ -92,7 +92,14 @@ const InfoServicioPage = () => {
           </div>
         </Col>
       </Row>
-
+      { serviceData?.publico &&
+        <Row className="mt-4">
+        <Col>
+          <ReviewCarousel/>
+        </Col>
+      </Row>
+      }
+      
       <ModalPublicarServicio
         handleCloseModal={handleCloseModal}
         fetchServicio={fetchServicio}

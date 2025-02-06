@@ -1,10 +1,25 @@
 import React from "react";
 import { Form, Button } from "react-bootstrap";
 
-export default function General({ register, errors, categorias, goToNextTab }) {
+export default function General({ register, errors, categorias, goToNextTab, logoPreview, setLogoPreview }) {
+  
+  // Desestructuramos el registro para el input del logo para agregar un onChange personalizado
+  const { ref, onChange, ...rest } = register("logo");
+
+  const handleLogoChange = (e) => {
+    // Llamamos al onChange original de react-hook-form
+    onChange(e);
+    // Si se seleccionó un archivo, creamos una URL para mostrar la vista previa
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const previewURL = URL.createObjectURL(file);
+      setLogoPreview(previewURL);
+    }
+  };
+
   return (
     <Form>
-      <Form.Group controlId="categoria" className="mb-3 ">
+      <Form.Group controlId="categoria" className="mb-3">
         <Form.Label>Categoría</Form.Label>
         <Form.Select
           {...register("categoria", { required: "Selecciona una categoría" })}
@@ -22,7 +37,7 @@ export default function General({ register, errors, categorias, goToNextTab }) {
         </Form.Control.Feedback>
       </Form.Group>
 
-      <Form.Group controlId="nombreServicio" className="mb-3 ">
+      <Form.Group controlId="nombreServicio" className="mb-3">
         <Form.Label>Nombre del Servicio</Form.Label>
         <Form.Control
           type="text"
@@ -34,7 +49,7 @@ export default function General({ register, errors, categorias, goToNextTab }) {
         </Form.Control.Feedback>
       </Form.Group>
 
-      <Form.Group controlId="descripcion" className="mb-3 ">
+      <Form.Group controlId="descripcion" className="mb-3">
         <Form.Label>Descripción</Form.Label>
         <Form.Control
           as="textarea"
@@ -44,18 +59,33 @@ export default function General({ register, errors, categorias, goToNextTab }) {
         />
       </Form.Group>
 
-      <Form.Group controlId="ubicacion" className="mb-3 ">
+      <Form.Group controlId="ubicacion" className="mb-3">
         <Form.Label>Ubicación</Form.Label>
         <Form.Control type="text" {...register("ubicacion")} />
       </Form.Group>
 
-      <Form.Group controlId="logo" className="mb-3 ">
+      <Form.Group controlId="logo" className="mb-3">
         <Form.Label>Logo</Form.Label>
-        <Form.Control type="file" {...register("logo")} />
+        <Form.Control
+          type="file"
+          ref={ref}
+          onChange={handleLogoChange}
+          {...rest}
+        />
+        {/* Muestra la vista previa si existe */}
+        {logoPreview && (
+          <div className="mt-3">
+            <img 
+              src={logoPreview} 
+              alt="Vista previa del logo" 
+              style={{ maxWidth: "200px", border: "1px solid #ddd", padding: "5px" }} 
+            />
+          </div>
+        )}
       </Form.Group>
 
       <div className="d-flex justify-content-end align-items-center">
-      <span
+        <span
           className="fs-3"
           onClick={goToNextTab}
           style={{ cursor: "pointer" }}

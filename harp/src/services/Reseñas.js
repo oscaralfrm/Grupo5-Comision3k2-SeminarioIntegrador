@@ -41,6 +41,7 @@ export const getReseniasDeAlumno = async (idAlumno, publicadas, borradores) => {
 export const getReseniasDeServicio = async (idServicio) => {
   try {
     const response = await axios.get(`${API_URL}servicios/${idServicio}/resenias`);
+    console.log("resenias", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener las reseñas del servicio con ID ${idServicio}`, error);

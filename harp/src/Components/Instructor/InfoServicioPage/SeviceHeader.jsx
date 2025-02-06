@@ -6,9 +6,11 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import BarraResumen from "./BarraResumen";
 import { obtenerInstructorDeServicio } from "../../../services/Instructor";
 import { getGruposDeServicio } from "../../../services/Grupo";
+import { getResumenReseniasDeServicio } from "../../../services/Reseñas";
 
 function ServiceHeader({ serviceData, sePuedeEditar }) {
   const [instructor, setInstructor] = useState(null);
+  const [resumenResenias, setResumenResenias] = useState(null);
   const [grupos, setGrupos] = useState(null);
   const navigate = useNavigate();
 
@@ -19,6 +21,9 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
         setInstructor(data);
         const gruposData = await getGruposDeServicio(serviceData?.id);
         setGrupos(gruposData);
+        const resumen = await getResumenReseniasDeServicio(serviceData?.id);
+        console.log("Resumen resenias", resumen);
+        setResumenResenias(resumen);
       } catch (error) {
         console.error("Error al traer el instructor:", error);
       }
@@ -30,6 +35,18 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
     navigate(
       `/instructor/${instructor.id}/servicio/${serviceData?.id}/editar-servicio`
     ); // Navigate to edit service page
+  };
+
+  // Función que renderiza las estrellas utilizando íconos de react-icons
+  const renderStars = (rating) => {
+    const safeRating = Math.min(5, Math.max(0, rating || 0));
+    return [1, 2, 3, 4, 5].map((star) =>
+      star <= safeRating ? (
+        <FaStar key={star} color="gold" size={18} />
+      ) : (
+        <FaRegStar key={star} color="gray" size={18} />
+      )
+    );
   };
 
   return (
@@ -106,15 +123,12 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
               <div className="ms-auto d-flex align-items-center">
                 <strong>Calificación:</strong>
                 <span className="ms-2">
-                  {[1, 2, 3, 4, 5].map((star) =>
-                    star <= 4 ? (
-                      <FaStar key={star} color="gold" />
-                    ) : (
-                      <FaRegStar key={star} />
-                    )
-                  )}
+                  {renderStars(resumenResenias?.calificacion)}
                 </span>
-                <span className="ms-2">({4.9})</span>
+                <span className="ms-2">({resumenResenias?.calificacion})</span>
+                <span className="ms-2">
+                  ({resumenResenias?.cantResenias || 0} reseñas)
+                </span>
               </div>
             </div>
           </Col>

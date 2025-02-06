@@ -9,14 +9,14 @@ import Modalidad from "./Tabs/Modalidad";
 import ResumenServicio from "./Tabs/InfoCard";
 import { Tab, Tabs, Button } from "react-bootstrap";
 
-
 export default function ServicioForm() {
   const [activeTab, setActiveTab] = useState("general");
   const [categorias, setCategorias] = useState([]);
+  // Agrega estado para la vista previa del logo
+  const [logoPreview, setLogoPreview] = useState("");
   const { idInstructor } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-
 
   const {
     register,
@@ -24,7 +24,7 @@ export default function ServicioForm() {
     formState: { errors, isValid },
     watch,
   } = useForm({
-    mode: "onChange", // Ensure validation triggers on change
+    mode: "onChange",
     defaultValues: {
       nombreServicio: '',
       descripcion: '',
@@ -34,12 +34,11 @@ export default function ServicioForm() {
       clasePrueba: '',
       asistencia: '',
       montoInscripcion: 0,
+      // Puedes inicializar "logo" si lo requieres
     },
   });
 
-
   const formData = watch();
-
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -53,35 +52,29 @@ export default function ServicioForm() {
     fetchCategorias();
   }, []);
 
-
   function obtenerValoresCiclo(frecuenciaCuotas, duracionCuotasPersonalizada) {
     switch (frecuenciaCuotas) {
       case "mensual":
         return { cantidad: 1, unidad: "MONTHS" };
- 
       case "semanal":
         return { cantidad: 1, unidad: "WEEKS" };
- 
       case "diario":
         return { cantidad: 1, unidad: "DAYS" };
-  
       case "otros":
         if (duracionCuotasPersonalizada % 7 === 0) {
           return { cantidad: duracionCuotasPersonalizada / 7, unidad: "WEEKS" };
         } else {
           return { cantidad: duracionCuotasPersonalizada, unidad: "DAYS" };
         }
- 
       default:
         throw new Error("Frecuencia de cobro no válida");
     }
   }
 
-
   const onSubmit = async (data) => {
     console.log(data.logo);
     console.log(data.logo[0]);
-    const ciclo = obtenerValoresCiclo( data.frecuenciaCuotas,data.duracionCuotasPersonalizada);
+    const ciclo = obtenerValoresCiclo(data.frecuenciaCuotas, data.duracionCuotasPersonalizada);
     const servicioDTO = {
       nombre: data.nombreServicio,
       idInstructor: idInstructor,
@@ -92,8 +85,7 @@ export default function ServicioForm() {
         data.ciclos === "Mismas Fechas"
           ? "SegunCalendario"
           : "SegunInscripcion",
-      diaLimitePago:
-        data.frecuenciaCuotas === "mensual" ? data.fechaLimitePago : null,
+      diaLimitePago: data.fechaLimitePago > 0 ? data.fechaLimitePago : 0,
       cantCiclo: ciclo.cantidad,
       unidadCiclo: ciclo.unidad,
       tipoModalidad:
@@ -106,14 +98,14 @@ export default function ServicioForm() {
       logo: data.logo[0],
     };
 
+    console.log("ServicioDTO", servicioDTO);
 
     try {
       const response = await createServicio(servicioDTO);
-      
       alert("Servicio creado con éxito");
       navigate(
         `/instructor/${idInstructor}/servicio/${response.id}/info-servicio`,
-        {state: {from: window.location.pathname}}
+        { state: { from: window.location.pathname } }
       );
     } catch (error) {
       console.error("Error al crear el servicio:", error);
@@ -121,18 +113,15 @@ export default function ServicioForm() {
     }
   };
 
-
   const goToNextTab = () => {
     if (activeTab === "general") setActiveTab("cobros");
     else if (activeTab === "cobros") setActiveTab("modalidad");
   };
 
-
   const goToPreviousTab = () => {
     if (activeTab === "cobros") setActiveTab("general");
     else if (activeTab === "modalidad") setActiveTab("cobros");
   };
-
 
   return (
     <div
@@ -169,14 +158,16 @@ export default function ServicioForm() {
               className="mb-3"
             >
               <Tab eventKey="general" title="General">
+                {/* Se pasan también logoPreview y setLogoPreview */}
                 <General
                   register={register}
                   errors={errors}
                   categorias={categorias}
                   goToNextTab={goToNextTab}
+                  logoPreview={logoPreview}
+                  setLogoPreview={setLogoPreview}
                 />
               </Tab>
-
 
               <Tab eventKey="cobros" title="Cobros">
                 <Cobros
@@ -188,8 +179,7 @@ export default function ServicioForm() {
                 />
               </Tab>
 
-
-              <Tab eventKey="modalidad"  title="Modalidad">
+              <Tab eventKey="modalidad" title="Modalidad">
                 <Modalidad
                   register={register}
                   errors={errors}
@@ -200,12 +190,9 @@ export default function ServicioForm() {
                 />
               </Tab>
             </Tabs>
-
-
           </form>
         </div>
       </div>
-
 
       {/* Columna Derecha (ResumenServicio) */}
       <div
