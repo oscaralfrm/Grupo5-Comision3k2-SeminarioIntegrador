@@ -9,12 +9,14 @@ import Modalidad from "./Tabs/Modalidad";
 import ResumenServicio from "./Tabs/InfoCard";
 import { Tab, Tabs, Button } from "react-bootstrap";
 
+
 export default function ServicioForm() {
   const [activeTab, setActiveTab] = useState("general");
   const [categorias, setCategorias] = useState([]);
   const { idInstructor } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+
 
   const {
     register,
@@ -35,7 +37,9 @@ export default function ServicioForm() {
     },
   });
 
+
   const formData = watch();
+
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -49,14 +53,15 @@ export default function ServicioForm() {
     fetchCategorias();
   }, []);
 
+
   function obtenerValoresCiclo(frecuenciaCuotas, duracionCuotasPersonalizada) {
     switch (frecuenciaCuotas) {
       case "mensual":
         return { cantidad: 1, unidad: "MONTHS" };
-  
+ 
       case "semanal":
         return { cantidad: 1, unidad: "WEEKS" };
-  
+ 
       case "diario":
         return { cantidad: 1, unidad: "DAYS" };
   
@@ -66,11 +71,12 @@ export default function ServicioForm() {
         } else {
           return { cantidad: duracionCuotasPersonalizada, unidad: "DAYS" };
         }
-  
+ 
       default:
         throw new Error("Frecuencia de cobro no válida");
     }
   }
+
 
   const onSubmit = async (data) => {
     console.log(data.logo);
@@ -100,6 +106,7 @@ export default function ServicioForm() {
       logo: data.logo[0],
     };
 
+
     try {
       const response = await createServicio(servicioDTO);
       
@@ -114,15 +121,18 @@ export default function ServicioForm() {
     }
   };
 
+
   const goToNextTab = () => {
     if (activeTab === "general") setActiveTab("cobros");
     else if (activeTab === "cobros") setActiveTab("modalidad");
   };
 
+
   const goToPreviousTab = () => {
     if (activeTab === "cobros") setActiveTab("general");
     else if (activeTab === "modalidad") setActiveTab("cobros");
   };
+
 
   return (
     <div
@@ -167,6 +177,7 @@ export default function ServicioForm() {
                 />
               </Tab>
 
+
               <Tab eventKey="cobros" title="Cobros">
                 <Cobros
                   register={register}
@@ -176,6 +187,7 @@ export default function ServicioForm() {
                   goToPreviousTab={goToPreviousTab}
                 />
               </Tab>
+
 
               <Tab eventKey="modalidad"  title="Modalidad">
                 <Modalidad
@@ -189,9 +201,11 @@ export default function ServicioForm() {
               </Tab>
             </Tabs>
 
+
           </form>
         </div>
       </div>
+
 
       {/* Columna Derecha (ResumenServicio) */}
       <div
