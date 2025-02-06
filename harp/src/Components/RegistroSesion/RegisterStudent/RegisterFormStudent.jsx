@@ -34,7 +34,7 @@ export const RegisterFormStudent = () => {
         data.direccion,
         data.fechaNacimiento
       );
-      navigate(`/alumno/${AlumnoCreado.id}/cursos`);
+      navigate(`/alumno/${AlumnoCreado.id}/descubrir-servicios`);
     } catch (error) {
       console.error("Error:", error);
       alert("Hubo un problema al registrar el alumno. Por favor, inténtalo nuevamente.");

@@ -77,15 +77,18 @@ const transformarDTOaFormData = (servicioDTO) =>  {
 export const createServicio = async (servicioDTO) => {
     try {
         const formDataToSend = transformarDTOaFormData(servicioDTO);
-        const response = await axios.post(
-            `${API_URL}servicios`,
-            formDataToSend,
-            { headers: { "Content-Type": "multipart/form-data" } }  // Est
-        );
+        const options = {
+            method: 'POST',
+            url: 'http://localhost:9001/api/servicios',
+            headers: {'content-type': 'multipart/form-data; boundary=---011000010111000001101001'},
+            data: '[formDataToSend]'
+          };
+        const response = await axios.request(options);
         return response.data;
     } catch (error) {
-        console.error('Error al crear servicio', error);
-        throw error;
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
