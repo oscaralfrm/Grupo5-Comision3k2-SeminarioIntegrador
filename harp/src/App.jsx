@@ -22,7 +22,10 @@ import DescubrirServicios from "./Components/Alumno/DescubrirServicios.jsx";
 import InformacionDelServicio from "./Components/Alumno/InformacionDelServicio.jsx"; // <-- Importación corregida
 
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
+import ServicioAlumno from "./Components/Alumno/MenuOpciones/ServicioAlumno.jsx";
+//import Servicio0 from "./Components/Alumno/MenuOpciones/Servicio.jsx";
 import EditServicioForm from "./Components/Instructor/EditServicio/EditServicio.jsx";
+import AsistenciasAlumno from "./Components/Alumno/MenuOpciones/AsistenciasAlumno.jsx";
 import MisInscripciones from "./Components/Alumno/Cursos/MisInscripciones.jsx";
 import InfoServicioAlumno from "./Components/Alumno/InfoServicioAlumno.jsx";
 
@@ -98,6 +101,16 @@ function App() {
           />
 
           <Route
+            path="alumno/:idAlumno/inscripciones/:idInscripcion/mi-inscripcion"
+            element={<><AppNavbar /><ServicioAlumno /></>}
+          />
+
+          <Route path="instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo /></>} />
+          <Route
+            path="alumno/:idAlumno/inscripciones/:idInscripcion/detalles"
+            element={<><AppNavbar /><InformacionDelServicio /></>}
+          />
+          <Route
             path="alumno/:idAlumno/inscripciones"
             element={<><AppNavbar /><MisInscripciones /></>}
           />
@@ -111,6 +124,8 @@ function App() {
           <Route path="instructor/:idInstructor/servicio/:idServicio/crear-grupo" element={<><AppNavbar />< CrearGrupo /></>} />
           {/* <Route path="instructor/:idInstructor/servicio/:idServicio/configuracion/crear-grupo" element={<><AppNavbar /><CrearGrupo /></>} /> */}
 
+
+          <Route path="alumno/:idAlumno/inscripciones/:idInscripcion/mi-inscripcion/asistencias" element={<><AppNavbar />< AsistenciasAlumno /></>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

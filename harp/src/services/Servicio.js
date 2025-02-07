@@ -1,4 +1,9 @@
 import axios from './axiosConfig.js';
+import { armarStringPrecioYFrecuenciaCobro } from './frecuenciaPago.js';
+import { getGruposDeServicio } from './Grupo.js';
+import { getMontoActualGrupoDeHistorial } from './HistorialMontoCuota.js';
+import { obtenerInstructorDeServicio } from './Instructor.js';
+import { getResumenReseniasDeServicio } from './Reseñas.js';
 
 const API_URL = '/'; // Cambiar a la URL de tu API
 
@@ -26,13 +31,40 @@ export const getAllServiciosPublicos = async (page, size) => {
 
 export const getAllServiciosPublicosSinAlumno = async (page, size, idAlumno) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/publicos/sin-alumno/${idAlumno}?page=${page}&size=${size}`);
-        return response.data;
+        const { data } = await axios.get(`${API_URL}servicios/publicos/sin-alumno/${idAlumno}?page=${page}&size=${size}`);
+    
+        const serviciosArray = Array.isArray(data.content) ? data.content : [];
+
+        const servicios = await Promise.all(serviciosArray.map(async (servicio) => {
+            const instructor = await obtenerInstructorDeServicio(servicio.id);
+            const resumen = await getResumenReseniasDeServicio(servicio.id);
+            const grupos = await getGruposDeServicio(servicio.id);
+            
+            // Obtener montos de los grupos
+            const montos = grupos.map(
+                grupo => getMontoActualGrupoDeHistorial(grupo.historialMontos)?.monto ?? 0
+            );
+            
+            // Calcular monto mínimo
+            const montoMinimo = montos.length > 0 ? Math.min(...montos) : "Sin definir";
+            
+            return {
+                ...servicio,
+                instructorId: instructor.id,
+                instructorNombre: instructor.usuario.nombre,
+                resumen,
+                montoMinimo,
+            };
+        }));
+        
+        console.log(servicios);
+        return servicios;
     } catch (error) {
         console.error('Error al obtener los servicios', error);
         throw error;
     }
 };
+
 
 export const getServicioByNombre = async (nombre) => {
     try {
@@ -44,47 +76,50 @@ export const getServicioByNombre = async (nombre) => {
     }
 };
 
-const transformarDTOaFormData = (servicioDTO) =>  {
+const transformarDTOaFormData = (servicioDTO) => {
+    const formDataToSend = new FormData();
+    formDataToSend.append("nombre", servicioDTO.nombre);
+    formDataToSend.append("idInstructor", servicioDTO.idInstructor);
+    formDataToSend.append("descripcion", servicioDTO.descripcion);
+    formDataToSend.append("ubicacion", servicioDTO.ubicacion);
+    formDataToSend.append("categoria", servicioDTO.categoria);
+    formDataToSend.append("tipoCiclo", servicioDTO.tipoCiclo);
+    formDataToSend.append("diaLimitePago", servicioDTO.diaLimitePago);
+    formDataToSend.append("cantCiclo", servicioDTO.cantCiclo);
+    formDataToSend.append("unidadCiclo", servicioDTO.unidadCiclo);
+    formDataToSend.append("tipoModalidad", servicioDTO.tipoModalidad);
+    formDataToSend.append("claseDePrueba", servicioDTO.claseDePrueba);
+    formDataToSend.append("asistenciasActivas", servicioDTO.asistenciasActivas);
+    formDataToSend.append("montoInscripcion", servicioDTO.montoInscripcion);
+    formDataToSend.append("pagoAnticipadoDeMontoInscripcion", servicioDTO.pagoAnticipadoDeMontoInscripcion);
 
-    // Creamos un objeto FormData para enviar tanto el JSON como el archivo
-  const formDataToSend = new FormData();
-  formDataToSend.append("nombre", servicioDTO.nombre);
-  formDataToSend.append("idInstructor", servicioDTO.idInstructor);
-  formDataToSend.append("descripcion", servicioDTO.descripcion);
-  formDataToSend.append("ubicacion", servicioDTO.ubicacion);
-  formDataToSend.append("categoria", servicioDTO.categoria);
-  formDataToSend.append("tipoCiclo", servicioDTO.tipoCiclo);
-  formDataToSend.append("diaLimitePago", servicioDTO.diaLimitePago);
-  formDataToSend.append("cantCiclo", servicioDTO.cantCiclo);
-  formDataToSend.append("unidadCiclo", servicioDTO.unidadCiclo);
-  formDataToSend.append("tipoModalidad", servicioDTO.tipoModalidad);
-  formDataToSend.append("claseDePrueba", servicioDTO.claseDePrueba);
-  formDataToSend.append("asistenciasActivas", servicioDTO.asistenciasActivas);
-  formDataToSend.append("montoInscripcion", servicioDTO.montoInscripcion);
-  formDataToSend.append("pagoAnticipadoDeMontoInscripcion", servicioDTO.pagoAnticipadoDeMontoInscripcion);
 
-  // Si se seleccionó un archivo, se agrega al FormData.
-  if (servicioDTO.logo) {
-    console.log(servicioDTO.logo)
-    formDataToSend.append("logo", servicioDTO.logo);
-  }
+    if (servicioDTO.logo) {
+        console.log(servicioDTO.logo);
+        formDataToSend.append("logo", servicioDTO.logo);
+    }
 
-  return formDataToSend;
+    return formDataToSend;
+};
 
-}
-
-// Función para crear un nuevo servicio
 export const createServicio = async (servicioDTO) => {
     try {
         const formDataToSend = transformarDTOaFormData(servicioDTO);
-        const response = await axios.post(
-            `${API_URL}servicios`,
-            formDataToSend,
-            { headers: { "Content-Type": "multipart/form-data" } }  // Est
-        );
-        return response.data;
+
+        const response = await fetch(`http://localhost:9001/api/servicios`, {
+            method: 'POST',
+            body: formDataToSend
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error al crear servicio: ${response.status} - ${response.statusText} - ${JSON.stringify(errorData)}`);
+        }
+
+        const data = await response.json();
+        return data;
     } catch (error) {
-        console.error('Error al crear servicio', error);
+        console.error('Error al crear servicio:', error);
         throw error;
     }
 };
@@ -113,8 +148,20 @@ export const getServicioById = async (idServicio) => {
 // Función para actualizar un servicio
 export const updateServicio = async (idServicio, servicioDTO) => {
     try {
-        const response = await axios.put(`${API_URL}servicios/${idServicio}`, servicioDTO);
-        return response.data;
+        const formDataToSend = transformarDTOaFormData(servicioDTO);
+
+        const response = await fetch(`http://localhost:9001/api/servicios/${idServicio}`, {
+            method: 'PUT',
+            body: formDataToSend
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error al editar servicio: ${response.status} - ${response.statusText} - ${JSON.stringify(errorData)}`);
+        }
+
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.error('Error al editar el servicio', error);
         throw error;

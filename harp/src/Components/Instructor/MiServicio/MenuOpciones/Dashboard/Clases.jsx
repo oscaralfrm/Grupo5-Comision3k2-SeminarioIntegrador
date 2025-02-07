@@ -27,13 +27,13 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
   return (
     <div style={{
       position: "relative",
-      backgroundColor: "white",
-      padding: "20px",
-      borderRadius: "20px",
-      boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-      maxWidth: "100%",
-      width: "100%",
-      fontFamily: "Roboto"
+        backgroundColor: "white",
+        padding: "20px",
+        borderRadius: "20px",
+        boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
+        maxWidth: "90%",
+        width: "90%",
+        margin: "4vh auto",
     }}>
       <div className="responsive-container" style={{
         display: "flex",

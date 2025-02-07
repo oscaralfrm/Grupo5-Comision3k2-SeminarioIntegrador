@@ -4,8 +4,17 @@ import StudentsCard from "./Alumnos";
 import ReviewCarousel from "./Reseñas";
 import ClassesCard from "./Clases";
 import { Form } from "react-bootstrap";
-import { getInscripcionesDeServicio, aceptarInscripcion, rechazarInscripcion, habilitarInscripcionesDeServicio, deshabilitarInscripcionesDeServicio } from "../../../../../services/Inscripcion.js";
+import {
+  getInscripcionesDeServicio,
+  aceptarInscripcion,
+  rechazarInscripcion,
+  habilitarInscripcionesDeServicio,
+  deshabilitarInscripcionesDeServicio,
+} from "../../../../../services/Inscripcion.js";
 import { useParams } from "react-router-dom";
+import EnrollmentModal from "./ModalAceptarRechazarInscripcion.jsx";
+import SuccessModal from "../../../../CartelDeExito/CartelDeExito.jsx";
+
 
 export function calcularEdad(fechaNacimiento) {
   const hoy = new Date();
@@ -55,6 +64,15 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
   const [showAcceptedList, setShowAcceptedList] = useState(false);
   const [enrollments, setEnrrolments] = useState([]);
   const [inscriptionsSwitchActive, setInscriptionsSwitchActive] = useState(habilitadas);
+  const [modalType, setModalType] = useState("accept"); // "accept" o "reject"
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEnrollmentForModal, setSelectedEnrollmentForModal] = useState(null);
+
+  // Estados para el SuccessModal reutilizable
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
   const { idServicio } = useParams();
 
   const pendingEnrollments = enrollments.filter(
@@ -69,50 +87,68 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
         const data = await getInscripcionesDeServicio(idServicio, false, true);
         setEnrrolments(data);
       } catch (error) {
-        console.error('Error al traer las solicitudes de inscripción:', error);
+        console.error("Error al traer las solicitudes de inscripción:", error);
       }
     };
     fetchInscripciones();
     setInscriptionsSwitchActive(habilitadas);
   }, [idServicio, habilitadas]);
 
-  const handleDetailClick = (enroll) => {
-    setSelectedEnrollment({
-      ...enroll,
-      dni: enroll.alumno.usuario.dni,
-      phone: enroll.alumno.usuario.telefono,
-      email: enroll.alumno.usuario.email,
-      seniority: calcularAntiguedadComoTexto(enroll.alumno.usuario.fechaRegistro),
-      courses: 3,
-      paymentsUpToDate: true,
-      age: calcularEdad(enroll.alumno.usuario.fechaNacimiento),
-      photoUrl: "https://via.placeholder.com/100",
-    });
-    setShowDetail(true);
-  };
-
   const handleCloseDetail = () => {
     setShowDetail(false);
     setSelectedEnrollment(null);
   };
 
-  const handleAccept = (enroll) => {
-    const fechaActual = new Date();
-    const fechaISO = fechaActual.toISOString().split('T')[0];
-    const aceptado = aceptarInscripcion(idServicio, enroll.id, fechaISO);
-    setAcceptedEnrollments([...acceptedEnrollments, enroll]);
-    handleCloseDetail();
+  // Función para abrir el modal según la acción
+  const openModal = (enroll, type) => {
+    setSelectedEnrollmentForModal(enroll);
+    setModalType(type);
+    setShowModal(true);
   };
 
-  const handleReject = (enroll) => {
-    const aceptado = rechazarInscripcion(idServicio, enroll.id);
-    setRejectedEnrollments([...rejectedEnrollments, enroll]);
-    handleCloseDetail();
+
+  // Ejemplo de funciones de aceptación y rechazo
+  const handleAcceptEnrollment = async (enrollment, selectedDate) => {
+    try {
+      await aceptarInscripcion(idServicio, enrollment.id, selectedDate);
+      setAcceptedEnrollments([...acceptedEnrollments, enrollment]);
+    } catch (error) {
+      console.error("Error al aceptar la inscripción:", error);
+    }
+  };
+
+  const handleRejectEnrollment = async (enrollment, reason) => {
+    try {
+      // Aquí llamarías a la función que rechaza la inscripción, pasando el motivo si es necesario
+      await rechazarInscripcion(idServicio, enrollment.id, reason);
+      setRejectedEnrollments([...rejectedEnrollments, enrollment]);
+    } catch (error) {
+      console.error("Error al rechazar la inscripción:", error);
+    }
+  };
+
+  // Función que se ejecuta al enviar desde el modal
+  const handleModalSubmit = async (enrollment, inputValue) => {
+    try {
+      if (modalType === "accept") {
+        await handleAcceptEnrollment(enrollment, inputValue);
+        setSuccessMessage("La inscripción ha sido aceptada exitosamente.");
+      } else {
+        await handleRejectEnrollment(enrollment, inputValue);
+        setSuccessMessage("La inscripción ha sido rechazada exitosamente.");
+      }
+      // Mostramos el modal de éxito y cerramos el EnrollmentModal
+      setShowSuccessModal(true);
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error en el envío del modal:", error);
+    }
   };
 
   const handleToggleAcceptedList = () => {
     setShowAcceptedList(!showAcceptedList);
   };
+
 
   const toggleInscriptions = async () => {
     const newStatus = !inscriptionsSwitchActive;
@@ -127,13 +163,15 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
           : await deshabilitarInscripcionesDeServicio(idServicio);
         fetchServicio();
       } catch (error) {
-        console.error(
-          "Error al cambiar el estado de las inscripciones:",
-          error.message
-        );
+        console.error("Error al cambiar el estado de las inscripciones:", error.message);
         alert(error.message);
       }
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedEnrollmentForModal(null);
   };
 
   return (
@@ -144,8 +182,8 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
         padding: "20px",
         borderRadius: "20px",
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-        maxWidth: "100%",
-        width: "100%",
+        maxWidth: "90%",
+        width: "90%",
         marginTop: "3vh",
         margin: "4vh auto",
       }}
@@ -215,6 +253,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
                     flex: "1 1 40%",
                   }}
                 >
+                  {/*
                   <button
                     onClick={() => handleDetailClick(enroll)}
                     style={{
@@ -228,8 +267,9 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
                   >
                     Detalle
                   </button>
+                  */}
                   <button
-                    onClick={() => handleAccept(enroll)}
+                    onClick={() => openModal(enroll, "accept")}
                     style={{
                       backgroundColor: "#28a745",
                       color: "#fff",
@@ -242,7 +282,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
                     ✓
                   </button>
                   <button
-                    onClick={() => handleReject(enroll)}
+                    onClick={() => openModal(enroll, "reject")}
                     style={{
                       backgroundColor: "#dc3545",
                       color: "#fff",
@@ -315,6 +355,23 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
           <p>Las inscripciones están deshabilitadas.</p>
         </div>
       )}
+
+      {/* Modal para aceptar inscripción */}
+      <EnrollmentModal
+        show={showModal}
+        onClose={handleCloseModal}
+        onSubmit={handleModalSubmit}
+        enrollment={selectedEnrollmentForModal}
+        type={modalType}
+      />
+
+      {/* Success Modal reutilizable */}
+      <SuccessModal
+        show={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title={successMessage}
+        message={""}
+      />
     </div>
   );
 };

@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import img from "../../../../../assets/LogoHarp420.png"; // Ruta del logo
-import profileImg from "../../../../../assets/profile.png"; // Ruta de la imagen de perfil
-import { obtenerTodasLasNotificacionesDeInstructor } from "../../../../../services/Notificacion";
-import { Navbar, Dropdown, Container, Badge, ListGroup, Button, Card, Tab, Nav } from "react-bootstrap";
+import { Navbar, Dropdown, Container, Badge, ListGroup, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faCheck } from "@fortawesome/free-solid-svg-icons"; // Íconos necesario
-import NotificationPanel from "../../../../Notificaciones/NotificacionPanel";
+import { faBell, faCheck } from "@fortawesome/free-solid-svg-icons"; // Íconos necesarios
+import img from "../../../assets/LogoHarp420.png"; // Ruta del logo
+import profileImg from "../../../assets/profile.png"; // Ruta de la imagen de perfil
+import { obtenerTodasLasNotificacionesDeAlumno, leerNotificacion } from "../../../services/Notificacion"; // Asegúrate de importar correctamente los servicios
+import NotificationPanel from "../../Notificaciones/NotificacionPanel";
 
-export default function NavbarServicio() {
+export default function NavbarAlumnoMisServicios() {
   const navigate = useNavigate();
-  const { idInstructor } = useParams();
+  const { idAlumno } = useParams();
   const [notificaciones, setNotificaciones] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
-
-  const handleClick = () => {
-    navigate('/');
-  };
 
   useEffect(() => {
     const fetchNotificaciones = async () => {
       try {
-        const notificaciones = await obtenerTodasLasNotificacionesDeInstructor(idInstructor);
+        const notificaciones = await obtenerTodasLasNotificacionesDeAlumno(idAlumno);
         setNotificaciones(notificaciones);
         console.log(notificaciones);
       } catch (error) {
@@ -30,10 +26,13 @@ export default function NavbarServicio() {
     };
 
     fetchNotificaciones();
-  }, [idInstructor]);
+  }, [idAlumno]);
+
+  const handleClick = () => {
+    navigate('/');
+  };
 
   const hasUnreadNotifications = notificaciones.some(notif => !notif.leido);
- 
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
@@ -115,18 +114,16 @@ export default function NavbarServicio() {
               />
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => navigate(`/instructor/${idInstructor}/editar-usuario`)}>
+              <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/editar-perfil`)}>
                 Editar perfil
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => navigate("/")}>
-                Cerrar sesión
-              </Dropdown.Item>
+              <Dropdown.Item onClick={() => navigate("/")}>Cerrar sesión</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </Container>
       </Navbar>
 
-       {/* Panel de notificaciones */}
+      {/* Panel de notificaciones */}
       {showNotifications && (
         <NotificationPanel
           notifications={notificaciones}

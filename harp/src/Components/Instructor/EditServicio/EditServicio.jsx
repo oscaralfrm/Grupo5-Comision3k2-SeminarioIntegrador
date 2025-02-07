@@ -12,14 +12,16 @@ import { getAllCategorias } from "../../../services/Categoria";
 export default function EditServicioForm() {
     const [activeTab, setActiveTab] = useState("general");
     const [categorias, setCategorias] = useState([]);
-    const { idInstructor, idServicio } = useParams(); // Obtenemos idServicio de la URL
+    // Estado para la vista previa del logo
+    const [logoPreview, setLogoPreview] = useState("");
+    const { idInstructor, idServicio } = useParams();
     const navigate = useNavigate();
 
     const {
         register,
         handleSubmit,
         formState: { errors, isValid },
-        setValue, // Función para establecer valores en el formulario
+        setValue,
         watch,
     } = useForm({
         mode: "onChange",
@@ -27,28 +29,27 @@ export default function EditServicioForm() {
 
     const formData = watch();
 
-    // Función para cancelar (redirigir)
     const handleCancel = () => {
-        navigate(
-            (-1),
-            { state: { from: window.location.pathname } }
-        );
+        navigate(-1, { state: { from: window.location.pathname } });
     };
 
-
-    // Obtener el servicio para editar
     useEffect(() => {
         const fetchServicio = async () => {
             try {
                 const response1 = await getAllCategorias();
                 setCategorias(response1);
 
-                const response = await getServicioById(idServicio); // Obtener el servicio desde el backend
-                // Rellenar los valores del formulario con los datos del servicio
-                const frecuenciaCuotasObj = obtenerFrecuenciaCuotas(response.tipoFrecuenciaPago.cantCiclo, response.tipoFrecuenciaPago.unidadCiclo)
+                const response = await getServicioById(idServicio);
+                const frecuenciaCuotasObj = obtenerFrecuenciaCuotas(
+                    response.tipoFrecuenciaPago.cantCiclo,
+                    response.tipoFrecuenciaPago.unidadCiclo
+                );
 
                 setValue("nombreServicio", response.nombre);
                 setValue("descripcion", response.descripcion);
+                // Establecemos el valor inicial del logo como la URL que llega del backend
+                //setValue("logo", response.logoURL);
+                setLogoPreview(response.logoURL);
                 setValue("ubicacion", response.ubicacion);
                 setValue("categoria", response.categoria.nombre);
                 setValue("frecuenciaCuotas", frecuenciaCuotasObj.frecuenciaCuotas);
@@ -58,8 +59,10 @@ export default function EditServicioForm() {
                 setValue("incluyeInscripcion", response.montoInscripcion > 0 ? "si" : "no");
                 setValue("montoInscripcion", response.montoInscripcion);
                 setValue("pagoInscripcion", response.pagoAnticipadoDeMontoInscripcion ? "anticipado" : "incluido en la cuota");
-                setValue("fechaLimitePago", response.tipoFrecuenciaPago.diaLimitePago);
-                setValue("ciclos", response.tipoFrecuenciaPago.tipoCiclo == "SegunCalendario" ? "En fechas fijas" : "Según Inscripción");
+                if (response.tipoFrecuenciaPago.diaLimitePago > 0) {
+                    setValue("fechaLimitePago", response.tipoFrecuenciaPago.diaLimitePago);
+                }
+                setValue("ciclos", response.tipoFrecuenciaPago.tipoCiclo === "SegunCalendario" ? "En fechas fijas" : "Según Inscripción");
             } catch (error) {
                 console.error("Error al obtener el servicio:", error);
             }
@@ -88,7 +91,7 @@ export default function EditServicioForm() {
     }
 
     function obtenerFrecuenciaCuotas(cantidad, unidad) {
-        if (cantidad == 1) {
+        if (cantidad === 1) {
             switch (unidad) {
                 case "MONTHS":
                     return { frecuenciaCuotas: "mensual", duracionCuotasPersonalizada: null };
@@ -109,7 +112,6 @@ export default function EditServicioForm() {
         }
     }
 
-
     const onSubmit = async (data) => {
         const ciclo = obtenerValoresCiclo(data.frecuenciaCuotas, data.duracionCuotasPersonalizada);
         const servicioDTO = {
@@ -117,24 +119,29 @@ export default function EditServicioForm() {
             idInstructor: idInstructor,
             descripcion: data.descripcion,
             ubicacion: data.ubicacion,
-            categoria: data.categoria.nombre,
+            categoria: data.categoria,
             tipoCiclo:
                 data.ciclos === "Mismas Fechas"
                     ? "SegunCalendario"
                     : "SegunInscripcion",
-            diaLimitePago: data.frecuenciaCuotas === "mensual" ? data.fechaLimitePago : null,
+            diaLimitePago: data.fechaLimitePago > 0 ? data.fechaLimitePago : 0,
             cantCiclo: ciclo.cantidad,
             unidadCiclo: ciclo.unidad,
             tipoModalidad:
                 data.divideEnGrupos === "Sin clases" ? "AServicio" : "AGrupo",
-            claseDePrueba: data.clasePrueba === "sí" ? true : false,
-            asistenciasActivas: data.asistencias === "sí" ? true : false,
+            claseDePrueba: data.clasePrueba === "sí",
+            asistenciasActivas: data.asistencias === "sí",
             montoInscripcion: data.montoInscripcion || 0,
             pagoAnticipadoDeMontoInscripcion: data.pagoInscripcion === "De forma Anticipada",
         };
 
+        // Si el usuario seleccionó un nuevo archivo, data.logo vendrá como FileList
+        if (data.logo && data.logo.length > 0 && data.logo[0] instanceof File) {
+            servicioDTO.logo = data.logo[0];
+        }
+
         try {
-            const response = await updateServicio(idServicio, servicioDTO); // Llamamos a editar en lugar de crear
+            const response = await updateServicio(idServicio, servicioDTO);
             alert("Servicio editado con éxito");
             navigate(`/instructor/${idInstructor}/servicio/${response.id}/info-servicio`);
         } catch (error) {
@@ -161,10 +168,24 @@ export default function EditServicioForm() {
                     <form onSubmit={handleSubmit(onSubmit)} className="card shadow-lg rounded-3 bg-light p-4">
                         <Tabs id="register-tabs" activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-3">
                             <Tab eventKey="general" title="General">
-                                <General register={register} errors={errors} categorias={categorias} goToNextTab={goToNextTab} />
+                                {/* Se le pasan logoPreview y setLogoPreview */}
+                                <General
+                                    register={register}
+                                    errors={errors}
+                                    categorias={categorias}
+                                    goToNextTab={goToNextTab}
+                                    logoPreview={logoPreview}
+                                    setLogoPreview={setLogoPreview}
+                                />
                             </Tab>
                             <Tab eventKey="cobros" title="Cobros">
-                                <Cobros register={register} errors={errors} formData={formData} goToNextTab={goToNextTab} goToPreviousTab={goToPreviousTab} />
+                                <Cobros
+                                    register={register}
+                                    errors={errors}
+                                    formData={formData}
+                                    goToNextTab={goToNextTab}
+                                    goToPreviousTab={goToPreviousTab}
+                                />
                             </Tab>
                             <Tab eventKey="modalidad" title="Modalidad">
                                 <Modalidad
@@ -173,11 +194,11 @@ export default function EditServicioForm() {
                                     formData={formData}
                                     goToPreviousTab={goToPreviousTab}
                                     isValid={isValid}
-                                    nombreBoton={"Editar"} />
+                                    nombreBoton={"Editar"}
+                                />
                             </Tab>
                         </Tabs>
 
-                        {/* Botón de cancelar */}
                         <div className="d-flex justify-content-end">
                             <Button variant="secondary" onClick={handleCancel}>
                                 Cancelar
@@ -185,7 +206,7 @@ export default function EditServicioForm() {
                             <Button
                                 type="submit"
                                 variant="primary"
-                                disabled={!isValid} // Deshabilita el botón si el formulario no es válido
+                                disabled={!isValid}
                             >
                                 Editar
                             </Button>
@@ -194,7 +215,6 @@ export default function EditServicioForm() {
                 </div>
             </div>
 
-            {/* Columna Derecha (ResumenServicio) */}
             <div
                 style={{
                     flex: 1,
@@ -206,7 +226,7 @@ export default function EditServicioForm() {
                 }}
                 className="col-12 col-md-6 col-lg-12 mt-4 mt-md-0 mb-3"
             >
-                <ResumenServicio formData={formData} />
+                {Object.keys(formData).length > 0 && <ResumenServicio formData={formData} />}
             </div>
         </div>
     );

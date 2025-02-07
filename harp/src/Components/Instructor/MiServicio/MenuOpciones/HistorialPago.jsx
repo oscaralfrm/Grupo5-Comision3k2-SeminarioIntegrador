@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Table } from "react-bootstrap";
+import { format, parseISO } from "date-fns"; // Importar funciones de date-fns
 
 const HistorialPagoModal = ({ show, onClose, student }) => {
   const [historialPagos, setHistorialPagos] = useState([]);
+
+  // Función para formatear la fecha
+  const formatDate = (dateString) => {
+    if (!dateString || dateString === "N/A") return "N/A"; // Manejar casos donde no hay fecha
+    const date = parseISO(dateString); // Convierte el string a objeto Date
+    return format(date, "dd/MM/yyyy"); // Formatea a "dd/mm/aaaa"
+  };
 
   useEffect(() => {
     if (student?.historialPagos) {
@@ -15,6 +23,7 @@ const HistorialPagoModal = ({ show, onClose, student }) => {
           pago.cambiosEstado?.length > 0
             ? pago.cambiosEstado[pago.cambiosEstado.length - 1].estadoCuota
             : "N/A",
+        metodoPago: pago.pago?.metodoPago?.nombre || "N/A", // Agregar método de pago
       }));
       setHistorialPagos(pagosProcesados);
     }
@@ -36,15 +45,17 @@ const HistorialPagoModal = ({ show, onClose, student }) => {
                 <th>Monto</th>
                 <th>Recargo</th>
                 <th>Estado</th>
+                <th>Forma de Pago</th> {/* Nueva columna */}
               </tr>
             </thead>
             <tbody>
               {historialPagos.map((pago, index) => (
                 <tr key={index}>
-                  <td>{pago.fecha}</td>
+                  <td>{formatDate(pago.fecha)}</td> {/* Fecha formateada */}
                   <td>${pago.monto}</td>
                   <td>${pago.recargo}</td>
                   <td>{pago.estado}</td>
+                  <td>{pago.metodoPago}</td> {/* Método de pago */}
                 </tr>
               ))}
             </tbody>
@@ -63,5 +74,3 @@ const HistorialPagoModal = ({ show, onClose, student }) => {
 };
 
 export default HistorialPagoModal;
-
-// Queda le puedo agregar despues el metodo de pago que uso ?? veremos 

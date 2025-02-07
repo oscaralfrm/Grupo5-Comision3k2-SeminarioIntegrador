@@ -120,7 +120,7 @@ export const getClasesDeGrupo = async (idGrupo) => {
 // Servicio para obtener las clases futuras de un grupo
 export const getClasesFuturasDeGrupo = async (idGrupo) => {
     try {
-        const response = await axios.get(`${API_URL}/grupos/${idGrupo}/clases/futuras`);
+        const response = await axios.get(`${API_URL}/grupos/${idGrupo}/clases-futuras`);
         return response.data;  // Suponiendo que la respuesta es un array de clases futuras
     } catch (error) {
         console.error("Error fetching futuras clases de grupo: ", error);

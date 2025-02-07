@@ -118,13 +118,18 @@ export const actualizarMontoGrupo = async (idServicio, idGrupo, monto, fechaInic
 // Servicio para obtener el monto actual de un grupo
 export const getMontoActualGrupo = async (idServicio, idGrupo) => {
     try {
-        const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/monto-actual`);
-        return response.data; // Devuelve el monto actual
+      const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/monto-actual`);
+      console.log(`Monto actual del grupo ${idGrupo}:`, response.data); // Depuración
+  
+      // Si el backend devuelve un objeto, extrae el valor del monto
+      const monto = response.data?.monto || 0;
+      return monto;
     } catch (error) {
-        console.error('Error al obtener el monto actual del grupo:', error.response?.data?.message || error.message);
-        throw new Error(error.response?.data?.message || 'Error al obtener el monto actual del grupo');
+      console.error('Error al obtener el monto actual del grupo:', error.response?.data?.message || error.message);
+      console.warn(`No hay historial de montos para el grupo ${idGrupo}. Usando monto predeterminado: 0`); // Depuración
+      return 0; // Valor predeterminado si no hay historial
     }
-};
+  };
 
 export const definirSiGrupoSePuedeActualizarPrecio  = (grupo) => {
     const montoActual = getMontoActualGrupoDeHistorial(grupo.historialMontos) ;
@@ -139,21 +144,31 @@ export const definirSiGrupoSePuedeActualizarPrecio  = (grupo) => {
     if (montoActual.fechaInicio == null){
         return false;
     }
-    if ( montoActual.fechaInicio >= fechaActual ) {
-        console.log("La fecha inicio es mayor a al actual");
-        
-        return false;
-    } else {
-        // Si la fechaInicio es anterior a la actual entonces se ve si
-        // Si ya tiene un monto configurado entonces no se puede actualizar precio
-        const montoProgramado = getMontoProgramadoDeHistorial(grupo.historialMontos);
-        if (montoProgramado.length != 0) {
-            console.log("Ya hay un monto programado");
-            return false;
-        }
+  
+    // Verificar si el monto actual está definido y tiene una fecha de inicio válida
+    if (!montoActual || !montoActual.fechaInicio) {
+      console.log("El monto actual no tiene una fecha de inicio válida.");
+      return false;
     }
+  
+    // Si la fecha de inicio del monto actual es mayor o igual a la fecha actual, no se puede actualizar
+    if (montoActual.fechaInicio >= fechaActual) {
+      console.log("La fecha de inicio del monto actual es mayor o igual a la fecha actual.");
+      return false;
+    }
+  
+    // Verificar si ya hay un monto programado en el historial
+    const montoProgramado = getMontoProgramadoDeHistorial(grupo.historialMontos);
+  
+    // Si hay montos programados, no se puede actualizar el precio
+    if (montoProgramado && montoProgramado.length > 0) {
+      console.log("Ya hay un monto programado para este grupo.");
+      return false;
+    }
+  
+    // Si pasa todas las validaciones, se puede actualizar el precio
     return true;
-};
+  };
 
 
 export const definirSiServicioSePuedeActualizarPrecio  = (grupos) => {

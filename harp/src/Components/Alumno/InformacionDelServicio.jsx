@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // Importar useNavigate
 import { getDetallesDeServicio } from "../../services/Servicio"; // Asegúrate de que la importación sea correcta
 import { Card, Button, Spinner, Row, Col } from "react-bootstrap";
 import placeholderImage from "../../assets/placeholderForServices.png";

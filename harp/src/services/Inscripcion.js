@@ -73,9 +73,10 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   };
   
   // Crear una inscripción
-  export const crearInscripcion = async (idServicio, idGrupo, idsHorarios) => {
+  export const crearInscripcion = async (idAlumno, idServicio, idGrupo, idsHorarios) => {
     try {
-      const response = await axios.post(`${API_URL}/${idServicio}/inscribir`, {idGrupo, idsHorarios});
+      console.log(idAlumno, idServicio, idGrupo, idsHorarios);
+      const response = await axios.post(`${API_URL}/${idServicio}/inscribir`, {idAlumno, idGrupo, idsHorarios});
       return response.data;
     } catch (error) {
       console.error("Error al crear la inscripción:", error);
@@ -109,9 +110,9 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   };
   
   // Rechazar una inscripción
-  export const rechazarInscripcion = async (idServicio, idInscripcion) => {
+  export const rechazarInscripcion = async (idServicio, idInscripcion, motivo) => {
     try {
-      const response = await axios.put(`${API_URL}/${idServicio}/inscripciones/${idInscripcion}/rechazar`, "Sin motivo");
+      const response = await axios.put(`${API_URL}/${idServicio}/inscripciones/${idInscripcion}/rechazar`, motivo);
       return response.data;
     } catch (error) {
       console.error("Error al rechazar la inscripción:", error);

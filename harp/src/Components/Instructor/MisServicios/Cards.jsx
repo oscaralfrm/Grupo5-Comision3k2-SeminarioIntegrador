@@ -57,8 +57,8 @@ const CourseCards = ({ servicios, Instructorid }) => {
                   highlightedCourseId === servicio.id
                     ? "#A5B4FC"
                     : servicio.inscripcionesAbiertas === false
-                    ? "#E0E0E0" // Color gris si el servicio no es público
-                    : "#fff",
+                      ? "#E0E0E0" // Color gris si el servicio no es público
+                      : "#fff",
                 borderRadius: "20px",
                 boxShadow: "0px 4px 18px rgba(0, 0, 0, 0.5)",
                 textAlign: "center",
@@ -238,9 +238,8 @@ const CourseCards = ({ servicios, Instructorid }) => {
             {Array.from({ length: totalPages }, (_, index) => (
               <li
                 key={index + 1}
-                className={`page-item ${
-                  currentPage === index + 1 ? "active" : ""
-                }`}
+                className={`page-item ${currentPage === index + 1 ? "active" : ""
+                  }`}
               >
                 <button
                   className="page-link"
@@ -253,9 +252,8 @@ const CourseCards = ({ servicios, Instructorid }) => {
 
             {/* Botón para avanzar */}
             <li
-              className={`page-item ${
-                currentPage === totalPages ? "disabled" : ""
-              }`}
+              className={`page-item ${currentPage === totalPages ? "disabled" : ""
+                }`}
             >
               <button
                 className="page-link"
