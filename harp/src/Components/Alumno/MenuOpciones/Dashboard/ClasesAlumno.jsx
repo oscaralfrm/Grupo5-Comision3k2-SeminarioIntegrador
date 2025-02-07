@@ -5,7 +5,7 @@ import { getServicioById } from "../../../../services/Servicio";
 import { getInscripcionesDeGrupo } from "../../../../services/Inscripcion";
 import { useNavigate } from "react-router-dom";
 
-const ClassesCardAlumno = ({ asistenciasActivas }) => {
+const ClassesCardAlumno = ({ asistenciasActivas, servicio }) => {
   const [classes, setClasses] = useState([]); // Clases totales
   const [clasesFuturas, setClasesFuturas] = useState([]); // Clases futuras
   const [expanded, setExpanded] = useState(false);
@@ -14,24 +14,19 @@ const ClassesCardAlumno = ({ asistenciasActivas }) => {
   const [fechaInicioServicio, setFechaInicioServicio] = useState(null);
   const [inscripciones, setInscripciones] = useState([]); // Inscripciones totales
   const [claseHoy, setClaseHoy] = useState(null); // Clase del día actual
-  const {idAlumno} = useParams();
+  const {idAlumno, idInscripcion} = useParams();
   const navigate = useNavigate();
 
-  const { idServicio } = useParams();
 
   const fetchData = async () => {
     try {
-      console.log("Obteniendo datos del servicio con ID:", idServicio);
-
-      // Obtener servicio
-      const servicio = await getServicioById(idServicio);
       console.log("Datos del servicio:", servicio);
-      const fechaInicio = new Date(servicio.fechaInicio);
+      const fechaInicio = new Date(servicio?.fechaInicio);
       setFechaInicioServicio(fechaInicio);
       setServicioIniciado(fechaInicio <= new Date());
 
       // Obtener grupos del servicio
-      const grupos = await getGruposDeServicio(idServicio);
+      const grupos = await getGruposDeServicio(servicio?.id);
       console.log("Grupos obtenidos:", grupos);
 
       let clasesTotales = [];
@@ -50,7 +45,7 @@ const ClassesCardAlumno = ({ asistenciasActivas }) => {
         clasesFuturas.push(...futurasClases);
 
         // Obtener inscripciones del grupo
-        const inscripcionesGrupo = await getInscripcionesDeGrupo(idServicio, idGrupo, true, false);
+        const inscripcionesGrupo = await getInscripcionesDeGrupo(servicio?.id, idGrupo, true, false);
         inscripcionesTotales.push(...inscripcionesGrupo);
       }
 
@@ -85,14 +80,14 @@ const ClassesCardAlumno = ({ asistenciasActivas }) => {
 
   useEffect(() => {
     fetchData();
-  }, [idServicio]);
+  }, [servicio]);
 
   const handleExpandToggle = () => {
     setExpanded(!expanded);
   };
 
   const handleNavigate = () => {
-    navigate(`/alumno/${idAlumno}/servicios/${idServicio}/mi-servicio/asistencias`);
+    navigate(`/alumno/${idAlumno}/inscripciones/${idInscripcion}/mi-inscripcion/asistencias`);
 };
 
   // Función para formatear la fecha y hora de las clases

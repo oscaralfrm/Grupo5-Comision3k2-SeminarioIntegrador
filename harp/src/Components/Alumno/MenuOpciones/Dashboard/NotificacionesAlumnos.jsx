@@ -4,41 +4,43 @@ import { Form } from "react-bootstrap";
 import { obtenerNotificacionesDeAlumno, leerNotificacion } from "../../../../services/Notificacion";
 import { useParams } from "react-router-dom";
 
-const Notifications = () => {
+const Notifications = ({ idServicio }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadNotifications, setUnreadNotifications] = useState([]);
   const [showDetail, setShowDetail] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
-  const { idServicio, idAlumno } = useParams();
+  const { idInscripcion, idAlumno } = useParams();
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      try {
-        const data = await obtenerNotificacionesDeAlumno(idServicio, idAlumno);
+      if (idServicio) {
+        try {
+          console.log("Intentando traer notificaciones de ", idServicio, " y de alumno", idAlumno);
+          const data = await obtenerNotificacionesDeAlumno(idServicio, idAlumno);
 
-        // Filtrar solo las notificaciones no leídas
-        const unreadData = data.filter((notification) => !notification.leido);
+          // Filtrar solo las notificaciones no leídas
+          const unreadData = data.filter((notification) => !notification.leido);
 
-        // Actualizar el estado local solo con notificaciones no leídas
-        setNotifications((prevNotifications) => {
-          const updatedNotifications = unreadData.map((backendNotification) => {
-            const localNotification = prevNotifications.find(
-              (n) => n.id === backendNotification.id
-            );
-            return localNotification && localNotification.leido
-              ? { ...backendNotification, leido: true } // Mantener el estado local
-              : backendNotification;
+          // Actualizar el estado local solo con notificaciones no leídas
+          setNotifications((prevNotifications) => {
+            const updatedNotifications = unreadData.map((backendNotification) => {
+              const localNotification = prevNotifications.find(
+                (n) => n.id === backendNotification.id
+              );
+              return localNotification && localNotification.leido
+                ? { ...backendNotification, leido: true } // Mantener el estado local
+                : backendNotification;
+            });
+            return updatedNotifications;
           });
-          return updatedNotifications;
-        });
 
-        // Actualizar las notificaciones no leídas
-        setUnreadNotifications(unreadData);
-      } catch (error) {
-        console.error('Error al traer las notificaciones:', error);
-      }
-    };
-
+          // Actualizar las notificaciones no leídas
+          setUnreadNotifications(unreadData);
+        } catch (error) {
+          console.error('Error al traer las notificaciones:', error);
+        }
+      };
+    }
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 1000); // Actualizar cada segundo
 

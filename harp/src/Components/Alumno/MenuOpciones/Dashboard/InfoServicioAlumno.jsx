@@ -4,22 +4,9 @@ import { getServicioById } from "../../../../services/Servicio";
 
 const InfoCardAlumno = ({ serviceData, setServiceData }) => {
   const [showDetails, setShowDetails] = useState(true);
-  const { idServicio } = useParams();
   const navigate = useNavigate();
 
   const toggleDetails = () => setShowDetails(!showDetails);
-
-  useEffect(() => {
-    const fetchServicio = async () => {
-      try {
-        const data = await getServicioById(idServicio);
-        setServiceData(data);
-      } catch (error) {
-        console.error('Error al traer el servicio:', error);
-      }
-    };
-    fetchServicio();
-  }, [idServicio]);
 
   // Función para formatear la fecha como dd/mm/aaaa
   const formatDate = (dateString) => {

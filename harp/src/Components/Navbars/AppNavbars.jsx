@@ -14,7 +14,7 @@ import NavbarAlumnoMisServicios from '../Alumno/NavbarAlumno/NavbarMisServicios.
 
 const AppNavbar = () => {
   const location = useLocation();
-  const { idInstructor, idServicio, idAlumno } = useParams();
+  const { idInstructor, idServicio, idAlumno, idInscripcion } = useParams();
 
   // Define condiciones para mostrar las Navbars
   const isPrincipalRoute = location.pathname === '/';
@@ -26,8 +26,8 @@ const AppNavbar = () => {
   const isNavbarSimple = location.pathname === `/instructor/${idInstructor}/editar-usuario`;
   const isRegisterRoute = location.pathname.startsWith('/registro');
   const isAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicios`; // Nueva condición para alumnos
-  const isAlumnosDashRoute = location.pathname === `/alumno/${idAlumno}/servicios/${idServicio}/mi-servicio`
-  const isAlumnoAtrasRoute = location.pathname === `/alumno/${idAlumno}/servicios/${idServicio}/mi-servicio/asistencias`
+  const isAlumnosDashRoute = location.pathname === `/alumno/${idAlumno}/inscripciones/${idInscripcion}/mi-inscripcion`
+  const isAlumnoAtrasRoute = location.pathname === `/alumno/${idAlumno}/inscripciones/${idInscripcion}/mi-inscripcion/asistencias`
   const isAlumnoRouteIns = location.pathname === `/alumno/${idAlumno}/inscripciones`; 
   const isDescubrirRoute = location.pathname === `/alumno/${idAlumno}/descubrir-servicios`; 
   const isInfoServicioAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicio/${idServicio}/info-servicio`; 

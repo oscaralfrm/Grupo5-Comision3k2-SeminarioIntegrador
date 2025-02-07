@@ -10,7 +10,7 @@ import { getInscripcionesDeAlumno } from "../../../../services/Alumno"; // Aseg√
 import { getMontoProgramadoDeHistorial } from "../../../../services/HistorialMontoCuota";
 
 const Pagos = (props) => {
-  const { handleAddPayment } = props; 
+  const { handleAddPayment, idServicio } = props; 
   const [showAllPending, setShowAllPending] = useState(false);
   const [showLatePayments, setShowLatePayments] = useState(false);
   const navigate = useNavigate();
@@ -21,7 +21,6 @@ const Pagos = (props) => {
   const [inscripcionId, setInscripcionId] = useState(null); // ID de la inscripci√≥n
   const [grupoId, setGrupoId] = useState(null); // ID del grupo
   const { idAlumno } = useParams();
-  const { idServicio } = useParams();
   const [proximoMonto, setProximoMonto] = useState(null);
   const [fechaVigencia, setFechaVigencia] = useState(null);
   const [fechaVigenciaProximoMonto, setFechaVigenciaProximoMonto] = useState(null);

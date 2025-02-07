@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InfoCardAlumno from "./Dashboard/InfoServicioAlumno";
 import Pagos from "./Dashboard/Pagos";
@@ -7,12 +7,13 @@ import { Container, Row, Col } from "react-bootstrap";
 import { getServicioById } from "../../../services/Servicio";
 import ClassesCardAlumno from "./Dashboard/ClasesAlumno";
 import Notifications from "./Dashboard/NotificacionesAlumnos";
+import { traerUnaInscripcion } from "../../../services/Inscripcion";
 
 const ServicioAlumno = () => {
   const [serviceData, setServiceData] = useState(null);
   const navigate = useNavigate();
   const { idAlumno } = useParams();
-  const {idServicio} = useParams();
+  const { idInscripcion } = useParams();
   const [nombreServicio, setNombreServicio] = useState("Mi Servicio");
 
   const handleNavigate = () => {
@@ -21,7 +22,8 @@ const ServicioAlumno = () => {
 
   const fetchServicio = async () => {
     try {
-      const data = await getServicioById(idServicio);
+      const inscripcion = await traerUnaInscripcion(idInscripcion);
+      const data = inscripcion.servicio;
       setServiceData(data);
       if (data?.nombre) {
         setNombreServicio(data.nombre); // Actualiza el título con el nombre del servicio
@@ -33,7 +35,7 @@ const ServicioAlumno = () => {
 
   useEffect(() => {
     fetchServicio();
-  }, [idServicio]);
+  }, [idInscripcion]);
 
 
   return (
@@ -84,19 +86,19 @@ const ServicioAlumno = () => {
       <Row className="g-4">
         {/* Columna Izquierda */}
         <Col xs={12} md={4}>
-          <InfoCardAlumno serviceData={serviceData} setServiceData={setServiceData}/>
+          <InfoCardAlumno serviceData={serviceData} setServiceData={setServiceData} />
           {/* <StudentsCard /> */}
         </Col>
 
         {/* Columna Central */}
         <Col xs={12} md={4}>
-        <ClassesCardAlumno asistenciasActivas={serviceData?.asistenciasActivas} fetchServicio={fetchServicio}/>
-          <Notifications />
+          <ClassesCardAlumno asistenciasActivas={serviceData?.asistenciasActivas} servicio={serviceData} fetchServicio={fetchServicio} />
+          <Notifications idServicio={serviceData?.id} />
         </Col>
 
         {/* Columna Derecha */}
         <Col xs={12} md={4}>
-          <Pagos />
+          <Pagos idServicio={serviceData?.id} />
         </Col>
       </Row>
     </Container>

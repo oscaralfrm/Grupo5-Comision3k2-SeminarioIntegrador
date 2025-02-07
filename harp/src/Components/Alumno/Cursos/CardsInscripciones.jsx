@@ -35,7 +35,7 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
             }
             
         } else if (inscripcion.estado == "EnCurso" || inscripcion.estado == "Aceptada") {
-            navigate(`/alumno/${idAlumno}/servicios/${inscripcion.servicio.id}/mi-servicio`);
+            navigate(`/alumno/${idAlumno}/inscripciones/${inscripcion.id}/mi-inscripcion`);
         }
     };
 
