@@ -77,6 +77,7 @@ public class GrupoService implements IGrupoService {
      */
 
     @Override
+    @Transactional
     public Grupo createGrupo(GrupoDTO grupoDTO, Long idServicio) {
         //Aca se deberia busar el ultimo numero y sumarle 1
         Grupo nuevoGrupo = grupoConverter.dtoToEntity(grupoDTO);

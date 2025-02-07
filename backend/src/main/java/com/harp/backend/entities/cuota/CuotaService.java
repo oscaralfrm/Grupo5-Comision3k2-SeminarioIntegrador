@@ -329,9 +329,9 @@ public class CuotaService implements ICuotaService {
         //PAGO
         if (cuota.esAbonada()) {
             Pago pagoExistente = pagoService.editarPago(cuota.getPago(), LocalDate.now(),
-                    metodoPago, false, null, null);
+                    metodoPago, false, comprobanteURL, null);
         } else {
-            Pago pago = pagoService.createPago(metodoPago);
+            Pago pago = pagoService.createPago(metodoPago, comprobanteURL);
             cuota.setPago(pago);
 
             // CAMBIO DE ESTADO

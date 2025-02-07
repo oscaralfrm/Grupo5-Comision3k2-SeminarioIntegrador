@@ -509,4 +509,8 @@ public class Servicio {
     public void quitarResenia(Resenia resenia) {
         resenias.remove(resenia);
     }
+
+    public boolean tieneGrupoConEsteNombre(String nombreGrupo) {
+        return this.grupos.stream().anyMatch(grupo -> grupo.getNombre().equals(nombreGrupo));
+    }
 }

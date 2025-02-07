@@ -92,6 +92,12 @@ public class InstructorService implements IInstructorService {
 
     public void agregarServicioAInstructor(Servicio servicio, Long idInstructor) {
         Instructor instructor = findInstructor(idInstructor);
+
+        // Se valida que el nombre del servicio por instructor sea único
+        if (instructor.tieneServicioConEsteNombre(servicio.getNombre())) {
+            throw new UnsupportedOperationException("El instructor ya tiene un servicio con ese mismo nombre.");
+        }
+
         instructor.agregarServicio(servicio);
         instructorRepository.save(instructor);
     }
