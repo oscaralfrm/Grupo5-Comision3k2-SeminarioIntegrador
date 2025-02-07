@@ -104,7 +104,7 @@ public class ServicioController {
         if (logo != null && !logo.isEmpty()) {
             // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
             // y retornar la URL donde se encuentra
-            String logoUrl = fileStorageService.storeFile(logo);
+            String logoUrl = fileStorageService.storeFile(logo, "uploads/");
             // Se asigna la URL al DTO para que el servicio la use
             servicioDTO.setLogoURL(logoUrl);
         }
@@ -145,7 +145,7 @@ public class ServicioController {
         if (logo != null && !logo.isEmpty()) {
             // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
             // y retornar la URL donde se encuentra
-            String logoUrl = fileStorageService.storeFile(logo);
+            String logoUrl = fileStorageService.storeFile(logo, "uploads/");
             // Se asigna la URL al DTO para que el servicio la use
             servicioDTO.setLogoURL(logoUrl);
         }

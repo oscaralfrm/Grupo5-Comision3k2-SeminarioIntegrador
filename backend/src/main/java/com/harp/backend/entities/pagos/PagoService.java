@@ -12,6 +12,7 @@ import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -32,6 +33,12 @@ public class PagoService implements  IPagoService {
         return pagoCreado;
     };
 
+    @Override
+    public Pago createPago(MetodoPago metodoPago, String comprobanteURL) {
+        Pago nuevoPago = new Pago(metodoPago, comprobanteURL);
+        Pago pagoCreado = pagoRepository.save(nuevoPago);
+        return pagoCreado;
+    };
 
     @Override
     public void deletePago(Long idPago){
@@ -45,4 +52,20 @@ public class PagoService implements  IPagoService {
         return pagoRepository.findById(idPago)
                 .orElseThrow(() -> new NoSuchElementFoundException("Pago no encontrado"));
     };
+
+    public void rechazarPago(Pago pago, String motivo) {
+        pago.rechazar(motivo);
+        pagoRepository.save(pago);
+    }
+
+    public Pago editarPago(Pago pago, LocalDate fechaPago, MetodoPago metodoPago,
+                           boolean rechazado, String comprobanteURL, String motivoRechazo) {
+        pago.setFechaPago(fechaPago);
+        pago.setMetodoPago(metodoPago);
+        pago.setRechazado(rechazado);
+        pago.setComprobanteURL(comprobanteURL);
+        pago.setMotivoRechazo(motivoRechazo);
+        pagoRepository.save(pago);
+        return pago;
+    }
 }

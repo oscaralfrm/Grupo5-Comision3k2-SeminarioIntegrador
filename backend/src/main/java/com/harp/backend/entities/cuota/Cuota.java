@@ -128,4 +128,16 @@ public class Cuota {
     public boolean tieneEsteId(Long idCuota) {
         return this.id.equals(idCuota);
     }
+
+    public boolean puedeSerPagada() {
+        // Si esta abonada pero fue rechazado el pago puede abonarse nuevamente
+        if (this.esAbonada() && this.pago.rechazado) {
+            return true;
+            // Si todavia no se pago, estará en pendiente o vencida
+        } else if (this.esPendiente() || this.esVencida()) {
+            return true;
+        }
+        // Si esta en anulada, o esta en abonada pero no rechazada, no puede abonarse
+        return false;
+    }
 }

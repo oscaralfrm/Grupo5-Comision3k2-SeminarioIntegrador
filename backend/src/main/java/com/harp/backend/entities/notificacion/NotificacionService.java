@@ -76,6 +76,31 @@ public class NotificacionService implements INotificacionService {
         notificacionRepository.save(notificacion);
     }
 
+    public void notificarPagoCuotaAAlumno(Servicio servicio, Instructor instructor, Alumno alumno, Cuota cuota) {
+        double totalCuota = cuota.getMontoServicio().getMonto() + cuota.getRecargo();
+
+        String titulo = "Tu pago de la cuota fue registrado";
+        String mensaje = "Has abonado la cuota de " + servicio.getNombre()
+                + " con un valor de $" + totalCuota
+                + " mediante el método de pago " + cuota.getPago().getMetodoPago().getNombre() ;
+
+        Notificacion notificacion = new Notificacion(servicio, alumno, null, titulo, mensaje);
+        notificacionRepository.save(notificacion);
+    }
+
+    public void notificarRechazoPagoCuota(Servicio servicio, Instructor instructor, Alumno alumno, Cuota cuota) {
+        double totalCuota = cuota.getMontoServicio().getMonto() + cuota.getRecargo();
+
+        String titulo = "Rechazo de transferencia";
+        String mensaje = "El pago de la cuota de " + servicio.getNombre()
+                + " con un valor de $" + totalCuota
+                + " mediante el método de pago " + cuota.getPago().getMetodoPago().getNombre()
+                + " ha sido rechazado por el instructor. Motivo: " + cuota.getPago().getMotivoRechazo();
+
+        Notificacion notificacion = new Notificacion(servicio, alumno, null, titulo, mensaje);
+        notificacionRepository.save(notificacion);
+    }
+
     // NOTIFICAR A TODOS LOS ALUMNOS
     public void notificarActualizacionMonto(Servicio servicio, Grupo grupo, MontoServicio nuevoMontoGrupo) {
         List<Alumno> alumnos = servicio.obtenerAlumnosActuales();
@@ -91,7 +116,7 @@ public class NotificacionService implements INotificacionService {
     }
 
     // NOTIFICAR A INSTRUCTOR
-    public void notificarPagoCuota(Servicio servicio, Instructor instructor, Alumno alumno, Cuota cuota) {
+    public void notificarPagoCuotaAInstructor(Servicio servicio, Instructor instructor, Alumno alumno, Cuota cuota) {
         double totalCuota = cuota.getMontoServicio().getMonto() + cuota.getRecargo();
 
         String titulo = "Se ha registrado un Cobro de Cuota";

@@ -44,6 +44,19 @@ public class Instructor {
     @Column(name = "descripcion")
     private String descripcion;
 
+    // Foto de perfil
+    private String fotoURL;
+    private String cuit; // private String cuil
+
+    // Datos bancarios
+    private String alias;
+    private String bic; // (Bank Identifier Code)
+    private String cbu;
+    // Datos adicionales
+    private String tipoCuenta;          // Por ejemplo, "Cuenta Corriente" o "Caja de Ahorro"
+    private String banco;               // Nombre o código del banco
+
+
     public void agregarServicio(Servicio servicio) {
         servicios.add(servicio);
     }

@@ -1,6 +1,7 @@
 package com.harp.backend.entities.pagos;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -8,4 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 public class PagoDTO {
     private String nombre;
+    private MultipartFile comprobante;
+    private String comprobanteURL;
 }
