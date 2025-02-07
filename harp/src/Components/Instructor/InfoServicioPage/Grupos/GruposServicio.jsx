@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Card, Row, Col, Container, Button, Modal, Form } from "react-bootstrap";
-import { FaCog, FaExclamationCircle } from "react-icons/fa";
+import { Card, Row, Col, Container, Button, Modal } from "react-bootstrap";
+import { FaCog, FaExclamationCircle, FaCheckCircle } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
 import { getGruposDeServicio, createGrupoConHorarios } from "../../../../services/Grupo";
 import { getAlumnosDeGrupo } from "../../../../services/Alumno";
@@ -13,11 +13,12 @@ import { armarStringPrecioYFrecuenciaCobro } from "../../../../services/frecuenc
 import { format, parseISO } from "date-fns";
 import GrupoHorariosMontos from "./GrupoHorariosMontos";
 import { crearInscripcion } from "../../../../services/Inscripcion";
+import SuccessModal from "../../../CartelDeExito/CartelDeExito";
 
 function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar }) {
   const { idServicio, idAlumno } = useParams();
   const [cuposLibres, setCuposLibres] = useState({});
-  const [grupoSeleccionado, setGrupoSeleccionado] = useState(null); // Nuevo estado
+  const [grupoSeleccionado, setGrupoSeleccionado] = useState(null); // Para editar grupos
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalCrear, setShowModalCrear] = useState(false);
   const [showModalActualizarPrecio, setShowModalActualizarPrecio] = useState(false);
@@ -26,26 +27,27 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
   const [sePuedeActualizarPrecio, setSePuedeActualizarPrecio] = useState(false);
   const navigate = useNavigate();
 
+  // Estados para la inscripción con modales de Bootstrap
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [groupToInscribe, setGroupToInscribe] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const obtenerMontosProgramadosPorGrupo = async (grupos) => {
     const montosPorGrupo = {};
-
     for (const grupo of grupos) {
       const montoProgramado = await getMontoProgramadoDeHistorial(grupo.historialMontos);
       montosPorGrupo[grupo.id] = montoProgramado[0];
     }
-
     console.log("montos", montosPorGrupo);
     setMontosProgramados(montosPorGrupo);
   };
-
 
   useEffect(() => {
     setUltimoNumeroGrupo(calcularUltimoNumeroGrupo());
     obtenerMontosProgramadosPorGrupo(grupos);
     setSePuedeActualizarPrecio(definirSiServicioSePuedeActualizarPrecio(grupos));
   }, [idServicio, grupos]);
-
 
   const calcularCuposLibres = async (grupo) => {
     if (grupo.cantMaxAlumnos === null) return "Con cupos libres";
@@ -56,26 +58,17 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
       : "Sin cupos libres";
   };
 
-  // Formato de fecha
+  // Función para formatear fechas
   const formatDate = (dateString) => {
     if (dateString != null) {
-      const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date correctamente
-      return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
+      const date = parseISO(dateString);
+      return format(date, "dd/MM/yyyy");
     }
   };
 
   const calcularUltimoNumeroGrupo = () => {
-    // Si la lista está vacía, retornamos 0 o cualquier valor por defecto
-    if (!grupos || grupos.length === 0) {
-      return 0;
-    }
-
-    // Utilizar reduce para encontrar el máximo número de grupo
-    const numeroMaximo = grupos.reduce((max, grupo) => {
-      return Math.max(max, grupo.numero);
-    }, 0);
-
-    return numeroMaximo;
+    if (!grupos || grupos.length === 0) return 0;
+    return grupos.reduce((max, grupo) => Math.max(max, grupo.numero), 0);
   };
 
   const handleEditClick = (grupo) => {
@@ -93,26 +86,14 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
   };
 
   const getPrecioYFrecuencia = (historialMontos) => {
-
-    if (!historialMontos || historialMontos.length === 0) {
-      return "No disponible";
-    }
-
+    if (!historialMontos || historialMontos.length === 0) return "No disponible";
     const montoActual = getMontoActualGrupoDeHistorial(historialMontos).monto;
-
-
-    // Validamos que frecuenciaCobro y su unidadCiclo existan
-    if (!frecuenciaCobro || !frecuenciaCobro.unidadCiclo) {
-      return "No disponible";
-    }
-
+    if (!frecuenciaCobro || !frecuenciaCobro.unidadCiclo) return "No disponible";
     return armarStringPrecioYFrecuenciaCobro(montoActual, frecuenciaCobro?.cantCiclo, frecuenciaCobro?.unidadCiclo);
-  }
+  };
 
   useEffect(() => {
-    if (grupos.length > 0) {
-      cargarCuposLibres();
-    }
+    if (grupos.length > 0) cargarCuposLibres();
   }, [grupos]);
 
   const grupales = grupos.filter((grupo) => grupo.cantMaxAlumnos !== 1);
@@ -128,32 +109,42 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
       Sábado: 5,
       Domingo: 6,
     };
-    return horarios.sort(
-      (a, b) => diasSemana[a.diaSemana.nombre] - diasSemana[b.diaSemana.nombre]
-    );
+    return horarios.sort((a, b) => diasSemana[a.diaSemana.nombre] - diasSemana[b.diaSemana.nombre]);
   };
 
-  const handleInscribirseClick = async (grupo) => {
-    const confirmacion = window.confirm(`¿Está seguro que desea solicitar una inscripción para el grupo "${grupo.nombre}"?`);
-    
-    if (confirmacion) {
-      try {
-        // Llamar al servicio crearInscripcion
-        await crearInscripcion(idAlumno, idServicio, grupo.id, []);
-  
-        // Mostrar mensaje de éxito
-        alert('La solicitud de inscripción se ha enviado al instructor, quien la evaluará en los próximos días.');
-        navigate(`/alumno/${idAlumno}/inscripciones`)
-      } catch (error) {
-        // Mostrar un mensaje en caso de error
-        alert('Hubo un problema al enviar la solicitud de inscripción. Por favor, inténtelo nuevamente.');
-      }
-    } else {
-      // Si el usuario cancela, no hace nada
-      console.log('Inscripción cancelada');
+  /* ────────────── MODAL DE INSCRIPCIÓN ────────────── */
+  // Al hacer clic en "Inscribirme", abrimos el modal de confirmación:
+  const handleInscribirseClick = (grupo) => {
+    setGroupToInscribe(grupo);
+    setShowConfirm(true);
+  };
+
+  // Si confirma, se llama a este método:
+  const handleConfirmInscription = async () => {
+    setShowConfirm(false);
+    try {
+      await crearInscripcion(idAlumno, idServicio, groupToInscribe.id, []);
+      setShowSuccess(true);
+      // Luego de 2 segundos, se cierra el modal de éxito y se redirige
+      setTimeout(() => {
+        setShowSuccess(false);
+        navigate(`/alumno/${idAlumno}/inscripciones`);
+      }, 3000);
+    } catch (error) {
+      setErrorMessage("Hubo un problema al enviar la solicitud de inscripción. Por favor, inténtelo nuevamente.");
     }
   };
 
+  const handleCancelInscription = () => {
+    setShowConfirm(false);
+    setGroupToInscribe(null);
+  };
+
+  const handleCerrarError = () => {
+    setErrorMessage("");
+  };
+
+  /* ────────────── FIN MODAL DE INSCRIPCIÓN ────────────── */
 
   const handleCrearGrupo = () => {
     setShowModalCrear(true);
@@ -190,24 +181,18 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
         borderRadius: "20px",
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         minHeight: "100%"
-
-      }}>
-
-      <div className="mb-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1E1B4B", borderRadius: "8px", padding: "15px" }}>
-        <h2 className="text-center"
-          style={{
-            color: "white",
-            fontFamily: "Roboto",
-            fontSize: "1.5em"
-          }}>
+      }}
+    >
+      <div className="mb-3 d-flex justify-content-between align-items-center" style={{ backgroundColor: "#1E1B4B", borderRadius: "8px", padding: "15px" }}>
+        <h2 className="text-center" style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5em" }}>
           Grupos y Horarios
         </h2>
-        {sePuedeEditar && sePuedeActualizarPrecio &&
+        {sePuedeEditar && sePuedeActualizarPrecio && (
           <Button variant="link" style={{ backgroundColor: "#4F46E5", color: "white", padding: "10px 20px", borderRadius: "4px", textDecoration: "none", fontSize: "14px" }} onClick={handleActualizarPrecio}>
             Actualizar precio
           </Button>
-        }
-        {sePuedeEditar &&
+        )}
+        {sePuedeEditar && (
           <Button
             variant="link"
             style={{
@@ -219,20 +204,18 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
               fontSize: "14px",
               display: "flex",
               alignItems: "center",
-              gap: "8px", // Espacio entre texto y icono
+              gap: "8px"
             }}
             onClick={handleCrearGrupo}
           >
             Crear Grupo
             {grupos.length === 0 && <FaExclamationCircle style={{ color: "yellow", fontSize: "18px" }} />}
           </Button>
-        }
-
+        )}
       </div>
 
       <Row>
-        {grupos.length == 0 &&
-          <p>No hay grupos configurados.</p>}
+        {grupos.length === 0 && <p>No hay grupos configurados.</p>}
 
         {grupales.length > 0 && (
           <Col md={individuales.length > 0 ? 6 : 12} className="mb-4">
@@ -245,39 +228,40 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
                       <span className="text-muted small me-4">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
-                    {sePuedeEditar &&
+                    {sePuedeEditar && (
                       <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
                         <FaCog color="white" size={10} />
                       </Button>
-                       } 
-                      { ! sePuedeEditar && cuposLibres[grupo.id] != "Sin cupos libres" &&
-                        <Button
+                    )}
+                    {!sePuedeEditar && cuposLibres[grupo.id] !== "Sin cupos libres" && (
+                      <Button
                         size="sm"
                         className="mb-2 position-absolute"
-                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }} 
+                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }}
                         onClick={() => handleInscribirseClick(grupo)}
                       >
                         Inscribirme
                       </Button>
-                      } 
-                     
+                    )}
                     {ordenarPorDia(grupo.horarios).map((horario) => (
-                      <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
+                      <Card.Text key={horario.id}>
+                        {horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}
+                      </Card.Text>
                     ))}
                     <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo.historialMontos) || "No disponible"}</Card.Text>
-                    {montosProgramados[grupo.id] != null &&
+                    {montosProgramados[grupo.id] != null && (
                       <Card.Text className="fw-bold mt-2">
                         {montosProgramados[grupo.id]
                           ? `$${montosProgramados[grupo.id].monto} desde ${formatDate(montosProgramados[grupo.id].fechaInicio)}`
                           : "Monto no disponible"}
                       </Card.Text>
-                    }
+                    )}
                   </Card.Body>
                 </Card>
-
               </Col>
             ))}
-          </Col>)}
+          </Col>
+        )}
 
         {individuales.length > 0 && (
           <Col md={grupales.length > 0 ? 6 : 12} className="mb-4">
@@ -290,54 +274,95 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                       <Card.Title className="text-start mb-2 mb-md-0">{grupo.nombre}</Card.Title>
                       <span className="text-muted small me-4">{cuposLibres[grupo.id] || "Cargando cupos..."}</span>
                     </div>
-                    {sePuedeEditar &&
+                    {sePuedeEditar && (
                       <Button variant="light" className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute" onClick={() => handleEditClick(grupo)} style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px" }}>
                         <FaCog color="white" size={10} />
                       </Button>
-                     }
-                     { ! sePuedeEditar && cuposLibres[grupo.id] != "Sin cupos libres" &&
+                    )}
+                    {!sePuedeEditar && cuposLibres[grupo.id] !== "Sin cupos libres" && (
                       <Button
                         size="sm"
                         className="mb-2 position-absolute"
-                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }} // Posiciona el botón en la esquina inferior derecha
+                        style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }}
                         onClick={() => handleInscribirseClick(grupo)}
                       >
                         Inscribirme
                       </Button>
-                    }
+                    )}
                     {ordenarPorDia(grupo.horarios).map((horario) => (
-                      <Card.Text key={horario.id}>{horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}</Card.Text>
+                      <Card.Text key={horario.id}>
+                        {horario.diaSemana.nombre} de {horario.horaInicio.slice(0, 5)} a {horario.horaFin.slice(0, 5)}
+                      </Card.Text>
                     ))}
                     <Card.Text className="fw-bold mt-2">{getPrecioYFrecuencia(grupo.historialMontos) || "No disponible"}</Card.Text>
-                    {montosProgramados[grupo.id] != null &&
+                    {montosProgramados[grupo.id] != null && (
                       <Card.Text className="fw-bold mt-2">
                         {montosProgramados[grupo.id]
                           ? `$${montosProgramados[grupo.id].monto} desde ${formatDate(montosProgramados[grupo.id].fechaInicio)}`
                           : "Monto no disponible"}
                       </Card.Text>
-                    }
+                    )}
                   </Card.Body>
                 </Card>
-
               </Col>
             ))}
           </Col>
         )}
-
-
       </Row>
-
 
       {/* Modal para Crear Grupo */}
       <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos} />
 
-      {/* Modal para Actualizar precio */}
-      {/* <ActualizarMontoModal idServicio={idServicio} grupos={grupos} show={showModalActualizarPrecio} onClose={handleCerrarModalActualizarPrecio} /> */}
-
-
       {/* Modal para Editar Grupo */}
       <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchServicio} />
 
+      {/* ───────── Modal de confirmación de inscripción ───────── */}
+      <Modal show={showConfirm} onHide={handleCancelInscription} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Inscripción</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {groupToInscribe && (
+            <p>
+              ¿Está seguro que desea solicitar una inscripción para el grupo <strong>{groupToInscribe.nombre}</strong>?
+            </p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelInscription}>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleConfirmInscription}>
+            Confirmar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal de éxito reutilizable */}
+      <SuccessModal
+        show={showSuccess}
+        onClose={() => {
+          setShowSuccess(false);
+          navigate(`/alumno/${idAlumno}/inscripciones`);
+        }}
+        title="¡Inscripción enviada!"
+        message="La solicitud de inscripción se ha enviado al instructor, quien la evaluará en los próximos días."
+      />
+
+      {/* ───────── Modal de error ───────── */}
+      <Modal show={errorMessage !== ""} onHide={handleCerrarError} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Error</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{errorMessage}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCerrarError}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

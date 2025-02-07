@@ -152,6 +152,16 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
                                 >
                                     {inscripcion?.estado}
                                 </p>
+                                <p
+                                    className="card-text"
+                                    style={{
+                                        fontSize: "0.9em",
+                                        color: "#333",
+                                        lineHeight: "0.2",
+                                    }}
+                                >
+                                    {inscripcion?.fechaSolicitud}
+                                </p>
                             </div>
                         </div>
                     </div>

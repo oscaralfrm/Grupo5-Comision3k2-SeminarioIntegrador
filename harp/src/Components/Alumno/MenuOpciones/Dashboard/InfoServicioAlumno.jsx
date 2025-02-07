@@ -78,6 +78,8 @@ const InfoCardAlumno = ({ serviceData, setServiceData }) => {
   const textStyle = {
     fontSize: "1.1em", // Tamaño de letra más grande para mejor legibilidad
     margin: "5px 0",
+    whiteSpace: "pre-wrap",
+    wordBreak: "break-word"
   };
 
   return (
@@ -126,7 +128,7 @@ const InfoCardAlumno = ({ serviceData, setServiceData }) => {
             <p style={highlightStyle}>📍 Ubicación</p>
             <p style={textStyle}>{serviceData?.ubicacion}</p>
             <p style={highlightStyle}>📋 Descripción</p>
-            <p style={textStyle}>{serviceData?.descripcion}</p>
+            <p style={textStyle}>{serviceData?.descripcion.substring(0, 100)}</p>
           </div>
 
           {/* Sección 2: Fecha de inicio y detalles adicionales */}
