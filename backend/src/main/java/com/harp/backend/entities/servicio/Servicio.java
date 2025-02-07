@@ -485,7 +485,10 @@ public class Servicio {
     }
 
     public float getCalificacionPromedio() {
-        if (this.resenias.isEmpty() || this.resenias == null) {
+        if (this.resenias == null) {
+            return 0;
+        }
+        if (this.resenias.isEmpty()) {
             return 0;
         }
         float cantidadResenias = this.resenias.size();
