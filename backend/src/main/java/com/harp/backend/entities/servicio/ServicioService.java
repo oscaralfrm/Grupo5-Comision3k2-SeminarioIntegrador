@@ -117,9 +117,17 @@ public class ServicioService implements IServicioService {
 
     @Override
     public void deleteServicio(Long idServicio){
-        servicioRepository.findById(idServicio)
+        Servicio servicio = servicioRepository.findById(idServicio)
                 .orElseThrow(() -> new NoSuchElementFoundException("Servicio no encontrado"));
-        servicioRepository.deleteById(idServicio);
+
+        if ( servicio.isPublico() ) {
+            throw new UnsupportedOperationException("No se puede eliminar un servicio publicado.");
+        }
+        if ( servicio.tieneAlumnosConInscripcionesActivas() || servicio.tieneAlumnosConInscripcionesPendientes()) {
+            throw new UnsupportedOperationException("No se puede eliminar un servicio que tiene alumnos inscriptos.");
+        }
+
+        servicioRepository.delete(servicio);
         // revisar si hace falta eliminarlo donde está referenciado
     };
 

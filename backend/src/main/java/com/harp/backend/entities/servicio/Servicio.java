@@ -270,6 +270,10 @@ public class Servicio {
         return ( ! this.obtenerInscripcionesVigentes().isEmpty() );
     }
 
+    public boolean tieneAlumnosConInscripcionesPendientes() {
+        return ( ! this.obtenerInscripcionesPendientes().isEmpty() );
+    }
+
 //    public boolean tieneMontoActualConEstasVecesSemanales(Integer cantVecesSemanales) {
 //        if (! tieneMontoActualConfigurado()) {
 //            return false;
