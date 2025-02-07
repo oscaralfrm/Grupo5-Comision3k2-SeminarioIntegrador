@@ -67,6 +67,7 @@ public class Servicio {
         this.activo = false;                  // Por defecto, el servicio no está activo
         this.grupos = new HashSet<>();          // Inicializa los grupos vacíos
         this.inscripcionesAbiertas = false;
+        this.resenias = new ArrayList<>();
     }
 
     @Id
