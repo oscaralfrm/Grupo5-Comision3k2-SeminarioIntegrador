@@ -257,7 +257,7 @@ console.log(cuotasVencidas); // Verifica el filtro de cuotas vencidas
         padding: "20px",
         borderRadius: "20px",
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-        maxWidth: "90%",
+        maxWidth: "95%",
         margin: "auto",
       }}
       className="responsive-container"

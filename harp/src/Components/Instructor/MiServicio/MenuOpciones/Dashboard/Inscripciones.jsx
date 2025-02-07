@@ -182,8 +182,8 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
         padding: "20px",
         borderRadius: "20px",
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-        maxWidth: "100%",
-        width: "100%",
+        maxWidth: "90%",
+        width: "90%",
         marginTop: "3vh",
         margin: "4vh auto",
       }}

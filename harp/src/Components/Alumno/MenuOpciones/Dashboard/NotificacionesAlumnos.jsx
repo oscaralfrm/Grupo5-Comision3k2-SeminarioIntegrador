@@ -86,7 +86,7 @@ const Notifications = ({ idServicio }) => {
         padding: "20px",
         borderRadius: "20px",
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-        maxWidth: "100%",
+        maxWidth: "95%",
         width: "100%",
         marginTop: "3vh",
         margin: "4vh auto",

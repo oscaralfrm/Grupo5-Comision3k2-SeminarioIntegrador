@@ -23,7 +23,7 @@ const InfoCardAlumno = ({ serviceData, setServiceData }) => {
     padding: "20px",
     borderRadius: "20px",
     boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-    maxWidth: '90%',
+    maxWidth: '95%',
     minWidth: '90%',
     margin: "0 auto",
   };

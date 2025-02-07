@@ -17,7 +17,7 @@ const ServicioAlumno = () => {
   const [nombreServicio, setNombreServicio] = useState("Mi Servicio");
 
   const handleNavigate = () => {
-    navigate(`/alumno/${idAlumno}/descubrir-servicios`);
+    navigate(`/alumno/${idAlumno}/inscripciones`);
   };
 
   const fetchServicio = async () => {
@@ -79,7 +79,7 @@ const ServicioAlumno = () => {
             cursor: "pointer",
           }}
         >
-          Descubrir Servicios
+          Mis Inscripciones
         </button>
       </div>
 
