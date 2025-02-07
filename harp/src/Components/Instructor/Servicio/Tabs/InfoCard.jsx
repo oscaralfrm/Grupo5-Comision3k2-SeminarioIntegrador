@@ -8,7 +8,10 @@ export default function ResumenServicio({ formData }) {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center " style={{marginTop:"0vh"}}>
+    <div
+      className="d-flex justify-content-center align-items-center "
+      style={{ marginTop: "0vh" }}
+    >
       <div className="col-sm-12 p-4">
         <div
           className="card shadow-lg rounded-3 bg-light"
@@ -73,12 +76,6 @@ export default function ResumenServicio({ formData }) {
               </div>
             )}
 
-            <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>Tipo de cobro: </strong>
-              <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {capitalizeFirstLetter(formData.ciclos)}
-              </span>
-            </div>
             {formData.frecuenciaCuotas === "mensual" ||
             formData.frecuenciaCuotas === "semanal" ||
             formData.frecuenciaCuotas === "otros" ? (
@@ -93,6 +90,13 @@ export default function ResumenServicio({ formData }) {
             ) : null}
 
             <div className="mb-3">
+              <strong style={{ fontSize: "1.2rem" }}>Tipo de cobro: </strong>
+              <span style={{ fontSize: "1.1rem", color: "#333" }}>
+                {capitalizeFirstLetter(formData.ciclos)}
+              </span>
+            </div>
+
+            <div className="mb-3">
               <strong style={{ fontSize: "1.2rem" }}>
                 Incluye cobro de inscripción:{" "}
               </strong>
@@ -103,14 +107,14 @@ export default function ResumenServicio({ formData }) {
 
             {formData.incluyeInscripcion === "si" && (
               <>
-                <div className="mb-3">
+                {/* <div className="mb-3">
                   <strong style={{ fontSize: "1.2rem" }}>
                     Cobro de inscripción:{" "}
                   </strong>
                   <span style={{ fontSize: "1.1rem", color: "#333" }}>
                     {capitalizeFirstLetter(formData.pagoInscripcion)}
                   </span>
-                </div>
+                </div> */}
                 <div className="mb-3">
                   <strong style={{ fontSize: "1.2rem" }}>
                     Monto por la inscripción:{" "}
