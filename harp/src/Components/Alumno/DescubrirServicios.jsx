@@ -14,6 +14,21 @@ const DescubrirServicios = () => {
   const [size] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const armarStringPrecioYFrecuenciaCobro = (cantCiclo, unidadCiclo) => {
+    const unidades = {
+      MONTHS: { singular: "mes", plural: "meses", especial: "mensual" },
+      WEEKS: { singular: "semana", plural: "semanas", especial: "semanal" },
+      DAYS: { singular: "día", plural: "días", especial: "diario" },
+    };
+  
+    if (unidadCiclo) {
+      const { singular, plural, especial } = unidades[unidadCiclo];
+  
+      const frecuencia = cantCiclo === 1 ? especial : `cada ${cantCiclo} ${plural}`;
+    
+      return `${frecuencia}`;
+    }
+  };  
   const renderStars = (rating) => {
     const safeRating = Math.min(5, Math.max(0, rating || 0));
     return [1, 2, 3, 4, 5].map((star) =>
@@ -144,80 +159,48 @@ const DescubrirServicios = () => {
                       <Col xs={12} md={8}>
                         <Card.Body style={{ padding: "20px 15px" }}>
                           <p>
+                            <strong>Categoría:</strong>{" "}
+                            {servicio.categoria?.nombre}
+                          </p>
+                          <p>
+                            <strong>Calificación:</strong>{" "}
+                            {renderStars(servicio.resumen?.calificacion)} (
+                            {servicio.resumen?.cantResenias})
+                          </p>
+                          <p>
+                            <strong>Ubicación:</strong> {servicio.ubicacion}
+                          </p>
+                          <p>
                             <strong>Instructor:</strong>{" "}
                             {servicio.instructorNombre}
                           </p>
                           <p>
-                            <strong>Categoría:</strong>{" "}
-                            {servicio.categoria?.nombre}
-                          </p>
-                          <p className="mb-4">
-                            <strong>Ubicación:</strong> {servicio.ubicacion}
+                            <strong>Frecuencia:</strong>{" "}
+                            {armarStringPrecioYFrecuenciaCobro(servicio.tipoFrecuenciaPago?.cantCiclo,
+                              servicio.tipoFrecuenciaPago?.unidadCiclo
+                            )}    
                           </p>
                         </Card.Body>
 
-                        <div
-                          className="d-flex flex-wrap"
-                          style={{
-                            position: "relative", // Contenedor relativo para el posicionamiento absoluto del botón
-                            height: "100%", // Ajusta la altura del contenedor para asegurarse de que haya espacio suficiente
-                          }}
-                        >
-                          {/* Estrellas alineadas en eje Y */}
-                          <p
-                            className="d-flex justify-items-center align-items-center"
-                            style={{
-                              fontSize: ".5rem",
-                              position: "absolute",
-                              bottom: "3px", // Ajusta la distancia desde el fondo de la tarjeta
-                              left: "15px", // Ajusta la distancia desde la izquierda de la tarjeta
-                              display: "flex",
-                              alignItems: "center", // Alineación vertical centrada
-                            }}
-                          >
-                            <span style={{ marginRight: "5px" }}>
-                              {isNaN(Number(servicio.resumen?.calificacion)) ||
-                              servicio.resumen?.calificacion <= 0
-                                ? 0
-                                : servicio.resumen?.calificacion}
-                            </span>
-
-                            <span
-                              style={{ display: "flex", alignItems: "center" }}
-                            >
-                              {renderStars(
-                                isNaN(Number(servicio.resumen?.calificacion)) ||
-                                  servicio.resumen?.calificacion <= 0
-                                  ? 0
-                                  : servicio.resumen?.calificacion
-                              )}
-                            </span>
-
-                            <span style={{ marginLeft: "5px" }}>
-                              ({servicio.resumen?.cantResenias})
-                            </span>
+                        <div className="d-flex justify-content-between align-items-center" >
+                          <p className="mb-0" style={{marginLeft:"15px"}}>
+                           <strong>Desde:</strong> 
+                           <strong style={{fontSize:"1.5rem"}}> ${servicio.montoMinimo}</strong>
                           </p>
-
-                          {/* Botón a la derecha del todo */}
-                          <div className="d-flex flex-wrap justify-content-end mb-2">
-                            <Button
-                              size="sm"
-                              style={{
-                                backgroundColor: "#4F46E5",
-                                borderColor: "#4F46E5",
-                                position: "absolute", // Posiciona el botón de forma absoluta dentro del contenedor
-                                bottom: "10px", // Ajusta la distancia desde el fondo de la tarjeta
-                                right: "10px", // Ajusta la distancia desde la derecha de la tarjeta
-                              }}
-                              onClick={() =>
-                                navigate(
-                                  `/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`
-                                )
-                              }
-                            >
-                              Ver más
-                            </Button>
-                          </div>
+                          <Button
+                            size="sm"
+                            style={{
+                              backgroundColor: "#4F46E5",
+                              borderColor: "#4F46E5",
+                            }}
+                            onClick={() =>
+                              navigate(
+                                `/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`
+                              )
+                            }
+                          >
+                            Ver más
+                          </Button>
                         </div>
                       </Col>
                     </Row>
@@ -227,29 +210,6 @@ const DescubrirServicios = () => {
             ))
           )}
         </Row>
-
-        {/* Paginación */}
-        {totalPages > 1 && (
-          <div className="pagination d-flex justify-content-center mt-3">
-            <Button
-              style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
-              disabled={page === 0}
-              onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-            >
-              Anterior
-            </Button>
-            <span className="mx-3">
-              Página {page + 1} de {totalPages}
-            </span>
-            <Button
-              style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
-              disabled={page >= totalPages - 1}
-              onClick={() => setPage((prev) => prev + 1)}
-            >
-              Siguiente
-            </Button>
-          </div>
-        )}
       </Card>
     </Container>
   );
