@@ -81,8 +81,11 @@ public class ServicioService implements IServicioService {
     public Page<Servicio> getAllServiciosPublicadosSinInscripcionAlumno(Integer page, Integer size, Long idAlumno) {
         System.out.println("idAlumno" + idAlumno);
         Page<Servicio> listServicios = this.getAllServiciosPublicados(page, size);
+
+        // SI el alumno no esta en el servicio y tampoco esta esperando que lo acepten entonces lo retornamos
         List<Servicio> serviciosFiltrados = listServicios.stream()
-                .filter(servicio -> ! servicio.tieneEsteAlumno(idAlumno)).toList();
+                .filter(servicio ->
+                        (  (! servicio.tieneEsteAlumno(idAlumno)) && (! servicio.tieneEsteAlumnoPendiente(idAlumno)) ) ).toList();
 
         // Crear una nueva página basada en la lista filtrada
         Pageable pageable = PageRequest.of(page, size);
@@ -114,9 +117,17 @@ public class ServicioService implements IServicioService {
 
     @Override
     public void deleteServicio(Long idServicio){
-        servicioRepository.findById(idServicio)
+        Servicio servicio = servicioRepository.findById(idServicio)
                 .orElseThrow(() -> new NoSuchElementFoundException("Servicio no encontrado"));
-        servicioRepository.deleteById(idServicio);
+
+        if ( servicio.isPublico() ) {
+            throw new UnsupportedOperationException("No se puede eliminar un servicio publicado.");
+        }
+        if ( servicio.tieneAlumnosConInscripcionesActivas() || servicio.tieneAlumnosConInscripcionesPendientes()) {
+            throw new UnsupportedOperationException("No se puede eliminar un servicio que tiene alumnos inscriptos.");
+        }
+
+        servicioRepository.delete(servicio);
         // revisar si hace falta eliminarlo donde está referenciado
     };
 

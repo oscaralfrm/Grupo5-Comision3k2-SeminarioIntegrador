@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -24,8 +25,8 @@ public class Notificacion {
 
     @ManyToOne
     @JoinColumn(name = "servicio_id")
-    @JsonIgnore
     private Servicio servicio;
+
 
     // O es para alumno o es para instructor
     // como era el obsever
@@ -54,7 +55,7 @@ public class Notificacion {
     private boolean leido = false;
 
     @Column(name = "fecha_envio")
-    private LocalDate fechaEnvio = LocalDate.now();
+    private LocalDateTime fechaHoraEnvio = LocalDateTime.now();
 
 
     public Notificacion(Servicio servicio, Alumno alumno, Instructor instructor, String titulo, String mensaje) {
@@ -68,5 +69,6 @@ public class Notificacion {
     public void leer() {
         this.leido = true;
     }
+
 
 }

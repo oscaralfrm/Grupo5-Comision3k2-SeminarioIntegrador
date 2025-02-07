@@ -9,6 +9,6 @@ import java.util.List;
 public interface INotificacionRepository extends JpaRepository<Notificacion, Long> {
     List<Notificacion> findByAlumnoDestinatarioIdAndServicioId(Long alumnoId, Long servicioId);
     List<Notificacion> findByInstructorDestinatarioIdAndServicioId(Long alumnoId, Long servicioId);
-    List<Notificacion> findByAlumnoDestinatarioId(Long alumnoId);
-    List<Notificacion> findByInstructorDestinatarioId(Long alumnoId);
+    List<Notificacion> findByAlumnoDestinatarioIdOrderByFechaHoraEnvioDesc(Long alumnoId);
+    List<Notificacion> findByInstructorDestinatarioIdOrderByFechaHoraEnvioDesc(Long alumnoId);
 }

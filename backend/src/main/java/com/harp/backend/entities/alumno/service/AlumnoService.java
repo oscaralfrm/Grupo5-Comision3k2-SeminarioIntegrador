@@ -76,7 +76,9 @@ public class AlumnoService implements IAlumnoService {
 
     public List<Inscripcion> findInscripcionesDeAlumno(Long idAlumno) {
         Alumno alumnoExistente = this.findAlumno(idAlumno);
-        return alumnoExistente.getInscripciones().stream().toList();
+        return alumnoExistente.getInscripciones().stream()
+                .sorted(Comparator.comparing(Inscripcion::getFechaSolicitud).reversed()) // Ordena por fechaSolicitud
+                .collect(Collectors.toList());
     }
 
     @Override

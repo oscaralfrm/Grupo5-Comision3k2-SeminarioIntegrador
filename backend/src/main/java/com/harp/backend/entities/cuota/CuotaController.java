@@ -4,6 +4,7 @@ import com.harp.backend.entities.alumno.service.IAlumnoService;
 import com.harp.backend.entities.inscripcion.InscripcionService;
 import com.harp.backend.entities.pagos.PagoDTO;
 import com.harp.backend.entities.pagos.metodoPago.MetodoPago;
+import com.harp.backend.entities.servicio.FileStorageService;
 import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,6 +29,9 @@ public class CuotaController {
 
     @Autowired
     private ServicioService servicioService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @GetMapping("/inscripciones/cuotas")
     public ResponseEntity<List<List<Object>> > getUltimasCuotasDeAlumnosDeServicio(@PathVariable @Min(1) Long idServicio) {
@@ -72,13 +77,49 @@ public class CuotaController {
         return ResponseEntity.ok("Se anuló la cuota.");
     }
 
-        // EDITAR
+    // EDITAR
     @PutMapping("/inscripciones/{idInscripcion}/cuotas/{idCuota}/pagar")
-    public ResponseEntity<String> pagarCuota( @PathVariable @Min(1) Long idServicio,
+    public ResponseEntity<String> pagarCuotaPorInstructor( @PathVariable @Min(1) Long idServicio,
                                                 @PathVariable @Min(1) Long idInscripcion,
                                               @PathVariable @Min(1) Long idCuota,
                                              @RequestBody PagoDTO pagoDTO) {
-        cuotaService.pagarCuota(idServicio, idInscripcion, idCuota, pagoDTO.getNombre());
+        cuotaService.registrarPagoCuotaPorInstructor(idServicio, idInscripcion, idCuota, pagoDTO.getNombre());
         return ResponseEntity.ok("Se registró el pago de la cuota.");
+    }
+
+    // EDITAR
+    @PostMapping(value = "/inscripciones/{idInscripcion}/cuotas/{idCuota}/pagar-comprobante", consumes = {"multipart/form-data"})
+    public ResponseEntity<String> pagarCuotaPorAlumno( @PathVariable @Min(1) Long idServicio,
+                                                         @PathVariable @Min(1) Long idInscripcion,
+                                                          @PathVariable @Min(1) Long idCuota,
+                                                          @ModelAttribute PagoDTO pagoDTO) {
+
+        MultipartFile comprobante = pagoDTO.getComprobante();
+        System.out.println("Pago recibido: " + pagoDTO);
+        System.out.println("Archivo recibido: " + (comprobante != null ? comprobante.getOriginalFilename() : "No se envió archivo"));
+
+        // Si se envió un archivo, se procesa y se almacena a través de un servicio especializado
+        if (comprobante != null && !comprobante.isEmpty()) {
+            // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
+            // y retornar la URL donde se encuentra
+            String comprobanteURL = fileStorageService.storeFile(comprobante, "comprobantes/");
+            // Se asigna la URL al DTO para que el servicio la use
+            //pagoDTO.setComprobanteURL(comprobanteURL);
+
+            cuotaService.registrarPagoCuotaPorAlumno(idServicio, idInscripcion, idCuota, pagoDTO.getNombre(), comprobanteURL);
+            return ResponseEntity.ok("Se registró el pago de la cuota.");
+        } else {
+            throw new UnsupportedOperationException("Es necesario un comprobante.");
+        }
+    }
+
+    @PutMapping("/inscripciones/{idInscripcion}/cuotas/{idCuota}/pagos/{idPago}/rechazar")
+    public ResponseEntity<String> rechazarPagoDeCuota( @PathVariable @Min(1) Long idServicio,
+                                                       @PathVariable @Min(1) Long idInscripcion,
+                                                       @PathVariable @Min(1) Long idCuota,
+                                                       @PathVariable @Min(1) Long idPago,
+                                                       @RequestBody String motivoRechazo) {
+        cuotaService.rechazarPagoDeCuota(idServicio, idInscripcion, idCuota, idPago, motivoRechazo);
+        return ResponseEntity.ok("El pago de la cuota fue rechazado.");
     }
 }

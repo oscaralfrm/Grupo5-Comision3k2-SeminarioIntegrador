@@ -27,7 +27,26 @@ public class Pago {
     @Column(name = "fecha_pago")
     private LocalDate fechaPago = LocalDate.now();
 
+    private String comprobanteURL;
+
+    public boolean rechazado = false;
+
+    public LocalDate fechaRechazo;
+    public String motivoRechazo;
+
+    public Pago(MetodoPago metodoPago, String comprobanteURL) {
+        if (metodoPago.getNombre().equals("Transferencia")) {
+            this.comprobanteURL = comprobanteURL;
+        }
+        this.metodoPago = metodoPago;
+    }
+
     public Pago(MetodoPago metodoPago) {
         this.metodoPago = metodoPago;
+    }
+
+    public void rechazar(String motivoRechazo) {
+        this.rechazado = true;
+        this.fechaRechazo = LocalDate.now();
     }
 }

@@ -312,7 +312,39 @@ public class CuotaService implements ICuotaService {
 //        return cuotaRepository.save(cuota);
 //    }
 
-    public void pagarCuota(Long idServicio, Long idInscripcion, Long idCuota, String nombre) {
+    public void registrarPagoCuotaPorAlumno(Long idServicio, Long idInscripcion, Long idCuota, String nombre, String comprobanteURL) {
+        MetodoPago metodoPago = metodoPagoService.findMetodoPagoByNombre(nombre);
+
+        Servicio servicio = servicioService.findServicio(idServicio);
+        Instructor instructor = instructorService.findInstructorDeEsteServicio(servicio);
+        Inscripcion inscripcion = servicio.obtenerInscripcionById(idInscripcion);
+        Cuota cuota = inscripcion.obtenerCuotaConEsteId(idCuota);
+
+        if (! cuota.puedeSerPagada() )  {
+            throw new UnsupportedOperationException("La cuota no puede ser abonada.");
+        }
+
+        // Si la cuota ya fue abonada y rechazada, y este es el segundo pago
+        // Se reempalzará el pago anterior por este nuevo valido
+        //PAGO
+        if (cuota.esAbonada()) {
+            Pago pagoExistente = pagoService.editarPago(cuota.getPago(), LocalDate.now(),
+                    metodoPago, false, null, null);
+        } else {
+            Pago pago = pagoService.createPago(metodoPago);
+            cuota.setPago(pago);
+
+            // CAMBIO DE ESTADO
+            this.cambiarEstadoCuota(EstadoCuota.Abonada, cuota);
+        }
+
+        // Notificamos al instructor
+        // El alumno x ha abonado su ultima cuota de $x
+        Alumno alumno = inscripcion.getAlumno();
+        notificacionService.notificarPagoCuotaAInstructor(servicio, instructor, alumno, cuota);
+    }
+
+    public void registrarPagoCuotaPorInstructor(Long idServicio, Long idInscripcion, Long idCuota, String nombre) {
         MetodoPago metodoPago = metodoPagoService.findMetodoPagoByNombre(nombre);
 
         Servicio servicio = servicioService.findServicio(idServicio);
@@ -323,21 +355,29 @@ public class CuotaService implements ICuotaService {
         //Cuota cuota = this.findCuota(idCuota);
         Cuota cuota = inscripcion.obtenerCuotaConEsteId(idCuota);
 
-        if ( ! ( cuota.esPendiente() || cuota.esVencida() ) )  {
+        if ( ! cuota.puedeSerPagada())  {
             throw new UnsupportedOperationException("La cuota no puede ser abonada.");
         }
 
+        // Si la cuota ya fue abonada y rechazada, y este es el segundo pago
+        // Se reempalzará el pago anterior por este nuevo valido
         //PAGO
-        Pago pago = pagoService.createPago(metodoPago);
-        cuota.setPago(pago);
+        if (cuota.esAbonada()) {
+            Pago pagoExistente = pagoService.editarPago(cuota.getPago(), LocalDate.now(),
+                    metodoPago, false, null, null);
+            cuotaRepository.save(cuota);
+        } else {
+            Pago pago = pagoService.createPago(metodoPago);
+            cuota.setPago(pago);
 
-        // CAMBIO DE ESTADO
-        this.cambiarEstadoCuota(EstadoCuota.Abonada, cuota);
+            // CAMBIO DE ESTADO
+            this.cambiarEstadoCuota(EstadoCuota.Abonada, cuota);
+        }
 
         // Notificamos al instructor
         // El alumno x ha abonado su ultima cuota de $x
         Alumno alumno = inscripcion.getAlumno();
-        notificacionService.notificarPagoCuota(servicio, instructor, alumno,  cuota);
+        notificacionService.notificarPagoCuotaAAlumno(servicio, instructor, alumno, cuota);
     }
 
     public void anularCuota(Long idCuota) {
@@ -359,5 +399,31 @@ public class CuotaService implements ICuotaService {
 
         // Persistimos los cambios
         cuotaRepository.save(cuota);
+    }
+
+    public void rechazarPagoDeCuota(Long idServicio, Long idInscripcion, Long idCuota, Long idPago, String motivoRechazo) {
+        Servicio servicio = servicioService.findServicio(idServicio);
+        Instructor instructor = instructorService.findInstructorDeEsteServicio(servicio);
+        Inscripcion inscripcion = servicio.obtenerInscripcionById(idInscripcion);
+        Cuota cuota = inscripcion.obtenerCuotaConEsteId(idCuota);
+
+        // Verificamos que sea por trasnferenicia
+        if (cuota.getPago().getMetodoPago().equals("Efectivo")) {
+            throw new UnsupportedOperationException("No se puede rechazar un pago en efectivo.");
+        }
+
+        // Verificamos que haya sido pagado por un alumno, es decir que tenga un comprobante asignado
+        if (cuota.getPago().getComprobanteURL().isBlank()) {
+            throw new UnsupportedOperationException("No se puede rechazar un pago realizado por un instructor.");
+        }
+
+        Pago pagoPorTransferencia = cuota.getPago();
+
+        // Rechazamos el pago
+        pagoService.rechazarPago(pagoPorTransferencia, motivoRechazo);
+
+        // Notificamos al alumno
+        Alumno alumno = inscripcion.getAlumno();
+        notificacionService.notificarRechazoPagoCuota(servicio, instructor, alumno, cuota);
     }
 }

@@ -67,6 +67,7 @@ public class Servicio {
         this.activo = false;                  // Por defecto, el servicio no está activo
         this.grupos = new HashSet<>();          // Inicializa los grupos vacíos
         this.inscripcionesAbiertas = false;
+        this.resenias = new ArrayList<>();
     }
 
     @Id
@@ -244,6 +245,10 @@ public class Servicio {
         return this.obtenerAlumnosActuales().stream().anyMatch(alumno -> alumno.tieneEsteId(idAlumno));
     }
 
+    public boolean tieneEsteAlumnoPendiente(Long idAlumno) {
+        return this.obtenerAlumnosPendientesAceptacion().stream().anyMatch(alumno -> alumno.tieneEsteId(idAlumno));
+    }
+
 //    public MontoServicio obtenerMontoActualConEstasVecesSemanales(int vecesSemanales) {
 //        for (MontoServicio monto : this.obtenerMontosActuales()) {
 //            if (monto.esDeEstasVecesSemanales(vecesSemanales)) {
@@ -263,6 +268,10 @@ public class Servicio {
 
     public boolean tieneAlumnosConInscripcionesActivas() {
         return ( ! this.obtenerInscripcionesVigentes().isEmpty() );
+    }
+
+    public boolean tieneAlumnosConInscripcionesPendientes() {
+        return ( ! this.obtenerInscripcionesPendientes().isEmpty() );
     }
 
 //    public boolean tieneMontoActualConEstasVecesSemanales(Integer cantVecesSemanales) {
@@ -365,6 +374,11 @@ public class Servicio {
 
     public List<Alumno> obtenerAlumnosActuales() {
         return inscripciones.stream().filter(Inscripcion::estaEnCursoOAceptada).map(Inscripcion::getAlumno).toList();
+    }
+
+
+    public List<Alumno> obtenerAlumnosPendientesAceptacion() {
+        return this.obtenerInscripcionesPendientes().stream().map(Inscripcion::getAlumno).toList();
     }
 
     public List<Alumno> obtenerAlumnosActualesDeGrupo(Grupo grupo) {
@@ -474,7 +488,13 @@ public class Servicio {
         return alumnosConSusCuotas;
     }
 
-    public float calcularCalificacionPromedio() {
+    public float getCalificacionPromedio() {
+        if (this.resenias == null) {
+            return 0;
+        }
+        if (this.resenias.isEmpty()) {
+            return 0;
+        }
         float cantidadResenias = this.resenias.size();
         float sumatoriaResenias = this.resenias.stream().mapToInt(Resenia::getCalificacion)  // Obtener la calificación de cada reseña
                 .sum(); // Sumar todas las calificaciones
