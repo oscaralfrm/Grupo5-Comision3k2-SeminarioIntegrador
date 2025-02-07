@@ -23,6 +23,10 @@ public class EstrategiaAGrupos implements IEstrategiaInscripcion{
     @Override
     public boolean tieneCuposLibres(Servicio servicio, Long idGrupo, List<Long> idsHorarios) {
         Grupo grupo = servicio.obtenerGrupoConEsteId(idGrupo);
+        // Si la cant max alumnos es null quiere decir que tiene ilimitados cupos
+        if (grupo.getCantMaxAlumnos() == null) {
+            return true;
+        }
         // calculamos la cantidad de inscripciones que hay en ese grupo
         Integer cantAlumnosGrupo = servicio.obtenerInscripcionesVigentes(grupo).size();
         return (grupo.getCantMaxAlumnos() > cantAlumnosGrupo);
