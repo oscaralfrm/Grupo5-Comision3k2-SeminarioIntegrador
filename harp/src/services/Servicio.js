@@ -1,4 +1,6 @@
 import axios from './axiosConfig.js';
+import { obtenerInstructorDeServicio } from './Instructor.js';
+import { getResumenReseniasDeServicio } from './Reseñas.js';
 
 const API_URL = '/'; // Cambiar a la URL de tu API
 
@@ -26,8 +28,24 @@ export const getAllServiciosPublicos = async (page, size) => {
 
 export const getAllServiciosPublicosSinAlumno = async (page, size, idAlumno) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/publicos/sin-alumno/${idAlumno}?page=${page}&size=${size}`);
-        return response.data;
+        const { data } = await axios.get(`${API_URL}servicios/publicos/sin-alumno/${idAlumno}?page=${page}&size=${size}`);
+    
+
+        const serviciosArray = Array.isArray(data.content) ? data.content : [];
+
+        const servicios = await Promise.all(serviciosArray.map(async (servicio) => {
+            const instructor = await obtenerInstructorDeServicio(servicio.id);
+             const resumen = await getResumenReseniasDeServicio(servicio.id);
+            return {
+                ...servicio,
+                instructorId: instructor.id,
+                instructorNombre: instructor.usuario.nombre,
+                resumen,
+
+            };
+        }));
+        console.log(servicios)
+        return servicios;
     } catch (error) {
         console.error('Error al obtener los servicios', error);
         throw error;

@@ -45,7 +45,7 @@ export const RegisterFormChooser = () => {
                 overflow: 'hidden',
             }}
         >
-            <div className="row w-100 d-flex justify-content-center mt-5" style={{ gap: '55px', flexWrap: 'wrap' }}>
+            <div className="row w-100 d-flex justify-content-center" style={{ gap: '55px', flexWrap: 'wrap' }}>
                 <div className="col-lg-5 col-md-5 col-sm-8 col-10 d-flex justify-content-center px-0">
                     <div 
                         className="shadow-lg w-100"
