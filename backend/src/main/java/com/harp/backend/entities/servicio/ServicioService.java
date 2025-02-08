@@ -180,7 +180,9 @@ public class ServicioService implements IServicioService {
 
         servicio.setNombre(dto.getNombre());
         servicio.setDescripcion(dto.getDescripcion());
-        servicio.setLogoURL(dto.getLogoURL());
+        if (dto.getLogoURL() != null) {
+            servicio.setLogoURL(dto.getLogoURL());
+        }
         servicio.setUbicacion(dto.getUbicacion());
         servicio.setCantMaxAlumnosPorGrupo(dto.getCantMaxAlumnosPorGrupo());
         //servicio.setCantHorariosPorGrupo(dto.getCantHorariosPorGrupo());
