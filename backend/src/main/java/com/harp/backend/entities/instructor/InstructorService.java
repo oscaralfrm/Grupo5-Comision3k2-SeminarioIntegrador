@@ -73,6 +73,13 @@ public class InstructorService implements IInstructorService {
     }
 
 
+    public List<Servicio> findServiciosPublicadosDeInstructor(Long idInstructor) {
+        return this.findServiciosDeInstructor(idInstructor)
+                .stream().filter(Servicio::isPublico)
+                .toList();
+    }
+
+
     @Override
     public Instructor editInstructor(Long idInstructor, InstructorDTO instructorDTO) {
         Instructor instructorExistente = this.findInstructor(idInstructor);

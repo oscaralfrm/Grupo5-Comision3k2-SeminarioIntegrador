@@ -8,6 +8,7 @@ import com.harp.backend.entities.servicio.Servicio;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public interface IInscripcionService {
     public List<Inscripcion> getAllInscripciones();
@@ -22,4 +23,5 @@ public interface IInscripcionService {
     public void finalizarInscripcion(Long idInscripcion);
     //List<Inscripcion> findInscripcionesDeServicio(Long idServicio);
     public List<Cuota> obtenerHistorialCuotasInscripcion(Long idInscripcion);
+    public List<Cuota> obtenerUltimaCuotaOVencidasYPendientes(Long idInscripcion);
 }

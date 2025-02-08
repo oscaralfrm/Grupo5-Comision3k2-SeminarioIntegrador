@@ -147,6 +147,10 @@ public class Inscripcion {
         return cuotas.stream().filter(Cuota::esPendiente).toList();
     }
 
+    public List<Cuota> obtenerCuotasVencidas() {
+        return cuotas.stream().filter(Cuota::esVencida).toList();
+    }
+
     public void iniciar() {
         // se puede iniciar si esta en pendiente o en aceptada
         // si un alumno se inscribe pagando se acepta solo
@@ -274,10 +278,6 @@ public class Inscripcion {
 
     public boolean estaEnCurso() {
         return (this.estado == EstadoInscripcion.EnCurso);
-    }
-
-    public boolean estaEnCursoOAceptada() {
-        return (this.estaEnCurso() || this.estaAceptada());
     }
 
     public boolean estaPendiente() {

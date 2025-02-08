@@ -81,6 +81,13 @@ public class AlumnoService implements IAlumnoService {
                 .collect(Collectors.toList());
     }
 
+    public List<Inscripcion> findInscripcionesVigentesDeAlumno(Long idAlumno) {
+        return this.findInscripcionesDeAlumno(idAlumno).stream()
+                .filter(Inscripcion::estaVigente)
+                .sorted(Comparator.comparing(Inscripcion::getFechaSolicitud).reversed()) // Ordena por fechaSolicitud
+                .collect(Collectors.toList());
+    }
+
     @Override
     public Alumno editAlumno(Alumno alumno) {
         return alumnoRepository.save(alumno);

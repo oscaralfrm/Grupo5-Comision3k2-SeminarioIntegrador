@@ -373,7 +373,7 @@ public class Servicio {
 
 
     public List<Alumno> obtenerAlumnosActuales() {
-        return inscripciones.stream().filter(Inscripcion::estaEnCursoOAceptada).map(Inscripcion::getAlumno).toList();
+        return inscripciones.stream().filter(Inscripcion::estaVigente).map(Inscripcion::getAlumno).toList();
     }
 
 
@@ -383,7 +383,7 @@ public class Servicio {
 
     public List<Alumno> obtenerAlumnosActualesDeGrupo(Grupo grupo) {
         return inscripciones.stream()
-                .filter(i -> i.estaEnCursoOAceptada() && i.esDeEsteGrupo(grupo))
+                .filter(i -> i.estaVigente() && i.esDeEsteGrupo(grupo))
                 .map(Inscripcion::getAlumno)
                 .toList();
     }

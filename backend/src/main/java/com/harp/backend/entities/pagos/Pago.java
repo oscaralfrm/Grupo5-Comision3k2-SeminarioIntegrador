@@ -48,5 +48,6 @@ public class Pago {
     public void rechazar(String motivoRechazo) {
         this.rechazado = true;
         this.fechaRechazo = LocalDate.now();
+        this.motivoRechazo = motivoRechazo;
     }
 }

@@ -20,6 +20,7 @@ public interface IAlumnoService {
     Alumno findAlumno(Long idAlumno);
     Alumno editAlumno(Alumno alumno);
     List<Inscripcion> findInscripcionesDeAlumno(Long idAlumno);
+    public List<Inscripcion> findInscripcionesVigentesDeAlumno(Long idAlumno);
     List<Cuota> obtenerHistorialCuotasEsteAlumnoYServicio(Long idAlumno, Long idServicio);
     Map<Long, List<Clase>> obtenerClasesDeAlumno(Long idAlumno, boolean proximas, boolean anteriores);
 }

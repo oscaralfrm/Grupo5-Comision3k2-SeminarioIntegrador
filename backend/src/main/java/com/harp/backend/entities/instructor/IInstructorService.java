@@ -12,6 +12,7 @@ public interface IInstructorService {
     Instructor editInstructor(Long idInstructor, InstructorDTO instructorDTO);
     Instructor createInstructor(InstructorDTO instructorDTO);
     List<Servicio> findServiciosDeInstructor(Long idInstructor);
+    public List<Servicio> findServiciosPublicadosDeInstructor(Long idInstructor);
     double[] calcularIngresosPorMesDeServiciosDeInstructor(Long idInstructor);
     Long validarInicioSesion(String email, String contrasena);
 }

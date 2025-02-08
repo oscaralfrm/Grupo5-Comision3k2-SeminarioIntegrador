@@ -21,7 +21,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 //REVISAR Agregar transaccional
 @Service
@@ -351,5 +352,25 @@ public class InscripcionService implements IInscripcionService {
     public List<Cuota> obtenerHistorialCuotasInscripcion(Long idInscripcion) {
         Inscripcion inscripcion = this.findInscripcion(idInscripcion);
         return inscripcion.getCuotas();
+    }
+
+    public List<Cuota> obtenerUltimaCuotaOVencidasYPendientes(Long idInscripcion) {
+        Set<Cuota> cuotas = new HashSet<>();
+        Inscripcion inscripcion = this.findInscripcion(idInscripcion);
+
+        // Devolvemos todas las pendientes o las vencidas si hay
+        cuotas.addAll(inscripcion.obtenerCuotasPendientes());
+        cuotas.addAll(inscripcion.obtenerCuotasVencidas());
+
+        // Como es un set si la ultima cuota es vencida o pendiente no se va a agregar
+        // Si la cuota es abonada igual la agregamos
+        cuotas.add(inscripcion.obtenerUltimaCuota());
+
+        // Ordenar las cuotas usando streams y comparadores
+        List<Cuota> cuotasOrdenadas = cuotas.stream()
+                .sorted(Comparator.comparing(Cuota::getFechaInicioCiclo))
+                .collect(Collectors.toList());
+
+        return cuotasOrdenadas;
     }
 }

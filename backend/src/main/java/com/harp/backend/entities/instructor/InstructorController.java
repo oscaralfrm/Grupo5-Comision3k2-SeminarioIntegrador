@@ -38,6 +38,13 @@ public class InstructorController {
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     };
 
+    // GET TODOS LOS SERVICIOS PUBLICADOS DE UN INSTRUCTOR
+    @GetMapping("/{idInstructor}/servicios-publicados")
+    public ResponseEntity<List<Servicio>> traerServiciosPublicadosDeInstructor(@PathVariable Long idInstructor) {
+        List<Servicio> servicios = instructorService.findServiciosPublicadosDeInstructor(idInstructor);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
     // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
     @GetMapping("/{idInstructor}/servicios/ingresos-por-mes")
     public ResponseEntity<double[]> calcularIngresosPorMesDeServicios(@PathVariable Long idInstructor) {

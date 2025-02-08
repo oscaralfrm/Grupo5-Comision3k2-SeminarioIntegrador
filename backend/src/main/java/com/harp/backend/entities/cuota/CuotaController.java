@@ -102,7 +102,7 @@ public class CuotaController {
         if (comprobante != null && !comprobante.isEmpty()) {
             // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
             // y retornar la URL donde se encuentra
-            String comprobanteURL = fileStorageService.storeFile(comprobante, "comprobantes/");
+            String comprobanteURL = fileStorageService.storeFile(comprobante, "uploads/comprobantes/");
             // Se asigna la URL al DTO para que el servicio la use
             //pagoDTO.setComprobanteURL(comprobanteURL);
 

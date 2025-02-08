@@ -79,6 +79,14 @@ public class InscripcionController {
         return ResponseEntity.ok(cuotas);
     }
 
+    // GET LAS CUOTAS DE UNA INSCRIPCION
+    @GetMapping("/{idServicio}/inscripciones/{idInscripcion}/ultimas-cuotas")
+    public ResponseEntity<List<Cuota>> getCuotasPendientesVencidasOUltmaDeInscripcion(@PathVariable @Min(1) Long idInscripcion) {
+        List<Cuota> cuotas = inscripcionService.obtenerUltimaCuotaOVencidasYPendientes(idInscripcion);
+        return ResponseEntity.ok(cuotas);
+    }
+
+
     // POST
     @PostMapping("/{idServicio}/inscribir")
     public ResponseEntity<Inscripcion> crearInscripcion(@PathVariable Long idServicio,

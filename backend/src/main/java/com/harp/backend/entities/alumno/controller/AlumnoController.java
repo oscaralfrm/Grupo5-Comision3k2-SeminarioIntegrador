@@ -66,6 +66,14 @@ public class AlumnoController {
         return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
     }
 
+    // GET TODAS LAS INSCRIPCIONES VIGENTES
+    //implementar filtros por estado
+    @GetMapping("{idAlumno}/inscripciones-vigentes")
+    public ResponseEntity<List<Inscripcion>> findInscripcionesVigentesDeAlumno(@PathVariable Long idAlumno) {
+        List<Inscripcion> inscripciones = alumnoService.findInscripcionesVigentesDeAlumno(idAlumno);
+        return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
+    }
+
 
     @PostMapping
     public ResponseEntity<Alumno> saveAlumno(@RequestBody AlumnoDTO alumnoDTO) {
