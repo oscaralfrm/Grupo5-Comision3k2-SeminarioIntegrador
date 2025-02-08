@@ -91,4 +91,7 @@ public class Instructor {
         return totalIngresosServiciosPorMes;
     }
 
+    public boolean tieneServicioConEsteNombre(String nombreServicio) {
+        return this.servicios.stream().anyMatch(servicio -> servicio.getNombre().equals(nombreServicio));
+    }
 }

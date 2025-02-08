@@ -29,6 +29,7 @@ public class EstrategiaAGrupos implements IEstrategiaInscripcion{
         }
         // calculamos la cantidad de inscripciones que hay en ese grupo
         Integer cantAlumnosGrupo = servicio.obtenerInscripcionesVigentes(grupo).size();
+
         return (grupo.getCantMaxAlumnos() > cantAlumnosGrupo);
     }
 

@@ -104,6 +104,7 @@ public class ServicioService implements IServicioService {
         return (servicioRepository.findById(idServicio).isPresent());
     }
 
+    @Transactional
     public Servicio createServicio(ServicioDTO servicioDTO, Long idInstructorLoggeado) {
         Servicio nuevoServicio = servicioConverter.dtoToEntity(servicioDTO);
 
@@ -111,7 +112,6 @@ public class ServicioService implements IServicioService {
         Servicio servicioCreado = servicioRepository.save(nuevoServicio);
         instructorService.agregarServicioAInstructor(servicioCreado, idInstructorLoggeado);
 
-        //Deberiamos ver que tipo de modalidad es, si es paseLibre crear un grupo 1 acá
         return servicioCreado;
     }
 
@@ -207,6 +207,11 @@ public class ServicioService implements IServicioService {
     };
 
     public void agregarGrupoAServicio(Grupo grupo, Servicio servicioExistente) {
+        // Validamos que el servicio no tenga ya un grupo con ese nombre
+        if (servicioExistente.tieneGrupoConEsteNombre(grupo.getNombre()) ) {
+            throw new UnsupportedOperationException("El servicio ya tiene otro grupo con ese nombre.");
+        }
+
         servicioExistente.agregarGrupo(grupo);
         servicioRepository.save(servicioExistente);
     }
