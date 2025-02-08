@@ -3,17 +3,20 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { traerUltimasCuotasDeServicio } from "../../../../../services/Cuota";
+import {obtenerCuotasDeInscripcion,} from "../../../../../services/Cuota"; // Asegúrate de importar los servicios correctamente
+import {getHistorialCuotasDeAlumno, getInscripcionesDeAlumno, getAlumnosDeGrupo} from "../../../../../services/Alumno"
 import { getServicioById } from "../../../../../services/Servicio";
+import {getGruposDeServicio} from "../../../../../services/Grupo"
 
 const Cobros = () => {
   const [showAllPending, setShowAllPending] = useState(false);
   const [showLatePayments, setShowLatePayments] = useState(false);
   const navigate = useNavigate();
-  const [cuotas, setCuotas] = useState([]); // Lista completa de cuotas
-  const [servicio, setServicio] = useState(null); // Detalle del servicio
+  const [cuotas, setCuotas] = useState([]);
+  const [servicio, setServicio] = useState(null);
   const { idServicio } = useParams();
 
+  // Obtener el servicio
   useEffect(() => {
     const fetchServicio = async () => {
       try {
@@ -26,18 +29,35 @@ const Cobros = () => {
     fetchServicio();
   }, [idServicio]);
 
+  // Obtener las inscripciones y cuotas asociadas
   useEffect(() => {
-    const fetchCuotas = async () => {
+    const fetchInscripcionesYCuotas = async () => {
       try {
-        const data = await traerUltimasCuotasDeServicio(idServicio);
-        setCuotas(data);
+        // Obtener grupos del servicio
+        const grupos = await getGruposDeServicio(idServicio);
+
+        // Obtener alumnos y cuotas para cada grupo
+        const cuotasData = [];
+        for (const grupo of grupos) {
+          const alumnos = await getAlumnosDeGrupo(idServicio, grupo.id); // Obtener alumnos del grupo
+          for (const alumno of alumnos) {
+            const inscripciones = await getInscripcionesDeAlumno(alumno.id); // Obtener inscripciones del alumno
+            for (const inscripcion of inscripciones) {
+              const cuotasInscripcion = await obtenerCuotasDeInscripcion(idServicio, inscripcion.id);
+              cuotasData.push([alumno, cuotasInscripcion]);
+            }
+          }
+        }
+
+        setCuotas(cuotasData);
       } catch (error) {
         console.error("Error al traer las cuotas:", error);
       }
     };
-    fetchCuotas();
+    fetchInscripcionesYCuotas();
   }, [idServicio]);
 
+  // Procesar cuotas con estado actual
   const cuotasConEstadoActual = cuotas.map(([alumno, cuotas]) => [
     alumno,
     cuotas.map((cuota) => ({
@@ -46,6 +66,7 @@ const Cobros = () => {
     })),
   ]);
 
+  // Filtrar cuotas pendientes
   const cuotasPendientes = cuotasConEstadoActual
     .map(([alumno, cuotas]) => [
       alumno,
@@ -55,6 +76,7 @@ const Cobros = () => {
     ])
     .filter(([_, cuotas]) => cuotas.length > 0);
 
+  // Filtrar cuotas vencidas
   const cuotasVencidas = cuotasConEstadoActual
     .map(([alumno, cuotas]) => [
       alumno,
@@ -64,18 +86,23 @@ const Cobros = () => {
     ])
     .filter(([_, cuotas]) => cuotas.length > 0);
 
+  // Navegar a la página de pagos
   const handleGoToPayments = (idAlumno) => {
     navigate(`/cobros?alumno=${idAlumno}`);
   };
 
+  // Navegar a la página del alumno
   const handleGoToStudent = (idAlumno) => {
     navigate(`/alumnos/${idAlumno}`);
   };
 
+  // Alternar visibilidad de cuotas pendientes
   const toggleShowAllPending = () => setShowAllPending((prev) => !prev);
 
+  // Alternar visibilidad de pagos atrasados
   const toggleShowLatePayments = () => setShowLatePayments((prev) => !prev);
 
+  // Estilo para resaltar el día límite de pago en el calendario
   const tileClassName = ({ date, view }) => {
     if (view === "month" && servicio?.diaLimitePago && date.getDate() === servicio.diaLimitePago) {
       return "highlight";
@@ -95,6 +122,7 @@ const Cobros = () => {
       }}
       className="responsive-container"
     >
+      {/* Encabezado */}
       <div
         className="header-container"
         style={{
@@ -125,24 +153,25 @@ const Cobros = () => {
         </button>
       </div>
 
+      {/* Estilos adicionales */}
       <style>
         {`
           @media (max-width: 768px) {
             .header-container {
-              justify-content: center; /* Centrar contenido en móviles */
-              flex-direction: column; /* Cambiar a columna en móviles */
-              align-items: center; /* Centrar ambos elementos */
+              justify-content: center;
+              flex-direction: column;
+              align-items: center;
             }
 
             .header-container button {
-              margin-top: 10px; /* Margen superior para el botón en móvil */
-              width: 100%; /* Hacer que el botón ocupe todo el ancho en móvil */
-              max-width: 200px; /* Opcional: Máximo ancho para el botón */
+              margin-top: 10px;
+              width: 100%;
+              max-width: 200px;
             }
           }
 
           .section h3 {
-            margin-top: 20px; /* Aumenta el margen superior para el título de sección */
+            margin-top: 20px;
           }
 
           .highlight {
@@ -153,6 +182,7 @@ const Cobros = () => {
         `}
       </style>
 
+      {/* Sección de alumnos con pago pendiente */}
       <div className="section">
         <h3 style={{ color: "#1E1B4B", fontSize: "1.4rem" }}>Alumnos con Pago Pendiente</h3>
         <hr />
@@ -181,6 +211,7 @@ const Cobros = () => {
         </ul>
       </div>
 
+      {/* Sección de pagos atrasados */}
       {cuotasVencidas.length > 0 && (
         <div className="section">
           <button
@@ -230,6 +261,7 @@ const Cobros = () => {
         </div>
       )}
 
+      {/* Sección del calendario de pagos */}
       <hr />
       <div className="section">
         <h3 style={{ color: "#1E1B4B", fontSize: "1.4rem" }}>Calendario de Pagos</h3>

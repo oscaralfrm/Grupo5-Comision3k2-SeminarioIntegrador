@@ -58,7 +58,7 @@ const ServicioAlumno = () => {
           }}
           className="d-none d-md-block" // Mostrar solo en pantallas grandes
         >
-          Descubrir Servicios
+          Mis Inscripciones
         </button>
 
         <h1 className="text-center fw-bold mb-5">{nombreServicio}</h1> {/* Título en el centro */}

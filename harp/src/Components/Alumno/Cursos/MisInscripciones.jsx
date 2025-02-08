@@ -16,8 +16,9 @@ const MisInscripciones = () => {
         const data = await getInscripcionesDeAlumno(idAlumno);
 
         // NO mostramos las inscripciones rechazadas
-        const sinRechazadas = data.filter((inscripcion) =>
-          inscripcion.estado != "Rechazada");
+        const sinRechazadas = data.filter(
+          (inscripcion) => inscripcion.estado !== "Rechazada"
+        );
 
         // Si una inscripcion finalizada ya tiene una inscripcion EnCurso o Aceptada de un servicio entonces no mostramos la Finalizada
         const filtradas = sinRechazadas.filter((inscripcion) => {
@@ -26,7 +27,8 @@ const MisInscripciones = () => {
             const existeEnCursoOAceptada = sinRechazadas.some(
               (otraInscripcion) =>
                 otraInscripcion.servicio.id === inscripcion.servicio.id &&
-                (otraInscripcion.estado === "EnCurso" || otraInscripcion.estado === "Aceptada")
+                (otraInscripcion.estado === "EnCurso" ||
+                  otraInscripcion.estado === "Aceptada")
             );
             // No mostrar la inscripción finalizada si existe una "EnCurso" o "Aceptada"
             return !existeEnCursoOAceptada;
@@ -35,8 +37,19 @@ const MisInscripciones = () => {
           return true;
         });
 
-        setInscripciones(filtradas);
-        setFilteredInscripciones(filtradas);
+        // Ordenar las inscripciones: EnCurso primero, luego Aceptada, PendienteAceptacion y Finalizada
+        const ordenadas = filtradas.sort((a, b) => {
+          const ordenEstados = {
+            EnCurso: 1,
+            Aceptada: 2,
+            PendienteAceptacion: 3,
+            Finalizada: 4,
+          };
+          return ordenEstados[a.estado] - ordenEstados[b.estado];
+        });
+
+        setInscripciones(ordenadas);
+        setFilteredInscripciones(ordenadas);
       } catch (error) {
         console.error("Error al traer las inscripciones del alumno:", error);
       }
@@ -79,7 +92,6 @@ const MisInscripciones = () => {
       {/* Contenedor de filtros */}
       <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "20px" }}>
         <SearchFilter onSearch={handleSearch} onFilter={handleFilter} />
-      
 
         <div style={{ display: "flex", gap: "10px", padding: "10px 0", alignItems: "center" }}>
           {/* Nuevo filtro por estado con mismos estilos */}

@@ -33,7 +33,7 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         maxWidth: "90%",
         width: "90%",
-        margin: "4vh auto",
+        margin: "0.5vh auto",
     }}>
       <div className="responsive-container" style={{
         display: "flex",

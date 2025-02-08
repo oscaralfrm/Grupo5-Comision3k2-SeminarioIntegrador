@@ -11,6 +11,7 @@ import NavbarAlumno from '../Alumno/NavbarAlumno/NavbarAlumno.jsx';
 import NavbarAlumnoDash from '../Alumno/NavbarAlumno/NavbarDashboard/NavbarDashboard.jsx';
 import NavbarAlumnoAtras from '../Alumno/NavbarAlumno/NavbarAtras.jsx';
 import NavbarAlumnoMisServicios from '../Alumno/NavbarAlumno/NavbarMisServicios.jsx';
+import NavbarMisServicios from './NavbarMisServicios.jsx';
 
 const AppNavbar = () => {
   const location = useLocation();
@@ -45,7 +46,7 @@ const AppNavbar = () => {
       {isCreateServiceRoute && <NavbarServicio />}
       {isEditService && <NavbarSimple />}
       {isNavbarSimple && <NavbarSimple/>}
-      {isConfigService &&<NavbarSimple/>}
+      {isConfigService &&<NavbarMisServicios/>}
       {/* Muestra NavbarRegisterChooser en rutas de registro */}
       {isRegisterRoute && <NavbarRegisterChooser />}
       {isInstructorService && <NavbarServicio /> }

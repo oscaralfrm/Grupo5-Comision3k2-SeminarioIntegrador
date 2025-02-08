@@ -3,7 +3,7 @@ import SearchFilter from "./Busqueda";
 import CourseCards from "./Cards";
 import Adicional from "./Adicional";
 import Statistics from "./Estadisticas";
-import GraficoDeTorta from "./GráficoPastel"
+import GraficoDeTorta from "./GráficoPastel";
 import { getServiciosDeInstructor } from "../../../services/Instructor";
 import { useParams } from "react-router-dom";
 
@@ -14,21 +14,25 @@ const Dashboard = () => {
   const { idServicio } = useParams();
   const { idInstructor } = useParams();
 
-
   useEffect(() => {
     const fetchServicios = async () => {
       try {
         const data = await getServiciosDeInstructor(idInstructor);
-        setServicios(data);
-        setFilteredServicios(data);
+        
+        // Ordenar los servicios: primero los públicos (publico: true), luego los no públicos
+        const sortedServicios = data.sort((a, b) => {
+          if (a.publico === b.publico) return 0;
+          return a.publico ? -1 : 1;
+        });
+
+        setServicios(sortedServicios);
+        setFilteredServicios(sortedServicios);
       } catch (error) {
         console.error('Error al traer los servicios del instructor:', error);
       }
     };
     fetchServicios();
-
-  }, []);
-
+  }, [idInstructor]);
 
   const handleSearch = (searchTerm) => {
     setFilteredServicios(servicios.filter((servicio) => servicio.nombre.toLowerCase().includes(searchTerm.toLowerCase())));

@@ -107,7 +107,7 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio }) => {
       boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
       maxWidth: "95%",
       width: "100%",
-      margin: "4vh auto",
+      margin: "0.5vh auto",
     }}>
       {/* Encabezado */}
       <div className="responsive-container" style={{
