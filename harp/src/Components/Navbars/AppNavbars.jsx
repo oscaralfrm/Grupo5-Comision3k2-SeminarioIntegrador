@@ -12,6 +12,7 @@ import NavbarAlumnoDash from '../Alumno/NavbarAlumno/NavbarDashboard/NavbarDashb
 import NavbarAlumnoAtras from '../Alumno/NavbarAlumno/NavbarAtras.jsx';
 import NavbarAlumnoMisServicios from '../Alumno/NavbarAlumno/NavbarMisServicios.jsx';
 import NavbarMisServicios from './NavbarMisServicios.jsx';
+import NavbarGeneralAlumno from './NavbarGeneralAlumno.jsx';
 
 const AppNavbar = () => {
   const location = useLocation();
@@ -29,6 +30,7 @@ const AppNavbar = () => {
   const isAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicios`; // Nueva condición para alumnos
   const isAlumnosDashRoute = location.pathname === `/alumno/${idAlumno}/inscripciones/${idInscripcion}/mi-inscripcion`
   const isAlumnoAtrasRoute = location.pathname === `/alumno/${idAlumno}/inscripciones/${idInscripcion}/mi-inscripcion/asistencias`
+  const isAlumnoCuotas = location.pathname === `/alumno/${idAlumno}/inscripciones/pagos`
   const isAlumnoRouteIns = location.pathname === `/alumno/${idAlumno}/inscripciones`; 
   const isDescubrirRoute = location.pathname === `/alumno/${idAlumno}/descubrir-servicios`; 
   const isInfoServicioAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicio/${idServicio}/info-servicio`; 
@@ -59,9 +61,10 @@ const AppNavbar = () => {
 
       {isAlumnoAtrasRoute && <NavbarAlumnoAtras/>}
 
-      {isAlumnoRouteIns && <NavbarAlumnoMisServicios /> }
+      {isAlumnoRouteIns && <NavbarGeneralAlumno /> }
       {isDescubrirRoute && <NavbarAlumno /> }
       {isInfoServicioAlumnoRoute && <NavbarSimple />}
+      {isAlumnoCuotas && <NavbarGeneralAlumno /> }
     </>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form, Modal } from "react-bootstrap";
 import { format, parseISO } from "date-fns";
-import { obtenerCuotasDeInscripcion } from "../../../../services/Cuota.js";
+import { obtenerCuotasDeInscripcion, rechazarPagoCuotaConTrasnferencia } from "../../../../services/Cuota.js";
 import { useParams } from "react-router-dom";
 import { getGruposDeServicio } from "../../../../services/Grupo.js";
 import { definirSiServicioSePuedeActualizarPrecio, getMontoActualGrupo } from "../../../../services/HistorialMontoCuota.js";
@@ -11,6 +11,7 @@ import HistorialPagoModal from "./HistorialPago.jsx";
 import { getHistorialCuotasDeAlumno } from "../../../../services/Alumno.js";
 import { useLocation } from 'react-router-dom';
 import Pagos from "./PagosInstructor.jsx"; // Importar el nuevo componente
+import RechazoPagoModal from "./RechazoPagoModal.jsx";
 
 const Cobros = ({ id }) => {
   // Estados principales
@@ -22,12 +23,12 @@ const Cobros = ({ id }) => {
   const [studentFilter, setStudentFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
   const [showAddPayment, setShowAddPayment] = useState(false);
-  const [paymentDate, setPaymentDate] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
   const [monto, setMonto] = useState([]);
   const [grupos, setGrupos] = useState([]);
   const [inscripciones, setInscripciones] = useState([]);
   const [showMontoModal, setShowMontoModal] = useState(false);
+  const [showModalMotivoRechazo, setShowModalMotivoRechazo] = useState(false);
+  const [motivoRechazo, setMotivoRechazo] = useState("");
   const [sePuedeActualizarPrecio, setSePuedeActualizarPrecio] = useState(false);
   const { idServicio } = useParams();
 
@@ -73,12 +74,12 @@ const Cobros = ({ id }) => {
     const fetchMontos = async () => {
       try {
         if (!grupos || grupos.length === 0) return;
-  
+
         const montos = await Promise.all(
           grupos.map(async (grupo) => {
             try {
               const monto = await getMontoActualGrupo(idServicio, grupo.id);
-              console.log(`Monto del grupo ${grupo.id}:`, monto); // Depuración
+              console.log(`Precio del grupo ${grupo.id}:`, monto); // Depuración
               return { idGrupo: grupo.id, nombreGrupo: grupo.nombre, monto };
             } catch (error) {
               console.error(`Error al obtener el monto del grupo ${grupo.id}:`, error);
@@ -86,14 +87,14 @@ const Cobros = ({ id }) => {
             }
           })
         );
-  
+
         console.log("Montos cargados:", montos); // Depuración
         setMonto(montos.filter(Boolean));
       } catch (error) {
         console.error("Error al traer los montos de los grupos:", error);
       }
     };
-  
+
     fetchMontos();
   }, [idServicio, grupos]);
 
@@ -107,6 +108,7 @@ const Cobros = ({ id }) => {
           const { alumno, grupo, id } = inscripcion;
           try {
             const cuotas = await obtenerCuotasDeInscripcion(idServicio, id);
+            console.log("cuotas", cuotas, "inscripcion", id);
             const montoGrupo = monto.find((m) => m.idGrupo === grupo.id)?.monto || 0;
 
             return [
@@ -173,6 +175,25 @@ const Cobros = ({ id }) => {
     setSelectedCuota(cuota);
     setShowAddPayment(true);
   };
+
+  const handleOpenRechazoModal = (cuota) => {
+    setShowModalMotivoRechazo(true);
+    setSelectedCuota(cuota);
+  };
+
+
+  const handleConfirmRechazoModal = async () => {
+    if (!selectedCuota || !motivoRechazo.trim()) {
+      alert("Debes ingresar un motivo.");
+      return;
+    }
+
+    await rechazarPagoCuotaConTrasnferencia(idServicio, selectedCuota.idInscripcion, selectedCuota.id, selectedCuota.pago.id, motivoRechazo);
+    setShowModalMotivoRechazo(false);
+    alert("Se ha rechazado el pago");
+    fetchCuotas();
+  }
+
 
   // Formato de fecha
   const formatDate = (dateString) => {
@@ -273,7 +294,7 @@ const Cobros = ({ id }) => {
               <th>Nombre</th>
               <th>Grupo</th>
               <th>Estado</th>
-              <th>Monto del Grupo</th>
+              <th>Precio del Grupo</th>
               <th>Recargo</th>
               <th>Forma de Pago</th>
               <th>Fecha de Pago</th>
@@ -281,71 +302,105 @@ const Cobros = ({ id }) => {
             </tr>
           </thead>
           <tbody>
-  {filteredCuotas.map(([student, cuotasStudent]) =>
-    cuotasStudent.map((cuota) => {
-      const montoGrupo = monto.find((m) => m.idGrupo === student.idGrupo)?.monto || 0;
-      const montoValor = typeof montoGrupo === 'object' ? montoGrupo.monto : montoGrupo; // Extraer el valor correcto
+            {filteredCuotas.map(([student, cuotasStudent]) =>
+              cuotasStudent.map((cuota) => {
+                const montoGrupo = monto.find((m) => m.idGrupo === student.idGrupo)?.monto || 0;
+                const montoValor = typeof montoGrupo === 'object' ? montoGrupo.monto : montoGrupo; // Extraer el valor correcto
 
-      console.log(`Monto del grupo para el alumno ${student.usuario.nombre}:`, montoValor); // Depuración
+                console.log(`Monto del grupo para el alumno ${student.usuario.nombre}:`, montoValor); // Depuración
 
-      return (
-        <tr key={cuota.id}>
-          <td>
-            {student.usuario.nombre} {student.usuario.apellido}
-          </td>
-          <td>{student.nombreGrupo}</td>
-          <td>
-            <span
-              className={`badge bg-${
-                cuota.cambiosEstado[0].estadoCuota === "Pendiente"
-                  ? "warning"
-                  : cuota.cambiosEstado[0].estadoCuota === "Abonada"
-                  ? "success"
-                  : cuota.cambiosEstado[0].estadoCuota === "Anulada" ||
-                    cuota.cambiosEstado[0].estadoCuota === "Vencida"
-                  ? "danger"
-                  : "secondary"
-              }`}
-            >
-              {cuota.cambiosEstado[0].estadoCuota}
-            </span>
-          </td>
-          <td>${montoValor}</td> {/* Mostrar el monto del grupo */}
-          <td>${cuota.recargo || 0}</td>
-          <td>{cuota.pago?.metodoPago.nombre || "N/A"}</td>
-          <td>{cuota.pago ? formatDate(cuota.pago.fechaPago) : "N/A"}</td>
-          <td>
-            <Button
-              variant="info"
-              size="sm"
-              style={{
-                backgroundColor: "#4F46E5",
-                color: "white",
-                padding: "10px 20px",
-                borderRadius: "4px",
-                textDecoration: "none",
-                fontSize: "14px",
-              }}
-              onClick={() => handleShowPaymentHistory(student, cuota)}
-            >
-              Historial de Pago
-            </Button>
-            {cuota.cambiosEstado[0].estadoCuota === "Pendiente" && (
-              <Button
-                variant="success"
-                size="sm"
-                className="ms-2"
-                onClick={() => handleAddPayment(student, cuota)}
-              >
-                Pagar
-              </Button>
+                return (
+                  <tr key={cuota.id}>
+                    <td>
+                      {student.usuario.nombre} {student.usuario.apellido}
+                    </td>
+                    <td>{student.nombreGrupo}</td>
+                    <td>
+                      <span
+                        className={`badge bg-${cuota.cambiosEstado[0].estadoCuota === "Pendiente"
+                            ? "warning"
+                            : cuota.cambiosEstado[0].estadoCuota === "Abonada"
+                              ? "success"
+                              : cuota.cambiosEstado[0].estadoCuota === "Anulada" ||
+                                cuota.cambiosEstado[0].estadoCuota === "Vencida"
+                                ? "danger"
+                                : "secondary"
+                          }`}
+                      >
+                        {cuota.cambiosEstado[0].estadoCuota}
+                       
+                      </span>
+                      {cuota?.pago?.rechazado &&
+                      <span
+                        className={`badge bg-danger`}
+                      >
+                        Pago Rechazado
+                      </span>
+                     }
+                      
+                    </td>
+                    <td>${montoValor}</td> {/* Mostrar el monto del grupo */}
+                    <td>${cuota.recargo || 0}</td>
+                    <td>
+                      {cuota.pago?.metodoPago.nombre || "N/A"}
+                      {cuota.pago?.comprobanteURL && (
+                        <div>
+                          <a
+                            href={cuota.pago.comprobanteURL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontSize: "0.9rem", display: "block", marginTop: "4px" }}
+                          >
+                            Ver comprobante
+                          </a>
+                        </div>
+                      )}
+                    </td>
+
+                    <td>{cuota.pago ? formatDate(cuota.pago.fechaPago) : "N/A"}</td>
+                    <td>
+                      <Button
+                        variant="info"
+                        size="sm"
+                        style={{
+                          backgroundColor: "#4F46E5",
+                          color: "white",
+                          padding: "10px 20px",
+                          borderRadius: "4px",
+                          textDecoration: "none",
+                          fontSize: "14px",
+                        }}
+                        onClick={() => handleShowPaymentHistory(student, cuota)}
+                      >
+                        Historial de Pago
+                      </Button>
+                      {cuota.cambiosEstado[0].estadoCuota === "Pendiente" && (
+                        <Button
+                          variant="success"
+                          size="sm"
+                          className="ms-2"
+                          onClick={() => handleAddPayment(student, cuota)}
+                        >
+                          Pagar
+                        </Button>
+                      )}
+                      {cuota?.pago?.comprobanteURL && !cuota.pago.rechazado && (
+                        <Button
+                          variant="success"
+                          size="sm"
+                          className="ms-2"
+                          onClick={() => handleOpenRechazoModal(cuota)}
+                        >
+                          Rechazar Pago
+                        </Button>
+
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
             )}
-          </td>
-        </tr>
-      );
-    })
-  )}
-</tbody>
+          </tbody>
         </Table>
       </div>
 
@@ -368,13 +423,18 @@ const Cobros = ({ id }) => {
         handleCloseAddPayment={() => setShowAddPayment(false)}
         selectedStudent={selectedStudent}
         selectedCuota={selectedCuota}
-        paymentMethod={paymentMethod}
-        setPaymentMethod={setPaymentMethod}
-        paymentDate={paymentDate}
-        setPaymentDate={setPaymentDate}
         fetchCuotas={fetchCuotas}
         idServicio={idServicio}
       />
+        <RechazoPagoModal
+        show={showModalMotivoRechazo}
+        onClose={() => setShowModalMotivoRechazo(false)}
+        handleSubmit={() => handleConfirmRechazoModal()}
+        motivoRechazo={motivoRechazo}
+        setMotivoRechazo={setMotivoRechazo}
+        cuota={selectedCuota}
+      />
+      
     </div>
   );
 };

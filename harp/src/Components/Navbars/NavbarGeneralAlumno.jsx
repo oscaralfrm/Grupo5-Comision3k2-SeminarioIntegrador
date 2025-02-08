@@ -1,66 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Navbar, Nav, NavDropdown, Dropdown } from "react-bootstrap";
-import img from "../../../../assets/LogoHarp420.png";
-import { getInscripcionesDeAlumno, getInscripcionesVigentesDeAlumno } from "../../../../services/Alumno";
-import { getServicioById } from "../../../../services/Servicio";
-import profileImg from "../../../../assets/profile.png";
-import { traerUnaInscripcion } from "../../../../services/Inscripcion";
+import { Navbar, Nav, Dropdown } from "react-bootstrap";
+import img from "../../assets/LogoHarp420.png";
+import profileImg from "../../assets/profile.png";
+import { getInscripcionesDeAlumno } from "../../services/Alumno";
 
-function NavbarAlumnoDash() {
+function NavbarGeneralAlumno() {
   const navigate = useNavigate();
   const [inscripciones, setInscripciones] = useState([]);
-  const { idAlumno, idInscripcion } = useParams();
+  const { idAlumno } = useParams();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedInscripcion, setSelectedInscripcion] = useState(null);
 
   useEffect(() => {
     const fetchInscripciones = async () => {
       try {
-        const data = await getInscripcionesVigentesDeAlumno(idAlumno);
-        const inscripcionSeleccionada = await traerUnaInscripcion(idInscripcion);
-        setSelectedInscripcion(inscripcionSeleccionada);
+        const data = await getInscripcionesDeAlumno(idAlumno);
         setInscripciones(data);
       } catch (error) {
         console.error("Error al traer las inscripciones del alumno:", error);
       }
     };
     fetchInscripciones();
-  }, [idAlumno, idInscripcion]);
+  }, [idAlumno]);
 
   const toggleDropdown = () => {
       setDropdownOpen(!dropdownOpen);
     };
-  
-    const handleSelectedInscripcion = (inscripcionId) => {
-      const inscripcion = inscripciones.find((inscripcion) => inscripcion.id === inscripcionId);
-      if (inscripcion) {
-        const currentPath = window.location.pathname;
-        const basePath = currentPath.split("/").slice(0, -1).join("/");
-        const lastSegment = currentPath.split("/").pop();
-  
-        const newPath = `${basePath}/${lastSegment}`.replace(
-          /\/inscripciones\/\d+\//,
-          `/inscripciones/${inscripcionId}/`
-        );
-  
-        setSelectedInscripcion(inscripcion);
-        navigate(newPath);
-      }
-      setDropdownOpen(false);
-    };
-  
-    useEffect(() => {
-      if (idInscripcion) {
-        const selected = inscripciones.find(
-          (inscripcion) => inscripcion.id === parseInt(idInscripcion, 10)
-        );
-        if (selected) {
-          setSelectedInscripcion(selected);
-        }
-      }
-    }, [idInscripcion, inscripciones]);
   
     return (
       <Navbar
@@ -104,45 +71,17 @@ function NavbarAlumnoDash() {
           <Navbar.Collapse id="navbarNav" className={dropdownOpen ? "show" : ""}>
             <Nav className="mx-auto d-flex justify-content-center w-100">
               <Nav.Link
-                href={`/alumno/${idAlumno}/inscripciones/${idInscripcion}/mi-inscripcion`}
+                href={`/alumno/${idAlumno}/inscripciones`}
                 style={{ color: "white" }}
               >
-                Mi Inscripcion
+                Mis Inscripciones
               </Nav.Link>
-          {/*     <Nav.Link
-                href={`/instructor/${idAlumno}/servicio/${idServicio}/alumnos`}
-                style={{ color: "white" }}
-              >
-                Alumnos
-              </Nav.Link> */}
               <Nav.Link
-                href={`/alumno/${idAlumno}/inscripciones/${idInscripcion}/reseñas`}
+                href={`/alumno/${idAlumno}/inscripciones/pagos`}
                 style={{ color: "white" }}
               >
-                Reseñas
+                Pagos
               </Nav.Link>
-  
-              <NavDropdown
-                title={
-                  <span style={{ color: "white" }}>
-                    {selectedInscripcion ? selectedInscripcion.servicio.nombre : "Selecciona un servicio"}
-                  </span>
-                }
-                id="navbarDropdownMenuLink"
-                show={dropdownOpen}
-                onClick={toggleDropdown}
-                className="custom-dropdown"
-              >
-                {inscripciones.map((inscripcion) => (
-                  <NavDropdown.Item
-                    key={inscripcion.id}
-                    onClick={() => handleSelectedInscripcion(inscripcion.id)}
-                    className="text-dark"
-                  >
-                    {inscripcion.servicio.nombre}
-                  </NavDropdown.Item>
-                ))}
-              </NavDropdown>
             </Nav>
           </Navbar.Collapse>
 
@@ -217,4 +156,4 @@ function NavbarAlumnoDash() {
   );
 }
 
-export default NavbarAlumnoDash;
+export default NavbarGeneralAlumno;

@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getClasesFuturasDeGrupo, getClasesDeGrupo, getGruposDeServicio } from "../../../../services/Grupo";
-import { getServicioById } from "../../../../services/Servicio";
-import { getInscripcionesDeGrupo } from "../../../../services/Inscripcion";
 import { useNavigate } from "react-router-dom";
 
-const ClassesCardAlumno = ({ asistenciasActivas, servicio }) => {
+const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
   const [classes, setClasses] = useState([]); // Clases totales
   const [clasesFuturas, setClasesFuturas] = useState([]); // Clases futuras
   const [expanded, setExpanded] = useState(false);
   const [clasesCompletadas, setClasesCompletadas] = useState(0);
   const [servicioIniciado, setServicioIniciado] = useState(false);
   const [fechaInicioServicio, setFechaInicioServicio] = useState(null);
-  const [inscripciones, setInscripciones] = useState([]); // Inscripciones totales
   const [claseHoy, setClaseHoy] = useState(null); // Clase del día actual
   const {idAlumno, idInscripcion} = useParams();
   const navigate = useNavigate();
@@ -25,33 +22,16 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio }) => {
       setFechaInicioServicio(fechaInicio);
       setServicioIniciado(fechaInicio <= new Date());
 
-      // Obtener grupos del servicio
-      const grupos = await getGruposDeServicio(servicio?.id);
-      console.log("Grupos obtenidos:", grupos);
-
       let clasesTotales = [];
       let clasesFuturas = [];
-      let inscripcionesTotales = [];
-
-      for (const grupo of grupos) {
-        const idGrupo = grupo.id;
 
         // Obtener clases del grupo
-        const clasesGrupo = await getClasesDeGrupo(idGrupo);
+        const clasesGrupo = await getClasesDeGrupo(grupoId);
         clasesTotales.push(...clasesGrupo);
 
         // Obtener clases futuras del grupo
-        const futurasClases = await getClasesFuturasDeGrupo(idGrupo);
+        const futurasClases = await getClasesFuturasDeGrupo(grupoId);
         clasesFuturas.push(...futurasClases);
-
-        // Obtener inscripciones del grupo
-        const inscripcionesGrupo = await getInscripcionesDeGrupo(servicio?.id, idGrupo, true, false);
-        inscripcionesTotales.push(...inscripcionesGrupo);
-      }
-
-      console.log("Clases obtenidas:", clasesTotales);
-      console.log("Clases futuras:", clasesFuturas);
-      console.log("Inscripciones totales:", inscripcionesTotales);
 
       // Calcular clases completadas
       const hoy = new Date();
@@ -64,7 +44,6 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio }) => {
 
       // Actualizar estados
       setClasses(clasesTotales);
-      setInscripciones(inscripcionesTotales);
 
       // Encontrar la clase del día actual
       const claseDeHoy = clasesTotales.find(cls => {
@@ -80,7 +59,7 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio }) => {
 
   useEffect(() => {
     fetchData();
-  }, [servicio]);
+  }, [grupoId]);
 
   const handleExpandToggle = () => {
     setExpanded(!expanded);
@@ -168,12 +147,14 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio }) => {
             {clasesCompletadas}
           </p>
         </div>
-        <div>
+        {/*
+          <div>
           <p style={{ margin: 0, fontSize: "0.9em" }}>Numero de inscriptos</p>
           <p style={{ margin: 0, fontWeight: "bold", fontSize: "1em" }}>
             {inscripciones.length}
           </p>
         </div>
+        */}
       </div>
 
       {asistenciasActivas ? (

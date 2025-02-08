@@ -115,7 +115,7 @@ const InfoCardAlumno = ({ serviceData, setServiceData }) => {
             <p style={highlightStyle}>📍 Ubicación</p>
             <p style={textStyle}>{serviceData?.ubicacion}</p>
             <p style={highlightStyle}>📋 Descripción</p>
-            <p style={textStyle}>{serviceData?.descripcion.substring(0, 100)}</p>
+            <p style={textStyle}>{serviceData?.descripcion.substring(0, 100)}...</p>
           </div>
 
           {/* Sección 2: Fecha de inicio y detalles adicionales */}

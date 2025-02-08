@@ -2,42 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getResumenAsistencias, getHistorialAsistencias, getInscripcionesDeAlumno } from '../../../services/Alumno';
-import { getClasesDeGrupo } from '../../../services/Clase';
 import { FaCheckCircle, FaTimesCircle, FaCalendarAlt, FaChartBar } from 'react-icons/fa'; // Íconos
+import { traerUnaInscripcion } from '../../../services/Inscripcion';
 
 const AsistenciasAlumno = () => {
     const [resumen, setResumen] = useState(null);
     const [historial, setHistorial] = useState([]);
-    const [clases, setClases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [idGrupo, setIdGrupo] = useState(null);
-    const { idAlumno } = useParams();
+    const [inscripcion, setInscripcion] = useState(null);
+    const { idAlumno, idInscripcion } = useParams();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Obtener las inscripciones del alumno
-                const inscripciones = await getInscripcionesDeAlumno(idAlumno);
-                console.log("Inscripciones del alumno:", inscripciones);
-
-                if (inscripciones.length === 0) {
-                    throw new Error("El alumno no está inscrito en ningún grupo.");
-                }
-
-                // Tomar el idGrupo de la primera inscripción
-                const grupoInscrito = inscripciones[0].grupo;
-                const idGrupo = grupoInscrito.id;
-                setIdGrupo(idGrupo);
-
+                const inscripcion = await traerUnaInscripcion(idInscripcion);
+                setInscripcion(inscripcion);
                 // Obtener los datos usando el idGrupo
-                const resumenData = await getResumenAsistencias(idAlumno, idGrupo);
-                const historialData = await getHistorialAsistencias(idAlumno, idGrupo);
-                const clasesData = await getClasesDeGrupo(idGrupo);
+                const resumenData = await getResumenAsistencias(idAlumno, inscripcion?.grupo?.id);
+                const historialData = await getHistorialAsistencias(idAlumno, inscripcion?.grupo?.id);
 
+                console.log(historialData);
                 setResumen(resumenData);
                 setHistorial(historialData);
-                setClases(clasesData);
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -46,7 +33,7 @@ const AsistenciasAlumno = () => {
         };
 
         fetchData();
-    }, [idAlumno]);
+    }, [idInscripcion]);
 
     if (loading) return <div style={styles.loading}>Cargando...</div>;
     if (error) return <div style={styles.error}>Error: {error}</div>;
@@ -55,16 +42,6 @@ const AsistenciasAlumno = () => {
         { name: 'Asistencias', value: resumen.cantidadAsistencias },
         { name: 'Faltas', value: resumen.cantidadInasistencias },
     ];
-
-    // Combinar historial de asistencias con las clases
-    const historialCompleto = clases.map(clase => {
-        const asistencia = historial.find(a => a.clase.id === clase.id);
-        return {
-            ...clase,
-            asistio: asistencia ? asistencia.asistio : false,
-            observaciones: asistencia ? asistencia.observaciones : null
-        };
-    });
 
     return (
         <div style={styles.container}>
@@ -119,21 +96,21 @@ const AsistenciasAlumno = () => {
                     <FaCalendarAlt style={{ marginRight: '10px' }} />
                     Detalle de Clases
                 </h2>
-                {historialCompleto.map((clase, index) => (
+                {historial.map((asistencia, index) => (
                     <div key={index} style={styles.asistenciaItem}>
                         <p style={styles.text}>
-                            <strong>Fecha:</strong> {new Date(clase.fecha).toLocaleDateString()}
+                            <strong>Fecha:</strong> {new Date(asistencia.clase.fecha).toLocaleDateString()}
                         </p>
                         <p style={styles.text}>
-                            <strong>Asistió:</strong> {clase.asistio ? (
+                            <strong>Asistió:</strong> {asistencia.asistio ? (
                                 <span style={{ color: '#4CAF50' }}>Sí</span>
                             ) : (
                                 <span style={{ color: '#F44336' }}>No</span>
                             )}
                         </p>
-                        {clase.observaciones && (
+                        {asistencia.clase.observaciones && (
                             <p style={styles.text}>
-                                <strong>Comentarios:</strong> {clase.observaciones}
+                                <strong>Comentarios:</strong> {asistencia.clase.observaciones}
                             </p>
                         )}
                     </div>

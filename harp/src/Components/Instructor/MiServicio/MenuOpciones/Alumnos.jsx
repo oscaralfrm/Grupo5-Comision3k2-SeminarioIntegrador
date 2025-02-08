@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card, Button, Row, Col, Form, Container } from "react-bootstrap";
 import { Person } from "react-bootstrap-icons";
 import { useNavigate, useParams } from "react-router-dom";
@@ -28,6 +28,8 @@ const Alumnos = () => {
         const inscripciones = await getInscripcionesDeServicio(idServicio, true, false);
         setInscripciones(inscripciones);
         setFilteredInscripciones(inscripciones);
+
+        console.log("inscripciones", inscripciones);
         
       } catch (error) {
         console.error("Error al cargar los grupos o alumnos:", error);
@@ -41,6 +43,7 @@ const Alumnos = () => {
     useEffect(() => {
       setFilteredInscripciones(
         inscripciones.filter((inscripcion) => {
+          console.log("Inscripciones", inscripcion)
           return (
             inscripcion?.alumno?.usuario?.nombre.toLowerCase().includes(filters.name.toLowerCase()) &&
             inscripcion?.alumno?.usuario?.dni?.includes(filters.dni) &&

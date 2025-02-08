@@ -126,13 +126,16 @@ export default function ServicioForm() {
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "row",
-        height: "100vh",
+        // display: "flex",
+        // flexDirection: "row",
+        // height: "100vh",
         fontFamily: "Roboto",
-        flexWrap: "wrap",
-        marginTop: "10vh"
+        // flexWrap: "wrap",
+        marginTop: "10vh",
+        height: "100%",
+        justifyContent: "center"
       }}
+      className="d-flex flex-column flex-md-row align-item-center"
     >
       {/* Columna Izquierda (Formulario) */}
       <div
@@ -198,11 +201,12 @@ export default function ServicioForm() {
       <div
         style={{
           flex: 1,
-          padding: "20px",
+          // padding: "0px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          minHeight: "calc(100vh - 290px)",
+          // minHeight: "calc(100vh - 290px)",
+          justifyContent: "center" // alinea el contenido verticualmente
         }}
         className="col-12 col-md-6 col-lg-12 mt-4 mt-md-0 mb-3"
       >

@@ -1,4 +1,7 @@
 import axios from './axiosConfig.js';
+import { armarStringPrecioYFrecuenciaCobro } from './frecuenciaPago.js';
+import { getGruposDeServicio } from './Grupo.js';
+import { getMontoActualGrupoDeHistorial } from './HistorialMontoCuota.js';
 import { obtenerInstructorDeServicio } from './Instructor.js';
 import { getResumenReseniasDeServicio } from './Reseñas.js';
 
@@ -30,27 +33,38 @@ export const getAllServiciosPublicosSinAlumno = async (page, size, idAlumno) => 
     try {
         const { data } = await axios.get(`${API_URL}servicios/publicos/sin-alumno/${idAlumno}?page=${page}&size=${size}`);
     
-
         const serviciosArray = Array.isArray(data.content) ? data.content : [];
 
         const servicios = await Promise.all(serviciosArray.map(async (servicio) => {
             const instructor = await obtenerInstructorDeServicio(servicio.id);
-             const resumen = await getResumenReseniasDeServicio(servicio.id);
+            const resumen = await getResumenReseniasDeServicio(servicio.id);
+            const grupos = await getGruposDeServicio(servicio.id);
+            
+            // Obtener montos de los grupos
+            const montos = grupos.map(
+                grupo => getMontoActualGrupoDeHistorial(grupo.historialMontos)?.monto ?? 0
+            );
+            
+            // Calcular monto mínimo
+            const montoMinimo = montos.length > 0 ? Math.min(...montos) : "Sin definir";
+            
             return {
                 ...servicio,
                 instructorId: instructor.id,
                 instructorNombre: instructor.usuario.nombre,
                 resumen,
-
+                montoMinimo,
             };
         }));
-        console.log(servicios)
+        
+        console.log(servicios);
         return servicios;
     } catch (error) {
         console.error('Error al obtener los servicios', error);
         throw error;
     }
 };
+
 
 export const getServicioByNombre = async (nombre) => {
     try {

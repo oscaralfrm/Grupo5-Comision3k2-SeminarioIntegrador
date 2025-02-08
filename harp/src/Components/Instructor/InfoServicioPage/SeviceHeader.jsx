@@ -114,25 +114,29 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
             </h4>
           </div>
 
-          {/* Adjusting margins for consistent space */}
+          
           <Col md="6" className="" style={{ width: "100%" }}>
-            <div className="d-flex justify-content-between align-items-center">
-              <p className=" mt-3">
-                <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
-              </p>
-              <div className="ms-auto d-flex align-items-center">
-                <strong>Calificación:</strong>
-                <span className="ms-2">
-                  {renderStars(resumenResenias?.calificacion)}
-                </span>
-                <span className="ms-2">({resumenResenias?.calificacion})</span>
-                <span className="ms-2">
-                  ({resumenResenias?.cantResenias || 0} reseñas)
-                </span>
-              </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <p className=" mt-3">
+              <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
+            </p>
+            { serviceData.publico &&
+            <div className="ms-auto d-flex align-items-center">
+              <strong>Calificación:</strong>
+              <span className="ms-2">
+                {renderStars(resumenResenias?.calificacion)}
+              </span>
+              <span className="ms-2">({resumenResenias?.calificacion})</span>
+              <span className="ms-2">
+                ({resumenResenias?.cantResenias || 0} reseñas)
+              </span>
             </div>
-          </Col>
+            }
+          </div>
+        </Col>
 
+          
+          
           <p className="mb-3">
             <strong>Instructor:</strong>{" "}
             <Link
@@ -189,7 +193,7 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
         grupos={grupos}
         sePuedeEditar={sePuedeEditar}
       />
-    </Card>
+    </Card >
   );
 }
 

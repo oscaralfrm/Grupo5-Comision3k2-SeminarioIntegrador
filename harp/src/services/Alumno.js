@@ -91,6 +91,16 @@ export const getInscripcionesDeAlumno = async (idAlumno) => {
 };
 
 
+export const getInscripcionesVigentesDeAlumno = async (idAlumno) => {
+    try {
+        const response = await axios.get(`/alumnos/${idAlumno}/inscripciones-vigentes`);
+        return response.data;  
+    } catch (error) {
+        console.error("Error fetching inscripciones: ", error);
+        throw error;
+    }
+};
+
 // Servicio para obtener el historial de cuotas de un alumno para un servicio específico
 export const getHistorialCuotasDeAlumno = async (idInscripcion, idServicio) => {
     try {

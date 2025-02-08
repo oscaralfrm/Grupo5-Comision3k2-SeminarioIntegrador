@@ -28,6 +28,7 @@ import EditServicioForm from "./Components/Instructor/EditServicio/EditServicio.
 import AsistenciasAlumno from "./Components/Alumno/MenuOpciones/AsistenciasAlumno.jsx";
 import MisInscripciones from "./Components/Alumno/Cursos/MisInscripciones.jsx";
 import InfoServicioAlumno from "./Components/Alumno/InfoServicioAlumno.jsx";
+import MisCuotas from "./Components/Alumno/Pagos/PagosPage.jsx";
 
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
@@ -126,6 +127,8 @@ function App() {
 
 
           <Route path="alumno/:idAlumno/inscripciones/:idInscripcion/mi-inscripcion/asistencias" element={<><AppNavbar />< AsistenciasAlumno /></>}></Route>
+
+          <Route path="alumno/:idAlumno/inscripciones/pagos" element={<><AppNavbar />< MisCuotas /></>}></Route>
         </Routes>
       </BrowserRouter>
     </div>
