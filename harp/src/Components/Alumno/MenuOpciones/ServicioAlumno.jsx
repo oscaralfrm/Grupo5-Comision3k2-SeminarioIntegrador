@@ -4,37 +4,34 @@ import InfoCardAlumno from "./Dashboard/InfoServicioAlumno";
 import Pagos from "./Dashboard/Pagos";
 // import StudentsCard from "../MenuOpciones/Dashboard/Alumnos";
 import { Container, Row, Col } from "react-bootstrap";
-import { getServicioById } from "../../../services/Servicio";
 import ClassesCardAlumno from "./Dashboard/ClasesAlumno";
 import Notifications from "./Dashboard/NotificacionesAlumnos";
 import { traerUnaInscripcion } from "../../../services/Inscripcion";
 
 const ServicioAlumno = () => {
   const [serviceData, setServiceData] = useState(null);
+  const [inscripcion, setInscripcion] = useState(null);
   const navigate = useNavigate();
   const { idAlumno } = useParams();
   const { idInscripcion } = useParams();
-  const [nombreServicio, setNombreServicio] = useState("Mi Servicio");
 
   const handleNavigate = () => {
     navigate(`/alumno/${idAlumno}/inscripciones`);
   };
 
-  const fetchServicio = async () => {
+  const fetchInscripcion = async () => {
     try {
       const inscripcion = await traerUnaInscripcion(idInscripcion);
+      setInscripcion(inscripcion);
       const data = inscripcion.servicio;
       setServiceData(data);
-      if (data?.nombre) {
-        setNombreServicio(data.nombre); // Actualiza el título con el nombre del servicio
-      }
     } catch (error) {
       console.error("Error al traer el servicio:", error);
     }
   };
 
   useEffect(() => {
-    fetchServicio();
+    fetchInscripcion();
   }, [idInscripcion]);
 
 
@@ -58,10 +55,10 @@ const ServicioAlumno = () => {
           }}
           className="d-none d-md-block" // Mostrar solo en pantallas grandes
         >
-          Descubrir Servicios
+          Mis inscripciones
         </button>
 
-        <h1 className="text-center fw-bold mb-5">{nombreServicio}</h1> {/* Título en el centro */}
+        <h1 className="text-center fw-bold mb-5">{serviceData?.nombre} - {inscripcion?.grupo?.nombre} </h1> {/* Título en el centro */}
       </div>
 
       {/* Botón "Mis Servicios" en pantallas pequeñas */}
@@ -92,13 +89,13 @@ const ServicioAlumno = () => {
 
         {/* Columna Central */}
         <Col xs={12} md={4}>
-          <ClassesCardAlumno asistenciasActivas={serviceData?.asistenciasActivas} servicio={serviceData} fetchServicio={fetchServicio} />
+          <ClassesCardAlumno asistenciasActivas={serviceData?.asistenciasActivas} servicio={serviceData} grupoId={inscripcion?.grupo?.id} fetchInscripcion={fetchInscripcion} />
           <Notifications idServicio={serviceData?.id} />
         </Col>
 
         {/* Columna Derecha */}
         <Col xs={12} md={4}>
-          <Pagos idServicio={serviceData?.id} />
+          <Pagos idServicio={serviceData?.id} grupo={inscripcion?.grupo} />
         </Col>
       </Row>
     </Container>

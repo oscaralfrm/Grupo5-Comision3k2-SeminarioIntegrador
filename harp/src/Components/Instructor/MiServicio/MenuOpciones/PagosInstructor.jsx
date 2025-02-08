@@ -7,13 +7,12 @@ const Pagos = ({
   handleCloseAddPayment,
   selectedStudent,
   selectedCuota,
-  paymentMethod,
-  setPaymentMethod,
-  paymentDate,
-  setPaymentDate,
   fetchCuotas,
   idServicio,
 }) => {
+  const [paymentDate, setPaymentDate] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+
   const handleSavePayment = async () => {
     try {
       await pagarCuota(idServicio, selectedCuota.idInscripcion, selectedCuota.id, paymentMethod);

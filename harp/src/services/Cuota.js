@@ -76,6 +76,18 @@ export const obtenerCuotasDeInscripcion = async (idServicio, idInscripcion) => {
   }
 };
 
+
+// Servicio para obtener las cuotas de una inscripción
+export const obtenerUltimasCuotasDeInscripcion = async (idServicio, idInscripcion) => {
+  try {
+    const response = await axios.get(`${baseUrl}/${idServicio}/inscripciones/${idInscripcion}/ultimas-cuotas`);
+    return response.data; // Devuelve las cuotas de la inscripción
+  } catch (error) {
+    console.error("Error al obtener las ultimas cuotas de la inscripción:", error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || "Error al obtener las cuotas de la inscripción");
+  }
+};
+
 // Servicio para traer las últimas cuotas de alumnos (ya existente)
 export const traerUltimasCuotasDeServicio = async (idServicio) => {
   try {

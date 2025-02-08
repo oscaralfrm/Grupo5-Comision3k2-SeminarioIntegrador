@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Navbar, Nav, NavDropdown, Dropdown } from "react-bootstrap";
 import img from "../../../../assets/LogoHarp420.png";
-import { getServiciosDeInstructor } from "../../../../services/Instructor";
+import { getServiciosDeInstructor, getServiciosPublicadosDeInstructor } from "../../../../services/Instructor";
 import { getServicioById } from "../../../../services/Servicio";
 import profileImg from "../../../../assets/profile.png";
 
@@ -17,7 +17,7 @@ function NavbarInstructor() {
   useEffect(() => {
     const fetchServicios = async () => {
       try {
-        const data = await getServiciosDeInstructor(idInstructor);
+        const data = await getServiciosPublicadosDeInstructor(idInstructor);
         const servicioSeleccionado = await getServicioById(idServicio);
         setSelectedService(servicioSeleccionado);
         setServicios(data);

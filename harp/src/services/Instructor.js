@@ -32,6 +32,17 @@ export const getServiciosDeInstructor = async (idInstructor) => {
   }
 };
 
+export const getServiciosPublicadosDeInstructor = async (idInstructor) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/${idInstructor}/servicios-publicados`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching servicios for instructor with ID ${idInstructor}:`, error);
+    throw error;
+  }
+};
+
+
 export const calcularIngresosPorMesDeServicios = async (idInstructor) => {
   try {
     const response = await axios.get(`${BASE_URL}/${idInstructor}/servicios/ingresos-por-mes`);
