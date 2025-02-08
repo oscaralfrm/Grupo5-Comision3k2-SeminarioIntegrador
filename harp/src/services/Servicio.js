@@ -87,7 +87,8 @@ const transformarDTOaFormData = (servicioDTO) => {
     formDataToSend.append("diaLimitePago", servicioDTO.diaLimitePago);
     formDataToSend.append("cantCiclo", servicioDTO.cantCiclo);
     formDataToSend.append("unidadCiclo", servicioDTO.unidadCiclo);
-    formDataToSend.append("tipoModalidad", servicioDTO.tipoModalidad);
+    formDataToSend.append("modalidadClases", servicioDTO.modalidadClases);
+    formDataToSend.append("modalidadInscripcion", servicioDTO.modalidadInscripcion);
     formDataToSend.append("claseDePrueba", servicioDTO.claseDePrueba);
     formDataToSend.append("asistenciasActivas", servicioDTO.asistenciasActivas);
     formDataToSend.append("montoInscripcion", servicioDTO.montoInscripcion);

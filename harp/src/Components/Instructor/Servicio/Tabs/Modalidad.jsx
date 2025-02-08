@@ -9,10 +9,42 @@ export default function Modalidad({
   isValid,
   nombreBoton
 }) {
+
   return (
     <>
+      <Form.Group controlId="tipoModalidad" className="mt-3">
+        <Form.Label>Modalidad de Clases <span style={{ color: "red" }}>*</span></Form.Label>
+        <Row>
+          <Col md={6}>
+            <Form.Check
+              type="checkbox"
+              id="modalidad-virtual"
+              label="Virtual"
+              value="virtual"
+              {...register("modalidadClases", {
+                required: "Debes seleccionar al menos una modalidad.",
+              })}
+            />
+          </Col>
+          <Col md={6}>
+            <Form.Check
+              type="checkbox"
+              id="modalidad-presencial"
+              label="Presencial"
+              value="presencial"
+              {...register("modalidadClases", {
+                required: "Debes seleccionar al menos una modalidad.",
+              })}
+            />
+          </Col>
+        </Row>
+        {errors.tipoModalidad && (
+          <p className="text-danger">{errors.tipoModalidad.message}</p>
+        )}
+      </Form.Group>
+
       <Form.Group controlId="asistencias" className="mt-3">
-        <Form.Label>¿Se registran las asistencias?</Form.Label>
+        <Form.Label>¿Se registrán las asistencias? <span style={{ color: "red" }}>*</span></Form.Label>
         <Row>
           {["Sí", "No"].map((opcion) => (
             <Col key={opcion} md={6}>
@@ -36,7 +68,7 @@ export default function Modalidad({
       {/* Clase de prueba */}
 
       <Form.Group controlId="clasePrueba" className="mt-3">
-        <Form.Label>¿Clase de prueba gratuita?</Form.Label>
+        <Form.Label>¿Clase de prueba gratuita? <span style={{ color: "red" }}>*</span></Form.Label>
         <Row>
           {["Sí", "No"].map((opcion) => (
             <Col key={opcion} md={6}>

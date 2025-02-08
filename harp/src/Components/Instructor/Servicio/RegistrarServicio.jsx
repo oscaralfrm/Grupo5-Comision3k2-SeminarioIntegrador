@@ -23,6 +23,7 @@ export default function ServicioForm() {
     handleSubmit,
     formState: { errors, isValid },
     watch,
+    setValue
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -34,6 +35,8 @@ export default function ServicioForm() {
       clasePrueba: '',
       asistencia: '',
       montoInscripcion: 0,
+      modalidadClases: "",
+      modalidadInscripcion: ""
       // Puedes inicializar "logo" si lo requieres
     },
   });
@@ -88,7 +91,7 @@ export default function ServicioForm() {
       diaLimitePago: data.fechaLimitePago > 0 ? data.fechaLimitePago : 0,
       cantCiclo: ciclo.cantidad,
       unidadCiclo: ciclo.unidad,
-      tipoModalidad:
+      modalidadInscripcion:
         data.divideEnGrupos === "Sin clases" ? "AServicio" : "AGrupo",
       claseDePrueba: data.clasePrueba === "sí" ? true : false,
       asistenciasActivas: data.asistencias === "sí" ? true : false,
@@ -96,6 +99,11 @@ export default function ServicioForm() {
       pagoAnticipadoDeMontoInscripcion:
         data.pagoInscripcion === "De forma Anticipada",
       logo: data.logo[0],
+      modalidadClases: data.modalidadClases.includes("virtual") && data.modalidadClases.includes("presencial") 
+                        ? "Hibrida" 
+                        : data.modalidadClases.includes("virtual")  
+                            ? "Virtual"
+                            : "Presencial"
     };
 
     console.log("ServicioDTO", servicioDTO);
@@ -179,6 +187,8 @@ export default function ServicioForm() {
                   formData={formData}
                   goToNextTab={goToNextTab}
                   goToPreviousTab={goToPreviousTab}
+                  setValue={setValue}
+                  watch={watch}
                 />
               </Tab>
 

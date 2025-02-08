@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 
 export default function General({ register, errors, categorias, goToNextTab, logoPreview, setLogoPreview }) {
   
@@ -20,7 +20,9 @@ export default function General({ register, errors, categorias, goToNextTab, log
   return (
     <Form>
       <Form.Group controlId="categoria" className="mb-3">
-        <Form.Label>Categoría</Form.Label>
+        <Form.Label>
+          Categoría <span style={{ color: "red" }}>*</span>
+        </Form.Label>
         <Form.Select
           {...register("categoria", { required: "Selecciona una categoría" })}
           isInvalid={!!errors.categoria}
@@ -38,7 +40,9 @@ export default function General({ register, errors, categorias, goToNextTab, log
       </Form.Group>
 
       <Form.Group controlId="nombreServicio" className="mb-3">
-        <Form.Label>Nombre del Servicio</Form.Label>
+        <Form.Label>
+          Nombre del Servicio <span style={{ color: "red" }}>*</span>
+        </Form.Label>
         <Form.Control
           type="text"
           {...register("nombreServicio", { required: "El nombre es obligatorio" })}
@@ -60,7 +64,7 @@ export default function General({ register, errors, categorias, goToNextTab, log
       </Form.Group>
 
       <Form.Group controlId="ubicacion" className="mb-3">
-        <Form.Label>Ubicación</Form.Label>
+        <Form.Label>Ubicación <span style={{ color: "red" }}>*</span></Form.Label>
         <Form.Control type="text" {...register("ubicacion")} />
       </Form.Group>
 

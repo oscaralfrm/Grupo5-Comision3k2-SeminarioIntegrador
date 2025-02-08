@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 
 export default function Cobros({
@@ -7,11 +7,29 @@ export default function Cobros({
   formData,
   goToPreviousTab,
   goToNextTab,
+  setValue,
+  watch
 }) {
+
+ // Suponemos que formData.frecuenciaCuotas y formData.duracionCuotasPersonalizada
+  // se actualizan mediante react-hook-form (por ejemplo, usando watch)
+  const frecuencia = formData.frecuenciaCuotas; // o bien: const frecuencia = watch("frecuenciaCuotas");
+
+  // Si la frecuencia es "otros", forzamos que ciclos sea "Según Inscripción"
+  useEffect(() => {
+    if (frecuencia === "otros") {
+      setValue("ciclos", "Según Inscripción");
+    }
+  }, [frecuencia, setValue]);
+
+  // Determinamos si debemos deshabilitar la selección en ciclos
+  const disableCiclos = frecuencia === "otros";
+
+
   return (
     <>
       <Form.Group controlId="frecuenciaCuotas" className="mt-3">
-        <Form.Label>¿Frecuencia del cobro?</Form.Label>
+        <Form.Label>¿Frecuencia del cobro? <span style={{ color: "red" }}>*</span></Form.Label>
         <div className="row">
           {["Diaria", "Semanal", "Mensual", "Otros"].map((freq) => (
             <div className="col-md-6" key={freq}>
@@ -35,9 +53,10 @@ export default function Cobros({
 
         {formData.frecuenciaCuotas === "otros" && (
           <Form.Group controlId="duracionCuotasPersonalizada" className="mt-3">
-            <Form.Label>Frecuencia de cobro en días</Form.Label>
+            <Form.Label>Frecuencia de cobro en días <span style={{ color: "red" }}>*</span></Form.Label>
+            <div className="input-group"> {/* Contenedor para el input y la palabra */}
             <Form.Control
-              type="number"
+              type="text"
               placeholder="Ej: 45 días"
               {...register("duracionCuotasPersonalizada", {
                 required: "Debes ingresar una cantidad de días.",
@@ -51,8 +70,19 @@ export default function Cobros({
                   }
                   return true;
                 },
+                pattern: { // Validación con expresión regular
+                  value: /^[0-9]*$/, // Solo permite números
+                  message: "Solo se permiten números."
+                }
               })}
+              onWheel={(e) => e.preventDefault()} // Evita el scroll con la rueda del mouse
+              style={{ // Estilos CSS para ocultar flechitas
+                "-webkit-appearance": "none",
+                "-moz-appearance": "textfield"
+              }}
             />
+            <span className="input-group-text">días</span> {/* Palabra "días" */}
+            </div>
             {errors.duracionCuotasPersonalizada && (
               <p className="text-danger">
                 {errors.duracionCuotasPersonalizada.message}
@@ -61,12 +91,13 @@ export default function Cobros({
           </Form.Group>
         )}
       </Form.Group>
+
       {formData.frecuenciaCuotas && formData.frecuenciaCuotas !== "diaria" && (
         <Form.Group controlId="fechaLimitePago" className="mt-3">
           <Form.Label>Día límite de cobro</Form.Label>
           <Form.Control
             placeholder="Ej: 3 de cada mes"
-            type="number"
+            type="text"
             {...register("fechaLimitePago", {
               validate: (value) => {
                 const frecuencia = formData.frecuenciaCuotas;
@@ -91,60 +122,69 @@ export default function Cobros({
 
                 return true;
               },
+              pattern: { // Validación con expresión regular
+                value: /^[0-9]*$/, // Solo permite números
+                message: "Solo se permiten números."
+              }
             })}
+            onWheel={(e) => e.preventDefault()} // Evita el scroll con la rueda del mouse
+            style={{ // Estilos CSS para ocultar flechitas
+              "-webkit-appearance": "none",
+              "-moz-appearance": "textfield"
+            }}
           />
           {errors.fechaLimitePago && (
             <p className="text-danger">{errors.fechaLimitePago.message}</p>
           )}
         </Form.Group>
       )}
-      <Form.Group controlId="ciclos" className="mt-3">
-        <Form.Label>¿Cómo se realizarán los cobros?</Form.Label>
-        <div className="row">
-          <div className="col-md-6">
-            <Form.Check
-              type="radio"
-              id="fechas-fijas"
-              label="En fechas fijas"
-              value="En fechas fijas"
-              {...register("ciclos", {
-                required: "Debes seleccionar una opción.",
-              })}
-            />
-          </div>
-          <div className="col-md-6">
-            <Form.Check
-              type="radio"
-              id="segun-inscripcion"
-              label="Según Inscripción"
-              value="Según Inscripción"
-              {...register("ciclos", {
-                required: "Debes seleccionar una opción.",
-              })}
-            />
-          </div>
-        </div>
-        {errors.ciclos && (
-          <p className="text-danger">{errors.ciclos.message}</p>
-        )}
-      </Form.Group>
 
-      <Form.Group controlId="incluyeInscripcion" className="mt-3">
-        <Form.Label>¿Incluye inscripción?</Form.Label>
-        <div className="row">
-          <div className="col-md-6">
-            <label className="d-flex align-items-center">
+      {formData.frecuenciaCuotas !== "diaria" && (
+        <Form.Group controlId="ciclos" className="mt-3">
+          <Form.Label>¿Cómo se realizarán los cobros? <span style={{ color: "red" }}>*</span></Form.Label>
+          <div className="row">
+            <div className="col-md-6">
               <Form.Check
                 type="radio"
-                value="no"
-                {...register("incluyeInscripcion", {
+                id="fechas-fijas"
+                label="Según Calendario"
+                value="En fechas fijas"
+                {...register("ciclos", {
                   required: "Debes seleccionar una opción.",
                 })}
-                className="me-2"
+                disabled={disableCiclos} // Se deshabilita si frecuencia es "otros"
               />
-              No incluye
-            </label>
+            </div>
+            {/* Texto dinámico según la frecuencia de cobro */}
+            <div className="col-md-6">
+              <Form.Check
+                type="radio"
+                id="segun-inscripcion"
+                label={(formData.frecuenciaCuotas === "otros" && formData.duracionCuotasPersonalizada)
+                  ? `Cada ${formData.duracionCuotasPersonalizada} días según inscripción`
+                  : formData.frecuenciaCuotas === "semanal"
+                    ? `Cada 7 días según inscripción`
+                    : formData.frecuenciaCuotas === "mensual"
+                      ? `Cada 30 días según inscripción`
+                      : `Según Inscripcion`
+                }
+                value="Según Inscripción"
+                disabled={disableCiclos} // Se deshabilita si frecuencia es "otros"
+                {...register("ciclos", {
+                  required: "Debes seleccionar una opción.",
+                })}
+              />
+            </div>
           </div>
+          {errors.ciclos && (
+            <p className="text-danger">{errors.ciclos.message}</p>
+          )}
+        </Form.Group>
+      )}
+
+      <Form.Group controlId="incluyeInscripcion" className="mt-3">
+        <Form.Label>¿Tiene costo de inscripción? <span style={{ color: "red" }}>*</span></Form.Label>
+        <div className="row">
           <div className="col-md-6">
             <label className="d-flex align-items-center">
               <Form.Check
@@ -155,7 +195,20 @@ export default function Cobros({
                 })}
                 className="me-2"
               />
-              Incluye
+              Si
+            </label>
+          </div>
+          <div className="col-md-6">
+            <label className="d-flex align-items-center">
+              <Form.Check
+                type="radio"
+                value="no"
+                {...register("incluyeInscripcion", {
+                  required: "Debes seleccionar una opción.",
+                })}
+                className="me-2"
+              />
+              No
             </label>
           </div>
         </div>
@@ -168,17 +221,28 @@ export default function Cobros({
         <>
           <Form.Group controlId="montoInscripcion" className="mt-3">
             <Form.Label>Monto de inscripción</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="$X"
-              {...register("montoInscripcion", {
-                required: "El monto es obligatorio.",
-                min: {
-                  value: 1,
-                  message: "El monto debe ser mayor a cero.",
-                }
-              })}
-            />
+            <div className="input-group"> {/* Contenedor para el símbolo y el input */}
+              <span className="input-group-text">$</span> {/* Símbolo $ a la izquierda */}
+              <Form.Control
+                type="text"
+                {...register("montoInscripcion", {
+                  required: "El monto es obligatorio.",
+                  min: {
+                    value: 1,
+                    message: "El monto debe ser mayor a cero.",
+                  },
+                  pattern: { // Validación con expresión regular
+                    value: /^[0-9]*$/, // Solo permite números
+                    message: "Solo se permiten números."
+                  }
+                })}
+                onWheel={(e) => e.preventDefault()} // Evita el scroll con la rueda del mouse
+                style={{ // Estilos CSS para ocultar flechitas
+                  "-webkit-appearance": "none",
+                  "-moz-appearance": "textfield"
+                }}
+              />
+            </div>
             {errors.montoInscripcion && (
               <p className="text-danger">{errors.montoInscripcion.message}</p>
             )}
