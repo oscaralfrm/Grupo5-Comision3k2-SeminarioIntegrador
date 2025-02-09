@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Button, Container, Row, Col, Spinner } from "react-bootstrap";
-import { getAllServiciosPublicosSinAlumno } from "../../services/Servicio";
+import { getAllServiciosPublicosSinAlumno, generarLinkMaps } from "../../services/Servicio";
 import { getInscripcionesDeAlumno } from "../../services/Alumno"; // Importar el servicio
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { armarStringPrecioYFrecuenciaCobro } from "../../services/frecuenciaPago";
@@ -125,110 +125,118 @@ const DescubrirServicios = () => {
             <p className="mt-3" style={{ color: "#4F46E5", fontWeight: "bold" }}>Cargando servicios, por favor espere...</p>
           </div>
         ) : (
-        <Row className="justify-content-center">
-          {filteredServicios.length === 0 ? (
-            <p>No se encontraron servicios.</p>
-          ) : (
-            filteredServicios.map((servicio) => (
-              <Col
-                xs={12}
-                md={10}
-                key={servicio.id}
-                style={{ marginBottom: "20px" }}
-              >
-                <Card
-                  style={{
-                    border: "none",
-                    backgroundColor: "white",
-                    borderRadius: "20px",
-                    boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-                    minHeight: "200px",
-                  }}
+          <Row className="justify-content-center">
+            {filteredServicios.length === 0 ? (
+              <p>No se encontraron servicios.</p>
+            ) : (
+              filteredServicios.map((servicio) => (
+                <Col
+                  xs={12}
+                  md={10}
+                  key={servicio.id}
+                  style={{ marginBottom: "20px" }}
                 >
-                  <Card.Header
+                  <Card
                     style={{
-                      textAlign: "center",
-                      fontSize: "1.5rem",
-                      fontWeight: "bold",
-                      padding: "15px",
-                      color: "white",
-                      borderTopLeftRadius: "20px",
-                      borderTopRightRadius: "20px",
-                      backgroundColor: "#1E1B4B",
+                      border: "none",
+                      backgroundColor: "white",
+                      borderRadius: "20px",
+                      boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
+                      minHeight: "200px",
                     }}
                   >
-                    {servicio.nombre}
-                  </Card.Header>
-                  <Card.Body>
-                    <Row className="g-0 align-items-center h-100">
-                      <Col xs={12} md={4} className="text-center">
-                        <img
-                          src={servicio.logoURL || placeholderImage}
-                          alt={servicio.nombre}
-                          style={{
-                            width: "100%",
-                            maxWidth: "120px",
-                            height: "120px",
-                            objectFit: "cover",
-                            borderRadius: "10px",
-                          }}
-                        />
-                      </Col>
-                      <Col xs={12} md={8}>
-                        <Card.Body style={{ padding: "20px 15px" }}>
-                          <p>
-                            <strong>Categoría:</strong>{" "}
-                            {servicio.categoria?.nombre}
-                          </p>
-                          <p>
-                            <strong>Calificación:</strong>{" "}
-                            {renderStars(servicio.resumen?.calificacion)} (
-                            {servicio.resumen?.cantResenias})
-                          </p>
-                          <p>
-                            <strong>Ubicación:</strong> {servicio.ubicacion}
-                          </p>
-                          <p>
-                            <strong>Instructor:</strong>{" "}
-                            {servicio.instructorNombre}
-                          </p>
-                        </Card.Body>
-
-                        <div className="d-flex justify-content-between align-items-center">
-                          <p className="mb-0" style={{ marginLeft: "15px" }}>
-                            <strong>Desde:</strong>
-                            <strong style={{ fontSize: "1.5rem" }}>
-                              {" "}
-                              {armarStringPrecioYFrecuenciaCobro(
-                                servicio.montoMinimo,
-                                servicio.tipoFrecuenciaPago?.cantCiclo,
-                                servicio.tipoFrecuenciaPago?.unidadCiclo
-                              )}{" "}
-                            </strong>
-                          </p>
-                          <Button
-                            size="sm"
+                    <Card.Header
+                      style={{
+                        textAlign: "center",
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        padding: "15px",
+                        color: "white",
+                        borderTopLeftRadius: "20px",
+                        borderTopRightRadius: "20px",
+                        backgroundColor: "#1E1B4B",
+                      }}
+                    >
+                      {servicio.nombre}
+                    </Card.Header>
+                    <Card.Body>
+                      <Row className="g-0 align-items-center h-100">
+                        <Col xs={12} md={4} className="text-center">
+                          <img
+                            src={servicio.logoURL || placeholderImage}
+                            alt={servicio.nombre}
                             style={{
-                              backgroundColor: "#4F46E5",
-                              borderColor: "#4F46E5",
+                              width: "100%",
+                              maxWidth: "120px",
+                              height: "120px",
+                              objectFit: "cover",
+                              borderRadius: "10px",
                             }}
-                            onClick={() =>
-                              navigate(
-                                `/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`
-                              )
-                            }
-                          >
-                            Ver más
-                          </Button>
-                        </div>
-                      </Col>
-                    </Row>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))
-          )}
-        </Row>
+                          />
+                        </Col>
+                        <Col xs={12} md={8}>
+                          <Card.Body style={{ padding: "20px 15px" }}>
+                            <p>
+                              <strong>Categoría:</strong>{" "}
+                              {servicio.categoria?.nombre}
+                            </p>
+                            <p>
+                              <strong>Calificación:</strong>{" "}
+                              {renderStars(servicio.resumen?.calificacion)} (
+                              {servicio.resumen?.cantResenias})
+                            </p>
+                            <p>
+                              <strong>Ubicación: </strong>
+                              <a href={generarLinkMaps(servicio.ubicacion)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Ver en Google Maps"
+                                className="text-primary fw-semibold">
+                                {servicio.ubicacion} <i className="bi bi-geo-alt-fill"></i> 
+                              </a>
+
+                            </p>
+                            <p>
+                              <strong>Instructor:</strong>{" "}
+                              {servicio.instructorNombre}
+                            </p>
+                          </Card.Body>
+
+                          <div className="d-flex justify-content-between align-items-center">
+                            <p className="mb-0" style={{ marginLeft: "15px" }}>
+                              <strong>Desde:</strong>
+                              <strong style={{ fontSize: "1.5rem" }}>
+                                {" "}
+                                {armarStringPrecioYFrecuenciaCobro(
+                                  servicio.montoMinimo,
+                                  servicio.tipoFrecuenciaPago?.cantCiclo,
+                                  servicio.tipoFrecuenciaPago?.unidadCiclo
+                                )}{" "}
+                              </strong>
+                            </p>
+                            <Button
+                              size="sm"
+                              style={{
+                                backgroundColor: "#4F46E5",
+                                borderColor: "#4F46E5",
+                              }}
+                              onClick={() =>
+                                navigate(
+                                  `/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`
+                                )
+                              }
+                            >
+                              Ver más
+                            </Button>
+                          </div>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))
+            )}
+          </Row>
         )}
       </Card>
     </Container>

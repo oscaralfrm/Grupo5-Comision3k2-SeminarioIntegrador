@@ -1,34 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { editAsistenciasClase, getAsistenciasDeClase } from '../../../../services/Asistencia';
 import { getClaseById } from '../../../../services/Clase';
 import { format, parseISO } from "date-fns";
+import { Button } from 'react-bootstrap';
 
 const Asistencias = () => {
-    const { idClase } = useParams();
+    const { idClase, idInstructor, idServicio } = useParams();
     const [searchTerm, setSearchTerm] = useState('');
     const [asistenciasFiltradas, setAsistenciasFiltradas] = useState([]);
     const [asistencias, setAsistencias] = useState([]);
+    const [asistenciasIniciales, setAsistenciasIniciales] = useState([]);
     const [clase, setClase] = useState({});
-
     const navigate = useNavigate();
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'Fecha no disponible';  // Maneja el caso de fecha indefinida
+        if (!dateString) return 'Fecha no disponible';
         try {
-            const date = parseISO(dateString); // Convierte el string "YYYY-MM-DD" en un objeto Date
-            return format(date, "dd/MM/yyyy"); // Formatea a "DD/MM/AAAA"
+            const date = parseISO(dateString);
+            return format(date, "dd/MM/yyyy");
         } catch (error) {
             console.error("Error al formatear la fecha:", error);
             return 'Fecha inválida';
         }
     };
 
+    const handleCancel = () => {
+        navigate(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`);
+    };
+
     const formatHour = (hourString) => {
-        if (!hourString) return ''; // Maneja el caso de undefined o null
-        return hourString.split(':').slice(0, 2).join(':'); // Devuelve solo las horas y minutos
+        if (!hourString) return '';
+        return hourString.split(':').slice(0, 2).join(':');
     };
 
     useEffect(() => {
@@ -38,9 +41,16 @@ const Asistencias = () => {
                 setClase(claseData);
 
                 const asistenciasData = await getAsistenciasDeClase(idClase);
-                setAsistencias(asistenciasData);
+                console.log("Asistencias", asistenciasData);
 
+                // LAs asistencias estan en null si nunca antes fueron cargadas por el instructor,
+                // es por eso que si estan en null las mostramos como true por defecto
+                // pero si ya tienen un valor se muestra ese valor
 
+                setAsistencias(asistenciasData.map(asistencia =>
+                    asistencia.asistio == null ? { ...asistencia, asistio: true } : asistencia
+                ));
+                setAsistenciasIniciales(asistenciasData);
             } catch (error) {
                 console.error("Error al obtener datos:", error);
             }
@@ -48,7 +58,6 @@ const Asistencias = () => {
 
         fetchData();
     }, [idClase]);
-
 
     useEffect(() => {
         if (searchTerm === '') {
@@ -61,12 +70,11 @@ const Asistencias = () => {
         }
     }, [searchTerm, asistencias]);
 
-
     const handleCheckboxChange = (id) => {
         setAsistencias((prevAsistencias) =>
             prevAsistencias.map((asistencia) =>
                 asistencia.id === id
-                    ? { ...asistencia, asistio: !asistencia.asistio } // Cambia el estado de asistencia
+                    ? { ...asistencia, asistio: !asistencia.asistio }
                     : asistencia
             )
         );
@@ -76,36 +84,29 @@ const Asistencias = () => {
         setAsistencias((prevAsistencias) =>
             prevAsistencias.map((asistencia) =>
                 asistencia.id === id
-                    ? { ...asistencia, observaciones: value } // Actualiza la observación
+                    ? { ...asistencia, observaciones: value }
                     : asistencia
             )
         );
     };
 
     const handleRegistrarAsistencia = async () => {
-        // Creamos un nuevo arreglo con el formato adecuado
         const asistenciasFormateadas = asistencias.map((asistencia) => ({
-            idAsistencia: asistencia.id, // id de la asistencia
-            asistio: asistencia.asistio,  // estado de asistencia (true/false)
-            observaciones: asistencia.observaciones || "" // si no hay observaciones, se envía como cadena vacía
+            idAsistencia: asistencia.id,
+            asistio: asistencia.asistio,
+            observaciones: asistencia.observaciones || ""
         }));
 
         try {
-            // Enviamos las asistencias con el formato esperado al backend
             console.log(asistenciasFormateadas);
             await editAsistenciasClase(idClase, asistenciasFormateadas);
             alert("Asistencias registradas con éxito.");
-            navigate(-1); // Volver a la página anterior
+            navigate(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`);
         } catch (error) {
             console.error("Error al registrar asistencias:", error);
             alert("Hubo un error al registrar las asistencias.");
         }
     };
-
-
-    const totalPages = Math.ceil(asistenciasFiltradas.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
 
     return (
         <>
@@ -123,7 +124,6 @@ const Asistencias = () => {
                     <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>
                         Clase: {clase?.horario?.diaSemana?.nombre} {formatDate(clase?.fecha)} - Horario: De {formatHour(clase?.horario?.horaInicio)} a {formatHour(clase?.horario?.horaFin)}
                     </h2>
-
 
                     <input
                         type="text"
@@ -163,21 +163,17 @@ const Asistencias = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {asistenciasFiltradas.slice(startIndex, endIndex).length === 0 ? (
+                                {asistenciasFiltradas.length === 0 ? (
                                     <tr>
                                         <td colSpan="3" style={{ textAlign: 'center', padding: '20px' }}>
                                             No se encontraron alumnos.
                                         </td>
                                     </tr>
                                 ) : (
-                                    asistenciasFiltradas.slice(startIndex, endIndex).map((asistencia) => (
+                                    asistenciasFiltradas.map((asistencia) => (
                                         <tr key={asistencia.id}>
                                             <td style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>
-                                                {
-                                                    (() => {
-                                                        return `${asistencia.alumno.usuario.nombre} ${asistencia.alumno.usuario.apellido}.`; // Retorna el formato deseado
-                                                    })()
-                                                }
+                                                {`${asistencia.alumno.usuario.nombre} ${asistencia.alumno.usuario.apellido}.`}
                                             </td>
                                             <td style={{ padding: '10px', borderBottom: '1px solid #ddd', textAlign: 'center' }}>
                                                 <input
@@ -211,39 +207,10 @@ const Asistencias = () => {
                         </table>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                        <button
-                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                            style={{
-                                backgroundColor: currentPage === 1 ? 'gray' : '#4F46E5',
-                                color: 'white',
-                                padding: '10px',
-                                borderRadius: '8px',
-                                border: 'none',
-                                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                            }}
-                        >
-                            Anterior
-                        </button>
-                        <span>Página {currentPage} de {totalPages}</span>
-                        <button
-                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                            style={{
-                                backgroundColor: currentPage === totalPages ? 'gray' : '#4F46E5',
-                                color: 'white',
-                                padding: '10px',
-                                borderRadius: '8px',
-                                border: 'none',
-                                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                            }}
-                        >
-                            Siguiente
-                        </button>
-                    </div>
-
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                        <Button variant="secondary" onClick={handleCancel}>
+                            Cancelar
+                        </Button>
                         <button
                             onClick={handleRegistrarAsistencia}
                             style={{
@@ -256,7 +223,7 @@ const Asistencias = () => {
                                 fontSize: '14px',
                             }}
                         >
-                            Registrar Asistencia
+                            Registrar Asistencias
                         </button>
                     </div>
                 </div>

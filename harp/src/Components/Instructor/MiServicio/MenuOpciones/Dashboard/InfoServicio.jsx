@@ -88,6 +88,7 @@ const InfoCard = ({ serviceData, setServiceData }) => {
           <img
             alt="Logo del servicio"
             style={logoStyle}
+            src={serviceData?.logoURL}
           />
         )}
         <h2
@@ -130,19 +131,19 @@ const InfoCard = ({ serviceData, setServiceData }) => {
           <div style={sectionStyle}>
             <p>
               <FaUserCheck style={iconStyle} />
-              <strong>Inscripciones:</strong> {serviceData?.inscripcionesAbiertas === true ? "Habilitadas" : "Inhabilitadas"}
+              <strong>Inscripciones:</strong> {serviceData?.inscripcionesAbiertas ? "Habilitadas" : "Inhabilitadas"}
             </p>
             <p>
               <FaClipboardCheck style={iconStyle} />
-              <strong>Asistencias:</strong> {serviceData?.asistenciasActivas === true ? "Activas" : "Inactivas"}
+              <strong>Asistencias:</strong> {serviceData?.asistenciasActivas ? "Activas" : "Inactivas"}
             </p>
             <p>
               <FaEye style={iconStyle} />
-              <strong>Clase prueba:</strong> {serviceData?.claseDePruba === 1 ? "Si" : "No"}
+              <strong>Clase prueba:</strong> {serviceData?.claseDePruba ? "Si" : "No"}
             </p>
             <p>
               <FaEyeSlash style={iconStyle} />
-              <strong>Publicado:</strong> {serviceData?.publico === 1 ? "Si" : "No"}
+              <strong>Publicado:</strong> {serviceData?.publico ? "Si" : "No"}
             </p>
           </div>
         </div>

@@ -373,3 +373,8 @@ export const yaInicio = (fechaInicio) => {
     console.log("fechaactual", fechaActual);
     return fechaActual >= fechaInicio;
 };
+
+export const generarLinkMaps = (ubicacion) => {
+    if (!ubicacion) return "#";
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicacion)}`;
+  };

@@ -3,7 +3,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import {obtenerCuotasDeInscripcion,} from "../../../../../services/Cuota"; // Asegúrate de importar los servicios correctamente
+import {obtenerCuotasDeInscripcion, traerUltimasCuotasDeServicio,} from "../../../../../services/Cuota"; // Asegúrate de importar los servicios correctamente
 import {getHistorialCuotasDeAlumno, getInscripcionesDeAlumno, getAlumnosDeGrupo} from "../../../../../services/Alumno"
 import { getServicioById } from "../../../../../services/Servicio";
 import {getGruposDeServicio} from "../../../../../services/Grupo"
@@ -14,7 +14,7 @@ const Cobros = () => {
   const navigate = useNavigate();
   const [cuotas, setCuotas] = useState([]);
   const [servicio, setServicio] = useState(null);
-  const { idServicio } = useParams();
+  const { idServicio, idInstructor } = useParams();
 
   // Obtener el servicio
   useEffect(() => {
@@ -33,23 +33,11 @@ const Cobros = () => {
   useEffect(() => {
     const fetchInscripcionesYCuotas = async () => {
       try {
-        // Obtener grupos del servicio
-        const grupos = await getGruposDeServicio(idServicio);
 
-        // Obtener alumnos y cuotas para cada grupo
-        const cuotasData = [];
-        for (const grupo of grupos) {
-          const alumnos = await getAlumnosDeGrupo(idServicio, grupo.id); // Obtener alumnos del grupo
-          for (const alumno of alumnos) {
-            const inscripciones = await getInscripcionesDeAlumno(alumno.id); // Obtener inscripciones del alumno
-            for (const inscripcion of inscripciones) {
-              const cuotasInscripcion = await obtenerCuotasDeInscripcion(idServicio, inscripcion.id);
-              cuotasData.push([alumno, cuotasInscripcion]);
-            }
-          }
-        }
-
+        // USamos este servicio que trae las ultimas cuotas de cada alumno de ese servicio
+        const cuotasData = await traerUltimasCuotasDeServicio(idServicio);
         setCuotas(cuotasData);
+        console.log("Cuotas", cuotas);
       } catch (error) {
         console.error("Error al traer las cuotas:", error);
       }
@@ -137,7 +125,7 @@ const Cobros = () => {
       >
         <h2 style={{ color: "white", fontFamily: "Roboto", fontSize: "1.5rem", margin: 0 }}>Cobros</h2>
         <button
-          onClick={() => navigate(`/instructor/1/servicio/${idServicio}/cobros`)}
+          onClick={() => navigate(`/instructor/${idInstructor}/servicio/${idServicio}/cobros`)}
           style={{
             backgroundColor: "#4F46E5",
             color: "white",

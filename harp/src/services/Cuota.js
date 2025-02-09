@@ -91,7 +91,7 @@ export const obtenerUltimasCuotasDeInscripcion = async (idServicio, idInscripcio
 // Servicio para traer las últimas cuotas de alumnos (ya existente)
 export const traerUltimasCuotasDeServicio = async (idServicio) => {
   try {
-    const response = await axios.get(`${baseUrl}/${idServicio}/alumnos/cuotas`);
+    const response = await axios.get(`${baseUrl}/${idServicio}/inscripciones/cuotas`);
     return response.data; // Devuelve las últimas cuotas de los alumnos del servicio
   } catch (error) {
     console.error("Error al buscar las últimas cuotas:", error.response?.data?.message || error.message);
