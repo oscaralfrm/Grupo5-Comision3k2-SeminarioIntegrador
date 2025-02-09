@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { Form } from "react-bootstrap";
 
 export default function General({ register, errors, categorias, goToNextTab, logoPreview, setLogoPreview }) {
@@ -82,7 +82,7 @@ export default function General({ register, errors, categorias, goToNextTab, log
             <img 
               src={logoPreview} 
               alt="Vista previa del logo" 
-              style={{ maxWidth: "200px", border: "1px solid #ddd", padding: "5px" }} 
+              style={{ maxWidth: "120px", border: "1px solid #ddd", padding: "5px" }} 
             />
           </div>
         )}

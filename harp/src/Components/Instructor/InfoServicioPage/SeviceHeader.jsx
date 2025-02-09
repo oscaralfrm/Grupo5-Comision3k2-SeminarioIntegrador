@@ -96,8 +96,7 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
             src={serviceData.logoURL || "https://via.placeholder.com/120"}
             alt="Logo del servicio"
             className="rounded-circle"
-            width="120"
-            height="120"
+            style={{ objectFit: "cover", width: "120px", height: "120px" }}
           />
         </Col>
 
