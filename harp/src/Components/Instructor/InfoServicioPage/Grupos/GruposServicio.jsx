@@ -311,10 +311,10 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
       </Row>
 
       {/* Modal para Crear Grupo */}
-      <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos} />
+      <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos} frecuenciaCobro={frecuenciaCobro}/>
 
       {/* Modal para Editar Grupo */}
-      <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchServicio} />
+      <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchServicio} frecuenciaCobro={frecuenciaCobro}/>
 
       {/* ───────── Modal de confirmación de inscripción ───────── */}
       <Modal show={showConfirm} onHide={handleCancelInscription} centered>

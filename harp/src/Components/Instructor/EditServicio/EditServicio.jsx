@@ -63,6 +63,12 @@ export default function EditServicioForm() {
                     setValue("fechaLimitePago", response.tipoFrecuenciaPago.diaLimitePago);
                 }
                 setValue("ciclos", response.tipoFrecuenciaPago.tipoCiclo === "SegunCalendario" ? "En fechas fijas" : "Según Inscripción");
+                setValue("modalidadClases", 
+                    response.modalidadClases === "Virtual" 
+                        ? ["virtual"]
+                        : response.modalidadClases === "Presencial" 
+                            ? ["presencial"]
+                            : ["virtual", "presencial"] );
             } catch (error) {
                 console.error("Error al obtener el servicio:", error);
             }
@@ -121,18 +127,24 @@ export default function EditServicioForm() {
             ubicacion: data.ubicacion,
             categoria: data.categoria,
             tipoCiclo:
-                data.ciclos === "Mismas Fechas"
+                data.ciclos === "En fechas fijas"
                     ? "SegunCalendario"
                     : "SegunInscripcion",
             diaLimitePago: data.fechaLimitePago > 0 ? data.fechaLimitePago : 0,
             cantCiclo: ciclo.cantidad,
             unidadCiclo: ciclo.unidad,
-            tipoModalidad:
+            modalidadInscripcion:
                 data.divideEnGrupos === "Sin clases" ? "AServicio" : "AGrupo",
             claseDePrueba: data.clasePrueba === "sí",
             asistenciasActivas: data.asistencias === "sí",
             montoInscripcion: data.montoInscripcion || 0,
             pagoAnticipadoDeMontoInscripcion: data.pagoInscripcion === "De forma Anticipada",
+            modalidadClases: data.modalidadClases.includes("virtual") && data.modalidadClases.includes("presencial")
+                ? "Hibrida"
+                : data.modalidadClases.includes("virtual")
+                    ? "Virtual"
+                    : "Presencial"
+
         };
 
         // Si el usuario seleccionó un nuevo archivo, data.logo vendrá como FileList

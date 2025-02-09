@@ -150,21 +150,24 @@ const CourseCards = ({ servicios, Instructorid }) => {
                 >
                   Configurar
                 </button>
-                <button
-                  onClick={() => handleGoToService(servicio.id)}
-                  className="btn btn-primary"
-                  style={{
-                    backgroundColor: "#4F46E5",
-                    color: "white",
-                    padding: "10px 11px",
-                    borderRadius: "4px",
-                    textDecoration: "none",
-                    fontSize: "14px",
-                    marginLeft: "10px", // Asegura el mismo espacio a la derecha
-                  }}
-                >
-                  Ver Servicio
-                </button>
+                {servicio.publico &&
+                  <button
+                    onClick={() => handleGoToService(servicio.id)}
+                    className="btn btn-primary"
+                    style={{
+                      backgroundColor: "#4F46E5",
+                      color: "white",
+                      padding: "10px 11px",
+                      borderRadius: "4px",
+                      textDecoration: "none",
+                      fontSize: "14px",
+                      marginLeft: "10px", // Asegura el mismo espacio a la derecha
+                    }}
+                  >
+                    Ver Servicio
+                  </button>
+                }
+
               </div>
             </div>
           </div>
@@ -221,50 +224,54 @@ const CourseCards = ({ servicios, Instructorid }) => {
       </div>
 
       {/* Sección de Paginación */}
-      <div className="d-flex justify-content-center mt-3">
-        <nav>
-          <ul className="pagination">
-            {/* Botón para retroceder */}
-            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-              <button
-                className="page-link"
-                onClick={() => paginate(currentPage - 1)}
-              >
-                &lt;
-              </button>
-            </li>
+      {servicios.length != 0 &&
+        <div className="d-flex justify-content-center mt-3">
+          <nav>
+            <ul className="pagination">
+              {/* Botón para retroceder */}
+              <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => paginate(currentPage - 1)}
+                >
+                  &lt;
+                </button>
+              </li>
 
-            {/* Botones de número de página dinámicos */}
-            {Array.from({ length: totalPages }, (_, index) => (
+              {/* Botones de número de página dinámicos */}
+              {Array.from({ length: totalPages }, (_, index) => (
+                <li
+                  key={index + 1}
+                  className={`page-item ${currentPage === index + 1 ? "active" : ""
+                    }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => paginate(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                </li>
+              ))}
+
+              {/* Botón para avanzar */}
               <li
-                key={index + 1}
-                className={`page-item ${currentPage === index + 1 ? "active" : ""
+                className={`page-item ${currentPage === totalPages ? "disabled" : ""
                   }`}
               >
                 <button
                   className="page-link"
-                  onClick={() => paginate(index + 1)}
+                  onClick={() => paginate(currentPage + 1)}
                 >
-                  {index + 1}
+                  &gt;
                 </button>
               </li>
-            ))}
+            </ul>
+          </nav>
+        </div>
+      }
 
-            {/* Botón para avanzar */}
-            <li
-              className={`page-item ${currentPage === totalPages ? "disabled" : ""
-                }`}
-            >
-              <button
-                className="page-link"
-                onClick={() => paginate(currentPage + 1)}
-              >
-                &gt;
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
+
     </div>
   );
 };

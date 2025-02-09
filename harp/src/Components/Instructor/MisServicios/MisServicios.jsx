@@ -58,8 +58,10 @@ const Dashboard = () => {
         Mis Servicios
       </h2>
 
+
       {/* Filtro centrado en la parte superior */}
-      <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "20px" }}>
+      { servicios.length != 0 && 
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "20px" }}>
         <SearchFilter onSearch={handleSearch} onFilter={handleFilter} />
       
 
@@ -83,7 +85,7 @@ const Dashboard = () => {
         </select>
       </div>
       </div>
-
+      }
 
 
       {/* Contenedor Principal */}

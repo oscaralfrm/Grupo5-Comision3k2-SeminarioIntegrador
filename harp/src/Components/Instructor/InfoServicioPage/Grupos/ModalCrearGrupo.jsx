@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, ListGroup, Alert } from 'react-bootstrap';
 import { createGrupoConHorarios } from '../../../../services/Grupo';
+import { armarStringFrecuenciaCobro } from '../../../../services/frecuenciaPago';
 
-const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, grupos}) => {
+const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, grupos, frecuenciaCobro}) => {
   const [nombreGrupo, setNombreGrupo] = useState('');
   const [monto, setMonto] = useState(null);
   const [diaSemana, setDiaSemana] = useState('');
@@ -121,14 +122,18 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Precio</Form.Label>
+            <Form.Label>Precio {armarStringFrecuenciaCobro(frecuenciaCobro.cantCiclo, frecuenciaCobro.unidadCiclo)} </Form.Label>
+            <div className="input-group"> {/* Contenedor para el símbolo y el input */}
+              <span className="input-group-text">$</span> {/* Símbolo $ a la izquierda */}
             <Form.Control
-              type="text"
+              type="number"
               value={monto}
               onChange={(e) => setMonto(e.target.value)}
               placeholder="Precio"
               required
+              onWheel={(e) => e.target.blur()}  // Evita el scroll
             />
+            </div>
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -199,7 +204,7 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
                 onChange={(e) => setHoraFin(e.target.value)}
                 required
               />
-              <Button onClick={agregarHorario}>+</Button>
+              <Button onClick={agregarHorario}>✓</Button>
             </div>
           </Form.Group>
 

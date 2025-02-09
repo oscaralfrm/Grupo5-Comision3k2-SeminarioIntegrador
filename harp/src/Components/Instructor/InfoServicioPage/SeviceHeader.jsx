@@ -7,12 +7,35 @@ import BarraResumen from "./BarraResumen";
 import { obtenerInstructorDeServicio } from "../../../services/Instructor";
 import { getGruposDeServicio } from "../../../services/Grupo";
 import { getResumenReseniasDeServicio } from "../../../services/Reseñas";
+import { deshabilitarInscripcionesDeServicio, habilitarInscripcionesDeServicio } from "../../../services/Inscripcion";
+import ActionSection from "./AccionesServicioCard";
 
-function ServiceHeader({ serviceData, sePuedeEditar }) {
+function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }) {
   const [instructor, setInstructor] = useState(null);
   const [resumenResenias, setResumenResenias] = useState(null);
   const [grupos, setGrupos] = useState(null);
   const navigate = useNavigate();
+  const { idServicio } = useParams();
+
+  const toggleInscriptions = async () => {
+    const newStatus = !serviceData?.inscripcionesAbiertas;
+    const confirmationMessage = newStatus
+      ? "¿Está seguro de que desea habilitar las inscripciones?"
+      : "¿Está seguro de que desea deshabilitar las inscripciones?";
+
+    if (window.confirm(confirmationMessage)) {
+      try {
+        newStatus
+          ? await habilitarInscripcionesDeServicio(idServicio)
+          : await deshabilitarInscripcionesDeServicio(idServicio);
+        fetchServicio();
+      } catch (error) {
+        console.error("Error al cambiar el estado de las inscripciones:", error.message);
+        alert(error.message);
+      }
+    }
+  };
+
 
   useEffect(() => {
     const fetchInstructor = async () => {
@@ -69,7 +92,7 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
           className="d-flex justify-content-center  align-items-center"
         >
           <img
-            src={serviceData.logoURL|| "https://via.placeholder.com/120"} 
+            src={serviceData.logoURL || "https://via.placeholder.com/120"}
             alt="Logo del servicio"
             className="rounded-circle"
             width="120"
@@ -92,21 +115,21 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
             }}
           >
             {/* Edit Button */}
-            { sePuedeEditar &&
+            {sePuedeEditar &&
               <Button
-              variant="light"
-              className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
-              onClick={handleEditClick}
-              style={{
-                backgroundColor: "#1E1B4B",
-                border: "none",
-                top: "-7px",
-                right: "0px",
-                zIndex: 10, // Asegura que el botón esté encima de otros elementos
-              }}
-            >
-              <FaCog color="white" size={20} />
-            </Button>
+                variant="light"
+                className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
+                onClick={handleEditClick}
+                style={{
+                  backgroundColor: "#1E1B4B",
+                  border: "none",
+                  top: "-7px",
+                  right: "0px",
+                  zIndex: 10, // Asegura que el botón esté encima de otros elementos
+                }}
+              >
+                <FaCog color="white" size={20} />
+              </Button>
             }
 
             <h4 className="fw-bold mb-2 mt-2 text-center">
@@ -114,29 +137,29 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
             </h4>
           </div>
 
-          
-          <Col md="6" className="" style={{ width: "100%" }}>
-          <div className="d-flex justify-content-between align-items-center">
-            <p className=" mt-3">
-              <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
-            </p>
-            { serviceData.publico &&
-            <div className="ms-auto d-flex align-items-center">
-              <strong>Calificación:</strong>
-              <span className="ms-2">
-                {renderStars(resumenResenias?.calificacion)}
-              </span>
-              <span className="ms-2">({resumenResenias?.calificacion})</span>
-              <span className="ms-2">
-                ({resumenResenias?.cantResenias || 0} reseñas)
-              </span>
-            </div>
-            }
-          </div>
-        </Col>
 
-          
-          
+          <Col md="6" className="" style={{ width: "100%" }}>
+            <div className="d-flex justify-content-between align-items-center">
+              <p className=" mt-3">
+                <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
+              </p>
+              {serviceData.publico &&
+                <div className="ms-auto d-flex align-items-center">
+                  <strong>Calificación:</strong>
+                  <span className="ms-2">
+                    {renderStars(resumenResenias?.calificacion)}
+                  </span>
+                  <span className="ms-2">({resumenResenias?.calificacion})</span>
+                  <span className="ms-2">
+                    ({resumenResenias?.cantResenias || 0} reseñas)
+                  </span>
+                </div>
+              }
+            </div>
+          </Col>
+
+
+
           <p className="mb-3">
             <strong>Instructor:</strong>{" "}
             <Link
@@ -152,13 +175,13 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
             <strong>Clase de prueba:</strong>{" "}
             {serviceData?.claseDePrueba == true ? "Gratis" : "No incluida"}
           </p>
-          {/*
-             <p>
-            <strong>Descripción:</strong> {serviceData?.descripcion}
-          </p>
-          */}
 
-          {/* Publicar Servicio section 
+          <p>
+            <strong>Modalidad Clases:</strong> {serviceData?.modalidadClases
+              ? (serviceData.modalidadClases == "Hibrida" ? "Virtual y Presencial" : serviceData.modalidadClases)
+              : "Sin definir"}
+          </p>
+
           <Col md="6" className="mb-2" style={{ width: "100%" }}>
             <div className="ms-auto d-flex align-items-center">
               <strong className="me-2">Publicar Servicio:</strong>
@@ -185,14 +208,31 @@ function ServiceHeader({ serviceData, sePuedeEditar }) {
               </Form>
             </div>
           </Col>
-          */}
+
         </Col>
+        {/* BarraResumen y ActionSection en la misma fila */}
+        <Row className="mt-3 align-items-start">
+          { sePuedeEditar && 
+             <Col md={3}>
+             <ActionSection
+               serviceData={serviceData}
+               cantGrupos={cantGrupos}
+             />
+           </Col>
+          }
+          <Col md={sePuedeEditar ? 9 : 12}>
+            <BarraResumen
+              serviceData={serviceData}
+              grupos={grupos}
+              sePuedeEditar={sePuedeEditar}
+            />
+          </Col>
+        </Row>
       </Row>
-      <BarraResumen
-        serviceData={serviceData}
-        grupos={grupos}
-        sePuedeEditar={sePuedeEditar}
-      />
+
+
+      {/* Columna de acciones */}
+
     </Card >
   );
 }

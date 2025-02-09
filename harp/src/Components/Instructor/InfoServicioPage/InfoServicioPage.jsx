@@ -9,6 +9,7 @@ import { getServicioById, sePuedePublicarServicio } from "../../../services/Serv
 import Descripcion from "./Descripcion/Descripcion";
 import ModalPublicarServicio from "./ModalPublicarServicio";
 import { getGruposDeServicio } from "../../../services/Grupo";
+import AccionesServicioCard from "./AccionesServicioCard";
 
 const InfoServicioPage = () => {
   const { idServicio } = useParams();
@@ -55,7 +56,7 @@ const InfoServicioPage = () => {
     >
       {/* Renderizamos ServiceHeader solo si serviceData ya está definido */}
       {serviceData ? (
-        <ServiceHeader serviceData={serviceData} sePuedeEditar={true} />
+        <ServiceHeader serviceData={serviceData} sePuedeEditar={true} fetchServicio={fetchServicio} cantGrupos={grupos?.length} />
       ) : (
         <p>Cargando servicio...</p>
       )}
@@ -88,18 +89,18 @@ const InfoServicioPage = () => {
         </Col>
         <Col md={6} className="d-flex">
           <div className="w-100">
-            <MontosServicio sePuedeEditar={true}/>
+            <MontosServicio sePuedeEditar={true} />
           </div>
         </Col>
       </Row>
-      { serviceData?.publico &&
+      {serviceData?.publico &&
         <Row className="mt-4">
-        <Col>
-          <ReviewCarousel/>
-        </Col>
-      </Row>
+          <Col>
+            <ReviewCarousel />
+          </Col>
+        </Row>
       }
-      
+
       <ModalPublicarServicio
         handleCloseModal={handleCloseModal}
         fetchServicio={fetchServicio}

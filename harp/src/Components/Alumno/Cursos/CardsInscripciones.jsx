@@ -219,7 +219,8 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
             </div>
 
             {/* Sección de Paginación */}
-            <div className="d-flex justify-content-center mt-3">
+            { inscripciones.length != 0 && 
+                <div className="d-flex justify-content-center mt-3">
                 <nav>
                     <ul className="pagination">
                         {/* Botón para retroceder */}
@@ -263,6 +264,9 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
                     </ul>
                 </nav>
             </div>
+            }
+           
+            
         </div>
     );
 };

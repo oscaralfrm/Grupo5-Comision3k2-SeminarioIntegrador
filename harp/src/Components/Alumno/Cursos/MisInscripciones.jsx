@@ -89,32 +89,34 @@ const MisInscripciones = () => {
         Mis Inscripciones
       </h2>
 
-      {/* Contenedor de filtros */}
-      <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "20px" }}>
-        <SearchFilter onSearch={handleSearch} onFilter={handleFilter} />
+      {inscripciones.length != 0 &&
+        < div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "20px" }}>
+          <SearchFilter onSearch={handleSearch} onFilter={handleFilter} />
 
-        <div style={{ display: "flex", gap: "10px", padding: "10px 0", alignItems: "center" }}>
-          {/* Nuevo filtro por estado con mismos estilos */}
-          <select
-            value={selectedEstado}
-            onChange={(e) => handleEstadoFilter(e.target.value)}
-            style={{
-              padding: "10px",
-              flex: 3,  // Misma proporción que el input
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-              width: "30vw",  // Misma anchura que el input
-              backgroundColor: "white",
-            }}
-          >
-            <option value="">Todos los estados</option>
-            <option value="EnCurso">En Curso</option>
-            <option value="Aceptada">Aceptada</option>
-            <option value="PendienteAceptacion">Pendiente Aceptación</option>
-            <option value="Finalizada">Finalizada</option>
-          </select>
+          <div style={{ display: "flex", gap: "10px", padding: "10px 0", alignItems: "center" }}>
+            {/* Nuevo filtro por estado con mismos estilos */}
+            <select
+              value={selectedEstado}
+              onChange={(e) => handleEstadoFilter(e.target.value)}
+              style={{
+                padding: "10px",
+                flex: 3,  // Misma proporción que el input
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+                width: "30vw",  // Misma anchura que el input
+                backgroundColor: "white",
+              }}
+            >
+              <option value="">Todos los estados</option>
+              <option value="EnCurso">En Curso</option>
+              <option value="Aceptada">Aceptada</option>
+              <option value="PendienteAceptacion">Pendiente Aceptación</option>
+              <option value="Finalizada">Finalizada</option>
+            </select>
+          </div>
         </div>
-      </div>
+      }
+
 
       {/* Contenedor de inscripciones */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", padding: "20px" }}>
@@ -124,7 +126,7 @@ const MisInscripciones = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

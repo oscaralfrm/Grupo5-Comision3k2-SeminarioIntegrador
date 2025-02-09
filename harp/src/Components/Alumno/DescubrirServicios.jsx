@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import { getAllServiciosPublicosSinAlumno } from "../../services/Servicio";
 import { FaStar, FaRegStar } from "react-icons/fa";
+import { armarStringPrecioYFrecuenciaCobro } from "../../services/frecuenciaPago";
 
 const DescubrirServicios = () => {
   const { idAlumno } = useParams();
@@ -14,21 +15,7 @@ const DescubrirServicios = () => {
   const [size] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const armarStringPrecioYFrecuenciaCobro = (cantCiclo, unidadCiclo) => {
-    const unidades = {
-      MONTHS: { singular: "mes", plural: "meses", especial: "mensual" },
-      WEEKS: { singular: "semana", plural: "semanas", especial: "semanal" },
-      DAYS: { singular: "día", plural: "días", especial: "diario" },
-    };
-  
-    if (unidadCiclo) {
-      const { singular, plural, especial } = unidades[unidadCiclo];
-  
-      const frecuencia = cantCiclo === 1 ? especial : `cada ${cantCiclo} ${plural}`;
-    
-      return `${frecuencia}`;
-    }
-  };  
+
   const renderStars = (rating) => {
     const safeRating = Math.min(5, Math.max(0, rating || 0));
     return [1, 2, 3, 4, 5].map((star) =>
@@ -174,18 +161,15 @@ const DescubrirServicios = () => {
                             <strong>Instructor:</strong>{" "}
                             {servicio.instructorNombre}
                           </p>
-                          <p>
-                            <strong>Frecuencia:</strong>{" "}
-                            {armarStringPrecioYFrecuenciaCobro(servicio.tipoFrecuenciaPago?.cantCiclo,
-                              servicio.tipoFrecuenciaPago?.unidadCiclo
-                            )}    
-                          </p>
                         </Card.Body>
 
                         <div className="d-flex justify-content-between align-items-center" >
                           <p className="mb-0" style={{marginLeft:"15px"}}>
                            <strong>Desde:</strong> 
-                           <strong style={{fontSize:"1.5rem"}}> ${servicio.montoMinimo}</strong>
+                           <strong style={{fontSize:"1.5rem"}}> {armarStringPrecioYFrecuenciaCobro(servicio.montoMinimo, 
+                              servicio.tipoFrecuenciaPago?.cantCiclo,
+                              servicio.tipoFrecuenciaPago?.unidadCiclo
+                            )}   </strong>
                           </p>
                           <Button
                             size="sm"

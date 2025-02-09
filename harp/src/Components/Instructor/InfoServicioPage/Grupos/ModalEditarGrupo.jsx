@@ -6,8 +6,9 @@ import { agregarHorariosAGrupo, deleteGrupo, editGrupo } from '../../../../servi
 import { editHorario } from '../../../../services/Horario';
 import { yaInicio } from '../../../../services/Servicio';
 import { getMontoActualGrupoDeHistorial } from '../../../../services/HistorialMontoCuota';
+import { armarStringFrecuenciaCobro } from '../../../../services/frecuenciaPago';
 
-const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, idServicio }) => {
+const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, idServicio, frecuenciaCobro }) => {
     const [nombreGrupo, setNombreGrupo] = useState(grupo?.nombre || '');
     const [horarios, setHorarios] = useState(grupo?.horarios || []);
     const [diaSemana, setDiaSemana] = useState('');
@@ -220,18 +221,23 @@ const EditarGrupoModal = ({ show, handleClose, grupo, grupos, onGrupoEditado, id
                     </Form.Group>
 
                     {/*  Si el grupo tiene un solo precio definido y su fecha inicio es mas adelante o null se puede editar */}
-                        <Form.Group className="mb-3">
-                            <Form.Label>Precio</Form.Label>
+                    <Form.Group className="mb-3">
+
+                        <Form.Label>Precio {armarStringFrecuenciaCobro(frecuenciaCobro.cantCiclo, frecuenciaCobro.unidadCiclo)}</Form.Label>
+                        <div className="input-group"> {/* Contenedor para el símbolo y el input */}
+                            <span className="input-group-text">$</span> {/* Símbolo $ a la izquierda */}
                             <Form.Control
                                 type="text"
                                 value={monto}
                                 onChange={(e) => setMonto(e.target.value)}
                                 placeholder="Precio"
                                 required
-                                disabled={! (grupo?.historialMontos.length == 1 && ! yaInicio(grupo.historialMontos[0].fechaInicio) )} 
+                                disabled={!(grupo?.historialMontos.length == 1 && !yaInicio(grupo.historialMontos[0].fechaInicio))}
+                                onWheel={(e) => e.target.blur()}  // Evita el scroll 
                             />
-                        </Form.Group>
-                    
+                        </div>
+                    </Form.Group>
+
 
 
                     <Form.Label>Horarios</Form.Label>

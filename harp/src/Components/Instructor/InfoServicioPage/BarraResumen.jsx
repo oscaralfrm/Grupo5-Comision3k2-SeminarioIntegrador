@@ -102,6 +102,13 @@ const BarraResumen = ({ serviceData, grupos, sePuedeEditar }) => {
           <FaRegCalendarAlt size={25} className="mb-2 mt-2 text-primary" />
           <p className="mb-1 fw-bold">Fecha Inicio:</p>
           <p>{formatDate(serviceData?.fechaInicio) || "Sin definir"}</p>
+
+          {/* sePuedeEditar && sePuedeModificarFechaInicio(serviceData?.fechaInicio) &&
+            <Button variant="warning" size="sm" className="mb-3" onClick={handleSuspendService}>
+            Editar
+            </Button>
+          */}
+
           {serviceData?.fechaInicio && sePuedeEditar && (
             <Button variant="warning" size="sm" className="mb-3" onClick={handleSuspendService}>
               Suspender

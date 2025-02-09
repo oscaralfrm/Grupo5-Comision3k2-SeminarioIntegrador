@@ -8,9 +8,11 @@ import Cobros from "./Tabs/Cobros";
 import Modalidad from "./Tabs/Modalidad";
 import ResumenServicio from "./Tabs/InfoCard";
 import { Tab, Tabs, Button } from "react-bootstrap";
+import SuccessModal from "../../CartelDeExito/CartelDeExito";
 
 export default function ServicioForm() {
   const [activeTab, setActiveTab] = useState("general");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [categorias, setCategorias] = useState([]);
   // Agrega estado para la vista previa del logo
   const [logoPreview, setLogoPreview] = useState("");
@@ -85,7 +87,7 @@ export default function ServicioForm() {
       ubicacion: data.ubicacion,
       categoria: data.categoria,
       tipoCiclo:
-        data.ciclos === "Mismas Fechas"
+        data.ciclos === "En fechas fijas"
           ? "SegunCalendario"
           : "SegunInscripcion",
       diaLimitePago: data.fechaLimitePago > 0 ? data.fechaLimitePago : 0,
@@ -99,18 +101,20 @@ export default function ServicioForm() {
       pagoAnticipadoDeMontoInscripcion:
         data.pagoInscripcion === "De forma Anticipada",
       logo: data.logo[0],
-      modalidadClases: data.modalidadClases.includes("virtual") && data.modalidadClases.includes("presencial") 
-                        ? "Hibrida" 
-                        : data.modalidadClases.includes("virtual")  
-                            ? "Virtual"
-                            : "Presencial"
+      modalidadClases: data.modalidadClases.includes("virtual") && data.modalidadClases.includes("presencial")
+        ? "Hibrida"
+        : data.modalidadClases.includes("virtual")
+          ? "Virtual"
+          : "Presencial"
     };
 
     console.log("ServicioDTO", servicioDTO);
 
     try {
       const response = await createServicio(servicioDTO);
-      alert("Servicio creado con éxito");
+      //alert("Servicio creado con éxito");
+      setShowSuccessModal(true);
+
       navigate(
         `/instructor/${idInstructor}/servicio/${response.id}/info-servicio`,
         { state: { from: window.location.pathname } }
@@ -222,6 +226,14 @@ export default function ServicioForm() {
       >
         <ResumenServicio formData={formData} />
       </div>
+
+      {/* Success Modal reutilizable */}
+      <SuccessModal
+        show={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title={"Servicio creado con éxito"}
+        message={""}
+      />
     </div>
   );
 }

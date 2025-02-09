@@ -8,7 +8,7 @@ import { useParams, useNavigate } from "react-router-dom";
 const ModalPublicarServicio = ({ serviceData, setServiceData, handleCloseModal, showModal, fetchServicio }) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
-     const { idServicio } = useParams();
+    const { idServicio } = useParams();
 
     const handleSaveDate = async () => {
         if (!selectedDate) return;
@@ -17,7 +17,7 @@ const ModalPublicarServicio = ({ serviceData, setServiceData, handleCloseModal, 
             console.log('Guardando nueva fecha:', selectedDate); // Log para ver qué fecha se está guardando
             setIsSaving(true);
             await publicarServicio(idServicio, selectedDate.toISOString().split('T')[0]);
-            
+
             fetchServicio();
             handleCloseModal();
         } catch (error) {
@@ -37,15 +37,14 @@ const ModalPublicarServicio = ({ serviceData, setServiceData, handleCloseModal, 
         </Modal.Header>
         <Modal.Body>
             <p>Selecciona una fecha de inicio para el servicio:</p>
-            <DatePicker
-                selected={selectedDate}
-                onChange={(date) => {
-                    console.log('Fecha seleccionada:', date); // Log para verificar la fecha seleccionada
+            <Form.Control
+                type="date"
+                min={new Date().toISOString().split("T")[0]}
+                onChange={(e) => {
+                    const date = new Date(e.target.value);
+                    console.log('Fecha seleccionada:', date); // Log para verificar que es un objeto Date
                     setSelectedDate(date);
                 }}
-                minDate={new Date()}
-                dateFormat="yyyy-MM-dd"
-                className="form-control"
             />
         </Modal.Body>
         <Modal.Footer>
