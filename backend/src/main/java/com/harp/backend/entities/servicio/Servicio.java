@@ -15,6 +15,7 @@ import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.modalidad.Modalidad;
+import com.harp.backend.entities.modalidad.ModalidadClases;
 import com.harp.backend.entities.pagos.Pago;
 import com.harp.backend.entities.resenia.Resenia;
 import com.harp.backend.exception.NoSuchElementFoundException;
@@ -143,6 +144,9 @@ public class Servicio {
 
     @Enumerated(EnumType.STRING)
     private Modalidad modalidadInscripcion;
+
+    @Enumerated(EnumType.STRING)
+    private ModalidadClases modalidadClases;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "servicio_id")

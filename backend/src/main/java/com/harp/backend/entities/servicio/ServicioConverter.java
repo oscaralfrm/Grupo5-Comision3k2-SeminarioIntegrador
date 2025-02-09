@@ -4,6 +4,7 @@ import com.harp.backend.entities.categoria.CategoriaService;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPagoService;
 import com.harp.backend.entities.modalidad.Modalidad;
+import com.harp.backend.entities.modalidad.ModalidadClases;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,7 +43,9 @@ public class ServicioConverter {
 
         //Definir manualmente los atributos que son otros objetos
         servicio.setCategoria(categoriaService.findCategoriaByNombre(dto.getCategoria()));
-        servicio.setModalidadInscripcion(Modalidad.valueOf(dto.getTipoModalidad()));
+        servicio.setModalidadInscripcion(Modalidad.valueOf(dto.getModalidadInscripcion()));
+
+        servicio.setModalidadClases(ModalidadClases.valueOf(dto.getModalidadClases()));
 
         TipoFrecuenciaPago nuevoTipoFrecuencia = tipoFrecuenciaPagoService.createTipoFrecuenciaPago(
                 dto.getCantCiclo(),

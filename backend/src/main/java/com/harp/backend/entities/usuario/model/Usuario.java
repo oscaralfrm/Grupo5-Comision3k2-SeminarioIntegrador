@@ -101,5 +101,6 @@ public class Usuario {
         this.direccion = alumnoDTO.getDireccion();
         this.fechaNacimiento = alumnoDTO.getFechaNacimiento();
         this.fechaRegistro = LocalDate.now();
+        this.dni = alumnoDTO.getDni();
     }
 }

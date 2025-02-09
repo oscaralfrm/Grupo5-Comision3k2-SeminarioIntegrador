@@ -20,6 +20,7 @@ import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.IEstrate
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.instructor.InstructorService;
 import com.harp.backend.entities.modalidad.Modalidad;
+import com.harp.backend.entities.modalidad.ModalidadClases;
 import com.harp.backend.entities.resenia.Resenia;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.transaction.Transactional;
@@ -198,7 +199,8 @@ public class ServicioService implements IServicioService {
 
         //Definir manualmente los atributos que son otros objetos
         servicio.setCategoria(categoriaService.findCategoriaByNombre(dto.getCategoria()));
-        servicio.setModalidadInscripcion(Modalidad.valueOf(dto.getTipoModalidad()));
+        servicio.setModalidadInscripcion(Modalidad.valueOf(dto.getModalidadInscripcion()));
+        servicio.setModalidadClases(ModalidadClases.valueOf(dto.getModalidadClases()));
 
         servicio.getTipoFrecuenciaPago().setCantCiclo(dto.getCantCiclo());
         servicio.getTipoFrecuenciaPago().setUnidadCiclo(dto.getUnidadCiclo());

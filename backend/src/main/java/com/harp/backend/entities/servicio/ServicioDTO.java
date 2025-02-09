@@ -58,7 +58,9 @@ public class ServicioDTO {
     private int cantHorariosPorGrupo;
 
     // Modalidad: puede ser AGrupo AServicio
-    private String tipoModalidad;
+    private String modalidadInscripcion;
+
+    private String modalidadClases;
 
 
     private LocalDate fechaInicio;
