@@ -61,7 +61,7 @@ const DescubrirServicios = () => {
 
   return (
     <Container style={{ marginTop: "20vh" }}>
-      {/* Botón "Mis Inscripciones" */}
+      {/* Botón "Mis Inscripciones" 
       {hasInscriptions && (
         <Button
           style={{
@@ -80,6 +80,7 @@ const DescubrirServicios = () => {
           Mis Inscripciones
         </Button>
       )}
+        */}
 
       <Card style={{ padding: "20px", borderRadius: "10px" }}>
         <h2

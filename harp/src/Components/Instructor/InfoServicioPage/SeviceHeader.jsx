@@ -9,6 +9,7 @@ import { getGruposDeServicio } from "../../../services/Grupo";
 import { getResumenReseniasDeServicio } from "../../../services/Reseñas";
 import { deshabilitarInscripcionesDeServicio, habilitarInscripcionesDeServicio } from "../../../services/Inscripcion";
 import ActionSection from "./AccionesServicioCard";
+import { generarLinkMaps } from "../../../services/Servicio";
 
 function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }) {
   const [instructor, setInstructor] = useState(null);
@@ -171,7 +172,19 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
             </Link>
           </p>
 
-          <p className=" mt-3">
+          <p>
+            <strong>Ubicación: </strong>
+            <a href={generarLinkMaps(serviceData.ubicacion)}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Ver en Google Maps"
+              className="text-primary fw-semibold">
+              {serviceData.ubicacion} <i className="bi bi-geo-alt-fill"></i>
+            </a>
+
+          </p>
+
+          <p >
             <strong>Clase de prueba:</strong>{" "}
             {serviceData?.claseDePrueba == true ? "Gratis" : "No incluida"}
           </p>
@@ -182,7 +195,7 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
               : "Sin definir"}
           </p>
 
-           {/*
+          {/*
           <Col md="6" className="mb-2" style={{ width: "100%" }}>
             <div className="ms-auto d-flex align-items-center">
               <strong className="me-2">Publicar Servicio:</strong>
@@ -215,13 +228,13 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
         </Col>
         {/* BarraResumen y ActionSection en la misma fila */}
         <Row className="mt-3 align-items-start">
-          { sePuedeEditar && 
-             <Col md={3}>
-             <ActionSection
-               serviceData={serviceData}
-               cantGrupos={cantGrupos}
-             />
-           </Col>
+          {sePuedeEditar &&
+            <Col md={3}>
+              <ActionSection
+                serviceData={serviceData}
+                cantGrupos={cantGrupos}
+              />
+            </Col>
           }
           <Col md={sePuedeEditar ? 9 : 12}>
             <BarraResumen

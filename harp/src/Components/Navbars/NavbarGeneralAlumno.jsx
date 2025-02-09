@@ -6,99 +6,93 @@ import img from "../../assets/LogoHarp420.png";
 import profileImg from "../../assets/profile.png";
 import { getInscripcionesDeAlumno } from "../../services/Alumno";
 
-function NavbarGeneralAlumno() {
-  const navigate = useNavigate();
-  const [inscripciones, setInscripciones] = useState([]);
-  const { idAlumno } = useParams();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedInscripcion, setSelectedInscripcion] = useState(null);
+function NavbarGeneralAlumno({ inscripcionesConCuotas }) {
+    const navigate = useNavigate();
+    const { idAlumno } = useParams();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchInscripciones = async () => {
-      try {
-        const data = await getInscripcionesDeAlumno(idAlumno);
-        setInscripciones(data);
-      } catch (error) {
-        console.error("Error al traer las inscripciones del alumno:", error);
-      }
+    const toggleDropdown = () => {
+        setDropdownOpen(!dropdownOpen);
     };
-    fetchInscripciones();
-  }, [idAlumno]);
 
-  const toggleDropdown = () => {
-      setDropdownOpen(!dropdownOpen);
-    };
-  
     return (
-      <Navbar
-        expand="lg"
-        fixed="top"
-        style={{
-          fontFamily: "Roboto",
-          backgroundColor: "#1E1B4B",
-          color: "white",
-          fontSize: "1.2rem",
-        }}
-      >
-        <div className="container-fluid d-flex align-items-center">
-          <Navbar.Brand href="/" className="mx-auto">
-            <img
-              src={img}
-              alt="Harp Logo"
-              style={{
-                height: "auto",
-                maxHeight: "50px",
-              }}
-              className="d-none d-lg-block"
-            />
-            <img
-              src={img}
-              alt="Harp Logo"
-              style={{
-                height: "auto",
-                maxHeight: "40px",
-              }}
-              className="d-lg-none"
-            />
-          </Navbar.Brand>
-  
-          <Navbar.Toggle
-            aria-controls="navbarNav"
-            onClick={toggleDropdown}
-            style={{ border: "none" }}
-          />
-  
-          <Navbar.Collapse id="navbarNav" className={dropdownOpen ? "show" : ""}>
-            <Nav className="mx-auto d-flex justify-content-center w-100">
-              <Nav.Link
-                href={`/alumno/${idAlumno}/inscripciones`}
-                style={{ color: "white" }}
-              >
-                Mis Inscripciones
-              </Nav.Link>
-              <Nav.Link
-                href={`/alumno/${idAlumno}/inscripciones/pagos`}
-                style={{ color: "white" }}
-              >
-                Pagos
-              </Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
+        <Navbar
+            expand="lg"
+            fixed="top"
+            style={{
+                fontFamily: "Roboto",
+                backgroundColor: "#1E1B4B",
+                color: "white",
+                fontSize: "1.2rem",
+            }}
+        >
+            <div className="container-fluid d-flex align-items-center">
+                <Navbar.Brand href="/" className="mx-auto">
+                    <img
+                        src={img}
+                        alt="Harp Logo"
+                        style={{
+                            height: "auto",
+                            maxHeight: "50px",
+                        }}
+                        className="d-none d-lg-block"
+                    />
+                    <img
+                        src={img}
+                        alt="Harp Logo"
+                        style={{
+                            height: "auto",
+                            maxHeight: "40px",
+                        }}
+                        className="d-lg-none"
+                    />
+                </Navbar.Brand>
 
-        <div className="d-flex align-items-center">
-          <Dropdown align="end">
-            <Dropdown.Toggle id="dropdown-profile" style={{ background: "none", border: "none", padding: "0", cursor: "pointer" }}>
-              <img src={profileImg} alt="Profile" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", backgroundColor: "gray" }} />
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/editar-usuario`)}>Editar perfil</Dropdown.Item>
-              <Dropdown.Item onClick={() => navigate("/")}>Cerrar sesión</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-      </div>
-      <style>
-        {`
+                <Navbar.Toggle
+                    aria-controls="navbarNav"
+                    onClick={toggleDropdown}
+                    style={{ border: "none" }}
+                />
+
+                <Navbar.Collapse id="navbarNav" className={dropdownOpen ? "show" : ""}>
+                    <Nav className="mx-auto d-flex justify-content-center w-100">
+                        <Nav.Link
+                            href={`/alumno/${idAlumno}/inscripciones`}
+                            style={{ color: "white" }}
+                        >
+                            Mis Inscripciones
+                        </Nav.Link>
+                        {inscripcionesConCuotas &&
+                            <Nav.Link
+                                href={`/alumno/${idAlumno}/inscripciones/pagos`}
+                                style={{ color: "white" }}
+                            >
+                                Pagos
+                            </Nav.Link>
+                        }
+                        <Nav.Link
+                            href={`/alumno/${idAlumno}/descubrir-servicios`}
+                            style={{ color: "white" }}
+                        >
+                            Descubrir
+                        </Nav.Link>
+                    </Nav>
+                </Navbar.Collapse>
+
+                <div className="d-flex align-items-center">
+                    <Dropdown align="end">
+                        <Dropdown.Toggle id="dropdown-profile" style={{ background: "none", border: "none", padding: "0", cursor: "pointer" }}>
+                            <img src={profileImg} alt="Profile" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", backgroundColor: "gray" }} />
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/editar-usuario`)}>Editar perfil</Dropdown.Item>
+                            <Dropdown.Item onClick={() => navigate("/")}>Cerrar sesión</Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </div>
+            </div>
+            <style>
+                {`
           .custom-dropdown .dropdown-toggle::after {
             border-top: 0.24em solid white; /* Color blanco para la flecha */
             border-right: 0.25em solid transparent;
@@ -151,9 +145,9 @@ function NavbarGeneralAlumno() {
             max-height: 50px; /* Controlar la altura de las imágenes */
           }
         `}
-      </style>
-    </Navbar>
-  );
+            </style>
+        </Navbar>
+    );
 }
 
 export default NavbarGeneralAlumno;

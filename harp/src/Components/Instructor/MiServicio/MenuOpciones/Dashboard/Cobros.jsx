@@ -76,7 +76,7 @@ const Cobros = () => {
 
   // Navegar a la página de pagos
   const handleGoToPayments = (idAlumno) => {
-    navigate(`/cobros?alumno=${idAlumno}`);
+    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/cobros?alumno=${idAlumno}`);
   };
 
   // Navegar a la página del alumno
