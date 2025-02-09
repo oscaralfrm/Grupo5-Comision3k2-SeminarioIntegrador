@@ -60,7 +60,7 @@ public class AsistenciaService implements IAsistenciaService{
         Asistencia asistenciaExistente = this.findAsistencia(idAsistencia);
         asistenciaExistente.setAsistio(asistio);
         asistenciaExistente.setObservaciones(observaciones);
-        System.out.println("id" + asistenciaExistente.getId() + "asistio" + asistenciaExistente.isAsistio());
+        System.out.println("id" + asistenciaExistente.getId() + "asistio" + asistenciaExistente.getAsistio());
         return asistenciaRepository.save(asistenciaExistente);
     };
 

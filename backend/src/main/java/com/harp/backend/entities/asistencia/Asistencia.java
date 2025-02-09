@@ -27,7 +27,7 @@ public class Asistencia {
     @JoinColumn(name = "clase_id")
     private Clase clase;
 
-    private boolean asistio = true;
+    private Boolean asistio = null;
 
     private String observaciones;
 

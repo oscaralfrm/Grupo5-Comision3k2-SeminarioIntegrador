@@ -427,8 +427,9 @@ public class GrupoService implements IGrupoService {
 
     public AsistenciaResumenDTO calcularAsistenciasEInasistencias(Long idAlumno, Long idGrupo) {
         List<Asistencia> asistencias = this.obtenerAsistenciasDeAlumnoYGrupo(idAlumno, idGrupo);
-        int totalAsistencias = asistencias.size();
-        int cantAsistencias = (int) asistencias.stream().filter(Asistencia::isAsistio).count();
+        List<Asistencia> asistenciasReales = asistencias.stream().filter(asistencia -> asistencia.getAsistio() != null).toList();
+        int totalAsistencias = asistenciasReales.size();
+        int cantAsistencias = (int) asistenciasReales.stream().filter(Asistencia::getAsistio).count();
         int cantInasistencias = totalAsistencias - cantAsistencias;
         AsistenciaResumenDTO resumen = asistenciaService.createResumenAsistenciaDTO(idAlumno, idGrupo, cantAsistencias, cantInasistencias);
         return resumen;
