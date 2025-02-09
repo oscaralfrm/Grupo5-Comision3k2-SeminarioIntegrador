@@ -11,9 +11,8 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
   const [servicioIniciado, setServicioIniciado] = useState(false);
   const [fechaInicioServicio, setFechaInicioServicio] = useState(null);
   const [claseHoy, setClaseHoy] = useState(null); // Clase del día actual
-  const {idAlumno, idInscripcion} = useParams();
+  const { idAlumno, idInscripcion } = useParams();
   const navigate = useNavigate();
-
 
   const fetchData = async () => {
     try {
@@ -25,13 +24,13 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
       let clasesTotales = [];
       let clasesFuturas = [];
 
-        // Obtener clases del grupo
-        const clasesGrupo = await getClasesDeGrupo(grupoId);
-        clasesTotales.push(...clasesGrupo);
+      // Obtener clases del grupo
+      const clasesGrupo = await getClasesDeGrupo(grupoId);
+      clasesTotales.push(...clasesGrupo);
 
-        // Obtener clases futuras del grupo
-        const futurasClases = await getClasesFuturasDeGrupo(grupoId);
-        clasesFuturas.push(...futurasClases);
+      // Obtener clases futuras del grupo
+      const futurasClases = await getClasesFuturasDeGrupo(grupoId);
+      clasesFuturas.push(...futurasClases);
 
       // Calcular clases completadas
       const hoy = new Date();
@@ -46,10 +45,7 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
       setClasses(clasesTotales);
 
       // Encontrar la clase del día actual
-      const claseDeHoy = clasesTotales.find(cls => {
-        const fechaClase = new Date(cls.fecha);
-        return fechaClase.toDateString() === hoy.toDateString();
-      });
+      const claseDeHoy = clasesTotales.find(cls => isToday(cls));
       setClaseHoy(claseDeHoy);
 
     } catch (error) {
@@ -67,14 +63,36 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
 
   const handleNavigate = () => {
     navigate(`/alumno/${idAlumno}/inscripciones/${idInscripcion}/mi-inscripcion/asistencias`);
-};
+  };
 
   // Función para formatear la fecha y hora de las clases
   const formatearClase = (clase) => {
-    const fecha = new Date(clase.fecha);
+    // Crear un objeto de fecha en la zona horaria local
+    const fecha = new Date(clase.fecha + "T00:00:00"); // Añadir la hora para evitar desfases
+
+    // Formatear la fecha en la zona horaria local
+    const fechaFormateada = fecha.toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "long",
+      timeZone: "UTC", // Forzar a usar UTC para evitar desfases
+    });
+
     const diaSemana = clase.horario.diaSemana.nombre;
-    const hora = clase.horario.horaInicio;
-    return `${diaSemana} ${fecha.getDate()} a las ${hora}`;
+    const horaInicio = clase.horario.horaInicio;
+    return `${diaSemana} ${fechaFormateada} a las ${horaInicio}`;
+  };
+
+  // Función para verificar si una clase es hoy
+  const isToday = (clase) => {
+    const today = new Date();
+    const classDate = new Date(clase.fecha + "T00:00:00"); // Añadir la hora para evitar desfases
+
+    // Comparar solo el día, mes y año
+    return (
+      today.getFullYear() === classDate.getFullYear() &&
+      today.getMonth() === classDate.getMonth() &&
+      today.getDate() === classDate.getDate()
+    );
   };
 
   return (
@@ -110,8 +128,8 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
 
         {asistenciasActivas && (
           <button
-          onClick={handleNavigate}
-          style={{
+            onClick={handleNavigate}
+            style={{
               backgroundColor: "#4F46E5",
               color: "white",
               padding: "10px 20px",
@@ -119,10 +137,10 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
               border: "none",
               cursor: "pointer",
               fontSize: "14px"
-          }}
-      >
-          Historial
-      </button>
+            }}
+          >
+            Historial
+          </button>
         )}
       </div>
 
@@ -147,14 +165,6 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
             {clasesCompletadas}
           </p>
         </div>
-        {/*
-          <div>
-          <p style={{ margin: 0, fontSize: "0.9em" }}>Numero de inscriptos</p>
-          <p style={{ margin: 0, fontWeight: "bold", fontSize: "1em" }}>
-            {inscripciones.length}
-          </p>
-        </div>
-        */}
       </div>
 
       {asistenciasActivas ? (

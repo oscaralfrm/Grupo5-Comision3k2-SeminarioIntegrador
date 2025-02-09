@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getServicioById } from "../../../../../services/Servicio.js";
+import { FaMapMarkerAlt, FaCalendarAlt, FaMoneyBillWave, FaUserCheck, FaClipboardCheck, FaEye, FaEyeSlash, FaCog } from "react-icons/fa";
 
 const InfoCard = ({ serviceData, setServiceData }) => {
   const [showDetails, setShowDetails] = useState(true);
-  //const [serviceData, setServiceData] = useState(null);
   const { idServicio } = useParams();
   const { idInstructor } = useParams();
-  const navigate = useNavigate();  // Hook para navegar
+  const navigate = useNavigate();
 
   const toggleDetails = () => setShowDetails(!showDetails);
 
@@ -24,13 +24,8 @@ const InfoCard = ({ serviceData, setServiceData }) => {
   }, [idServicio]);
 
   const handleVerServicio = () => {
-    // Cambiar la ruta según lo que necesites
-    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/info-servicio`);  // Ejemplo de ruta dinámica
+    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/info-servicio`);
   };
-
-  //const {idServicio} = useParams();
-
-  //const toggleDetails = () => setShowDetails(!showDetails);
 
   const cardStyle = {
     backgroundColor: "white",
@@ -65,6 +60,19 @@ const InfoCard = ({ serviceData, setServiceData }) => {
     display: "flex",
     justifyContent: "space-between",
     marginTop: "10px",
+  };
+
+  const sectionStyle = {
+    marginBottom: "15px",
+    padding: "15px",
+    borderRadius: "8px",
+    backgroundColor: "#f0f0f0", // Fondo más oscuro para resaltar las secciones
+  };
+
+  const iconStyle = {
+    marginRight: "8px",
+    verticalAlign: "middle",
+    color: "#4F46E5", // Color para los iconos
   };
 
   return (
@@ -107,37 +115,36 @@ const InfoCard = ({ serviceData, setServiceData }) => {
       </div>
 
       {showDetails && (
-        <div style={{ textAlign: "left", marginTop: "10px" }}>
-          <p>
-            <strong>Ubicación:</strong> {serviceData?.ubicacion}
-          </p>
-          {/*
+        <div style={{ marginTop: "10px" }}>
+          <div style={sectionStyle}>
             <p>
-            <strong>Descripción:</strong> {serviceData?.descripcion}
-          </p>
-          */}
-          <p>
-            <strong>Tipo de Servicio:</strong> {serviceData?.categoria?.nombre}
-          </p>
-          <p>
-            <strong>Fecha inicio:</strong> {serviceData?.fechaInicio || "Sin definir"}
-          </p>
-          <p>
-            <strong>Modalidad de Cobro:</strong> {serviceData?.tipoFrecuenciaPago?.nombre}
-          </p>
-          <p>
-            <strong>Inscripciones:</strong> {serviceData?.inscripcionesAbiertas === true ? "Habilitadas" : "Inhabilitadas"}
-          </p>
-          <p>
-            <strong>Asistencias:</strong> {serviceData?.asistenciasActivas === true ? "Activas" : "Inactivas"}
-          </p>
-          <p>
-            <strong>Clase prueba:</strong> {serviceData?.claseDePruba === 1 ? "Si" : "No"}
-          </p>
-          <p>
-            <strong>Publicado:</strong> {serviceData?.publico === 1 ? "Si" : "No"}
-          </p>
+              <FaMapMarkerAlt style={iconStyle} />
+              <strong>Ubicación:</strong> {serviceData?.ubicacion}
+            </p>
+            <p>
+              <FaCalendarAlt style={iconStyle} />
+              <strong>Fecha inicio:</strong> {serviceData?.fechaInicio || "Sin definir"}
+            </p>
+          </div>
 
+          <div style={sectionStyle}>
+            <p>
+              <FaUserCheck style={iconStyle} />
+              <strong>Inscripciones:</strong> {serviceData?.inscripcionesAbiertas === true ? "Habilitadas" : "Inhabilitadas"}
+            </p>
+            <p>
+              <FaClipboardCheck style={iconStyle} />
+              <strong>Asistencias:</strong> {serviceData?.asistenciasActivas === true ? "Activas" : "Inactivas"}
+            </p>
+            <p>
+              <FaEye style={iconStyle} />
+              <strong>Clase prueba:</strong> {serviceData?.claseDePruba === 1 ? "Si" : "No"}
+            </p>
+            <p>
+              <FaEyeSlash style={iconStyle} />
+              <strong>Publicado:</strong> {serviceData?.publico === 1 ? "Si" : "No"}
+            </p>
+          </div>
         </div>
       )}
 
@@ -147,7 +154,7 @@ const InfoCard = ({ serviceData, setServiceData }) => {
         </button>
         <button
           type="button"
-          onClick={handleVerServicio}  // Acción de navegar
+          onClick={handleVerServicio}
           style={{
             ...buttonStyle,
             backgroundColor: "white",
@@ -157,6 +164,7 @@ const InfoCard = ({ serviceData, setServiceData }) => {
             borderStyle: "solid",
           }}
         >
+          <FaCog style={iconStyle} />
           Configurar
         </button>
       </div>
