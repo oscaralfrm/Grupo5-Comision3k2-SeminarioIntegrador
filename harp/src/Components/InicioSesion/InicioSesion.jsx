@@ -54,7 +54,7 @@ export const LoginForm = () => {
                 if (alumno) {
                     const userProfileId = alumno.id; // Usar el id del alumno directamente
                     console.log('ID del alumno encontrado:', userProfileId); // Log del idAlumno
-                    navigate(`/alumno/${userProfileId}/inscripciones`);
+                    navigate(`/alumno/${userProfileId}/descubrir-servicios`);
                 } else {
                     console.error('Alumno no encontrado');
                     setErrorMessage('No se encontró el alumno.');

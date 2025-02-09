@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaBell } from "react-icons/fa";
-import StudentsCard from "./Alumnos";
-import ReviewCarousel from "./Reseñas";
-import ClassesCard from "./Clases";
+import { FaBell, FaEye } from "react-icons/fa";
 import { Form } from "react-bootstrap";
 import {
   getInscripcionesDeServicio,
@@ -14,7 +11,7 @@ import {
 import { useParams } from "react-router-dom";
 import EnrollmentModal from "./ModalAceptarRechazarInscripcion.jsx";
 import SuccessModal from "../../../../CartelDeExito/CartelDeExito.jsx";
-
+import AlumnoInfoModal from "./AlumnoInfoModal.jsx"; // Importar el nuevo modal
 
 export function calcularEdad(fechaNacimiento) {
   const hoy = new Date();
@@ -29,6 +26,7 @@ export function calcularEdad(fechaNacimiento) {
   return edad;
 }
 
+// Exportar la función calcularAntiguedadComoTexto
 export function calcularAntiguedadComoTexto(fechaRegistro) {
   const hoy = new Date();
   const registro = new Date(fechaRegistro);
@@ -57,21 +55,18 @@ export function calcularAntiguedadComoTexto(fechaRegistro) {
 }
 
 const Enrollments = ({ habilitadas, fetchServicio }) => {
-  const [showDetail, setShowDetail] = useState(false);
-  const [selectedEnrollment, setSelectedEnrollment] = useState(null);
+  const [enrollments, setEnrollments] = useState([]);
   const [acceptedEnrollments, setAcceptedEnrollments] = useState([]);
   const [rejectedEnrollments, setRejectedEnrollments] = useState([]);
   const [showAcceptedList, setShowAcceptedList] = useState(false);
-  const [enrollments, setEnrrolments] = useState([]);
   const [inscriptionsSwitchActive, setInscriptionsSwitchActive] = useState(habilitadas);
-  const [modalType, setModalType] = useState("accept"); // "accept" o "reject"
-
+  const [modalType, setModalType] = useState("accept");
   const [showModal, setShowModal] = useState(false);
   const [selectedEnrollmentForModal, setSelectedEnrollmentForModal] = useState(null);
-
-  // Estados para el SuccessModal reutilizable
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [showAlumnoInfoModal, setShowAlumnoInfoModal] = useState(false);
+  const [selectedAlumnoId, setSelectedAlumnoId] = useState(null);
 
   const { idServicio } = useParams();
 
@@ -85,7 +80,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
     const fetchInscripciones = async () => {
       try {
         const data = await getInscripcionesDeServicio(idServicio, false, true);
-        setEnrrolments(data);
+        setEnrollments(data);
       } catch (error) {
         console.error("Error al traer las solicitudes de inscripción:", error);
       }
@@ -94,20 +89,12 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
     setInscriptionsSwitchActive(habilitadas);
   }, [idServicio, habilitadas]);
 
-  const handleCloseDetail = () => {
-    setShowDetail(false);
-    setSelectedEnrollment(null);
-  };
-
-  // Función para abrir el modal según la acción
   const openModal = (enroll, type) => {
     setSelectedEnrollmentForModal(enroll);
     setModalType(type);
     setShowModal(true);
   };
 
-
-  // Ejemplo de funciones de aceptación y rechazo
   const handleAcceptEnrollment = async (enrollment, selectedDate) => {
     try {
       await aceptarInscripcion(idServicio, enrollment.id, selectedDate);
@@ -119,7 +106,6 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
 
   const handleRejectEnrollment = async (enrollment, reason) => {
     try {
-      // Aquí llamarías a la función que rechaza la inscripción, pasando el motivo si es necesario
       await rechazarInscripcion(idServicio, enrollment.id, reason);
       setRejectedEnrollments([...rejectedEnrollments, enrollment]);
     } catch (error) {
@@ -127,7 +113,6 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
     }
   };
 
-  // Función que se ejecuta al enviar desde el modal
   const handleModalSubmit = async (enrollment, inputValue) => {
     try {
       if (modalType === "accept") {
@@ -137,18 +122,12 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
         await handleRejectEnrollment(enrollment, inputValue);
         setSuccessMessage("La inscripción ha sido rechazada exitosamente.");
       }
-      // Mostramos el modal de éxito y cerramos el EnrollmentModal
       setShowSuccessModal(true);
-      handleCloseModal();
+      setShowModal(false);
     } catch (error) {
       console.error("Error en el envío del modal:", error);
     }
   };
-
-  const handleToggleAcceptedList = () => {
-    setShowAcceptedList(!showAcceptedList);
-  };
-
 
   const toggleInscriptions = async () => {
     const newStatus = !inscriptionsSwitchActive;
@@ -169,10 +148,12 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
     }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedEnrollmentForModal(null);
+  const handleShowAlumnoInfo = (alumnoId) => {
+    setSelectedAlumnoId(alumnoId);
+    setShowAlumnoInfoModal(true);
   };
+
+  
 
   return (
     <div
@@ -184,7 +165,6 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         maxWidth: "90%",
         width: "90%",
-        marginTop: "3vh",
         margin: "4vh auto",
       }}
     >
@@ -217,18 +197,6 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
         </Form>
       </div>
 
-      <style>
-        {`
-          @media (max-width: 500px) {
-            .responsive-container {
-              flex-direction: column;
-              justify-content: center;
-              align-items: center;
-            }
-          }
-        `}
-      </style>
-
       {inscriptionsSwitchActive ? (
         <div style={{ width: "100%", marginTop: "20px" }}>
           {pendingEnrollments.length > 0 ? (
@@ -243,31 +211,21 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
                 }}
               >
                 <span style={{ flex: "1 1 60%" }}>
-                  {enroll.alumno.usuario.nombre + " " + enroll.alumno.usuario.apellido}
+                  {enroll.alumno.usuario.nombre} {enroll.alumno.usuario.apellido}
                 </span>
-                <span style={{ flex: "1 1 60%" }}>{enroll.grupo.nombre}</span>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flex: "1 1 40%",
-                  }}
-                >
-                  {/*
+                <span style={{ flex: "1 1 40%" }}>{enroll.grupo.nombre}</span>
+                <div style={{ display: "flex", justifyContent: "flex-end", flex: "1 1 40%" }}>
                   <button
-                    onClick={() => handleDetailClick(enroll)}
+                    onClick={() => handleShowAlumnoInfo(enroll.alumno.id)}
                     style={{
-                      backgroundColor: "#4F46E5",
-                      color: "#fff",
+                      backgroundColor: "transparent",
                       border: "none",
-                      padding: "4px 8px",
-                      marginRight: "4px",
-                      borderRadius: "4px",
+                      cursor: "pointer",
+                      marginRight: "8px",
                     }}
                   >
-                    Detalle
+                    <FaEye style={{ color: "#4F46E5", fontSize: "1.2em" }} />
                   </button>
-                  */}
                   <button
                     onClick={() => openModal(enroll, "accept")}
                     style={{
@@ -319,7 +277,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
                 cursor: "pointer",
                 fontSize: "1.25em",
               }}
-              onClick={handleToggleAcceptedList}
+              onClick={() => setShowAcceptedList(!showAcceptedList)}
             >
               Nuevos Inscriptos ({acceptedEnrollments.length})
             </h3>
@@ -337,7 +295,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
                       }}
                     >
                       <span style={{ flex: "1 1 60%" }}>
-                        {enroll.alumno.usuario.nombre + " " + enroll.alumno.usuario.apellido}
+                        {enroll.alumno.usuario.nombre} {enroll.alumno.usuario.apellido}
                       </span>
                       <span style={{ flex: "1 1 40%" }}>{enroll.grupo.nombre}</span>
                     </div>
@@ -356,16 +314,23 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
         </div>
       )}
 
-      {/* Modal para aceptar inscripción */}
+      {/* Modal para aceptar/rechazar inscripción */}
       <EnrollmentModal
         show={showModal}
-        onClose={handleCloseModal}
+        onClose={() => setShowModal(false)}
         onSubmit={handleModalSubmit}
         enrollment={selectedEnrollmentForModal}
         type={modalType}
       />
 
-      {/* Success Modal reutilizable */}
+      {/* Modal para ver la información del alumno */}
+      <AlumnoInfoModal
+        show={showAlumnoInfoModal}
+        onClose={() => setShowAlumnoInfoModal(false)}
+        alumnoId={selectedAlumnoId}
+      />
+
+      {/* Modal de éxito */}
       <SuccessModal
         show={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}

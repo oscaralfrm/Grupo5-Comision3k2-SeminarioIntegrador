@@ -3,6 +3,7 @@ import placeholderImage from "../../assets/placeholderForServices.png";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import { getAllServiciosPublicosSinAlumno } from "../../services/Servicio";
+import { getInscripcionesDeAlumno } from "../../services/Alumno"; // Importar el servicio
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { armarStringPrecioYFrecuenciaCobro } from "../../services/frecuenciaPago";
 
@@ -14,7 +15,7 @@ const DescubrirServicios = () => {
   const [page, setPage] = useState(0);
   const [size] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [hasInscriptions, setHasInscriptions] = useState(false); // Estado para controlar si tiene inscripciones
 
   const renderStars = (rating) => {
     const safeRating = Math.min(5, Math.max(0, rating || 0));
@@ -41,7 +42,19 @@ const DescubrirServicios = () => {
         console.error("Error al obtener servicios:", error);
       }
     };
+
+    const checkInscripciones = async () => {
+      try {
+        const inscripciones = await getInscripcionesDeAlumno(idAlumno);
+        // Verificamos si el array de inscripciones tiene al menos un elemento
+        setHasInscriptions(inscripciones.length > 0);
+      } catch (error) {
+        console.error("Error al verificar inscripciones:", error);
+      }
+    };
+
     fetchServicios();
+    checkInscripciones(); // Llamamos a la función para verificar inscripciones
   }, [page, idAlumno, size]);
 
   const filteredServicios = servicios.filter((servicio) =>
@@ -56,11 +69,31 @@ const DescubrirServicios = () => {
 
   return (
     <Container style={{ marginTop: "20vh" }}>
+      {/* Botón "Mis Inscripciones" */}
+      {hasInscriptions && (
+        <Button
+          style={{
+            position: "fixed",
+            top: "100px",
+            right: "20px",
+            backgroundColor: "#4F46E5",
+            borderColor: "#4F46E5",
+            fontSize: "1rem",
+            padding: "10px 20px",
+            borderRadius: "10px",
+            zIndex: 1000,
+          }}
+          onClick={() => navigate(`/alumno/${idAlumno}/inscripciones`)}
+        >
+          Mis Inscripciones
+        </Button>
+      )}
+
       <Card style={{ padding: "20px", borderRadius: "10px" }}>
         <h2
           style={{
             textAlign: "center",
-            marginBottom: "20px",
+            marginBottom: "5px",
             color: "#1E1B4B",
             fontFamily: "Roboto",
           }}
@@ -163,13 +196,17 @@ const DescubrirServicios = () => {
                           </p>
                         </Card.Body>
 
-                        <div className="d-flex justify-content-between align-items-center" >
-                          <p className="mb-0" style={{marginLeft:"15px"}}>
-                           <strong>Desde:</strong> 
-                           <strong style={{fontSize:"1.5rem"}}> {armarStringPrecioYFrecuenciaCobro(servicio.montoMinimo, 
-                              servicio.tipoFrecuenciaPago?.cantCiclo,
-                              servicio.tipoFrecuenciaPago?.unidadCiclo
-                            )}   </strong>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <p className="mb-0" style={{ marginLeft: "15px" }}>
+                            <strong>Desde:</strong>
+                            <strong style={{ fontSize: "1.5rem" }}>
+                              {" "}
+                              {armarStringPrecioYFrecuenciaCobro(
+                                servicio.montoMinimo,
+                                servicio.tipoFrecuenciaPago?.cantCiclo,
+                                servicio.tipoFrecuenciaPago?.unidadCiclo
+                              )}{" "}
+                            </strong>
                           </p>
                           <Button
                             size="sm"
