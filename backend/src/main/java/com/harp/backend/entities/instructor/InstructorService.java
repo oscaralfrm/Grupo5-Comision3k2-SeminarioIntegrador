@@ -9,6 +9,7 @@ import com.harp.backend.entities.usuario.service.IUsuarioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
@@ -93,8 +94,15 @@ public class InstructorService implements IInstructorService {
         instructorExistente.getUsuario().setDireccion(instructorDTO.getDireccion());
         instructorExistente.getUsuario().setContrasena(instructorDTO.getContrasena());
         instructorExistente.getUsuario().setFechaNacimiento(instructorDTO.getFechaNacimiento());
+        instructorExistente.getUsuario().setFotoPerfilURL(instructorDTO.getFotoPerfilURL());
 
         return instructorRepository.save(instructorExistente);
+    }
+
+    public void editarFotoPerfil(Long idInstructor, String fotoPerfilURL) {
+        Instructor instructor = this.findInstructor(idInstructor);
+        instructor.getUsuario().setFotoPerfilURL(fotoPerfilURL);
+        instructorRepository.save(instructor);
     }
 
     public void agregarServicioAInstructor(Servicio servicio, Long idInstructor) {
@@ -132,6 +140,16 @@ public class InstructorService implements IInstructorService {
                 .filter(i -> i.tieneEsteServicio(servicio))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementFoundException("No se encontró el instructor del servicio."));
+    }
+
+    public void completarDatosBancariosDeInstructor(Long idInstructor, DatosBancarios datosBancarios) {
+        Instructor instructor = this.findInstructor(idInstructor);
+        instructor.completarDatosBancarios(datosBancarios);
+        instructorRepository.save(instructor);
+    }
+
+    public boolean tieneDatosBancariosCompletos(Long idInstructor) {
+        return this.findInstructor(idInstructor).tieneDatosBancariosCompletos();
     }
 
 }

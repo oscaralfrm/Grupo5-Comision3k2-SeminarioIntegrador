@@ -18,9 +18,10 @@ public interface IAlumnoService {
     Alumno createAlumno(AlumnoDTO alumnoDTO);
     void deleteAlumno(Long idAlumno);
     Alumno findAlumno(Long idAlumno);
-    Alumno editAlumno(Alumno alumno);
+    Alumno editAlumno(Long idAlumno, AlumnoDTO alumnoDTO);
     List<Inscripcion> findInscripcionesDeAlumno(Long idAlumno);
     public List<Inscripcion> findInscripcionesVigentesDeAlumno(Long idAlumno);
     List<Cuota> obtenerHistorialCuotasEsteAlumnoYServicio(Long idAlumno, Long idServicio);
     Map<Long, List<Clase>> obtenerClasesDeAlumno(Long idAlumno, boolean proximas, boolean anteriores);
+    void editarFotoPerfil(Long idAlumno, String fotoPerfilURL);
 }

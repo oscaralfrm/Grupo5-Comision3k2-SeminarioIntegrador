@@ -7,6 +7,8 @@ import com.harp.backend.entities.asistencia.Asistencia;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.instructor.Instructor;
+import com.harp.backend.entities.instructor.InstructorDTO;
 import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.perfil.service.IPerfilService;
 import com.harp.backend.entities.servicio.IServicioService;
@@ -89,8 +91,27 @@ public class AlumnoService implements IAlumnoService {
     }
 
     @Override
-    public Alumno editAlumno(Alumno alumno) {
-        return alumnoRepository.save(alumno);
+    public Alumno editAlumno(Long idAlumno, AlumnoDTO alumnoDTO) {
+        Alumno alumnoExistente = this.findAlumno(idAlumno);
+        //instructorExistente = instructorConverter.dtoToEntity(instructorDTO);
+        //instructorExistente.setId(idInstructor);
+
+        alumnoExistente.getUsuario().setNombre(alumnoDTO.getNombre());
+        alumnoExistente.getUsuario().setApellido(alumnoDTO.getApellido());
+        //instructorExistente.getUsuario().setEmail(instructorDTO.getEmail());
+        alumnoExistente.getUsuario().setTelefono(alumnoDTO.getTelefono());
+        alumnoExistente.getUsuario().setDireccion(alumnoDTO.getDireccion());
+        alumnoExistente.getUsuario().setContrasena(alumnoDTO.getContrasena());
+        alumnoExistente.getUsuario().setFechaNacimiento(alumnoDTO.getFechaNacimiento());
+        alumnoExistente.getUsuario().setFotoPerfilURL(alumnoDTO.getFotoPerfilURL());
+
+        return alumnoRepository.save(alumnoExistente);
+    }
+
+    public void editarFotoPerfil(Long idAlumno, String fotoPerfilURL) {
+        Alumno alumno = this.findAlumno(idAlumno);
+        alumno.getUsuario().setFotoPerfilURL(fotoPerfilURL);
+        alumnoRepository.save(alumno);
     }
 
     public void agregarInscripcionAAlumno(Inscripcion inscripcion, Alumno alumnoExistente) {

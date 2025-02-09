@@ -58,6 +58,9 @@ public class Usuario {
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
+    // Foto de perfil
+    private String fotoPerfilURL;
+
     // Relación con las Suspensiones... 1 a N
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -89,6 +92,7 @@ public class Usuario {
         this.direccion = instructorDTO.getDireccion();
         this.fechaNacimiento = instructorDTO.getFechaNacimiento();
         this.fechaRegistro = LocalDate.now();
+        this.fotoPerfilURL = instructorDTO.getFotoPerfilURL();
     }
 
     public Usuario(AlumnoDTO alumnoDTO) {
@@ -102,5 +106,6 @@ public class Usuario {
         this.fechaNacimiento = alumnoDTO.getFechaNacimiento();
         this.fechaRegistro = LocalDate.now();
         this.dni = alumnoDTO.getDni();
+        this.fotoPerfilURL = alumnoDTO.getFotoPerfilURL();
     }
 }

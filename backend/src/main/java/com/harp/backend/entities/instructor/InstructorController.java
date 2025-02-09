@@ -1,6 +1,7 @@
 package com.harp.backend.entities.instructor;
 
 import com.harp.backend.entities.categoria.Categoria;
+import com.harp.backend.entities.servicio.FileStorageService;
 import com.harp.backend.entities.servicio.Servicio;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 @RestController
@@ -18,6 +21,9 @@ public class InstructorController {
 
     @Autowired
     private IInstructorService instructorService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @GetMapping
     public ResponseEntity<List<Instructor>> getAllInstructores() {
@@ -59,8 +65,16 @@ public class InstructorController {
         return ResponseEntity.status(HttpStatus.OK).body(idInstructor);
     };
 
-    @PostMapping
-    public ResponseEntity<Instructor> saveInstructor(@RequestBody InstructorDTO instructorDTO) {
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<Instructor> saveInstructor(@ModelAttribute InstructorDTO instructorDTO) {
+        MultipartFile fotoPerfil = instructorDTO.getFotoPerfil();
+
+        if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
+            String fotoPerfilURL = fileStorageService.storeFile(fotoPerfil, "uploads/instructores/fotos-perfil/");
+
+            instructorDTO.setFotoPerfilURL(fotoPerfilURL);
+        }
+
         Instructor nuevoInstructor = instructorService.createInstructor(instructorDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoInstructor);
     }
@@ -73,10 +87,55 @@ public class InstructorController {
     };
 
     // EDITAR
-    @PutMapping("/{idInstructor}")
-    public ResponseEntity<Instructor> editarInstructor(@PathVariable @Min(1) Long idInstructor, @RequestBody InstructorDTO instructorDTO) {
+    @PutMapping(value = "/{idInstructor}", consumes = {"multipart/form-data"})
+    public ResponseEntity<Instructor> editarInstructor(@PathVariable @Min(1) Long idInstructor, @ModelAttribute InstructorDTO instructorDTO) {
+
+        MultipartFile fotoPerfil = instructorDTO.getFotoPerfil();
+
+        System.out.println("Servicio recibido: " + instructorDTO);
+        System.out.println("Archivo recibido: " + (fotoPerfil != null ? fotoPerfil.getOriginalFilename() : "No se envió archivo"));
+        if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
+            // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
+            // y retornar la URL donde se encuentra
+            String logoUrl = fileStorageService.storeFile(fotoPerfil, "uploads/instructores/fotos-perfil/");
+            // Se asigna la URL al DTO para que el servicio la use
+            instructorDTO.setFotoPerfilURL(logoUrl);
+        }
+
         Instructor instructorEditado = instructorService.editInstructor(idInstructor, instructorDTO);
         return ResponseEntity.status(HttpStatus.OK).body(instructorEditado);
+    }
+
+    // EDITAR
+    @PutMapping(value = "/{idInstructor}/foto-perfil", consumes = {"multipart/form-data"})
+    public ResponseEntity<String> editarFotoPerfilInstructor(@PathVariable @Min(1) Long idInstructor, @ModelAttribute InstructorDTO instructorDTO) {
+        MultipartFile fotoPerfil = instructorDTO.getFotoPerfil();
+
+        System.out.println("Servicio recibido: " + instructorDTO);
+        System.out.println("Archivo recibido: " + (fotoPerfil != null ? fotoPerfil.getOriginalFilename() : "No se envió archivo"));
+        if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
+            // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
+            // y retornar la URL donde se encuentra
+            String logoUrl = fileStorageService.storeFile(fotoPerfil, "uploads/instructores/fotos-perfil");
+            // Se asigna la URL al DTO para que el servicio la use
+            instructorDTO.setFotoPerfilURL(logoUrl);
+        }
+        instructorService.editarFotoPerfil(idInstructor, instructorDTO.getFotoPerfilURL());
+        return ResponseEntity.status(HttpStatus.OK).body("La foto de perfil ha sido editada.");
+    }
+
+    // EDITAR
+    @PutMapping("/{idInstructor}/datos-bancarios")
+    public ResponseEntity<String> completarDatosBancarios(@PathVariable @Min(1) Long idInstructor, @RequestBody DatosBancarios datosBancarios) {
+        instructorService.completarDatosBancariosDeInstructor(idInstructor, datosBancarios);
+        return ResponseEntity.status(HttpStatus.OK).body("Los datos bancarios fueron completados.");
+    }
+
+    // TIENE DATOS COMPLETOS BANCARIOS
+    @GetMapping("/{idInstructor}/datos-bancarios-completos")
+    public ResponseEntity<Boolean> tieneDatosBancariosCompletos(@PathVariable @Min(1) Long idInstructor) {
+        boolean response = instructorService.tieneDatosBancariosCompletos(idInstructor);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

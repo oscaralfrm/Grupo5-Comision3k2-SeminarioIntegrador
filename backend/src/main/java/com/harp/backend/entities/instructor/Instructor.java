@@ -44,18 +44,18 @@ public class Instructor {
     @Column(name = "descripcion")
     private String descripcion;
 
-    // Foto de perfil
-    private String fotoURL;
-    private String cuit; // private String cuil
+    @OneToOne(mappedBy = "instructor", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private DatosBancarios datosBancarios;
 
-    // Datos bancarios
-    private String alias;
-    private String bic; // (Bank Identifier Code)
-    private String cbu;
-    // Datos adicionales
-    private String tipoCuenta;          // Por ejemplo, "Cuenta Corriente" o "Caja de Ahorro"
-    private String banco;               // Nombre o código del banco
+    //private byte[] cv;
 
+    public void completarDatosBancarios(DatosBancarios datosBancarios) {
+        this.datosBancarios.completarDatos(datosBancarios);
+    }
+
+    public boolean tieneDatosBancariosCompletos() {
+        return this.datosBancarios.estanCompletos();
+    }
 
     public void agregarServicio(Servicio servicio) {
         servicios.add(servicio);

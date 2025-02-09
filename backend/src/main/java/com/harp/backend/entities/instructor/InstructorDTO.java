@@ -3,6 +3,7 @@ package com.harp.backend.entities.instructor;
 import com.harp.backend.entities.servicio.Servicio;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -39,4 +40,8 @@ public class InstructorDTO {
     private String direccion;
 
     private LocalDate fechaNacimiento;
+
+    private MultipartFile fotoPerfil;
+
+    private String fotoPerfilURL;
 }
