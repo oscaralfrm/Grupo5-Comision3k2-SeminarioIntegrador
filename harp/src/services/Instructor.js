@@ -53,18 +53,118 @@ export const calcularIngresosPorMesDeServicios = async (idInstructor) => {
   }
 };
 
-export const createInstructor = async (nombre, apellido, dni, nombreUsuario, contrasena, 
-  email, telefono, direccion, fechaNacimiento) => {
+const transformarDTOaFormData = (dto) => {
+  const formDataToSend = new FormData();
+  formDataToSend.append("nombre", dto.nombre);
+  formDataToSend.append("apellido", dto.apellido);
+  formDataToSend.append("dni", dto.dni);
+  formDataToSend.append("nombreUsuario", dto.nombreUsuario);
+  formDataToSend.append("contrasena", dto.contrasena);
+  formDataToSend.append("direccion", dto.direccion);
+  formDataToSend.append("email", dto.email);
+  formDataToSend.append("telefono", dto.telefono);
+  formDataToSend.append("fechaNacimiento", dto.fechaNacimiento);
+  if (dto.fotoPerfil) {
+    formDataToSend.append("fotoPerfil", dto.fotoPerfil);
+  }
+  return formDataToSend;
+}
+
+
+export const createInstructor = async (nombre, apellido, dni, nombreUsuario, contrasena,
+  email, telefono, direccion, fechaNacimiento, fotoPerfil) => {
+
+  const formDataToSend = transformarDTOaFormData({ nombre, apellido, dni, nombreUsuario, contrasena,
+    email, telefono, direccion, fechaNacimiento, fotoPerfil });
+
+
   try {
-    console.log("En service", nombre)
-    const response = await axios.post(`${BASE_URL}`, {nombre, apellido, dni, nombreUsuario, contrasena, 
-      email, telefono, direccion, fechaNacimiento});
-    return response.data;
+    const response = await fetch(`http://localhost:9001/api/instructores`, {
+      method: 'POST',
+      body: formDataToSend
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al crear el instructor: ${response.status} - ${response.statusText} - ${JSON.stringify(errorData)}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error saving new instructor:', error);
     throw error;
   }
 };
+
+export const editInstructor = async ({  idInstructor, nombre, apellido, dni, nombreUsuario, contrasena, 
+  email, telefono, direccion, fechaNacimiento, fotoPerfil }) => {
+  
+  const formDataToSend = transformarDTOaFormData({ nombre, apellido, dni, nombreUsuario, contrasena,
+    email, telefono, direccion, fechaNacimiento, fotoPerfil });
+
+    console.log([...formDataToSend.entries()]);
+
+  try {
+    const response = await fetch(`http://localhost:9001/api/instructores/${idInstructor}`, {
+      method: 'PUT',
+      body: formDataToSend
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al editar el instructor: ${response.status} - ${response.statusText} - ${JSON.stringify(errorData)}`);
+    }
+
+    const data = await response.json();
+    return data;
+} catch (error) {
+  console.error(`Error editing instructor with ID ${idInstructor}:`, error);
+  throw error;
+}
+};
+
+export const editFotoPerfil = async (idInstructor, fotoFile) => {
+    try {
+      const response = await fetch(`http://localhost:9001/api/instructores/${idInstructor}/foto-perfil`, {
+        method: 'PUT',
+        body: {fotoPerfil : fotoFile}
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Error al editar foto de perfil del instructor: ${response.status} - ${response.statusText} - ${JSON.stringify(errorData)}`);
+      }
+  
+      const data = await response.json();
+      return data;
+  } catch (error) {
+    console.error('Error editando la foto de perfil:', error);
+    throw error;
+  }
+};
+
+
+export const completarDatosBancarios = async (idInstructor, alias, cbu, banco, cuit, tipoCuenta) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/${idInstructor}/datos-bancarios`, { alias, cbu, banco, cuit, tipoCuenta });
+    return response.data;
+  } catch (error) {
+    console.error('Error completando datos bancarios:', error);
+    throw error;
+  }
+};
+
+export const tieneDatosBancariosCompletos = async (idInstructor) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/${idInstructor}/datos-bancarios-completos`);
+    return response.data;
+  } catch (error) {
+    console.error('Error completando datos bancarios:', error);
+    throw error;
+  }
+};
+
 
 export const deleteInstructor = async (idInstructor) => {
   try {
@@ -75,15 +175,8 @@ export const deleteInstructor = async (idInstructor) => {
   }
 };
 
-export const editInstructor = async (idInstructor, nombre, apellido, dni,email,contrasena, telefono, fechaNacimiento) => {
-  try {
-    const response = await axios.put(`${BASE_URL}/${idInstructor}`, {nombre, apellido, dni,email, contrasena, telefono, fechaNacimiento});
-    return response.data;
-  } catch (error) {
-    console.error(`Error editing instructor with ID ${idInstructor}:`, error);
-    throw error;
-  }
-};
+
+
 
 export const iniciarSesion = async (email, contrasena) => {
   try {

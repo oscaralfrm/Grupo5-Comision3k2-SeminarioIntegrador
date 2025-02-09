@@ -32,7 +32,8 @@ export const RegisterFormInstructor = () => {
         data.email,
         data.telefono,
         data.direccion,
-        data.fechaNacimiento
+        data.fechaNacimiento,
+        data.fotoPerfil[0]
       );
       navigate(`/instructor/${instructorCreado.id}/servicios`);
       //navigate(`/instructor/${instructorCreado.id}/crear-servicio`);

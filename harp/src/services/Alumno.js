@@ -44,29 +44,98 @@ export const getAlumnosDeGrupo = async (idServicio, idGrupo) => {
 };
 
 
+const transformarDTOaFormData = (dto) => {
+    const formDataToSend = new FormData();
+    formDataToSend.append("nombre", dto.nombre);
+    formDataToSend.append("apellido", dto.apellido);
+    formDataToSend.append("dni", dto.dni);
+    formDataToSend.append("nombreUsuario", dto.nombreUsuario);
+    formDataToSend.append("contrasena", dto.contrasena);
+    formDataToSend.append("direccion", dto.direccion);
+    formDataToSend.append("email", dto.email);
+    formDataToSend.append("telefono", dto.telefono);
+    formDataToSend.append("fechaNacimiento", dto.fechaNacimiento);
+    if (dto.fotoPerfil) {
+      formDataToSend.append("fotoPerfil", dto.fotoPerfil);
+    }
+    return formDataToSend;
+  }
+
+
 // Servicio para crear un alumno
-export const createAlumno = async (nombre, apellido, dni, nombreUsuario, contrasena, 
-    email, telefono, direccion, fechaNacimiento) => {
-    try {
-        const response = await axios.post(`/alumnos`, {nombre, apellido, dni, nombreUsuario, contrasena, 
-            email, telefono, direccion, fechaNacimiento});
-        return response.data;  // Suponiendo que la respuesta es el alumno creado
+export const createAlumno = async ({nombre, apellido, dni, nombreUsuario, contrasena, 
+    email, telefono, direccion, fechaNacimiento, fotoPerfil }) => {
+   
+  const formDataToSend = transformarDTOaFormData({nombre, apellido, dni, nombreUsuario, contrasena,
+    email, telefono, direccion, fechaNacimiento, fotoPerfil });
+
+    console.log([...formDataToSend.entries()]);
+
+  try {
+    const response = await fetch(`http://localhost:9001/api/alumnos`, {
+      method: 'POST',
+      body: formDataToSend
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al crear el alumno: ${response.status} - ${response.statusText} - ${JSON.stringify(errorData)}`);
+    }
+
+    const data = await response.json();
+    return data;
     } catch (error) {
         console.error("Error creating alumno: ", error);
         throw error;
     }
 };
 
+
 // Servicio para editar un alumno
 export const editAlumno = async (alumnoId, nombre, apellido, dni, nombreUsuario, contrasena, 
-    email, telefono, direccion, fechaNacimiento) => {
-    try {
-        const response = await axios.put(`/alumnos/${alumnoId}`, {nombre, apellido, dni, nombreUsuario, contrasena, 
-            email, telefono, direccion, fechaNacimiento});
-        return response.data;  // Suponiendo que la respuesta es el alumno actualizado
+    email, telefono, fechaNacimiento, fotoPerfil) => {
+        
+    const formDataToSend = transformarDTOaFormData(nombre, apellido, dni, nombreUsuario, contrasena,
+        email, telefono, fechaNacimiento, fotoPerfil);
+
+        console.log("Alumno milti", formDataToSend);
+    
+      try {
+        const response = await fetch(`http://localhost:9001/api/alumnos/${alumnoId}`, {
+          method: 'PUT',
+          body: formDataToSend
+        });
+    
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Error al editar el instructor: ${response.status} - ${response.statusText} - ${JSON.stringify(errorData)}`);
+        }
+    
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.error("Error editing alumno: ", error);
         throw error;
+    }
+};
+
+export const editFotoPerfil = async (idAlumno, fotoFile) => {
+    try {
+        const response = await fetch(`http://localhost:9001/api/alumnos/${idAlumno}/foto-perfil`, {
+            method: 'PUT',
+            body: {fotoPerfil : fotoFile}
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error al editar foto de perfil del alumno: ${response.status} - ${response.statusText} - ${JSON.stringify(errorData)}`);
+          }
+      
+          const data = await response.json();
+          return data;
+    } catch (error) {
+      console.error('Error editando la foto de perfil:', error);
+      throw error;
     }
 };
 

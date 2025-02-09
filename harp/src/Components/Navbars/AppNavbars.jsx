@@ -41,16 +41,19 @@ const AppNavbar = () => {
 
   useEffect(() => {
     const fetchInscripciones = async () => {
-      try {
-        const data = await getInscripcionesDeAlumno(idAlumno);
-        setInscripciones(data);
-        console.log("Inscripciones", inscripciones)
-
-        tieneInscripcionesConCuotas(inscripciones);
-
-      } catch (error) {
-        console.error("Error al traer las inscripciones del alumno:", error);
+      if (location.pathname.startsWith(`/alumno/${idAlumno}`) ) {
+        try {
+          const data = await getInscripcionesDeAlumno(idAlumno);
+          setInscripciones(data);
+          console.log("Inscripciones", inscripciones)
+  
+          tieneInscripcionesConCuotas(inscripciones);
+  
+        } catch (error) {
+          console.error("Error al traer las inscripciones del alumno:", error);
+        }
       }
+      
     };
     fetchInscripciones();
   }, [idAlumno]);

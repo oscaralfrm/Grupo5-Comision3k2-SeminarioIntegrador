@@ -91,6 +91,10 @@ function App() {
             path="instructor/:idInstructor/editar-usuario"
             element={<><AppNavbar /><EditUsuario /></>}
           />
+          <Route
+            path="alumno/:idAlumno/editar-usuario"
+            element={<><AppNavbar /><EditUsuario /></>}
+          />
 
 
           // Para alumnos...

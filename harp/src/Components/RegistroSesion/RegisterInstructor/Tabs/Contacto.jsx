@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function Contacto({
   register,
@@ -8,6 +8,20 @@ export default function Contacto({
   goToNextTab,
   data
 }) {
+  // Estado para almacenar la vista previa del logo
+  const [fotoPreview, setFotoPreview] = useState(null);
+
+  // Función para manejar el cambio en el input de tipo file
+  const handleLogoChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      // Crea una URL para mostrar la vista previa del archivo
+      setFotoPreview(URL.createObjectURL(file));
+    }
+    // Si deseas que el cambio del logo también se maneje en handleInputChange, puedes llamarlo aquí:
+    handleInputChange(e);
+  };
+
   return (
     <div>
       {/* Campo Email */}
@@ -33,26 +47,47 @@ export default function Contacto({
         )}
       </div>
 
-      {/* Campo Teléfono */}
+      {/* Campo Nombre de Usuario */}
       <div className="form-group mb-3">
-        <label htmlFor="telefono">Teléfono</label>
+        <label htmlFor="nombreUsuario">Nombre de usuario</label>
         <input
-          type="tel"
-          id="telefono"
-          name="telefono"
-          className={`form-control ${errors?.telefono ? "is-invalid" : ""}`}
-          placeholder="Teléfono"
-          {...register("telefono", {
-            required: "El teléfono es obligatorio",
-            pattern: {
-              value: /^[0-9]{10}$/,
-              message: "El teléfono debe tener 10 dígitos",
-            },
+          type="text"
+          id="nombreUsuario"
+          name="nombreUsuario"
+          className={`form-control ${errors?.nombreUsuario ? "is-invalid" : ""
+            }`}
+          placeholder="Nombre de usuario"
+          {...register("nombreUsuario", {
+            required: "El nombre de usuario es obligatorio",
             onChange: handleInputChange,
           })}
         />
-        {errors?.telefono && (
-          <div className="invalid-feedback">{errors.telefono.message}</div>
+        {errors?.nombreUsuario && (
+          <div className="invalid-feedback">{errors.nombreUsuario.message}</div>
+        )}
+      </div>
+
+      {/* Campo Foto Perfil */}
+      <div className="form-group mb-3">
+        <label htmlFor="fotoPerfil">Foto de Perfil</label>
+        <input
+          type="file"
+          id="fotoPerfil"
+          name="fotoPerfil"
+          className="form-control"
+          {...register("fotoPerfil", {
+            onChange: handleLogoChange,
+          })}
+        />
+        {/* Muestra la vista previa si existe */}
+        {fotoPreview && (
+          <div className="mt-3">
+            <img
+              src={fotoPreview}
+              alt="Vista previa del foto perfil"
+              style={{ maxWidth: "200px", border: "1px solid #ddd", padding: "5px" }}
+            />
+          </div>
         )}
       </div>
 

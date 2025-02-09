@@ -69,7 +69,7 @@ export default function NavbarAlumno() {
               />
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/editar-perfil`)}>
+              <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/editar-usuario`)}>
                 Editar perfil
               </Dropdown.Item>
               <Dropdown.Item onClick={() => navigate("/")}>Cerrar sesión</Dropdown.Item>

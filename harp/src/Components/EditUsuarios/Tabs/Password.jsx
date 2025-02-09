@@ -38,6 +38,8 @@ export default function Password({
     }
   };
 
+
+
   return (
     <div>
       {/* Campo Contraseña */}
@@ -117,13 +119,9 @@ export default function Password({
           &#8592;
         </span>
         {/* Botón para enviar el formulario */}
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={!isValid} // Deshabilitar si el formulario no es válido
-        >
-          Guardar
-        </button>
+      <button type="submit" className="btn btn-primary">
+        Guardar
+      </button>
       </div>
     </div>
   );

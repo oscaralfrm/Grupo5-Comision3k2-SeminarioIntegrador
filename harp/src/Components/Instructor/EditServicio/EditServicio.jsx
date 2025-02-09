@@ -197,6 +197,7 @@ export default function EditServicioForm() {
                                     formData={formData}
                                     goToNextTab={goToNextTab}
                                     goToPreviousTab={goToPreviousTab}
+                                    setValue={setValue}
                                 />
                             </Tab>
                             <Tab eventKey="modalidad" title="Modalidad">

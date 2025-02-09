@@ -23,16 +23,20 @@ export const RegisterFormStudent = () => {
   const onSubmit = async (data) => {
     try {
       console.log(data)
+      const alumnoDTO = {
+        nombre: data.nombre,
+        apellido: data.apellido,
+        dni: data.dni,
+        nombreUsuario: data.nombreUsuario,
+        contrasena: data.contrasena,
+        email: data.email,
+        telefono: data.telefono,
+        direccion: data.direccion,
+        fechaNacimiento: data.fechaNacimiento,
+        fotoPerfil: data.fotoPerfil[0]
+      }
       const alumnoCreado = await createAlumno(
-        data.nombre,
-        data.apellido,
-        data.dni,
-        data.nombreUsuario,
-        data.contrasena,
-        data.email,
-        data.telefono,
-        data.direccion,
-        data.fechaNacimiento
+        alumnoDTO
       );
       navigate(`/alumno/${alumnoCreado.id}/descubrir-servicios`);
     } catch (error) {

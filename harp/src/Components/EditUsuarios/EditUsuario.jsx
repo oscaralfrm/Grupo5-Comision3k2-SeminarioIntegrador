@@ -11,7 +11,9 @@ import DatosPersonales from "./Tabs/DatosPersonales.jsx";
 import Contacto from "./Tabs/Contacto.jsx";
 import InfoCard from "./Tabs/InfoCard.jsx";
 import Password from "./Tabs/Password.jsx";
-import { editAlumno } from "../../services/Alumno.js";
+import {
+  editAlumno
+} from "../../services/Alumno.js";
 
 export const EditUsuario = () => {
   const params = useParams();
@@ -20,6 +22,7 @@ export const EditUsuario = () => {
   const [tipoUsuario, setTipoUsuario] = useState(null);
   const [usuario, setUsuario] = useState(null);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -37,6 +40,8 @@ export const EditUsuario = () => {
       telefono: "",
       email: "",
       contrasena: "",
+      fotoPerfil: "",
+      fotoPerfilURL: ""
     },
   });
 
@@ -80,33 +85,45 @@ export const EditUsuario = () => {
     fetchUsuario();
   }, [id, tipoUsuario, reset]);
 
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("datosPersonales");
 
   const onSubmit = async (data) => {
     try {
       if (tipoUsuario.trim().toLowerCase() === "instructor") {
-        await editInstructor(
-          id,
-          data.nombre,
-          data.apellido,
-          data.dni,
-          usuario.email,
-          data.contrasena,
-          data.telefono,
-          data.fechaNacimiento
-        );
+        const instructorDTO = {
+          idInstructor: id,
+          nombre: data.nombre,
+          apellido: data.apellido,
+          dni: usuario.dni,
+          nombreUsuario: data.nombreUsuario,
+          contrasena: data.contrasena,
+          email: usuario.email,
+          telefono: data.telefono,
+          direccion: usuario.direccion,
+          fechaNacimiento: data.fechaNacimiento
+        }
+        
+        // Si el usuario seleccionó un nuevo archivo, data.logo vendrá como FileList
+        if (data.fotoPerfil && data.fotoPerfil.length > 0 && data.fotoPerfil[0] instanceof File) {
+          instructorDTO.fotoPerfil = data.fotoPerfil[0];
+        }
+        console.log("instructorDTO", instructorDTO);
+        await editInstructor(instructorDTO);
       } else if (tipoUsuario.trim().toLowerCase() === "alumno") {
         await editAlumno(
           id,
           data.nombre,
           data.apellido,
           data.dni,
+          data.nombreUsuario,
           data.contrasena,
+          data.email,
           data.telefono,
-          data.fechaNacimiento
+          data.fechaNacimiento,
+          data.fotoPerfil[0]
         );
       }
+      navigate(-1);
     } catch (error) {
       console.error("Error:", error);
       alert(
@@ -115,13 +132,34 @@ export const EditUsuario = () => {
     }
   };
 
+  const onError = (errors) => {
+    // Construye un mensaje de error
+    let mensaje = "El formulario contiene errores:\n";
+    for (const field in errors) {
+      mensaje += `- ${errors[field].message}\n`;
+    }
+    alert(mensaje);
+  };
+
   const validateField = (fieldName, value) => {
     // Si el valor es igual al inicial, no es necesario validarlo
     if (usuario && value === usuario[fieldName]) return true;
 
-    // Validar que el campo no esté vacío si fue modificado
-    return value.trim() !== "" || "Este campo no puede estar vacío";
+    // Si el valor es una cadena, aplicar trim
+    if (typeof value === "string") {
+      return value.trim() !== "" || "Este campo no puede estar vacío";
+    }
+
+    // Si el campo es, por ejemplo, 'fotoPerfil' (o cualquier campo que no sea string)
+    // Puedes personalizar la validación. Por ejemplo, asegurarte de que se haya seleccionado un archivo:
+    //if (fieldName === "fotoPerfil") {
+    //  return value && value.length > 0 || "Debes seleccionar una foto de perfil";
+    //}
+
+    // Para otros tipos de datos, se puede convertir a cadena o evaluar de otra forma
+    return value ? true : "Este campo no puede estar vacío";
   };
+
 
   const goToNextTab = () => {
     if (activeTab === "datosPersonales") setActiveTab("contacto");
@@ -163,7 +201,7 @@ export const EditUsuario = () => {
         <div style={{ width: "100%" }}>
           <h1 className="mb-1 text-center fs-1">Editar información de cuenta</h1>
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit, onError)}
             className="card shadow-lg rounded-3 bg-light p-4"
             style={{
               width: "100%",

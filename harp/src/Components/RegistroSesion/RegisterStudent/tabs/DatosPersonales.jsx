@@ -121,26 +121,29 @@ export default function DatosPersonales({
         )}
       </div>
 
-      {/* Campo Nombre de Usuario */}
-      <div className="form-group mb-3">
-        <label htmlFor="nombreUsuario">Nombre de usuario</label>
+            {/* Campo Teléfono */}
+            <div className="form-group mb-3">
+        <label htmlFor="telefono">Teléfono</label>
         <input
-          type="text"
-          id="nombreUsuario"
-          name="nombreUsuario"
-          className={`form-control ${
-            errors?.nombreUsuario ? "is-invalid" : ""
-          }`}
-          placeholder="Nombre de usuario"
-          {...register("nombreUsuario", {
-            required: "El nombre de usuario es obligatorio",
+          type="tel"
+          id="telefono"
+          name="telefono"
+          className={`form-control ${errors?.telefono ? "is-invalid" : ""}`}
+          placeholder="Teléfono"
+          {...register("telefono", {
+            required: "El teléfono es obligatorio",
+            pattern: {
+              value: /^[0-9]{10}$/,
+              message: "El teléfono debe tener 10 dígitos",
+            },
             onChange: handleInputChange,
           })}
         />
-        {errors?.nombreUsuario && (
-          <div className="invalid-feedback">{errors.nombreUsuario.message}</div>
+        {errors?.telefono && (
+          <div className="invalid-feedback">{errors.telefono.message}</div>
         )}
       </div>
+
 
       {/* Botón para ir al siguiente tab */}
       <div className="d-flex justify-content-end align-items-center">
