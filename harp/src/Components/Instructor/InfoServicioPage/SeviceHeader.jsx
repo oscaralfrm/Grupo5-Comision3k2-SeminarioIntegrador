@@ -182,6 +182,7 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
               : "Sin definir"}
           </p>
 
+           {/*
           <Col md="6" className="mb-2" style={{ width: "100%" }}>
             <div className="ms-auto d-flex align-items-center">
               <strong className="me-2">Publicar Servicio:</strong>
@@ -208,6 +209,8 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
               </Form>
             </div>
           </Col>
+
+           */}
 
         </Col>
         {/* BarraResumen y ActionSection en la misma fila */}

@@ -33,9 +33,20 @@ export function calcularAntiguedadComoTexto(fechaRegistro) {
   const hoy = new Date();
   const registro = new Date(fechaRegistro);
 
+  if (hoy <= registro ) {
+    return "No iniciado"
+  }
+
+  console.log("Fecha hoy", hoy);
+  console.log("Fecha registro", registro);
+
   let años = hoy.getFullYear() - registro.getFullYear();
   let meses = hoy.getMonth() - registro.getMonth();
   let días = hoy.getDate() - registro.getDate();
+
+  console.log("Anos", años);
+  console.log("MEses", meses);
+  console.log("Dias", días);
 
   if (días < 0) {
     meses--;

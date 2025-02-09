@@ -189,7 +189,7 @@ const Alumnos = () => {
   
                     {/* Información adicional del alumno */}
                     <Card.Text>
-                      <strong>Inscripto hace </strong> {calcularAntiguedadComoTexto(inscripcion.fechaInicio)}
+                      <strong>Inscripto hace </strong> {calcularAntiguedadComoTexto(inscripcion.fechaAceptacion)}
                       <br />
                       <strong>Edad:</strong> {calcularEdad(inscripcion.alumno.usuario.fechaNacimiento)}
                       <br />
