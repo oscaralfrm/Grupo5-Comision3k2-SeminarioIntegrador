@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { Tab, Tabs, Button } from "react-bootstrap";
@@ -173,8 +173,8 @@ export default function EditServicioForm() {
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "row", height: "100vh", fontFamily: "Roboto", flexWrap: "wrap", marginTop: "10vh" }}>
-            <div style={{ flex: 1, padding: "20px", display: "flex", flexDirection: "column", alignItems: "center" }} className="col-12 col-md-12">
+        <div style={{ display: "flex", flexDirection: "row", fontFamily: "Roboto", flexWrap: "wrap", marginTop: "8vh" }}>
+            <div style={{ flex: 1, padding: "0px", display: "flex", flexDirection: "column", alignItems: "center" }} className="col-12 col-md-12">
                 <div className="col-md-12 col-sm-12 p-4">
                     <h1 className="mb-1 text-center fs-1 mb-4">Editar Servicio</h1>
                     <form onSubmit={handleSubmit(onSubmit)} className="card shadow-lg rounded-3 bg-light p-4">
@@ -230,13 +230,14 @@ export default function EditServicioForm() {
             <div
                 style={{
                     flex: 1,
-                    padding: "20px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    minHeight: "calc(100vh - 290px)",
+                    // padding: "20px",
+                    // display: "flex",
+                    // flexDirection: "column",
+                    // alignItems: "center",
+                    // minHeight: "calc(100vh - 290px)",
+                    justifyContent: "center",
                 }}
-                className="col-12 col-md-6 col-lg-12 mt-4 mt-md-0 mb-3"
+                className="d-flex flex-column flex-md-row align-item-center"
             >
                 {Object.keys(formData).length > 0 && <ResumenServicio formData={formData} />}
             </div>

@@ -47,7 +47,7 @@ function App() {
           />
           <Route path="registro/alumno" element={<><AppNavbar /><RegisterFormStudent /></>} />
 
-          // Para instructor...
+          {/* Para Instructor */}
 
           <Route
             path="instructor/:idInstructor/crear-servicio"
@@ -93,7 +93,7 @@ function App() {
           />
 
 
-          // Para alumnos...
+          {/* Para alumnos... */}
 
 
           <Route

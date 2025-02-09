@@ -52,7 +52,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
             <div
               className="card mb-4"
               style={{
-                padding: "15px",
+                padding: "20px",
                 backgroundColor:
                   highlightedCourseId === servicio.id
                     ? "#A5B4FC"
@@ -82,13 +82,13 @@ const CourseCards = ({ servicios, Instructorid }) => {
                     height: "70px",
                     borderRadius: "50%",
                     backgroundColor: "#fff",
-                    border: "2px solid violet",
-                    marginBottom: "15px",
+                    border: "1px solid violet",
+                    marginBottom: "20px",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
                     margin: "0 auto",
-                    marginTop: "10px",
+                    marginTop: "15px",
                   }}
                 >
                   {servicio.logoURL ? (
@@ -96,9 +96,10 @@ const CourseCards = ({ servicios, Instructorid }) => {
                       src={servicio.logoURL}
                       alt={servicio.nombre}
                       style={{
-                        width: "50px",
-                        height: "50px",
+                        width: "100%",
+                        height: "100%",
                         borderRadius: "50%",
+                        objectFit: "cover"
                       }}
                     />
                   ) : (
@@ -141,7 +142,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
                   style={{
                     backgroundColor: "#4F46E5",
                     color: "white",
-                    padding: "20px 6px",
+                    padding: "10px 6px",
                     borderRadius: "4px",
                     textDecoration: "none",
                     fontSize: "14px",

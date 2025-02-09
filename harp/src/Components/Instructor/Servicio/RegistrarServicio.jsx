@@ -153,7 +153,7 @@ export default function ServicioForm() {
       <div
         style={{
           flex: 1,
-          padding: "20px",
+          padding: "5px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
