@@ -104,8 +104,12 @@ const AsistenciasAlumno = () => {
                         <p style={styles.text}>
                             <strong>Asistió:</strong> {asistencia.asistio ? (
                                 <span style={{ color: '#4CAF50' }}>Sí</span>
-                            ) : (
-                                <span style={{ color: '#F44336' }}>No</span>
+                            ) : 
+                            (
+                                asistencia.asistio == false 
+                                ? <span style={{ color: '#F44336' }}>No</span>
+                                : <span style={{ color: '#F44336' }}>Sin definir</span>
+
                             )}
                         </p>
                         {asistencia.clase.observaciones && (

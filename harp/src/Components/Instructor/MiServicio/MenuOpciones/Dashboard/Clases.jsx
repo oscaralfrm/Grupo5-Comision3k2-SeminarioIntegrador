@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getClasesDeServicio } from "../../../../../services/Clase.js";
 import { FaCalendarAlt, FaHandPointer } from "react-icons/fa";

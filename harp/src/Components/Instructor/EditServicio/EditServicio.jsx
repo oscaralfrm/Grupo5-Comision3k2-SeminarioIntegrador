@@ -174,7 +174,7 @@ export default function EditServicioForm() {
 
     return (
         <div style={{ display: "flex", flexDirection: "row", fontFamily: "Roboto", flexWrap: "wrap", marginTop: "8vh" }}>
-            <div style={{ flex: 1, padding: "0px", display: "flex", flexDirection: "column", alignItems: "center" }} className="col-12 col-md-12">
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }} className="col-12 col-md-12">
                 <div className="col-md-12 col-sm-12 p-4">
                     <h1 className="mb-1 text-center fs-1 mb-4">Editar Servicio</h1>
                     <form onSubmit={handleSubmit(onSubmit)} className="card shadow-lg rounded-3 bg-light p-4">
@@ -216,10 +216,12 @@ export default function EditServicioForm() {
                             <Button variant="secondary" onClick={handleCancel}>
                                 Cancelar
                             </Button>
+                            
                             <Button
                                 type="submit"
                                 variant="primary"
                                 disabled={!isValid}
+                                style={{marginLeft: "2vh"}}
                             >
                                 Editar
                             </Button>

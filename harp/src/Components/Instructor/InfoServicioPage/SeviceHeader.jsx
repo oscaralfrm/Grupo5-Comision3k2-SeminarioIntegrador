@@ -225,17 +225,9 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
            */}
 
         </Col>
-        {/* BarraResumen y ActionSection en la misma fila */}
+        {/* BarraResumen en la misma fila */}
         <Row className="mt-3 align-items-start">
-          {sePuedeEditar &&
-            <Col md={3}>
-              <ActionSection
-                serviceData={serviceData}
-                cantGrupos={cantGrupos}
-              />
-            </Col>
-          }
-          <Col md={sePuedeEditar ? 9 : 12}>
+          <Col md={12}>
             <BarraResumen
               serviceData={serviceData}
               grupos={grupos}
@@ -245,8 +237,6 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
         </Row>
       </Row>
 
-
-      {/* Columna de acciones */}
 
     </Card >
   );

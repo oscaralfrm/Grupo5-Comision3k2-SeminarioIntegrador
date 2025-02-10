@@ -32,6 +32,7 @@ export const getAllServiciosPublicos = async (page, size) => {
 export const getAllServiciosPublicosSinAlumno = async (page, size, idAlumno) => {
     try {
         const { data } = await axios.get(`${API_URL}servicios/publicos/sin-alumno/${idAlumno}?page=${page}&size=${size}`);
+        console.log("serivico inscripcioenes abiertas", data);
     
         const serviciosArray = Array.isArray(data.content) ? data.content : [];
 

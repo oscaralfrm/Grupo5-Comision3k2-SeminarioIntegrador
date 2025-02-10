@@ -75,13 +75,13 @@ export const LoginForm = () => {
                 overflow: "hidden",
                 padding: "0",
                 margin: "0",
-                height: "90vh",
+                height: "85vh",
                 display: "flex",
                 flexDirection: "column",
             }}
         >
             <div className="row h-100">
-                <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center bg-light" style={{ height: '100%', maxHeight: '90vh' }}>
+                <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center bg-light" style={{ height: '100%'}}>
                     <img
                         src={PanaTeacher}
                         alt="Login Illustration"
@@ -90,17 +90,17 @@ export const LoginForm = () => {
                             maxHeight: '60%',
                             width: 'auto',
                             maxWidth: '400px',
-                            objectFit: 'contain'
+                            objectFit: 'cover'
                         }}
                     />
                 </div>
 
-                <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center" style={{ height: '100%', maxHeight: '90vh' }}>
+                <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center" style={{ height: '100%'}}>
                     <div
                         className="col-md-8 col-sm-10"
                         style={{
                             height: "auto",
-                            marginTop: "1em",
+                            // marginTop: "1em",
                             marginBottom: "0.5em",
                         }}
                     >
