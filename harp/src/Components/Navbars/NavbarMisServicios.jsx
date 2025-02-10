@@ -108,9 +108,9 @@ export default function NavbarMisServicios() {
             </Dropdown.Toggle>
             <Dropdown.Menu style={{ marginTop: ".8rem" }}>
               <Dropdown.Item
-                onClick={() => navigate(`/instructor/${idInstructor}/editar-usuario`)}
+                onClick={() => navigate(`/instructor/${idInstructor}/perfil/ver-perfil`)}
               >
-                Editar perfil
+                Ver perfil
               </Dropdown.Item>
               <Dropdown.Item onClick={() => navigate("/")}>
                 Cerrar sesión

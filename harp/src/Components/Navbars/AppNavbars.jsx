@@ -28,7 +28,7 @@ const AppNavbar = () => {
   const isInstructorService = location.pathname === `/instructor/${idInstructor}/servicios`;
   const isLogin = location.pathname === `/login`;
   const isCreateServiceRoute = location.pathname === `/instructor/${idInstructor}/crear-servicio`;
-  const isNavbarSimple = location.pathname === `/instructor/${idInstructor}/editar-usuario`;
+  const isProfile = location.pathname.includes("perfil");
   const isRegisterRoute = location.pathname.startsWith('/registro');
   const isAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicios`; // Nueva condición para alumnos
   const isAlumnosDashRoute = location.pathname === `/alumno/${idAlumno}/inscripciones/${idInscripcion}/mi-inscripcion`
@@ -74,7 +74,10 @@ const AppNavbar = () => {
       {/* Muestra NavbarServicio en la ruta de creación de servicio */}
       {isCreateServiceRoute && <NavbarServicio />}
       {isEditService && <NavbarSimple />}
-      {isNavbarSimple && <NavbarSimple />}
+
+       {/* Para ver perfil y editar perfil de usuario */}
+      {isProfile && <NavbarSimple />}
+
       {isConfigService && <NavbarMisServicios />}
       {/* Muestra NavbarRegisterChooser en rutas de registro */}
       {isRegisterRoute && <NavbarRegisterChooser />}

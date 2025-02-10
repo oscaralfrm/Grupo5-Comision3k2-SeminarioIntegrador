@@ -51,7 +51,7 @@ export const getAllServiciosPublicosSinAlumno = async (page, size, idAlumno) => 
             return {
                 ...servicio,
                 instructorId: instructor.id,
-                instructorNombre: instructor.usuario.nombre,
+                instructorNombre: instructor.usuario.nombre + " " + instructor.usuario.apellido,
                 resumen,
                 montoMinimo,
             };
