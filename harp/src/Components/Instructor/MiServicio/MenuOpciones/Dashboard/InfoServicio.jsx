@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getServicioById } from "../../../../../services/Servicio.js";
 import { FaMapMarkerAlt, FaCalendarAlt, FaMoneyBillWave, FaUserCheck, FaClipboardCheck, FaEye, FaEyeSlash, FaCog } from "react-icons/fa";
@@ -87,7 +87,15 @@ const InfoCard = ({ serviceData, setServiceData }) => {
         {showDetails && (
           <img
             alt="Logo del servicio"
-            style={logoStyle}
+            style={{
+              ...logoStyle,
+              width: "100px",
+              height: "100px",
+              objectFit: "cover",
+              borderRadius: "50%",
+              display: "block",
+              margin: "0 auto",
+            }}
             src={serviceData?.logoURL}
           />
         )}
@@ -102,7 +110,7 @@ const InfoCard = ({ serviceData, setServiceData }) => {
         >
           {serviceData?.nombre}
         </h2>
-        {showDetails &&
+        {showDetails && (
           <p
             style={{
               fontSize: "1em",
@@ -112,7 +120,8 @@ const InfoCard = ({ serviceData, setServiceData }) => {
             }}
           >
             {serviceData?.categoria?.nombre}
-          </p>}
+          </p>
+        )}
       </div>
 
       {showDetails && (
@@ -124,22 +133,28 @@ const InfoCard = ({ serviceData, setServiceData }) => {
             </p>
             <p>
               <FaCalendarAlt style={iconStyle} />
-              <strong>Fecha inicio:</strong> {serviceData?.fechaInicio || "Sin definir"}
+              <strong>Fecha inicio:</strong>{" "}
+              {serviceData?.fechaInicio || "Sin definir"}
             </p>
           </div>
 
           <div style={sectionStyle}>
             <p>
               <FaUserCheck style={iconStyle} />
-              <strong>Inscripciones:</strong> {serviceData?.inscripcionesAbiertas ? "Habilitadas" : "Inhabilitadas"}
+              <strong>Inscripciones:</strong>{" "}
+              {serviceData?.inscripcionesAbiertas
+                ? "Habilitadas"
+                : "Inhabilitadas"}
             </p>
             <p>
               <FaClipboardCheck style={iconStyle} />
-              <strong>Asistencias:</strong> {serviceData?.asistenciasActivas ? "Activas" : "Inactivas"}
+              <strong>Asistencias:</strong>{" "}
+              {serviceData?.asistenciasActivas ? "Activas" : "Inactivas"}
             </p>
             <p>
               <FaEye style={iconStyle} />
-              <strong>Clase prueba:</strong> {serviceData?.claseDePruba ? "Si" : "No"}
+              <strong>Clase prueba:</strong>{" "}
+              {serviceData?.claseDePruba ? "Si" : "No"}
             </p>
             <p>
               <FaEyeSlash style={iconStyle} />
