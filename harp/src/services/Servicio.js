@@ -221,14 +221,47 @@ export const publicarServicio = async (idServicio, fechaInicio) => {
         const response = await axios.put(`${API_URL}servicios/${idServicio}/publicar`, fechaInicio);
         return response.data;
     } catch (error) {
-        console.error('Error al obtener el servicio', error.response.data.message);
+        console.error('Error al publicar el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
+    }
+};
+
+export const suspenderServicio = async (idServicio) => {
+    try {
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/suspender`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al suspender el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
+    }
+};
+
+export const renaudarServicio = async (idServicio) => {
+    try {
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/renaudar`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al renaudar el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
+    }
+};
+
+export const finalizarServicio = async (idServicio, fechaFin) => {
+    try {
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/finalizar`, fechaFin);
+        return response.data;
+    } catch (error) {
+        console.error('Error al suspender el servicio', error.response.data.message);
         const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
         throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
 
-
+{/*
 export const sePuedePublicarServicio = async (idServicio) => {
     try {
         const response = await axios.get(`${API_URL}servicios/${idServicio}/se-puede-publicar`);
@@ -251,6 +284,8 @@ export const sePuedeSuspenderServicio = async (idServicio) => {
         throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
+*/}
+
 
 
 export const sePuedeServicio = async (idServicio) => {

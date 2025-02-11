@@ -3,21 +3,31 @@ import ServiceHeader from "./SeviceHeader";
 import GruposServicio from "./Grupos/GruposServicio";
 import MontosServicio from "./Monto/MontosServicio";
 import ReviewCarousel from "../MiServicio/MenuOpciones/Dashboard/Reseñas";
-import { Row, Col, Button } from "react-bootstrap";
+import { Row, Col, Button, Modal } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
-import { getServicioById, sePuedeServicio } from "../../../services/Servicio";
+import { deleteServicio, getServicioById, renaudarServicio, sePuedeServicio, suspenderServicio } from "../../../services/Servicio";
 import Descripcion from "./Descripcion/Descripcion";
 import ModalPublicarServicio from "./ModalPublicarServicio";
 import { getGruposDeServicio } from "../../../services/Grupo";
-import AccionesServicioCard from "./AccionesServicioCard";
-import InstructorInfo from "./InstructorInfo/InstructorInfo";
+import ConfirmModal from "../../CartelDeExito/ModalConfirmacion";
+import SuccessModal from "../../CartelDeExito/CartelDeExito";
+import ModalFinalizarServicio from "./ModalFinalizarServicio";
 
 const InfoServicioPage = () => {
-  const { idServicio } = useParams();
+  const { idServicio, idInstructor } = useParams();
+  const navigate = useNavigate();
   const [serviceData, setServiceData] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [servicioSePuede, setServicioSePuede] = useState(null);
+  const [showModalPublicar, setShowModalPublicar] = useState(false);
+  const [showModalFinalizar, setShowModalFinalizar] = useState(false);
+  const [servicioSePuede, setServicioSePuede] = useState({});
   const [grupos, setGrupos] = useState([]);
+
+
+  // Estado para el modal de confirmación
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [accionSeleccionada, setAccionSeleccionada] = useState(null);
+  const [handleConfirm, setHandleConfirm] = useState(null);
 
   // Detectamos el ancho de la ventana para aplicar estilos condicionales
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -46,14 +56,25 @@ const InfoServicioPage = () => {
     fetchServicio();
   }, [idServicio]);
 
-  const handleOpenModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
 
-  const handlePublicar = () => setShowModal(true);
-  const handleEliminar = () => setShowModal(true);
-  const handleSuspender = () => setShowModal(true);
-  const handleFinalizar = () => setShowModal(true);
-  const handleRenaudar = () => setShowModal(true);
+  // Función para abrir el modal, pasando la acción y su handler
+  const handleOpenConfirmModal = (accion, confirmFunction) => {
+    setAccionSeleccionada(accion);
+    setHandleConfirm(() => confirmFunction);
+    setShowConfirmModal(true);
+  };
+
+  const handleCloseConfirmModal = () => {
+    setShowConfirmModal(false);
+    setAccionSeleccionada(null);
+    fetchServicio();
+  };
+
+  const handleOpenModalPublicar = () => setShowModalPublicar(true);
+  const handleCloseModalPublicar = () => setShowModalPublicar(false);
+
+  const handleOpenModalFinalizar = () => setShowModalFinalizar(true);
+  const handleCloseModalFinalizar = () => setShowModalFinalizar(false);
 
   // Reservamos en el contenedor principal el espacio que ocupa el contenedor fijo.
   // En pantallas grandes (donde los botones se muestran en su tamaño máximo)
@@ -91,12 +112,12 @@ const InfoServicioPage = () => {
     <div className="container mt-4" style={containerStyle}>
       {serviceData ? (
         <>
-        <ServiceHeader
-          serviceData={serviceData}
-          sePuedeEditar={true}
-          fetchServicio={fetchServicio}
-          cantGrupos={grupos?.length}
-        />
+          <ServiceHeader
+            serviceData={serviceData}
+            sePuedeEditar={true}
+            fetchServicio={fetchServicio}
+            cantGrupos={grupos?.length}
+          />
         </>
       ) : (
         <p>Cargando servicio...</p>
@@ -139,76 +160,136 @@ const InfoServicioPage = () => {
       )}
 
       <ModalPublicarServicio
-        handleCloseModal={handleCloseModal}
+        handleCloseModal={handleCloseModalPublicar}
         fetchServicio={fetchServicio}
         serviceData={serviceData}
         setServiceData={setServiceData}
-        showModal={showModal}
+        showModal={showModalPublicar}
+      />
+
+      <ModalFinalizarServicio
+        handleCloseModal={handleCloseModalFinalizar}
+        fetchServicio={fetchServicio}
+        serviceData={serviceData}
+        setServiceData={setServiceData}
+        showModal={showModalFinalizar}
+      />
+
+      <ConfirmModal
+        show={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirm}
+        title="Confirmar acción"
+        message={"¿Estás seguro de que deseas " + accionSeleccionada + " el servicio?"}
+      />
+
+      {/* Modal de éxito */}
+      <SuccessModal
+        show={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title={"Se ha completado la accion"}
+        message={""}
       />
 
       {/* Contenedor fijo de botones */}
-      <div style={fixedBottomStyle}>
-        {servicioSePuede?.suspender && (
-          <div className="flex-shrink-0">
-            <Button
-              variant="primary"
-              onClick={handleSuspender}
-              style={buttonResponsiveStyle}
-              className="fw-bold"
-            >
-              Suspender
-            </Button>
-          </div>
-        )}
-        {servicioSePuede?.finalizar && (
-          <div className="flex-shrink-0">
-            <Button
-              variant="primary"
-              onClick={handleFinalizar}
-              style={buttonResponsiveStyle}
-              className="fw-bold"
-            >
-              Finalizar
-            </Button>
-          </div>
-        )}
-        {servicioSePuede?.eliminar && (
-          <div className="flex-shrink-0">
-            <Button
-              variant="primary"
-              onClick={handleEliminar}
-              style={buttonResponsiveStyle}
-              className="fw-bold"
-            >
-              Eliminar
-            </Button>
-          </div>
-        )}
-        {servicioSePuede?.publicar && (
-          <div className="flex-shrink-0">
-            <Button
-              variant="primary"
-              onClick={handlePublicar}
-              style={buttonResponsiveStyle}
-              className="fw-bold"
-            >
-              Publicar
-            </Button>
-          </div>
-        )}
-        {servicioSePuede?.renaudar && (
-          <div className="flex-shrink-0">
-            <Button
-              variant="primary"
-              onClick={handleRenaudar}
-              style={buttonResponsiveStyle}
-              className="fw-bold"
-            >
-              Renaudar
-            </Button>
-          </div>
-        )}
-      </div>
+      {Object.values(servicioSePuede).some(valor => valor === true) &&
+        <div style={fixedBottomStyle}>
+          {servicioSePuede?.suspender && (
+            <div className="flex-shrink-0">
+              <Button
+                variant="primary"
+                onClick={() =>
+                  handleOpenConfirmModal("Suspender", async () => {
+                    await suspenderServicio(idServicio);
+                    setShowSuccessModal(true);
+                    handleCloseConfirmModal();
+                  })
+                }
+                style={buttonResponsiveStyle}
+                className="fw-bold"
+              >
+                Suspender
+              </Button>
+            </div>
+          )}
+          {servicioSePuede?.renaudar && (
+            <div className="flex-shrink-0">
+              <Button
+                variant="primary"
+                onClick={() =>
+                  handleOpenConfirmModal("Renaudar", async () => {
+                    await renaudarServicio(idServicio);
+                    setShowSuccessModal(true);
+                    handleCloseConfirmModal();
+                  })
+                }
+                style={buttonResponsiveStyle}
+                className="fw-bold"
+              >
+                Renaudar
+              </Button>
+            </div>
+          )}
+          {servicioSePuede?.finalizar && (
+            <div className="flex-shrink-0">
+              <Button
+                variant="primary"
+                onClick={handleOpenModalFinalizar}
+                style={buttonResponsiveStyle}
+                className="fw-bold"
+              >
+                Finalizar
+              </Button>
+            </div>
+          )}
+          {servicioSePuede?.eliminar && (
+            <div className="flex-shrink-0">
+              <Button
+                variant="primary"
+                onClick={() =>
+                  handleOpenConfirmModal("Eliminar", async () => {
+                    await deleteServicio(idServicio);
+                    setShowSuccessModal(true);
+                    navigate(`/instructor/${idInstructor}/servicios`)
+                  })
+                }
+                style={buttonResponsiveStyle}
+                className="fw-bold"
+              >
+                Eliminar
+              </Button>
+            </div>
+          )}
+          {servicioSePuede?.publicar && (
+            <div className="flex-shrink-0">
+              <Button
+                variant="primary"
+                onClick={handleOpenModalPublicar}
+                style={buttonResponsiveStyle}
+                className="fw-bold"
+              >
+                Publicar
+              </Button>
+            </div>
+          )}
+          {servicioSePuede?.volverAPublicar && (
+            <div className="flex-shrink-0">
+              <Button
+                variant="primary"
+                onClick={handleOpenModalPublicar}
+                style={buttonResponsiveStyle}
+                className="fw-bold"
+              >
+                Reiniciar
+              </Button>
+            </div>
+          )}
+          
+
+        </div>
+      }
+
+
     </div>
   );
 };

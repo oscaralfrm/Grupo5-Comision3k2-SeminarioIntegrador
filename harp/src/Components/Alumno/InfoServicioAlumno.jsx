@@ -8,7 +8,7 @@ import MontosServicio from "../Instructor/InfoServicioPage/Monto/MontosServicio"
 import { getServicioById } from "../../services/Instructor";
 import { getGruposDeServicio } from "../../services/Grupo";
 import ReviewCarousel from "../Instructor/MiServicio/MenuOpciones/Dashboard/Reseñas";
-import InstructorInfo from "../Instructor/InfoServicioPage/InstructorInfo/InstructorInfo";
+import InstructorInfo from "../Instructor/InfoServicioPage/InstructorInfo.jsx/InstructorInfo";
 
 const InfoServicioAlumno = () => {
   const { idServicio } = useParams();

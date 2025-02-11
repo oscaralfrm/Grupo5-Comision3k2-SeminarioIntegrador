@@ -208,6 +208,10 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
                     : serviceData.modalidadClases
                   : "Sin definir"}
               </p>
+              <p>
+                <strong>Estado:</strong>{" "}
+                {serviceData?.estado }
+              </p>
             </Col>
           </Row>
           {/* Fila para la Barra de Resumen */}

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { obtenerCuotasDeInscripcion, obtenerUltimasCuotasDeInscripcion } from "../../../../services/Cuota";
-import { getMontoActualGrupo, getHistorialMontosGrupo, getMontoActualGrupoDeHistorial } from "../../../../services/HistorialMontoCuota";
+import { getHistorialMontosGrupo, getMontoActualGrupoDeHistorial } from "../../../../services/HistorialMontoCuota";
 import { getMontoProgramadoDeHistorial } from "../../../../services/HistorialMontoCuota";
 import ModalPagarCuotaConComprobante from "../../ModalPagarCuotaConComprobante";
 import CuotaCard from "../../ResumenCuota";

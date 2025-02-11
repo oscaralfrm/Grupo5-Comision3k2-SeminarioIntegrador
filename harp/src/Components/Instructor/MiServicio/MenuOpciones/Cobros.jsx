@@ -4,7 +4,7 @@ import { format, parseISO } from "date-fns";
 import { obtenerCuotasDeInscripcion, rechazarPagoCuotaConTrasnferencia } from "../../../../services/Cuota.js";
 import { useParams } from "react-router-dom";
 import { getGruposDeServicio } from "../../../../services/Grupo.js";
-import { definirSiServicioSePuedeActualizarPrecio, getMontoActualGrupo } from "../../../../services/HistorialMontoCuota.js";
+import { definirSiServicioSePuedeActualizarPrecio, getMontoActualGrupoDeHistorial } from "../../../../services/HistorialMontoCuota.js";
 import { getInscripcionesDeServicio, traerUnaInscripcion } from "../../../../services/Inscripcion.js";
 import ActualizarMontoModal from "./ActualizarMonto.jsx";
 import HistorialPagoModal from "./HistorialPago.jsx";
@@ -78,7 +78,7 @@ const Cobros = ({ id }) => {
         const montos = await Promise.all(
           grupos.map(async (grupo) => {
             try {
-              const monto = await getMontoActualGrupo(idServicio, grupo.id);
+              const monto = await getMontoActualGrupoDeHistorial(grupo?.historialMontos);
               console.log(`Precio del grupo ${grupo.id}:`, monto); // Depuración
               return { idGrupo: grupo.id, nombreGrupo: grupo.nombre, monto };
             } catch (error) {
