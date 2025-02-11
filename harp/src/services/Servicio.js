@@ -240,6 +240,30 @@ export const sePuedePublicarServicio = async (idServicio) => {
     }
 };
 
+
+export const sePuedeSuspenderServicio = async (idServicio) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/se-puede-suspender`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
+    }
+};
+
+
+export const sePuedeServicio = async (idServicio) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/se-puede`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
+    }
+};
+
 // Función para calcular la duración total de un servicio
 export const calcularDuracionTotalDiasServicio = async (idServicio) => {
     try {

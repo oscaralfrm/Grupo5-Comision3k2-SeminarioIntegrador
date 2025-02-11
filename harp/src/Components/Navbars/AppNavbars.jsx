@@ -100,7 +100,7 @@ const AppNavbar = () => {
           <NavbarAlumno />
         ))}
 
-      {isInfoServicioAlumnoRoute && <NavbarSimple />}
+      {isInfoServicioAlumnoRoute && <NavbarGeneralAlumno />}
       {isAlumnoCuotas && <NavbarGeneralAlumno inscripcionesConCuotas={tieneInscripcionesConCuotas(inscripciones)} />}
     </>
   );

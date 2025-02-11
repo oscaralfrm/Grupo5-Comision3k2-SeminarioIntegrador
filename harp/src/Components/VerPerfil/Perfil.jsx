@@ -210,6 +210,20 @@ const ProfileInfo = () => {
                 <Col xs={12} lg={8} style={rightColumnStyle}>
                     {/* Biografía y CV */}
                     <div className="card shadow-lg p-4 mb-4">
+                    <Button
+                            variant="light"
+                            className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
+                            onClick={() => navigate("/editar-perfil?seccion=personal")}
+                            style={{
+                                backgroundColor: "#1E1B4B",
+                                border: "none",
+                                top: "10px",
+                                right: "10px",
+                                zIndex: 10,
+                            }}
+                        >
+                            <FaCog color="white" size={20} />
+                        </Button>
                         {/* Biografía */}
                         <h3 style={{ color: "#6a5acd" }}>Biografía</h3>
                         <hr />

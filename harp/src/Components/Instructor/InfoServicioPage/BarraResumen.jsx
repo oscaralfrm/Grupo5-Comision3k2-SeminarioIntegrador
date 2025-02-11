@@ -107,13 +107,14 @@ const BarraResumen = ({ serviceData, grupos, sePuedeEditar }) => {
             <Button variant="warning" size="sm" className="mb-3" onClick={handleSuspendService}>
             Editar
             </Button>
-          */}
+          
 
           {serviceData?.fechaInicio && sePuedeEditar && (
             <Button variant="warning" size="sm" className="mb-3" onClick={handleSuspendService}>
               Suspender
             </Button>
           )}
+            */}
         </Col>
         <Col className="d-flex flex-column align-items-center text-center">
           <FaClock size={25} className="mb-2 text-success" />
