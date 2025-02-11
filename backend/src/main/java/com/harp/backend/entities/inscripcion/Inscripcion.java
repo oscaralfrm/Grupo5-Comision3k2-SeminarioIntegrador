@@ -245,6 +245,7 @@ public class Inscripcion {
             this.finalizar();
             // ver como hacer para que corte aca en este caso como un break
         }
+        this.fechaFin = fechaFinNueva;
     }
 
     public Cuota obtenerCuotaConEsteId(Long idCuota) {

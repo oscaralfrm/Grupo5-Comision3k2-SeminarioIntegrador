@@ -49,6 +49,7 @@ public class MontoServicio {
 
           LocalDate fechaActual = LocalDate.now();
           if (this.fechaInicio == null) {
+               // revisar
                return true;
           } else {
                return  ( ( this.fechaInicio.isBefore(LocalDate.now()) || this.fechaInicio.isEqual(fechaActual) )
@@ -101,7 +102,8 @@ public class MontoServicio {
           // lo que yo quiero es modificar el monto solo si es progrmado
           // pero si es un falso progrmado no
           if (fechaInicio == null) {
-               return false;
+               // revisar, estaba en false
+               return true;
           } else {
                return (fechaInicio.isAfter(fechaActual));
           }

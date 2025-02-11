@@ -38,6 +38,7 @@ public interface IServicioService {
     List<Servicio> findServicioByNombre(String nombre);
     List<Double> calcularTotalPendienteYEsperado(Long idServicio);
     void setFechaInicioServicio(Long idServicio, LocalDate fechaInicio);
+    void setFechaFinServicio(Long idServicio, LocalDate fechaFin);
     double[] calcularIngresosPorMesDeServicio(Long idServicio);
     void activarAsistencias(Long idServicio);
     void desactivarAsistencias(Long idServicio);
@@ -47,6 +48,7 @@ public interface IServicioService {
     void editarDescripcionDeServicio(Long idServicio, String nuevaDescripcion);
     void publicarServicio(Long idServicio, LocalDate fechaInicio);
     void suspenderServicio(Long idServicio);
+    void renaudarServicio(Long idServicio);
     boolean sePuedePublicarServicio(Long idServicio);
     boolean sePuedeSuspenderServicio(Long idServicio);
     SePuedeDTO servicioSePuede(Long idServicio);

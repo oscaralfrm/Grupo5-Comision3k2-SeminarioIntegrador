@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -101,14 +102,54 @@ public class NotificacionService implements INotificacionService {
         notificacionRepository.save(notificacion);
     }
 
-    // NOTIFICAR A TODOS LOS ALUMNOS
+    // NOTIFICAR A TODOS LOS ALUMNOS DEL GRUPO
     public void notificarActualizacionMonto(Servicio servicio, Grupo grupo, MontoServicio nuevoMontoGrupo) {
-        List<Alumno> alumnos = servicio.obtenerAlumnosActuales();
+        // revisar solo notificamos a los de ese grupo
+        List<Alumno> alumnos = servicio.obtenerAlumnosActualesDeGrupo(grupo);
 
         String titulo = "Actualización precio de " + servicio.getNombre();
         String mensaje = "A partir de la fecha " + nuevoMontoGrupo.getFechaInicio()
                 + " el precio del servicio será de $"
                 + nuevoMontoGrupo.getMonto();
+        alumnos.forEach(alumno -> {
+            Notificacion notificacion = new Notificacion(servicio, alumno, null, titulo, mensaje);
+            notificacionRepository.save(notificacion);
+        });
+    }
+
+    public void notificarFinalizacionServicio(Servicio servicio) {
+        List<Alumno> alumnos = servicio.obtenerAlumnosActuales();
+
+        String titulo = "Finalizacion de " + servicio.getNombre();
+        String mensaje = "A partir de la fecha " + servicio.getFechaFin()
+                + " ya no estará vigente el servicio."
+                + servicio.getNombre();
+        alumnos.forEach(alumno -> {
+            Notificacion notificacion = new Notificacion(servicio, alumno, null, titulo, mensaje);
+            notificacionRepository.save(notificacion);
+        });
+    }
+
+    public void notificarServicioSuspendido(Servicio servicio) {
+        List<Alumno> alumnos = servicio.obtenerAlumnosActuales();
+
+        String titulo = "Servicio Suspendido";
+        String mensaje = "El servicio " + servicio.getNombre()
+                + " ha sido suspendido el dia de la fecha " + LocalDate.now()
+                + ". Motivo por el cual no tendrá que abonar las cuotas que correspondan a este periodo.";
+        alumnos.forEach(alumno -> {
+            Notificacion notificacion = new Notificacion(servicio, alumno, null, titulo, mensaje);
+            notificacionRepository.save(notificacion);
+        });
+    }
+
+    public void notificarServicioRenaudado(Servicio servicio) {
+        List<Alumno> alumnos = servicio.obtenerAlumnosActuales();
+
+        String titulo = "Servicio Renaudado";
+        String mensaje = "El servicio " + servicio.getNombre()
+                + " ha sido renaudado el dia de la fecha " + LocalDate.now()
+                + ". Motivo por el cual tendrá que abonar las cuotas correspondientes a partir de hoy.";
         alumnos.forEach(alumno -> {
             Notificacion notificacion = new Notificacion(servicio, alumno, null, titulo, mensaje);
             notificacionRepository.save(notificacion);

@@ -80,6 +80,9 @@ public class Servicio {
     private String logoURL;
     private String ubicacion;
 
+    @Enumerated(EnumType.STRING)
+    private EstadoServicio estado = EstadoServicio.Borrador;
+
     @ManyToOne
     @JoinColumn(name = "categoria_id", referencedColumnName = "id")
     private Categoria categoria;
@@ -113,6 +116,8 @@ public class Servicio {
     // Por defecto es false
     private boolean activo = false; //activo = que se esta cobrando
     private boolean publico; //publico = que se publicita
+
+    @Setter(AccessLevel.NONE)
     private boolean inscripcionesAbiertas; // cargar en base de datos
 
     // es != null si no es cada X cant dias
@@ -172,14 +177,6 @@ public class Servicio {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "servicio_id")
     private List<Resenia> resenias;
-
-    public void desactivar() {
-        this.setActivo(false);
-    }
-
-    public void hacerPrivado() {
-        this.setPublico(false);
-    }
 
     public void agregarGrupo(Grupo grupo) {
         this.grupos.add(grupo);
@@ -295,6 +292,10 @@ public class Servicio {
         return this.fechaInicio != null;
     }
 
+    public boolean tieneFechaFin() {
+        return this.fechaFin != null;
+    }
+
     public List<Inscripcion> obtenerInscripciones(Grupo grupo){
         return inscripciones.stream().filter(i -> i.esDeEsteGrupo(grupo) ).toList();
     }
@@ -357,6 +358,30 @@ public class Servicio {
         return (! this.publico);
     }
 
+    public void hacerPublico() {
+        this.inscripcionesAbiertas = true;
+        this.setPublico(true);
+        this.estado = EstadoServicio.Publicado;
+    }
+
+    public void hacerPrivado() {
+        this.inscripcionesAbiertas = false;
+        this.setPublico(true);
+        this.estado = EstadoServicio.Privado;
+    }
+
+    public void suspender() {
+        this.hacerPublico();
+        this.setActivo(false);
+        this.estado = EstadoServicio.Suspendido;
+    }
+
+    public void renaudar() {
+        // luego de reanudarlo tiene que manualmente poner las inscripciones abiertas si es que quiere
+        this.setActivo(true);
+        this.estado = EstadoServicio.Privado;
+    }
+
     // sacar de lombook
     public void setFechaFin(LocalDate fechaFinNueva) {
         // Validar que sea mayor que la actual
@@ -377,7 +402,10 @@ public class Servicio {
             if (this.yaInicio() && ! this.obtenerInscripcionesVigentes().isEmpty()) {
                 // revisar que cantidad de dias sería razonable cambiar la fecha fin
                 // acá tambien implementar que no de pueda cambiar la fecha fin si ya se cambió antes
-                this.esCambioFechaFinRazonable(fechaFinNueva, 15);
+                if ( ! this.esCambioFechaFinRazonable(fechaFinNueva, 15) ) {
+                    throw new UnsupportedOperationException("La fecha fin nueva es muy alejada al que ya estaba configurada.");
+                }
+                this.fechaFin = fechaFinNueva;
             }
         }
     }

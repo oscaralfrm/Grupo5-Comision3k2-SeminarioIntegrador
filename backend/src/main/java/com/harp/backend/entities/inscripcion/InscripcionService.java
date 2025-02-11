@@ -15,6 +15,7 @@ import com.harp.backend.entities.pagos.PagoService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -373,4 +374,16 @@ public class InscripcionService implements IInscripcionService {
 
         return cuotasOrdenadas;
     }
+
+//    @Transactional
+//    public void setFechaFinInscripcionesDeServicio(Long idServicio) {
+//        Servicio servicio = servicioService.findServicio(idServicio);
+//        List<Inscripcion> inscripciones = servicio.obtenerInscripcionesVigentes();
+//        for (Inscripcion inscripcion : inscripciones) {
+//            System.out.println("En inscripcion");
+//            inscripcion.setFechaFin(servicio.getFechaFin());
+//            System.out.println("Fecha fin " + inscripcion.getFechaFin());
+//            inscripcionRepository.save(inscripcion);
+//        }
+//    }
 }

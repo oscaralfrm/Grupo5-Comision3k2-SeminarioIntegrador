@@ -9,8 +9,10 @@ import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.inscripcion.InscripcionDTO;
+import com.harp.backend.entities.inscripcion.InscripcionService;
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.instructor.InstructorService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
@@ -35,6 +37,9 @@ public class ServicioController {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private InscripcionService inscripcionService;
 
     // GET DE TODOS
     @GetMapping
@@ -182,6 +187,13 @@ public class ServicioController {
         return  ResponseEntity.ok("Se suspendió el servicio");
     }
 
+    // RENAUDAR
+    @PutMapping("/{idServicio}/renaudar")
+    public ResponseEntity<String> renaudarServicio(@PathVariable @Min(1) Long idServicio) {
+        servicioService.renaudarServicio(idServicio);
+        return  ResponseEntity.ok("Se renaudó el servicio");
+    }
+
     @GetMapping("/{idServicio}/se-puede-suspender")
     public ResponseEntity<Boolean> sePuedeSuspender(@PathVariable @Min(1) Long idServicio) {
         boolean sePuedeSuspender = servicioService.sePuedeSuspenderServicio(idServicio);
@@ -231,6 +243,19 @@ public class ServicioController {
         servicioService.setFechaInicioServicio(idServicio, fechaInicio);
         return  ResponseEntity.ok("Se configuró el inicio del servicio");
     }
+
+    // EDITAR
+    @Transactional
+    @PutMapping("/{idServicio}/finalizar")
+    public ResponseEntity<String> setFechaFinServicio(@PathVariable @Min(1) Long idServicio,
+                                                         @RequestBody LocalDate fechaFin) {
+        servicioService.setFechaFinServicio(idServicio, fechaFin);
+//        System.out.println("Setteada la fecha fin");
+//        inscripcionService.setFechaFinInscripcionesDeServicio(idServicio);
+//        System.out.println("De inscripciones");
+        return  ResponseEntity.ok("Se configuró la fecha fin del servicio");
+    }
+
 
     // EDITAR DESCRIPCION
     @PutMapping("/{idServicio}/editar-descripcion")

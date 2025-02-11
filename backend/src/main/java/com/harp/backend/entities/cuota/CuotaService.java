@@ -184,32 +184,34 @@ public class CuotaService implements ICuotaService {
                     Servicio servicio = inscripcion.getServicio();
                     Grupo grupo = inscripcion.getGrupo();
 
-                    // MONTO
-                    // Aca deberiamos implementar estrategias de calculo de monto segun cada tipo de servicio
-                    // calculamos la cantidad de horarios de un grupo de este servicio en los que esta inscripto el alumno
+                    if (! servicio.esSuspendido()) {
+                        // MONTO
+                        // Aca deberiamos implementar estrategias de calculo de monto segun cada tipo de servicio
+                        // calculamos la cantidad de horarios de un grupo de este servicio en los que esta inscripto el alumno
 
-                    // en base a eso macheamos cantHorarios con CantVecesSemana del monto
-                    MontoServicio montoCuota = grupo.obtenerMontoActual();
+                        // en base a eso macheamos cantHorarios con CantVecesSemana del monto
+                        MontoServicio montoCuota = grupo.obtenerMontoActual();
 
-                    // ESTRATEGIA FECHAS CUOTA
-                    // obtenemos la estrategia que correponda segun la frecuencia de pago
-                    // a esta estrategia le paso el servicio y la cuota anterior y le preguntara al servicio lo necesario
-                    // segun si es:
-                    // - a mes calendario
-                    // - a mes calendario con fecha limite
-                    // - cada x cantidad de dias
-                    // - segun inscripcion de cada alumno
-                    // - un solo pago: se crea con fechaInicioCiclo = fechaInicioServicio, y fin lo mismo
-                    // - pago unico pero adelantado: se crea inicio = fechaInscripcion, fin = fechaFinServicio, limite = fechaInicioServicio
+                        // ESTRATEGIA FECHAS CUOTA
+                        // obtenemos la estrategia que correponda segun la frecuencia de pago
+                        // a esta estrategia le paso el servicio y la cuota anterior y le preguntara al servicio lo necesario
+                        // segun si es:
+                        // - a mes calendario
+                        // - a mes calendario con fecha limite
+                        // - cada x cantidad de dias
+                        // - segun inscripcion de cada alumno
+                        // - un solo pago: se crea con fechaInicioCiclo = fechaInicioServicio, y fin lo mismo
+                        // - pago unico pero adelantado: se crea inicio = fechaInscripcion, fin = fechaFinServicio, limite = fechaInicioServicio
 //                    IEstrategiaCrearCuota estrategiaCrearCuota = this.determinarEstrategia(servicio.getTipoFrecuenciaPago());
 //                    FechasCuota fechasNuevaCuota = estrategiaCrearCuota.calcularFechas(cuota, servicio);
 
-                    FechasCuota fechasNuevaCuota = servicio.getTipoFrecuenciaPago().calcularFechas(cuota);
+                        FechasCuota fechasNuevaCuota = servicio.getTipoFrecuenciaPago().calcularFechas(cuota);
 
-                    // Creamos la cuota
-                    this.createCuota(inscripcion, montoCuota, 0,
-                            fechasNuevaCuota.getFechaInicioCiclo(), fechasNuevaCuota.getFechaFinCiclo(),
-                            fechasNuevaCuota.getFechaLimitePago());
+                        // Creamos la cuota
+                        this.createCuota(inscripcion, montoCuota, 0,
+                                fechasNuevaCuota.getFechaInicioCiclo(), fechasNuevaCuota.getFechaFinCiclo(),
+                                fechasNuevaCuota.getFechaLimitePago());
+                    }
                 }
             }
         }
