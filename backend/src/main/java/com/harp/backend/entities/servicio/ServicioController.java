@@ -170,9 +170,28 @@ public class ServicioController {
     }
 
     @GetMapping("/{idServicio}/se-puede-publicar")
-    public ResponseEntity<Boolean> publicar(@PathVariable @Min(1) Long idServicio) {
+    public ResponseEntity<Boolean> sePuedepublicar(@PathVariable @Min(1) Long idServicio) {
         boolean sePuedePublicar = servicioService.sePuedePublicarServicio(idServicio);
         return  ResponseEntity.ok(sePuedePublicar);
+    }
+
+    // SUSPENDER
+    @PutMapping("/{idServicio}/suspender")
+    public ResponseEntity<String> suspenderServicio(@PathVariable @Min(1) Long idServicio) {
+        servicioService.suspenderServicio(idServicio);
+        return  ResponseEntity.ok("Se suspendió el servicio");
+    }
+
+    @GetMapping("/{idServicio}/se-puede-suspender")
+    public ResponseEntity<Boolean> sePuedeSuspender(@PathVariable @Min(1) Long idServicio) {
+        boolean sePuedeSuspender = servicioService.sePuedeSuspenderServicio(idServicio);
+        return  ResponseEntity.ok(sePuedeSuspender);
+    }
+
+    @GetMapping("/{idServicio}/se-puede")
+    public ResponseEntity<SePuedeDTO> servicioSePuede(@PathVariable @Min(1) Long idServicio) {
+        SePuedeDTO sePuede = servicioService.servicioSePuede(idServicio);
+        return  ResponseEntity.ok(sePuede);
     }
 
     // EDITAR

@@ -46,7 +46,10 @@ public interface IServicioService {
     List<MontoServicio>  obtenerMontosProgramadosFuturosGruposDeServicio(Long idServicio);
     void editarDescripcionDeServicio(Long idServicio, String nuevaDescripcion);
     void publicarServicio(Long idServicio, LocalDate fechaInicio);
+    void suspenderServicio(Long idServicio);
     boolean sePuedePublicarServicio(Long idServicio);
+    boolean sePuedeSuspenderServicio(Long idServicio);
+    SePuedeDTO servicioSePuede(Long idServicio);
     void configurarMontoInscripcionServicio(Long idServicio, MontoInscripcionDTO montoInscripcionDTO);
     public Instructor findInstructorDeServicio(Long idServicio);
 }

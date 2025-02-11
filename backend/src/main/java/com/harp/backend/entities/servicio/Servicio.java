@@ -328,7 +328,33 @@ public class Servicio {
 
     public boolean yaInicio() {
         // si hoy es la fecha de inicio entonces me da que no inició todavia
-        return (fechaInicio != null && fechaInicio.isBefore(LocalDate.now()));
+        // MODIFICADO: la fecha de hoy es que si inició
+        return (fechaInicio != null && (fechaInicio.isBefore(LocalDate.now()) || fechaInicio.isEqual(LocalDate.now()) ) );
+    }
+
+    public boolean esSuspendido() {
+        // es suspendido si esta publico e inactivo
+        return (! this.isActivo() && this.isPublico());
+    }
+
+    public boolean esFinalizado() {
+        // es finalizado si tiene fecha fin anterior a hoy y esta en inactivo
+        return (this.fechaFin.isBefore(LocalDate.now()));
+    }
+
+    public boolean esPublicado() {
+        // es publicado si esta en publico y con inscripciones abiertas
+        return (this.activo && this.publico && this.inscripcionesAbiertas);
+    }
+
+    public boolean esPrivado() {
+        // es privado si esta en publico y con inscripciones cerradas
+        return (this.activo && this.publico && ! this.inscripcionesAbiertas);
+    }
+
+    public boolean esBorrador() {
+        // es borrador si publico es false
+        return (! this.publico);
     }
 
     // sacar de lombook

@@ -74,14 +74,14 @@ public class ServicioService implements IServicioService {
     // PAGINADO Y PUBLICADOS
     public Page<Servicio> getAllServiciosPublicados(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Servicio> listServicios = servicioRepository.findByPublicoTrue(pageable);
+        Page<Servicio> listServicios = servicioRepository.findByInscripcionesAbiertasTrue(pageable);
         return listServicios;
     }
 
     // PAGINADO Y PUBLICADOS
     public Page<Servicio> getAllServiciosPublicadosSinInscripcionAlumno(Integer page, Integer size, Long idAlumno) {
-        System.out.println("idAlumno" + idAlumno);
-        Page<Servicio> listServicios = this.getAllServiciosPublicados(page, size);
+        //Page<Servicio> listServicios = this.getAllServiciosPublicados(page, size);
+        List<Servicio> listServicios = servicioRepository.findByInscripcionesAbiertasTrue();
 
         // SI el alumno no esta en el servicio y tampoco esta esperando que lo acepten entonces lo retornamos
         List<Servicio> serviciosFiltrados = listServicios.stream()
@@ -170,7 +170,7 @@ public class ServicioService implements IServicioService {
     public void deshabilitarInscripciones(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
         servicio.setInscripcionesAbiertas(false);
-        servicio.setPublico(false);
+        //servicio.setPublico(false);
         servicioRepository.save(servicio);
     }
 
@@ -340,21 +340,88 @@ public class ServicioService implements IServicioService {
 
     @Transactional
     public void publicarServicio(Long idServicio, LocalDate fechaInicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        // SI ya es publico entonces no se puede volver a configurar la fecha inicio y eso
+        if (servicio.isPublico()) {
+            throw new UnsupportedOperationException("No es posible publicar nuevamente el servicio. Solo se puede habilitar inscripciones, finalizar o suspender.");
+        }
+        // Habilitamos las inscripciones, es decir lo ponemos en publico y con inscripcionesAbiertas
         this.habilitarInscripciones(idServicio);
         this.setFechaInicioServicio(idServicio, fechaInicio);
+        servicio.setActivo(true);
+        servicioRepository.save(servicio);
     }
 
     public boolean sePuedePublicarServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
+        // SI ya es publico entonces no se puede volver a configurar la fecha inicio y eso
         if (servicio.isPublico()) {
             return false;
         }
+        // Validar que tenga los datos completos
+        // servicio.tieneDatosCompletos();
+
         if (servicio.getModalidadInscripcion().equals(Modalidad.AGrupo)) {
             if ( ! servicio.tieneGrupos() || ! servicio.tieneMontoEnTodosSusGrupos() ) {
                 return false;
             }
         }
         return true;
+    }
+
+    @Transactional
+    public void suspenderServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+
+        if (! sePuedeSuspenderServicio(idServicio)) {
+            throw new UnsupportedOperationException("No es posible suspender el servicio.");
+        }
+        // Lo ponemos inactivo y deshabilitamos las inscripciones
+        servicio.setInscripcionesAbiertas(false);
+        servicio.setActivo(false);
+        servicioRepository.save(servicio);
+    }
+
+    public boolean sePuedeSuspenderServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        // Se puede suspender si es publico, si ya inició y si está activo
+        // Se puede suspender si yaInicio y es Publicado o Privado
+        if (servicio.isPublico() && servicio.yaInicio() && servicio.isActivo()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean sePuedeFinalizarServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        // Se puede finalizar si esta en publicado y ya inicio o en suspendido
+        if (servicio.isPublico() &&  servicio.yaInicio() ) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean sePuedeEliminarServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        // Se puede eliminar si es borrador
+        return servicio.esBorrador();
+    }
+
+    public boolean sePuedeRenaudarServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        // Se puede eliminar si es borrador
+        return servicio.esSuspendido();
+    }
+
+    public SePuedeDTO servicioSePuede(Long idServicio) {
+        //Servicio servicio = this.findServicio(idServicio);
+        SePuedeDTO sePuede = new SePuedeDTO();
+        sePuede.setPublicar(this.sePuedePublicarServicio(idServicio));
+        sePuede.setFinalizar(this.sePuedeFinalizarServicio(idServicio));
+        sePuede.setEliminar(this.sePuedeEliminarServicio(idServicio));
+        sePuede.setRenaudar(this.sePuedeRenaudarServicio(idServicio));
+        sePuede.setSuspender(this.sePuedeSuspenderServicio(idServicio));
+        return sePuede;
     }
 
     public void activarAsistencias(Long idServicio) {

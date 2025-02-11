@@ -11,5 +11,6 @@ import java.util.List;
 public interface IServicioRepository extends JpaRepository<Servicio, Long> {
     //public List<Servicio> findByInstructorId(Long idServicio);
     public List<Servicio> findByNombre(String nombre);
-    public Page<Servicio> findByPublicoTrue(Pageable pageable);
+    public Page<Servicio> findByInscripcionesAbiertasTrue(Pageable pageable);
+    public List<Servicio> findByInscripcionesAbiertasTrue();
 }
