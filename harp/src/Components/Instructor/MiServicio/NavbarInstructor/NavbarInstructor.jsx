@@ -171,8 +171,8 @@ function NavbarInstructor() {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => navigate(`/instructor/${idInstructor}/editar-usuario`)}>
-                Editar perfil
+              <Dropdown.Item onClick={() => navigate(`/instructor/${idInstructor}/perfil/ver-perfil`)}>
+                Ver perfil
               </Dropdown.Item>
               <Dropdown.Item onClick={() => navigate("/")}>
                 Cerrar sesión

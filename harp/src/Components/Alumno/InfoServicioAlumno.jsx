@@ -8,6 +8,7 @@ import MontosServicio from "../Instructor/InfoServicioPage/Monto/MontosServicio"
 import { getServicioById } from "../../services/Instructor";
 import { getGruposDeServicio } from "../../services/Grupo";
 import ReviewCarousel from "../Instructor/MiServicio/MenuOpciones/Dashboard/Reseñas";
+import InstructorInfo from "../Instructor/InfoServicioPage/InstructorInfo.jsx/InstructorInfo";
 
 const InfoServicioAlumno = () => {
   const { idServicio } = useParams();
@@ -51,10 +52,16 @@ const InfoServicioAlumno = () => {
     >
       {/* Renderizamos ServiceHeader solo si serviceData ya está definido */}
       {serviceData ? (
-        <ServiceHeader serviceData={serviceData} sePuedeEditar={false} />
+        <Row>
+          <InstructorInfo serviceData={serviceData} />
+          <ServiceHeader serviceData={serviceData} sePuedeEditar={false} />
+        </Row>
+        
+
       ) : (
         <p>Cargando servicio...</p>
       )}
+
 
 
       <Row className="mt-4">
@@ -78,12 +85,12 @@ const InfoServicioAlumno = () => {
           </div>
         </Col>
       </Row>
-        <Row className="mt-4">
+      <Row className="mt-4">
         <Col>
-          <ReviewCarousel/>
+          <ReviewCarousel />
         </Col>
       </Row>
-      
+
 
     </div>
   );

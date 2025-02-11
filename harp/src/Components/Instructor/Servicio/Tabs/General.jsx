@@ -82,7 +82,7 @@ export default function General({ register, errors, categorias, goToNextTab, log
             <img 
               src={logoPreview} 
               alt="Vista previa del logo" 
-              style={{ maxWidth: "120px", border: "1px solid #ddd", padding: "5px" }} 
+              style={{ maxWidth: "90px", border: "1px solid #ddd", padding: "5px" }} 
             />
           </div>
         )}

@@ -14,6 +14,7 @@ import { format, parseISO } from "date-fns";
 import GrupoHorariosMontos from "./GrupoHorariosMontos";
 import { crearInscripcion } from "../../../../services/Inscripcion";
 import SuccessModal from "../../../CartelDeExito/CartelDeExito";
+import ActualizarMontoModal from "../../MiServicio/MenuOpciones/ActualizarMonto";
 
 function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar }) {
   const { idServicio, idAlumno } = useParams();
@@ -309,6 +310,15 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
           </Col>
         )}
       </Row>
+
+      {/* Modal Actualizar Precio */}
+      <ActualizarMontoModal
+        show={showModalActualizarPrecio}
+        onClose={() => setShowModalActualizarPrecio(false)}
+        grupos={grupos}
+        onSave={fetchServicio}
+        idServicio={idServicio}
+      />
 
       {/* Modal para Crear Grupo */}
       <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos} frecuenciaCobro={frecuenciaCobro}/>

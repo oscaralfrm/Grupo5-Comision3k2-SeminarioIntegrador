@@ -29,6 +29,7 @@ import AsistenciasAlumno from "./Components/Alumno/MenuOpciones/AsistenciasAlumn
 import MisInscripciones from "./Components/Alumno/Cursos/MisInscripciones.jsx";
 import InfoServicioAlumno from "./Components/Alumno/InfoServicioAlumno.jsx";
 import MisCuotas from "./Components/Alumno/Pagos/PagosPage.jsx";
+import ProfileInfo from "./Components/VerPerfil/Perfil.jsx";
 
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
@@ -95,7 +96,14 @@ function App() {
             path="alumno/:idAlumno/editar-usuario"
             element={<><AppNavbar /><EditUsuario /></>}
           />
-
+          <Route
+            path="alumno/:idAlumno/perfil/ver-perfil"
+            element={<><AppNavbar /><ProfileInfo /></>}
+          />
+          <Route
+            path="instructor/:idInstructor/perfil/ver-perfil"
+            element={<><AppNavbar /><ProfileInfo /></>}
+          />
 
           {/* Para alumnos... */}
 

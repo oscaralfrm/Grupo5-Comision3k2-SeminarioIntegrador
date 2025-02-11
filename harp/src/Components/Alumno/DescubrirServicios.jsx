@@ -60,7 +60,8 @@ const DescubrirServicios = () => {
   );
 
   return (
-    <Container style={{ marginTop: "20vh" }}>
+    <Container style={{ marginTop: "15vh" }}>
+
       {/* Botón "Mis Inscripciones" 
       {hasInscriptions && (
         <Button
@@ -82,7 +83,8 @@ const DescubrirServicios = () => {
       )}
         */}
 
-      <Card style={{ padding: "20px", borderRadius: "10px" }}>
+      <Card style={{ padding: "20px", borderRadius: "10px", border: "none", backgroundColor: "white" }}>
+
         <h2
           style={{
             textAlign: "center",
@@ -193,7 +195,7 @@ const DescubrirServicios = () => {
                                 rel="noopener noreferrer"
                                 title="Ver en Google Maps"
                                 className="text-primary fw-semibold">
-                                {servicio.ubicacion} <i className="bi bi-geo-alt-fill"></i> 
+                                {servicio.ubicacion} <i className="bi bi-geo-alt-fill"></i>
                               </a>
 
                             </p>
