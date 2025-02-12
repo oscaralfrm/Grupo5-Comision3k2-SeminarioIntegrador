@@ -20,13 +20,15 @@ const transformarDTOaFormData = (dto) => {
 }
 
 
-export const editUsuario = async ({  idUsuario, nombre, apellido, dni, nombreUsuario, contrasena, 
+export const editUsuario = async ({ idUsuario, nombre, apellido, dni, nombreUsuario, contrasena,
   email, telefono, direccion, fechaNacimiento, fotoPerfil }) => {
-  
-  const formDataToSend = transformarDTOaFormData({ nombre, apellido, dni, nombreUsuario, contrasena,
-    email, telefono, direccion, fechaNacimiento, fotoPerfil });
 
-    console.log([...formDataToSend.entries()]);
+  const formDataToSend = transformarDTOaFormData({
+    nombre, apellido, dni, nombreUsuario, contrasena,
+    email, telefono, direccion, fechaNacimiento, fotoPerfil
+  });
+
+  console.log([...formDataToSend.entries()]);
 
   try {
     const response = await fetch(`http://localhost:9001/api/users/${idUsuario}`, {
@@ -41,10 +43,10 @@ export const editUsuario = async ({  idUsuario, nombre, apellido, dni, nombreUsu
 
     const data = await response.json();
     return data;
-} catch (error) {
-  console.error(`Error editing usuario with ID ${idUsuario}:`, error);
-  throw error;
-}
+  } catch (error) {
+    console.error(`Error editing usuario with ID ${idUsuario}:`, error);
+    throw error;
+  }
 };
 
 export const editFotoPerfil = async (idUsuario, fotoFile) => {
@@ -63,16 +65,16 @@ export const editFotoPerfil = async (idUsuario, fotoFile) => {
     }
 
     console.log("Response,", response);
-    return response;
-} catch (error) {
-  console.error('Error editando la foto de perfil:', error);
-  throw error;
-}
+    return response.url;
+  } catch (error) {
+    console.error('Error editando la foto de perfil:', error);
+    throw error;
+  }
 };
 
 export const editarBiografiaUsuario = async (idUsuario, biografia) => {
   try {
-    const response = await axios.put(`${BASE_URL}/${idUsuario}/biografia`, {biografia});
+    const response = await axios.put(`${BASE_URL}/${idUsuario}/biografia`, { biografia });
     return response.data;
   } catch (error) {
     console.error(`Error editando la biografia ${idUsuario}:`, error);
@@ -80,12 +82,23 @@ export const editarBiografiaUsuario = async (idUsuario, biografia) => {
   }
 };
 
-export const completarRedesSociales = async (idUsuario, {instagram, facebook, twitter, tiktok, youtube, linkedin}) => {
+export const completarRedesSociales = async (idUsuario, { instagram, facebook, twitter, tiktok, youtube, linkedin }) => {
   try {
-    const response = await axios.put(`${BASE_URL}/${idUsuario}/redes-sociales`, {instagram, facebook, twitter, tiktok, youtube, linkedin});
+    const response = await axios.put(`${BASE_URL}/${idUsuario}/redes-sociales`, { instagram, facebook, twitter, tiktok, youtube, linkedin });
     return response.data;
   } catch (error) {
     console.error(`Error editando la biografia ${idUsuario}:`, error);
     throw error;
+  }
+};
+
+export const cambiarContrasena = async (idUsuario, contrasenaActual, contrasenaNueva) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/${idUsuario}/cambiar-contrasena`, { contrasenaActual, contrasenaNueva });
+    return response.data;
+  } catch (error) {
+    console.error('Error al cambiar la contraseña', error.response.data.message);
+    const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+    throw new Error(errorMessage); // Pasa el mensaje al componente
   }
 };

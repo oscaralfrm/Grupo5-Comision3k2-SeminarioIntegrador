@@ -149,6 +149,29 @@ export const editFotoPerfil = async (idInstructor, fotoFile) => {
 */}
 
 
+export const agregarCvInstructor = async (idInstructor, cvFile) => {
+  try {
+    const formDataToSend = new FormData();
+    formDataToSend.append("cv", cvFile);
+    const response = await fetch(`http://localhost:9001/api/instructores/${idInstructor}/cv`, {
+      method: 'PUT',
+      body: formDataToSend
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al subir cv instructor: ${response.status} - ${response.statusText} - ${JSON.stringify(errorData)}`);
+    }
+
+    const data = await response.json();
+    return data.url;
+} catch (error) {
+  console.error('Error subiendo el cv:', error);
+  throw error;
+}
+};
+
+
 
 export const completarDatosBancarios = async (idInstructor, {alias, cbu, banco, cuit, tipoCuenta}) => {
   try {

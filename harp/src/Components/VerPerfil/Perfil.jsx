@@ -127,12 +127,13 @@ const ProfileInfo = () => {
                         <Biography
                             profileData={profileData}
                             sePuedeEditar={true}
-                            onSave={(newBio) => {
+                            onSave={({biografia, cvFileURL }) => {
                                 setProfileData((prev) => ({
                                     ...prev,
+                                    cvURL: cvFileURL,
                                     usuario: {
                                         ...prev.usuario,
-                                        biografia: newBio
+                                        biografia: biografia
                                     },
                                 }));
                             }}
@@ -188,6 +189,7 @@ const ProfileInfo = () => {
             <ChangePasswordModal
                 show={showChangePasswordModal}
                 onClose={() => setShowChangePasswordModal(false)}
+                profileData={profileData}
             />
         </Container>
     );
