@@ -5,7 +5,7 @@ import MontosServicio from "./Monto/MontosServicio";
 import ReviewCarousel from "../MiServicio/MenuOpciones/Dashboard/Reseñas";
 import { Row, Col, Button, Modal } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
-import { deleteServicio, getServicioById, renaudarServicio, sePuedeServicio, suspenderServicio } from "../../../services/Servicio";
+import { cancelarServicio, deleteServicio, getServicioById, renaudarServicio, sePuedeServicio, suspenderServicio } from "../../../services/Servicio";
 import Descripcion from "./Descripcion/Descripcion";
 import ModalPublicarServicio from "./ModalPublicarServicio";
 import { getGruposDeServicio } from "../../../services/Grupo";
@@ -269,6 +269,24 @@ const InfoServicioPage = () => {
                 className="fw-bold"
               >
                 Publicar
+              </Button>
+            </div>
+          )}
+          {servicioSePuede?.cancelar && (
+            <div className="flex-shrink-0">
+              <Button
+                variant="primary"
+                onClick={() =>
+                  handleOpenConfirmModal("Cancelar", async () => {
+                    await cancelarServicio(idServicio);
+                    setShowSuccessModal(true);
+                    handleCloseConfirmModal();
+                  })
+                }
+                style={buttonResponsiveStyle}
+                className="fw-bold"
+              >
+                Cancelar
               </Button>
             </div>
           )}

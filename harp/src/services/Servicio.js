@@ -249,12 +249,23 @@ export const renaudarServicio = async (idServicio) => {
     }
 };
 
+export const cancelarServicio = async (idServicio) => {
+    try {
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/cancelar`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al cancelar el servicio', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
+    }
+};
+
 export const finalizarServicio = async (idServicio, fechaFin) => {
     try {
         const response = await axios.put(`${API_URL}servicios/${idServicio}/finalizar`, fechaFin);
         return response.data;
     } catch (error) {
-        console.error('Error al suspender el servicio', error.response.data.message);
+        console.error('Error al finalizar el servicio', error.response.data.message);
         const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
         throw new Error(errorMessage); // Pasa el mensaje al componente
     }

@@ -124,6 +124,9 @@ export const editInstructor = async ({  idInstructor, nombre, apellido, dni, nom
 }
 };
 
+
+
+{/*
 export const editFotoPerfil = async (idInstructor, fotoFile) => {
     try {
       const response = await fetch(`http://localhost:9001/api/instructores/${idInstructor}/foto-perfil`, {
@@ -143,9 +146,11 @@ export const editFotoPerfil = async (idInstructor, fotoFile) => {
     throw error;
   }
 };
+*/}
 
 
-export const completarDatosBancarios = async (idInstructor, alias, cbu, banco, cuit, tipoCuenta) => {
+
+export const completarDatosBancarios = async (idInstructor, {alias, cbu, banco, cuit, tipoCuenta}) => {
   try {
     const response = await axios.put(`${BASE_URL}/${idInstructor}/datos-bancarios`, { alias, cbu, banco, cuit, tipoCuenta });
     return response.data;
@@ -154,6 +159,20 @@ export const completarDatosBancarios = async (idInstructor, alias, cbu, banco, c
     throw error;
   }
 };
+
+{/*
+export const completarRedesSociales = async (idInstructor, redesSocialesDTO ) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/${idInstructor}/redes-sociales`, { alias, cbu, banco, cuit, tipoCuenta });
+    return response.data;
+  } catch (error) {
+    console.error('Error completando datos bancarios:', error);
+    throw error;
+  }
+};
+*/}
+
+
 
 export const tieneDatosBancariosCompletos = async (idInstructor) => {
   try {
