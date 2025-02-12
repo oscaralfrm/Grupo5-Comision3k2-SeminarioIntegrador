@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/instructores")
@@ -106,22 +108,46 @@ public class InstructorController {
         return ResponseEntity.status(HttpStatus.OK).body(instructorEditado);
     }
 
-    // EDITAR
-    @PutMapping(value = "/{idInstructor}/foto-perfil", consumes = {"multipart/form-data"})
-    public ResponseEntity<String> editarFotoPerfilInstructor(@PathVariable @Min(1) Long idInstructor, @ModelAttribute InstructorDTO instructorDTO) {
-        MultipartFile fotoPerfil = instructorDTO.getFotoPerfil();
+//    // EDITAR
+//    @PutMapping(value = "/{idInstructor}/foto-perfil", consumes = {"multipart/form-data"})
+//    public ResponseEntity<String> editarFotoPerfilInstructor(@PathVariable @Min(1) Long idInstructor, @ModelAttribute InstructorDTO instructorDTO) {
+//        MultipartFile fotoPerfil = instructorDTO.getFotoPerfil();
+//
+//        System.out.println("Servicio recibido: " + instructorDTO);
+//        System.out.println("Archivo recibido: " + (fotoPerfil != null ? fotoPerfil.getOriginalFilename() : "No se envió archivo"));
+//        if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
+//            // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
+//            // y retornar la URL donde se encuentra
+//            String logoUrl = fileStorageService.storeFile(fotoPerfil, "uploads/fotos-perfil/");
+//            // Se asigna la URL al DTO para que el servicio la use
+//            instructorDTO.setFotoPerfilURL(logoUrl);
+//        }
+//        instructorService.editarFotoPerfil(idInstructor, instructorDTO.getFotoPerfilURL());
+//        return ResponseEntity.status(HttpStatus.OK).body("La foto de perfil ha sido editada.");
+//    }
+
+    // AGREGAR CV
+    @PutMapping(value = "/{idInstructor}/cv", consumes = {"multipart/form-data"})
+    public ResponseEntity<Map<String, String>> agregarCurriculumInstructor(@PathVariable @Min(1) Long idInstructor,
+                                                              @ModelAttribute InstructorDTO instructorDTO) {
+        MultipartFile cv = instructorDTO.getCv();
+        System.out.println("en cv controller");
 
         System.out.println("Servicio recibido: " + instructorDTO);
-        System.out.println("Archivo recibido: " + (fotoPerfil != null ? fotoPerfil.getOriginalFilename() : "No se envió archivo"));
-        if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
+        System.out.println("Archivo recibido: " + (cv != null ? instructorDTO.getCv() : "No se envió archivo"));
+        if (cv != null) {
             // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
             // y retornar la URL donde se encuentra
-            String logoUrl = fileStorageService.storeFile(fotoPerfil, "uploads/instructores/fotos-perfil/");
+            String cvURL = fileStorageService.storeFile(cv, "uploads/instructores/curriculums/");
             // Se asigna la URL al DTO para que el servicio la use
-            instructorDTO.setFotoPerfilURL(logoUrl);
+            instructorDTO.setCvURL(cvURL);
         }
-        instructorService.editarFotoPerfil(idInstructor, instructorDTO.getFotoPerfilURL());
-        return ResponseEntity.status(HttpStatus.OK).body("La foto de perfil ha sido editada.");
+        String cvURLNuevo = instructorService.agregarCvInstructor(idInstructor, instructorDTO.getCvURL());
+
+        // Armamos un objeto json para devolver
+        Map<String, String> response = new HashMap<>();
+        response.put("url", cvURLNuevo);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // EDITAR

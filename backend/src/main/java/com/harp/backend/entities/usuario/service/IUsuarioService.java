@@ -1,6 +1,7 @@
 package com.harp.backend.entities.usuario.service;
 
 import com.harp.backend.entities.usuario.RedesSocialesUsuario;
+import com.harp.backend.entities.usuario.dto.CambiarContrasenaDTO;
 import com.harp.backend.entities.usuario.dto.UsuarioDTO;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.model.UsuarioLoginResponse;
@@ -18,6 +19,7 @@ public interface IUsuarioService {
     String editarFotoPerfil(Long idUsuario, String fotoPerfilURL);
     void editarBiografia(Long idUsuario, String biografia);
     void completarRedesSocialesUsuario(Long idUsuario, RedesSocialesUsuario redesSociales);
+    void cambiarContrasena(Long idUsuario, CambiarContrasenaDTO cambiarContrasenaDTO);
     UsuarioLoginResponse verificarCredenciales(String email, String contrasena); // Actualización
     // éste último es el method para poder verificar y devolver tanto el tipo de perfil, como el ID.
 //    public String encriptPassword(String password);

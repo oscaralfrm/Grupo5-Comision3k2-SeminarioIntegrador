@@ -7,6 +7,7 @@ import com.harp.backend.entities.servicio.ServicioService;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.service.IUsuarioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -150,6 +151,13 @@ public class InstructorService implements IInstructorService {
 
     public boolean tieneDatosBancariosCompletos(Long idInstructor) {
         return this.findInstructor(idInstructor).tieneDatosBancariosCompletos();
+    }
+
+    public String agregarCvInstructor(Long idInstructor, String cvURL) {
+        Instructor instructor = this.findInstructor(idInstructor);
+        instructor.setCvURL(cvURL);
+        instructorRepository.save(instructor);
+        return cvURL;
     }
 
 }

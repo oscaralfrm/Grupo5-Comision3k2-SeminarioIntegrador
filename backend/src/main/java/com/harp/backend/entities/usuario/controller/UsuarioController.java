@@ -8,6 +8,7 @@ import com.harp.backend.entities.perfil.service.IPerfilService;
 import com.harp.backend.entities.servicio.FileStorageService;
 import com.harp.backend.entities.suspension.service.ISuspensionService;
 import com.harp.backend.entities.usuario.RedesSocialesUsuario;
+import com.harp.backend.entities.usuario.dto.CambiarContrasenaDTO;
 import com.harp.backend.entities.usuario.dto.UsuarioDTO;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.model.UsuarioLoginResponse;
@@ -21,10 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Text;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -115,8 +113,8 @@ public class UsuarioController {
 
     // EDITAR
     @PutMapping(value = "/{idUsuario}/foto-perfil", consumes = {"multipart/form-data"})
-    public ResponseEntity<String> editarFotoPerfilUsuario(@PathVariable @Min(1) Long idUsuario,
-                                                          @ModelAttribute UsuarioDTO usuarioDTO) {
+    public ResponseEntity<Map<String, String>> editarFotoPerfilUsuario(@PathVariable @Min(1) Long idUsuario,
+                                                                       @ModelAttribute UsuarioDTO usuarioDTO) {
 
         Usuario usuario = usuarioService.findUsuario(idUsuario);
         MultipartFile fotoPerfil = usuarioDTO.getFotoPerfil();
@@ -135,7 +133,11 @@ public class UsuarioController {
         }
         String nuevURL = usuarioService.editarFotoPerfil(idUsuario, usuarioDTO.getFotoPerfilURL());
         System.out.println("nueva url"+ nuevURL);
-        return ResponseEntity.status(HttpStatus.OK).body(nuevURL);
+
+        // Armamos un objeto json para devolver
+        Map<String, String> response = new HashMap<>();
+        response.put("url", nuevURL);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // EDITAR
@@ -150,9 +152,16 @@ public class UsuarioController {
     @PutMapping("/{idUsuario}/redes-sociales")
     public ResponseEntity<String> completarRedesSociales(@PathVariable @Min(1) Long idUsuario,
                                                          @RequestBody RedesSocialesUsuario redesSocialesUsuario) {
-        System.out.println("redes" + redesSocialesUsuario);
         usuarioService.completarRedesSocialesUsuario(idUsuario, redesSocialesUsuario);
         return ResponseEntity.status(HttpStatus.OK).body("Las redes sociales del usuario han sido completadas.");
+    }
+
+    // EDITAR
+    @PutMapping("/{idUsuario}/cambiar-contrasena")
+    public ResponseEntity<String> cambiarContrasena(@PathVariable @Min(1) Long idUsuario,
+                                                    @RequestBody CambiarContrasenaDTO cambiarContrasenaDTO) {
+        usuarioService.cambiarContrasena(idUsuario, cambiarContrasenaDTO);
+        return ResponseEntity.status(HttpStatus.OK).body("La contraseña ha sido cambiada.");
     }
 
 

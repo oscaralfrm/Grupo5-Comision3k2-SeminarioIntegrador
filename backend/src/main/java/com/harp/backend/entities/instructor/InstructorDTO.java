@@ -44,4 +44,8 @@ public class InstructorDTO {
     private MultipartFile fotoPerfil;
 
     private String fotoPerfilURL;
+
+    private MultipartFile cv;
+
+    private String cvURL;
 }

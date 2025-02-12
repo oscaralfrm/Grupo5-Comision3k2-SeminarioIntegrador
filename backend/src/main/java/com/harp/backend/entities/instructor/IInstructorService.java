@@ -19,4 +19,5 @@ public interface IInstructorService {
     void completarDatosBancariosDeInstructor(Long idInstructor, DatosBancarios datosBancarios);
     boolean tieneDatosBancariosCompletos(Long idInstructor);
     void editarFotoPerfil(Long idInstructor, String fotoPerfilURL);
+    String agregarCvInstructor(Long idInstructor, String cvURL);
 }

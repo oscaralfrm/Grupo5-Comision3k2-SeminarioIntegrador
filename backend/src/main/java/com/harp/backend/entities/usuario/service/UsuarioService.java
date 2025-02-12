@@ -4,6 +4,7 @@ import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.instructor.InstructorDTO;
 import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.usuario.RedesSocialesUsuario;
+import com.harp.backend.entities.usuario.dto.CambiarContrasenaDTO;
 import com.harp.backend.entities.usuario.dto.UsuarioDTO;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.model.UsuarioLoginResponse;
@@ -82,7 +83,9 @@ public class UsuarioService implements IUsuarioService {
         usuario.setDireccion(usuarioDTO.getDireccion());
         usuario.setContrasena(usuarioDTO.getContrasena());
         usuario.setFechaNacimiento(usuarioDTO.getFechaNacimiento());
-        usuario.setFotoPerfilURL(usuarioDTO.getFotoPerfilURL());
+        if (usuarioDTO.getFotoPerfilURL() != null && usuarioDTO.getFotoPerfilURL() != "") {
+            usuario.setFotoPerfilURL(usuarioDTO.getFotoPerfilURL());
+        }
 
         return usuarioRepository.save(usuario);
     }
@@ -105,6 +108,15 @@ public class UsuarioService implements IUsuarioService {
     public void completarRedesSocialesUsuario(Long idUsuario, RedesSocialesUsuario redesSociales) {
         Usuario usuario = this.findUsuario(idUsuario);
         usuario.completarRedesSociales(redesSociales);
+        usuarioRepository.save(usuario);
+    }
+
+    public void cambiarContrasena(Long idUsuario, CambiarContrasenaDTO cambiarContrasenaDTO) {
+        Usuario usuario = this.findUsuario(idUsuario);
+        if (! usuario.tieneEstaContrasena(cambiarContrasenaDTO.getContrasenaActual())) {
+            throw new UnsupportedOperationException("La contraseña actual no es correcta");
+        }
+        usuario.setContrasena(cambiarContrasenaDTO.getContrasenaNueva());
         usuarioRepository.save(usuario);
     }
 

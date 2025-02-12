@@ -139,5 +139,9 @@ public class Usuario {
         redesSociales.setYoutube(redesSocialesNuevas.getYoutube());
     }
 
+    public boolean tieneEstaContrasena(String contrasena) {
+        return this.contrasena.equals(contrasena);
+    }
+
 
 }

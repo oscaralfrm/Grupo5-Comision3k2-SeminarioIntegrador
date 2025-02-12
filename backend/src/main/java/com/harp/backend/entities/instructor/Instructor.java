@@ -49,7 +49,7 @@ public class Instructor {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private DatosBancarios datosBancarios = new DatosBancarios();
 
-    //private byte[] cv;
+    private String cvURL;
 
     public void completarDatosBancarios(DatosBancarios datosBancarios) {
         if (this.datosBancarios == null) {
