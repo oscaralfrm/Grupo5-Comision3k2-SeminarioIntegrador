@@ -14,4 +14,5 @@ public class SePuedeDTO {
     private boolean finalizar;
     private boolean renaudar;
     private boolean volverAPublicar;
+    private boolean cancelar;
 }

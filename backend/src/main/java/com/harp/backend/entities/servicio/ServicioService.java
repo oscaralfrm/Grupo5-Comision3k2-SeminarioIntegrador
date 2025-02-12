@@ -385,7 +385,7 @@ public class ServicioService implements IServicioService {
     public void publicarServicio(Long idServicio, LocalDate fechaInicio) {
         Servicio servicio = this.findServicio(idServicio);
         // SI ya es publico entonces no se puede volver a configurar la fecha inicio y eso
-        if ( ! (sePuedeVolverAPublicarServicio(idServicio) || sePuedePublicarServicio(idServicio) ) ) {
+        if ( ! (servicio.sePuedeVolverAPublicar() || servicio.sePuedePublicar() ) ) {
             throw new UnsupportedOperationException("No es posible publicar nuevamente el servicio. Solo se puede habilitar inscripciones, finalizar o suspender.");
         }
         // Habilitamos las inscripciones, es decir lo ponemos en publico y con inscripcionesAbiertas
@@ -398,30 +398,13 @@ public class ServicioService implements IServicioService {
         // que se ponga en borrador para poder volver a publicar
     }
 
-    public boolean sePuedePublicarServicio(Long idServicio) {
-        Servicio servicio = this.findServicio(idServicio);
-        // SI ya es publico entonces no se puede volver a configurar la fecha inicio y eso
-        if (servicio.isPublico()) {
-            return false;
-        }
-        // Validar que tenga los datos completos
-        // servicio.tieneDatosCompletos();
-
-        if (servicio.getModalidadInscripcion().equals(Modalidad.AGrupo)) {
-            if ( ! servicio.tieneGrupos() || ! servicio.tieneMontoEnTodosSusGrupos() ) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
 
     @Transactional
     public void suspenderServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
 
-        if (! sePuedeSuspenderServicio(idServicio)) {
+        if (! servicio.sePuedeSuspender()) {
             throw new UnsupportedOperationException("No es posible suspender el servicio.");
         }
         // Lo ponemos inactivo y deshabilitamos las inscripciones
@@ -437,7 +420,7 @@ public class ServicioService implements IServicioService {
     public void renaudarServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
 
-        if (! sePuedeRenaudarServicio(idServicio)) {
+        if (! servicio.sePuedeRenaudar()) {
             throw new UnsupportedOperationException("No es posible renaudar el servicio.");
         }
         // Lo ponemos inactivo y deshabilitamos las inscripciones
@@ -448,80 +431,34 @@ public class ServicioService implements IServicioService {
         notificacionService.notificarServicioRenaudado(servicio);
     }
 
-    public boolean sePuedeSuspenderServicio(Long idServicio) {
+    @Transactional
+    public void cancelarServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
-        // Se puede suspender si es publico, si ya inició y si está activo
-        // Se puede suspender si yaInicio y es Publicado o Privado
-        if (servicio.isPublico() && servicio.yaInicio() && servicio.isActivo() && ! servicio.tieneFechaFin()) {
-            // Si el servicio inició hoy no se puede suspender
-            if (servicio.getFechaInicio().equals(LocalDate.now())) {
-                return false;
-            }
-            // Si no tiene alumnos inscriptos o aceptados, porque ahi se eliminaria
-            if (! servicio.tieneAlumnosConInscripcionesActivas()) {
-                return false;
-            }
-            return true;
+
+        if (! servicio.sePuedeCancelar()) {
+            throw new UnsupportedOperationException("No es posible cancelar el servicio.");
         }
-        return false;
+
+        // Lo finalizamos, setteando la fecha fin a hoy y cambiando el estado
+        // Y finalizando las inscripciones
+        servicio.cancelar();
+        servicioRepository.save(servicio);
+
+        // notificamos a los alumnos
+        notificacionService.notificarServicioCancelado(servicio);
     }
 
-    public boolean sePuedeFinalizarServicio(Long idServicio) {
-        Servicio servicio = this.findServicio(idServicio);
-        // Se puede finalizar si esta en publicado y ya inicio o en suspendido
-        if (servicio.isPublico() && servicio.yaInicio() && ! servicio.tieneFechaFin()) {
-            // Si el servicio inició hoy no se puede finalizar
-            if (servicio.getFechaInicio().equals(LocalDate.now())) {
-                return false;
-            }
-            // si no tiene ni tuvo inscripciones tampoco
-            // Si no tiene alumnos inscriptos o aceptados, porque ahi se eliminaria
-            if (! servicio.tieneAlumnosConInscripcionesActivas()) {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public boolean sePuedeEliminarServicio(Long idServicio) {
-        Servicio servicio = this.findServicio(idServicio);
-        // Se puede eliminar si es borrador, o si no tiene inscripciones
-        if (servicio.esBorrador()
-                || (! servicio.tieneAlumnosConInscripcionesActivas() )  ) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean sePuedeVolverAPublicarServicio(Long idServicio) {
-        Servicio servicio = this.findServicio(idServicio);
-        // Se puede eliminar si es borrador, o si no tiene inscripciones
-        if (servicio.tieneFechaInicio()
-                && (! servicio.tieneAlumnosConInscripcionesActivas() )  ) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean sePuedeRenaudarServicio(Long idServicio) {
-        Servicio servicio = this.findServicio(idServicio);
-        // Se puede eliminar si es borrador
-        if (servicio.tieneFechaFin()) {
-            return false;
-        }
-        return servicio.esSuspendido();
-    }
 
     public SePuedeDTO servicioSePuede(Long idServicio) {
-        //Servicio servicio = this.findServicio(idServicio);
+        Servicio servicio = this.findServicio(idServicio);
         SePuedeDTO sePuede = new SePuedeDTO();
-        sePuede.setPublicar(this.sePuedePublicarServicio(idServicio));
-        sePuede.setFinalizar(this.sePuedeFinalizarServicio(idServicio));
-        sePuede.setEliminar(this.sePuedeEliminarServicio(idServicio));
-        sePuede.setRenaudar(this.sePuedeRenaudarServicio(idServicio));
-        sePuede.setSuspender(this.sePuedeSuspenderServicio(idServicio));
-        sePuede.setVolverAPublicar(this.sePuedeVolverAPublicarServicio(idServicio));
+        sePuede.setPublicar(servicio.sePuedePublicar());
+        sePuede.setFinalizar(servicio.sePuedeFinalizar());
+        sePuede.setEliminar(servicio.sePuedeEliminar());
+        sePuede.setRenaudar(servicio.sePuedeRenaudar());
+        sePuede.setSuspender(servicio.sePuedeSuspender());
+        sePuede.setVolverAPublicar(servicio.sePuedeVolverAPublicar());
+        sePuede.setCancelar(servicio.sePuedeCancelar());
         return sePuede;
     }
 
@@ -552,6 +489,26 @@ public class ServicioService implements IServicioService {
         for (Servicio servicio : serviciosAsistenciasActivas) {
             claseService.crearClasesParaSemanaSiguente(servicio, null);
         }
+    }
+
+    // Finalizar los servicios
+    // Revisar si es bueno tener todos los procesos automaticos a la misma hora
+    @Scheduled(cron = "0 0 3 * * ?", zone = "America/Argentina/Buenos_Aires")
+    public void validarFechaFinServicios() {
+        // Recorro todas los servicios
+        // Valido que tengan que la fechaFin que sea hoy o ayer?
+
+        // si inicia una inscripcion no hace falta crear la primera cuota porque eso se hace cuandos se acepta
+        // Las inscripciones que vamos a cambiar son las que esten en aceptadas o en en curso
+        List<Servicio> servicios = servicioRepository.findByFechaFinNotNull();
+        LocalDate fechaActual = LocalDate.now();
+        for (Servicio servicio : servicios) {
+            // Si hoy es el dia de inicio de la inscripcion la iniciamos
+            if (servicio.getFechaFin().isEqual(fechaActual)) {
+                servicio.finalizar();
+            }
+        }
+        // Revisar si hay que hacer algo mas
     }
 
 

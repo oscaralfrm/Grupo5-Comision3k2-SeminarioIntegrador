@@ -13,4 +13,5 @@ public interface IServicioRepository extends JpaRepository<Servicio, Long> {
     public List<Servicio> findByNombre(String nombre);
     public Page<Servicio> findByInscripcionesAbiertasTrue(Pageable pageable);
     public List<Servicio> findByInscripcionesAbiertasTrue();
+    List<Servicio> findByFechaFinNotNull();
 }

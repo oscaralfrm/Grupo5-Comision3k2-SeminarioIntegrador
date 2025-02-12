@@ -147,6 +147,10 @@ public class Inscripcion {
         return cuotas.stream().filter(Cuota::esPendiente).toList();
     }
 
+    public List<Cuota> obtenerCuotasAbonadas() {
+        return cuotas.stream().filter(Cuota::esAbonada).toList();
+    }
+
     public List<Cuota> obtenerCuotasVencidas() {
         return cuotas.stream().filter(Cuota::esVencida).toList();
     }

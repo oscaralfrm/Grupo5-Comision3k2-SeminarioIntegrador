@@ -370,6 +370,97 @@ public class Servicio {
         this.estado = EstadoServicio.Privado;
     }
 
+    // Se pueden cambios de estado
+
+    public boolean sePuedePublicar() {
+        // SI ya es publico entonces no se puede volver a configurar la fecha inicio y eso
+        if (this.isPublico()) {
+            return false;
+        }
+        // Validar que tenga los datos completos
+        // servicio.tieneDatosCompletos();
+
+        if (this.getModalidadInscripcion().equals(Modalidad.AGrupo)) {
+            if ( ! this.tieneGrupos() || ! this.tieneMontoEnTodosSusGrupos() ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean sePuedeSuspender() {
+        // Se puede suspender si es publico, si ya inició y si está activo
+        // Se puede suspender si yaInicio y es Publicado o Privado
+        if (this.isPublico() && this.yaInicio() && this.isActivo() && ! this.tieneFechaFin()) {
+            // Si el servicio inició hoy no se puede suspender
+//            if (this.getFechaInicio().equals(LocalDate.now())) {
+//                return false;
+//            }
+            // Si no tiene alumnos inscriptos o aceptados, porque ahi se eliminaria
+            if (! this.tieneAlumnosConInscripcionesActivas()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean sePuedeFinalizar() {
+        // Se puede finalizar si esta en publicado y ya inicio o en suspendido
+        if (this.isPublico() && this.yaInicio() && ! this.tieneFechaFin()) {
+            // Si el servicio inició hoy no se puede finalizar
+//            if (this.getFechaInicio().equals(LocalDate.now())) {
+//                return false;
+//            }
+            // si no tiene ni tuvo inscripciones tampoco
+            // Si no tiene alumnos inscriptos o aceptados, porque ahi se eliminaria
+            if (! this.tieneAlumnosConInscripcionesActivas()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean sePuedeEliminar() {
+        // Se puede eliminar si es borrador, o si no tiene inscripciones
+        if (this.esBorrador()
+                || (! this.tieneAlumnosConInscripcionesActivas() )  ) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean sePuedeVolverAPublicar() {
+        // Se puede eliminar si es borrador, o si no tiene inscripciones
+        if (this.tieneFechaInicio()
+                && (! this.tieneAlumnosConInscripcionesActivas() )  ) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean sePuedeRenaudar() {
+        // Se puede eliminar si es borrador
+        if (this.tieneFechaFin()) {
+            return false;
+        }
+        return this.esSuspendido();
+    }
+
+    public boolean sePuedeCancelar() {
+        // Si todavia no inició se puede cancelar
+        if (this.tieneCuotasAbonadas()) {
+            return false;
+        }
+        return (! this.yaInicio() && ! this.esBorrador() && this.tieneAlumnosConInscripcionesActivas());
+    }
+
+    public boolean tieneCuotasAbonadas() {
+        return ! this.obtenerCuotasAbonadasAlumnosActuales().isEmpty();
+    }
+
+    // Cambios de estado
     public void suspender() {
         this.hacerPublico();
         this.setActivo(false);
@@ -394,7 +485,7 @@ public class Servicio {
         if (this.fechaFin == null) {
             this.fechaFin = fechaFinNueva;
             // si hay inscripciones en curso les setteamos la fecha fin
-            inscripciones.stream().forEach(i -> {i.setFechaFin(fechaFinNueva);});
+            this.obtenerInscripcionesVigentes().stream().forEach(i -> {i.setFechaFin(fechaFinNueva);});
         } else {
             // Si el servicio ya inició, hay inscripciones y ya habia una fecha fin definida
             // Deberiamos validar que la diferencia entre la fecha fin anterior y la nueva
@@ -408,6 +499,19 @@ public class Servicio {
                 this.fechaFin = fechaFinNueva;
             }
         }
+    }
+
+    public void finalizar() {
+        // Setteamos la fecha fin
+        if (fechaFin != null && fechaFin.isBefore(LocalDate.now())) {
+            this.estado = EstadoServicio.Finalizado;
+        }
+    }
+
+    public void cancelar() {
+        // Setteamos la fecha fin a hoy y lo cancelamos
+        this.setFechaFin(LocalDate.now());
+        this.estado = EstadoServicio.Cancelado;
     }
 
     public void setFechaInicio(LocalDate fechaInicioNueva) {
@@ -456,6 +560,13 @@ public class Servicio {
         return inscripciones.stream()
                 .filter(Inscripcion::estaEnCurso)
                 .flatMap(inscripcion -> inscripcion.obtenerCuotasPendientes().stream())
+                .toList();
+    }
+
+    public List<Cuota> obtenerCuotasAbonadasAlumnosActuales() {
+        return inscripciones.stream()
+                .filter(Inscripcion::estaEnCurso)
+                .flatMap(inscripcion -> inscripcion.obtenerCuotasAbonadas().stream())
                 .toList();
     }
 

@@ -49,8 +49,7 @@ public interface IServicioService {
     void publicarServicio(Long idServicio, LocalDate fechaInicio);
     void suspenderServicio(Long idServicio);
     void renaudarServicio(Long idServicio);
-    boolean sePuedePublicarServicio(Long idServicio);
-    boolean sePuedeSuspenderServicio(Long idServicio);
+    void cancelarServicio(Long idServicio);
     SePuedeDTO servicioSePuede(Long idServicio);
     void configurarMontoInscripcionServicio(Long idServicio, MontoInscripcionDTO montoInscripcionDTO);
     public Instructor findInstructorDeServicio(Long idServicio);

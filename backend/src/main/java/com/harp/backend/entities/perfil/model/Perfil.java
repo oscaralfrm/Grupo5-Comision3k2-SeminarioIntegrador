@@ -34,5 +34,13 @@ public class Perfil {
     )
     private Set<Permiso> permisos = new HashSet<>();
 
+    public boolean esInstructor() {
+        return this.nombre.equals("instructor");
+    }
+
+    public boolean esAlumno() {
+        return this.nombre.equals("alumno");
+    }
+
 
 }

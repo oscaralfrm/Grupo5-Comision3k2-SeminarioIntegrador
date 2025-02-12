@@ -156,6 +156,19 @@ public class NotificacionService implements INotificacionService {
         });
     }
 
+    public void notificarServicioCancelado(Servicio servicio) {
+        List<Alumno> alumnos = servicio.obtenerAlumnosActuales();
+
+        String titulo = "Servicio Cancelado";
+        String mensaje = "El servicio " + servicio.getNombre()
+                + " ha sido cancelado el dia de la fecha " + LocalDate.now()
+                + ". Motivo por el cual no se encuentra inscripto.";
+        alumnos.forEach(alumno -> {
+            Notificacion notificacion = new Notificacion(servicio, alumno, null, titulo, mensaje);
+            notificacionRepository.save(notificacion);
+        });
+    }
+
     // NOTIFICAR A INSTRUCTOR
     public void notificarPagoCuotaAInstructor(Servicio servicio, Instructor instructor, Alumno alumno, Cuota cuota) {
         double totalCuota = cuota.getMontoServicio().getMonto() + cuota.getRecargo();

@@ -1,13 +1,16 @@
 package com.harp.backend.entities.usuario.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.harp.backend.entities.alumno.dto.AlumnoDTO;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.instructor.InstructorDTO;
 import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.suspension.model.Suspension;
+import com.harp.backend.entities.usuario.RedesSocialesUsuario;
 import jakarta.persistence.*;
 import lombok.*;
+import org.w3c.dom.Text;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -61,6 +64,12 @@ public class Usuario {
     // Foto de perfil
     private String fotoPerfilURL;
 
+    private String biografia;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private RedesSocialesUsuario redesSociales = new RedesSocialesUsuario(this.id);
+
     // Relación con las Suspensiones... 1 a N
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -108,4 +117,27 @@ public class Usuario {
         this.dni = alumnoDTO.getDni();
         this.fotoPerfilURL = alumnoDTO.getFotoPerfilURL();
     }
+
+    public boolean esInstructor() {
+        return this.perfiles.stream().anyMatch(Perfil::esInstructor);
+    }
+
+    public boolean esAlumno() {
+        return this.perfiles.stream().anyMatch(Perfil::esInstructor);
+    }
+
+    public void completarRedesSociales(RedesSocialesUsuario redesSocialesNuevas) {
+        if (this.redesSociales == null) {
+            this.redesSociales = new RedesSocialesUsuario(this.id);
+        }
+        RedesSocialesUsuario redesSociales = this.redesSociales;
+        redesSociales.setFacebook(redesSocialesNuevas.getFacebook());
+        redesSociales.setInstagram(redesSocialesNuevas.getInstagram());
+        redesSociales.setTiktok(redesSocialesNuevas.getTiktok());
+        redesSociales.setTwitter(redesSocialesNuevas.getTwitter());
+        redesSociales.setLinkedin(redesSocialesNuevas.getLinkedin());
+        redesSociales.setYoutube(redesSocialesNuevas.getYoutube());
+    }
+
+
 }

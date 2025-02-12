@@ -116,7 +116,7 @@ public class InstructorController {
         if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
             // Este servicio se encarga de guardar el archivo (por ejemplo, en el sistema de archivos o en la nube)
             // y retornar la URL donde se encuentra
-            String logoUrl = fileStorageService.storeFile(fotoPerfil, "uploads/instructores/fotos-perfil");
+            String logoUrl = fileStorageService.storeFile(fotoPerfil, "uploads/instructores/fotos-perfil/");
             // Se asigna la URL al DTO para que el servicio la use
             instructorDTO.setFotoPerfilURL(logoUrl);
         }

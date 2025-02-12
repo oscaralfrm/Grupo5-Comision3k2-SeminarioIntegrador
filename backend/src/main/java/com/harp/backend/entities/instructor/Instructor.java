@@ -1,5 +1,6 @@
 package com.harp.backend.entities.instructor;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.servicio.Servicio;
 //import com.harp.backend.entities.usuario.model.Usuario;
@@ -44,12 +45,16 @@ public class Instructor {
     @Column(name = "descripcion")
     private String descripcion;
 
-    @OneToOne(mappedBy = "instructor", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    private DatosBancarios datosBancarios;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private DatosBancarios datosBancarios = new DatosBancarios();
 
     //private byte[] cv;
 
     public void completarDatosBancarios(DatosBancarios datosBancarios) {
+        if (this.datosBancarios == null) {
+            this.datosBancarios = new DatosBancarios();
+        }
         this.datosBancarios.completarDatos(datosBancarios);
     }
 

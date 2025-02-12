@@ -1,11 +1,17 @@
 package com.harp.backend.entities.usuario.service;
 
+import com.harp.backend.entities.instructor.Instructor;
+import com.harp.backend.entities.instructor.InstructorDTO;
 import com.harp.backend.entities.perfil.model.Perfil;
+import com.harp.backend.entities.usuario.RedesSocialesUsuario;
+import com.harp.backend.entities.usuario.dto.UsuarioDTO;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.model.UsuarioLoginResponse;
 import com.harp.backend.entities.usuario.repository.IUsuarioRepository;
+import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Text;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,13 +68,44 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public Optional<Usuario> findUsuario(Long idUsuario) {
-        return usuarioRepository.findById(idUsuario);
+    public Usuario findUsuario(Long idUsuario) {
+        return usuarioRepository.findById(idUsuario).orElseThrow(() -> new NoSuchElementFoundException("Usuario no encontrado"));
     }
 
     @Override
-    public Usuario editUsuario(Usuario usuario) {
+    public Usuario editUsuario(Long idUsuario, UsuarioDTO usuarioDTO) {
+        Usuario usuario = this.findUsuario(idUsuario);
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setApellido(usuarioDTO.getApellido());
+        //instructorExistente.getUsuario().setEmail(instructorDTO.getEmail());
+        usuario.setTelefono(usuarioDTO.getTelefono());
+        usuario.setDireccion(usuarioDTO.getDireccion());
+        usuario.setContrasena(usuarioDTO.getContrasena());
+        usuario.setFechaNacimiento(usuarioDTO.getFechaNacimiento());
+        usuario.setFotoPerfilURL(usuarioDTO.getFotoPerfilURL());
+
         return usuarioRepository.save(usuario);
+    }
+
+    public String editarFotoPerfil(Long idUsuario, String fotoPerfilURL) {
+        System.out.println("en foto perfil service");
+        Usuario usuario = this.findUsuario(idUsuario);
+        usuario.setFotoPerfilURL(fotoPerfilURL);
+        usuarioRepository.save(usuario);
+        return usuario.getFotoPerfilURL();
+    }
+
+    public void editarBiografia(Long idUsuario, String biografia) {
+        System.out.println("editando biografia" + biografia);
+        Usuario usuario = this.findUsuario(idUsuario);
+        usuario.setBiografia(biografia);
+        usuarioRepository.save(usuario);
+    }
+
+    public void completarRedesSocialesUsuario(Long idUsuario, RedesSocialesUsuario redesSociales) {
+        Usuario usuario = this.findUsuario(idUsuario);
+        usuario.completarRedesSociales(redesSociales);
+        usuarioRepository.save(usuario);
     }
 
 //    @Override

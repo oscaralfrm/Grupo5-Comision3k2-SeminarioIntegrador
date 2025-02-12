@@ -1,5 +1,6 @@
 package com.harp.backend.entities.instructor;
 
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,9 +27,13 @@ public class DatosBancarios {
     private String banco;               // Nombre o código del banco
     private String cuit; // private String cuil
 
-    @OneToOne
-    @JoinColumn(name = "instructor_id", nullable = false)
-    private Instructor instructor;
+//    public DatosBancarios(Instructor instructor) {
+//        this.instructor = instructor;
+//    }
+
+//    @OneToOne
+//    @JoinColumn(name = "instructor_id", nullable = false)
+//    private Instructor instructor;
 
     public boolean estanCompletos() {
         return (! alias.isBlank() && ! cbu.isBlank() && ! tipoCuenta.isBlank() &&

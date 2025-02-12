@@ -174,12 +174,6 @@ public class ServicioController {
         return  ResponseEntity.ok("Se publicó el servicio");
     }
 
-    @GetMapping("/{idServicio}/se-puede-publicar")
-    public ResponseEntity<Boolean> sePuedepublicar(@PathVariable @Min(1) Long idServicio) {
-        boolean sePuedePublicar = servicioService.sePuedePublicarServicio(idServicio);
-        return  ResponseEntity.ok(sePuedePublicar);
-    }
-
     // SUSPENDER
     @PutMapping("/{idServicio}/suspender")
     public ResponseEntity<String> suspenderServicio(@PathVariable @Min(1) Long idServicio) {
@@ -192,12 +186,6 @@ public class ServicioController {
     public ResponseEntity<String> renaudarServicio(@PathVariable @Min(1) Long idServicio) {
         servicioService.renaudarServicio(idServicio);
         return  ResponseEntity.ok("Se renaudó el servicio");
-    }
-
-    @GetMapping("/{idServicio}/se-puede-suspender")
-    public ResponseEntity<Boolean> sePuedeSuspender(@PathVariable @Min(1) Long idServicio) {
-        boolean sePuedeSuspender = servicioService.sePuedeSuspenderServicio(idServicio);
-        return  ResponseEntity.ok(sePuedeSuspender);
     }
 
     @GetMapping("/{idServicio}/se-puede")
@@ -254,6 +242,14 @@ public class ServicioController {
 //        inscripcionService.setFechaFinInscripcionesDeServicio(idServicio);
 //        System.out.println("De inscripciones");
         return  ResponseEntity.ok("Se configuró la fecha fin del servicio");
+    }
+
+    // CANCELAR
+    @Transactional
+    @PutMapping("/{idServicio}/cancelar")
+    public ResponseEntity<String> cancelarServicio(@PathVariable @Min(1) Long idServicio) {
+        servicioService.cancelarServicio(idServicio);
+        return  ResponseEntity.ok("Se canceló el servicio");
     }
 
 

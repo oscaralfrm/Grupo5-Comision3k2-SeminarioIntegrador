@@ -5,5 +5,6 @@ public enum EstadoServicio {
     Publicado,
     Privado,
     Finalizado,
-    Suspendido
+    Suspendido,
+    Cancelado
 }
