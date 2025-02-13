@@ -18,7 +18,7 @@ import Dashboard from "./Components/Instructor/MisServicios/MisServicios.jsx";
 import CrearGrupo from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/Grupos.jsx";
 import Configuracion from "./Components/Instructor/MiServicio/MenuOpciones/Configuracion.jsx";
 import InfoServicioPage from "./Components/Instructor/InfoServicioPage/InfoServicioPage.jsx";
-import DescubrirServicios from "./Components/Alumno/DescubrirServicios.jsx";
+
 import InformacionDelServicio from "./Components/Alumno/InformacionDelServicio.jsx"; // <-- Importación corregida
 
 import { EditUsuario } from "./Components/EditUsuarios/EditUsuario.jsx";
@@ -30,6 +30,7 @@ import MisInscripciones from "./Components/Alumno/Cursos/MisInscripciones.jsx";
 import InfoServicioAlumno from "./Components/Alumno/InfoServicioAlumno.jsx";
 import MisCuotas from "./Components/Alumno/Pagos/PagosPage.jsx";
 import ProfileInfo from "./Components/VerPerfil/Perfil.jsx";
+import DescubrirServicios from "./Components/Alumno/DescubrirServicios/DescubrirServicios.jsx";
 
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 

@@ -1,4 +1,5 @@
 import axios from './axiosConfig.js';
+import qs from "qs";
 import { armarStringPrecioYFrecuenciaCobro } from './frecuenciaPago.js';
 import { getGruposDeServicio } from './Grupo.js';
 import { getMontoActualGrupoDeHistorial } from './HistorialMontoCuota.js';
@@ -29,42 +30,139 @@ export const getAllServiciosPublicos = async (page, size) => {
     }
 };
 
-export const getAllServiciosPublicosSinAlumno = async (page, size, idAlumno) => {
+export const getAllServiciosPublicosSinAlumno = async ({
+    nombre,
+    categoriaNombre,
+    modalidadClasesNombre,
+    calificacionMinima,
+    ubicacion,
+    conClaseGratis,
+    frecuenciaSemanalClases,
+    precioMinimo,
+    cantCiclo,
+    unidadCiclo,
+    diasSemanales,
+    turnos,
+    idAlumno,
+    page = 0,
+    size = 20,
+  }) => {
+    console.log({
+        nombre,
+        categoriaNombre,
+        modalidadClasesNombre,
+        calificacionMinima,
+        ubicacion,
+        conClaseGratis,
+        frecuenciaSemanalClases,
+        precioMinimo,
+        cantCiclo,
+        unidadCiclo,
+        diasSemanales,
+        turnos,
+        idAlumno,
+        page,
+        size,
+      });
     try {
-        const { data } = await axios.get(`${API_URL}servicios/publicos/sin-alumno/${idAlumno}?page=${page}&size=${size}`);
-        console.log("serivico inscripcioenes abiertas", data);
-    
-        const serviciosArray = Array.isArray(data.content) ? data.content : [];
-
-        const servicios = await Promise.all(serviciosArray.map(async (servicio) => {
-            const instructor = await obtenerInstructorDeServicio(servicio.id);
-            const resumen = await getResumenReseniasDeServicio(servicio.id);
-            const grupos = await getGruposDeServicio(servicio.id);
-            
-            // Obtener montos de los grupos
-            const montos = grupos.map(
-                grupo => getMontoActualGrupoDeHistorial(grupo.historialMontos)?.monto ?? 0
-            );
-            
-            // Calcular monto mínimo
-            const montoMinimo = montos.length > 0 ? Math.min(...montos) : "Sin definir";
-            
-            return {
-                ...servicio,
-                instructorId: instructor.id,
-                instructorNombre: instructor.usuario.nombre + " " + instructor.usuario.apellido,
-                resumen,
-                montoMinimo,
-            };
-        }));
-        
-        console.log(servicios);
-        return servicios;
+      const data = await descubrirServicios({
+        nombre,
+        categoriaNombre,
+        modalidadClasesNombre,
+        calificacionMinima,
+        ubicacion,
+        conClaseGratis,
+        frecuenciaSemanalClases,
+        precioMinimo,
+        cantCiclo,
+        unidadCiclo,
+        diasSemanales,
+        turnos,
+        idAlumno,
+        page,
+        size,
+      });
+      console.log("Servicios obtenidos", data);
+  
+      const serviciosArray = Array.isArray(data.content) ? data.content : [];
+  
+      // Se procesan cada uno de los servicios (agregando datos del instructor, resumen, etc.)
+      const servicios = await Promise.all(
+        serviciosArray.map(async (servicio) => {
+          const instructor = await obtenerInstructorDeServicio(servicio.id);
+          const resumen = await getResumenReseniasDeServicio(servicio.id);
+          const grupos = await getGruposDeServicio(servicio.id);
+  
+          // Obtener montos de los grupos
+          const montos = grupos.map(
+            (grupo) => getMontoActualGrupoDeHistorial(grupo.historialMontos)?.monto ?? 0
+          );
+  
+          // Calcular monto mínimo
+          const montoMinimo = montos.length > 0 ? Math.min(...montos) : "Sin definir";
+  
+          return {
+            ...servicio,
+            instructorId: instructor.id,
+            instructorNombre: instructor.usuario.nombre + " " + instructor.usuario.apellido,
+            resumen,
+            montoMinimo,
+          };
+        })
+      );
+  
+      return { content: servicios, totalPages: data.totalPages };
     } catch (error) {
-        console.error('Error al obtener los servicios', error);
-        throw error;
+      console.error("Error al obtener los servicios", error);
+      throw error;
     }
-};
+  };
+
+export const descubrirServicios = async ({ 
+    nombre,
+    categoriaNombre,
+    modalidadClasesNombre,
+    calificacionMinima,
+    ubicacion,
+    conClaseGratis,
+    frecuenciaSemanalClases,
+    precioMinimo,
+    cantCiclo,
+    unidadCiclo,
+    diasSemanales,
+    turnos,
+    idAlumno,
+    page = 0,
+    size = 20,
+  }) => {
+    try {
+      const response = await axios.get(`${API_URL}servicios/descubrir-servicios`, {
+        params: {
+          nombre,
+          categoriaNombre,
+          modalidadClasesNombre,
+          calificacionMinima,
+          ubicacion,
+          conClaseGratis,
+          frecuenciaSemanalClases,
+          precioMinimo,
+          cantCiclo,
+          unidadCiclo,
+          diasSemanales, // se enviará como arreglo
+          turnos,       // se enviará como arreglo
+          idAlumno,
+          page,
+          size,
+        },
+        // Aquí configuramos la serialización de arrays para que se envíen sin corchetes
+      paramsSerializer: params => qs.stringify(params, { arrayFormat: "repeat" }),
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener descubrir servicios:", error);
+      throw error;
+    }
+  };
 
 
 export const getServicioByNombre = async (nombre) => {
