@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.harp.backend.entities.alumno.model.Alumno;
 //import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.clase.Clase;
+import com.harp.backend.entities.diaSemana.DiaSemana;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.horario.Horario;
+import com.harp.backend.entities.horario.Turno;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -292,6 +294,16 @@ public class Grupo {
 
     public List<Clase> getClasesAnteriores() {
         return this.clases.stream().filter(c -> ! c.esFutura()).toList();
+    }
+
+    public boolean tieneHorariosEnTodosEstosDias(List<DayOfWeek> diasSemana) {
+        // Devuelve true si todos sus horarios son en esos dias
+        return this.horarios.stream().allMatch(horario -> horario.esDeAlgunoDeEstosDias(diasSemana));
+    }
+
+    public boolean esDeAlgunoDeEstosTurnos(List<Turno> turnos) {
+        // Devuelve true si todos los horarios del grupo cumplen con estar dentro de los turnos de la lista
+        return this.horarios.stream().allMatch(horario -> horario.esDeAlgunoDeEstosTurnos(turnos));
     }
 }
 

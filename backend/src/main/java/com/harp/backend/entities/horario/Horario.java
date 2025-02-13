@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Time;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
@@ -100,6 +101,36 @@ public class Horario {
         } else {
             return false;
         }
+    }
+
+    public boolean esDeAlgunoDeEstosDias(List<DayOfWeek> diasSemana) {
+        // Retorna true si alguno de los dias de la lista coinciden con el dia de este horario
+        return diasSemana.stream().anyMatch(diaSemanaDeLista -> diaSemanaDeLista.equals(this.diaSemana.toDayOfWeek()));
+    }
+
+    public boolean esDeAlgunoDeEstosTurnos(List<Turno> turnos) {
+        // Restorna true si es de alguno de los turnos de la lista
+        return turnos.stream().anyMatch(turno -> turno.equals(this.calcularTurno()));
+    }
+
+    public boolean estaEntre(LocalTime horaInicio, LocalTime horaFin) {
+        return ( this.horaInicio.equals(horaInicio) || this.horaInicio.isAfter(horaInicio) )
+                && ( this.horaFin.equals(horaFin) || this.horaFin.isBefore(horaFin) );
+    }
+
+    public Turno calcularTurno() {
+        if (this.estaEntre(LocalTime.of(6, 0) , LocalTime.of(11, 59))) {
+            return Turno.Mañana;
+        } else if (this.estaEntre(LocalTime.of(12, 0) , LocalTime.of(15, 59))) {
+            return Turno.MedioDia;
+        } else if (this.estaEntre(LocalTime.of(16, 0) , LocalTime.of(19, 59))) {
+            return Turno.Tarde;
+        } else if (this.estaEntre(LocalTime.of(20, 0) , LocalTime.of(2, 59))) {
+            return Turno.Noche;
+        } else if (this.estaEntre(LocalTime.of(3, 0), LocalTime.of(5, 59))) {
+            return Turno.Madrugada;
+        }
+        return null;
     }
 
 }

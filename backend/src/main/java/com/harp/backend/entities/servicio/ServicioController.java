@@ -4,9 +4,12 @@ package com.harp.backend.entities.servicio;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.clase.Clase;
+import com.harp.backend.entities.diaSemana.DiaSemana;
+import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
+import com.harp.backend.entities.horario.Turno;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.inscripcion.InscripcionDTO;
 import com.harp.backend.entities.inscripcion.InscripcionService;
@@ -17,13 +20,17 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
@@ -66,6 +73,46 @@ public class ServicioController {
         Page<Servicio> servicios = servicioService.getAllServiciosPublicadosSinInscripcionAlumno(page, size, idAlumno);
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     };
+
+//    @GetMapping("/descubrir-servicios")
+//    public Page<Servicio> descubrirServicios(
+//            @RequestParam(required = false) String nombre,
+//            @RequestParam(required = false) String categoriaNombre,
+//            @RequestParam(required = false) Float calificacionMinima,
+//            @RequestParam(required = false) String ubicacion,
+//            @RequestParam(required = false) Long idAlumno,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "20") int size) {
+//        System.out.println("idAlumno" + idAlumno);
+//        Pageable pageable = PageRequest.of(page, size);
+//        return servicioService.searchServiciosPublicadosSinAlumnoConFiltros(nombre, categoriaNombre,
+//                ubicacion, calificacionMinima, idAlumno, pageable);
+//    }
+
+
+    @GetMapping("/descubrir-servicios")
+    public Page<Servicio> descubrirServicios(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String categoriaNombre,
+            @RequestParam(required = false) String modalidadClasesNombre,
+            @RequestParam(required = false) Float calificacionMinima,
+            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) boolean conClaseGratis,
+            @RequestParam(required = false) Integer frecuenciaSemanalClases,
+            @RequestParam(required = false) Double precioMinimo,
+            @RequestParam(required = false) Integer cantCiclo,
+            @RequestParam(required = false) ChronoUnit unidadCiclo,
+            @RequestParam(required = false) List<DayOfWeek> diasSemanales,
+            @RequestParam(required = false) List<Turno> turnos,
+            @RequestParam(required = false) Long idAlumno,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        System.out.println("idAlumno" + idAlumno);
+        return servicioService.descubrirServicios(nombre, categoriaNombre, modalidadClasesNombre, ubicacion,
+                calificacionMinima, conClaseGratis, frecuenciaSemanalClases, precioMinimo, cantCiclo, unidadCiclo,
+                diasSemanales, turnos,
+                idAlumno, page, size);
+    }
 
     // GET DE UNO EN PARTICULAR
     @GetMapping("/{idServicio}")

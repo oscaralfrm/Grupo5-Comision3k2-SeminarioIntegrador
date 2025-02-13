@@ -9,10 +9,12 @@ import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.cuota.Cuota;
+import com.harp.backend.entities.diaSemana.DiaSemana;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.horario.Horario;
+import com.harp.backend.entities.horario.Turno;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.modalidad.Modalidad;
 import com.harp.backend.entities.modalidad.ModalidadClases;
@@ -22,10 +24,12 @@ import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Setter
 @Getter
@@ -36,7 +40,7 @@ import java.util.*;
 public class Servicio {
 
     public Servicio(String nombre, String descripcion, String logoURL, String ubicacion,
-                    Integer cantMaxAlumnosPorGrupo, Integer cantVecesSemanales, int duracionTotalMeses,
+                    Integer cantMaxAlumnosPorGrupo, int duracionTotalMeses,
                     LocalDate fechaInicio, LocalDate fechaFin,
                     boolean publico, int cantDiasCiclo, int diaLimitePago,
                     boolean claseDePrueba, boolean asistenciasActivas,
@@ -92,7 +96,7 @@ public class Servicio {
     private Integer cantMaxAlumnosPorGrupo;
 
     private Integer cantMaxAlumnos;
-    @Column(name = "cant_veces_semanales")
+//    @Column(name = "cant_veces_semanales")
     private Integer cantVecesSemanales;
 //    private Integer cantHorariosPorGrupo;
 
@@ -681,5 +685,52 @@ public class Servicio {
 
     public boolean tieneGrupoConEsteNombre(String nombreGrupo) {
         return this.grupos.stream().anyMatch(grupo -> grupo.getNombre().equals(nombreGrupo));
+    }
+
+    public boolean tieneEstaCategoria(String categoriaNombre) {
+        return this.categoria.getNombre().equals(categoriaNombre);
+    }
+
+
+    public boolean incluyeEsteNombre(String nombre) {
+        return this.nombre.contains(nombre);
+    }
+
+    public boolean incluyeEstaUbicacion(String ubicacion) {
+        return this.ubicacion.contains(ubicacion);
+    }
+
+    public boolean tieneCalificacionMayorOIgualA(Float calificacionMinima) {
+        return this.getCalificacionPromedio() >= calificacionMinima;
+    }
+
+    public List<Integer> calcularFrecuenciasSemanales() {
+        return this.grupos.stream().map(Grupo::calcularVecesSemanales).toList();
+    }
+
+    public Double obtenerPrecioMinimo() {
+        Stream<Double> montosActualesGrupos = this.grupos.stream().map(Grupo::obtenerMontoActual).map(MontoServicio::getMonto);
+        return montosActualesGrupos.min(Double::compare).orElse(0.0);
+    }
+
+    public boolean tienePrecioIgualOMenorA(Double precioMaximo) {
+        Double precioMinimoActual = this.obtenerPrecioMinimo();
+        return precioMinimoActual <= precioMaximo;
+    }
+
+    public boolean tieneEstaFrecuenciaPago(Integer cantCiclo, ChronoUnit unidadCiclo) {
+        if (this.tipoFrecuenciaPago == null) {
+            return false;
+        }
+        return this.tipoFrecuenciaPago.getCantCiclo().equals(cantCiclo) && this.tipoFrecuenciaPago.getUnidadCiclo().equals(unidadCiclo);
+    }
+
+    public boolean tieneGruposEnEstosDias(List<DayOfWeek> diasSemana) {
+        // Devuelve true si alguno de sus grupos cumple con tener todos sus horarios en esos dias
+        return this.grupos.stream().anyMatch(grupo -> grupo.tieneHorariosEnTodosEstosDias(diasSemana));
+    }
+
+    public boolean tieneGruposEnEstosTurnos(List<Turno> turnos) {
+        return this.grupos.stream().anyMatch(grupo -> grupo.esDeAlgunoDeEstosTurnos(turnos));
     }
 }

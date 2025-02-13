@@ -135,4 +135,11 @@ public class ReseniaController {
         Resenia resenia = reseniaService.editResenia(idResenia, reseniaDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resenia);
     };
+
+    @DeleteMapping("/resenias/{idResenia}")
+    public ResponseEntity<String> deleteResenia(@PathVariable Long idResenia) {
+        reseniaService.deleteResenia(idResenia);
+        return ResponseEntity.status(HttpStatus.OK).body("Reseña eliminada");
+    };
+
 }

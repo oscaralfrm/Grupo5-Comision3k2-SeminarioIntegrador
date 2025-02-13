@@ -3,14 +3,21 @@ package com.harp.backend.entities.servicio;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.clase.Clase;
+import com.harp.backend.entities.diaSemana.DiaSemana;
+import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
+import com.harp.backend.entities.horario.Turno;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.instructor.Instructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
@@ -53,4 +60,18 @@ public interface IServicioService {
     SePuedeDTO servicioSePuede(Long idServicio);
     void configurarMontoInscripcionServicio(Long idServicio, MontoInscripcionDTO montoInscripcionDTO);
     public Instructor findInstructorDeServicio(Long idServicio);
+    Page<Servicio> descubrirServicios(String nombre,
+                                      String categoriaNombre,
+                                      String modalidadClasesNombre,
+                                      String ubicacion,
+                                      Float calificacionMinima,
+                                      boolean conClaseGratis,
+                                      Integer frecuenciaSemanalClases,
+                                      Double precioMinimo,
+                                      Integer cantCiclo,
+                                      ChronoUnit unidadCiclo,
+                                      List<DayOfWeek> diasSemanales,
+                                      List<Turno> turnos,
+                                      Long idAlumno,
+                                      int page, int size);
 }

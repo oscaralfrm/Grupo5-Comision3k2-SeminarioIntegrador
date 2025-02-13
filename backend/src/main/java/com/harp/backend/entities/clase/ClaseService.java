@@ -83,7 +83,8 @@ public class ClaseService implements IClaseService {
 
         // Si el día obtenido es hoy osea es domingo o ya pasó, ajustamos a la semana siguiente
         // Los domingos a primera hora se crean las clases desde el lunes hasta el doming siguiente
-        if (!fechaClase.isAfter(fechaInicio)) {
+        // agregamos el equal para que si la fecha de inicio es hoy se cree la clase de hoy
+        if (!fechaClase.isAfter(fechaInicio) && ! fechaClase.isEqual(fechaInicio)) {
             fechaClase = fechaClase.plusWeeks(1);
         }
 

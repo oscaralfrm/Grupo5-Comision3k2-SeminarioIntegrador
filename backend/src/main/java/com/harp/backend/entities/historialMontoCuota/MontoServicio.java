@@ -1,5 +1,6 @@
 package com.harp.backend.entities.historialMontoCuota;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.harp.backend.entities.servicio.Servicio;
 import jakarta.persistence.*;
 import lombok.*;

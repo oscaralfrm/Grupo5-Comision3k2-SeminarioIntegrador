@@ -7,6 +7,7 @@ import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.ClaseService;
 import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.cuota.Cuota;
+import com.harp.backend.entities.diaSemana.DiaSemana;
 import com.harp.backend.entities.frecuenciaPago.TipoCiclo;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPagoService;
@@ -14,6 +15,7 @@ import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioService;
+import com.harp.backend.entities.horario.Turno;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.EstrategiaCrearInscripcionFactory;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.IEstrategiaInscripcion;
@@ -30,12 +32,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.data.domain.Pageable;
 
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -100,6 +107,141 @@ public class ServicioService implements IServicioService {
         List<Servicio> subList = (start < end) ? serviciosFiltrados.subList(start, end) : List.of();
         return new PageImpl<>(subList, pageable, serviciosFiltrados.size());
     }
+
+
+//    public Page<Servicio> descubrirServicios(String nombre,
+//                                             String categoriaNombre,
+//                                             String ubicacion,
+//                                             Float calificacionMinima,
+//                                             Long idAlumno,
+//                                             int page,
+//                                             int size) {
+//        //Page<Servicio> listServicios = this.getAllServiciosPublicados(page, size);
+//        List<Servicio> listServicios =
+//                servicioRepository
+//                        .findByInscripcionesAbiertasTrueAndCategoriaNombreAndNombreContainingIgnoreCaseAndUbicacionContainingIgnoreCase(categoriaNombre, nombre, ubicacion);
+//        System.out.println("list servicios" + listServicios);
+//        // Corregimos la calificacion minima a cero si es que llega vacía
+//        final Float calificacionMinimaFinal = (calificacionMinima == null || calificacionMinima.isNaN() || calificacionMinima.isInfinite())
+//                ? 0f
+//                : calificacionMinima;
+//
+//        // SI el alumno no esta en el servicio y tampoco esta esperando que lo acepten entonces lo retornamos
+//        List<Servicio> serviciosFiltrados = listServicios.stream()
+//                .filter(servicio ->
+//                        (  (! servicio.tieneEsteAlumno(idAlumno)) && (! servicio.tieneEsteAlumnoPendiente(idAlumno)) )
+//                        && servicio.tieneCalificacionMayorOIgualA(calificacionMinimaFinal)
+//
+//                ).toList();
+//
+//        // Crear una nueva página basada en la lista filtrada
+//        Pageable pageable = PageRequest.of(page, size);
+//        int start = (int) pageable.getOffset();
+//        int end = Math.min((start + pageable.getPageSize()), serviciosFiltrados.size());
+//
+//        List<Servicio> subList = (start < end) ? serviciosFiltrados.subList(start, end) : List.of();
+//        return new PageImpl<>(subList, pageable, serviciosFiltrados.size());
+//    }
+
+
+//    public Page<Servicio> searchServiciosPublicadosSinAlumnoConFiltros(String nombre,
+//                                          String categoriaNombre,
+//                                          EstadoServicio estado,
+//                                          String ubicacion,
+//                                          Long idAlumno,
+//                                          Pageable pageable) {
+//        Specification<Servicio> spec = Specification.where(ServicioSpecifications.nombreContains(nombre))
+//                .and(ServicioSpecifications.categoriaEquals(categoriaNombre))
+//                .and(ServicioSpecifications.estadoEquals(estado))
+//                .and(ServicioSpecifications.ubicacionContains(ubicacion))
+//                .and(ServicioSpecifications.inscripcionesAbiertasSpec())
+//                .and(ServicioSpecifications.alumnoNoInscriptoSpec(idAlumno));
+//        System.out.println("spec" + spec);
+//        return servicioRepository.findAll(spec, pageable);
+//    }
+
+    public Page<Servicio> descubrirServicios(String nombre,
+                                                                       String categoriaNombre,
+                                                                       String modalidadClasesNombre,
+                                                                       String ubicacion,
+                                                                       Float calificacionMinima,
+                                                                       boolean conClaseGratis,
+                                                                       Integer frecuenciaSemanalClases,
+                                                                        Double precioMaximo,
+                                                                        Integer cantCiclo,
+                                                                        ChronoUnit unidadCiclo,
+                                                                        List<DayOfWeek> diasSemanales,
+                                                                        List<Turno> turnos,
+                                                                       Long idAlumno,
+                                                                       int page, int size) {
+        // Crear una nueva página basada en la lista filtrada
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Filtramos con specifications
+        Specification<Servicio> spec = Specification.where(ServicioSpecifications.nombreContains(nombre))
+                .and(ServicioSpecifications.inscripcionesAbiertasSpec())
+                .and(ServicioSpecifications.alumnoNoInscriptoSpec(idAlumno))
+                .and(ServicioSpecifications.categoriaEquals(categoriaNombre))
+                .and(ServicioSpecifications.claseDePruebaGratis(conClaseGratis))
+                .and(ServicioSpecifications.modalidadClasesEquals(modalidadClasesNombre))
+                .and(ServicioSpecifications.ubicacionContains(ubicacion));
+
+        // Aseguramos que calificacion es valida
+        final Float calificacionMinimaFinal = (calificacionMinima == null || calificacionMinima.isNaN() || calificacionMinima.isInfinite())
+                ? 0f
+                : calificacionMinima;
+
+
+        // FIltramos por calificacion
+        Stream<Servicio> serviciosFiltrados =
+                servicioRepository
+                        .findAll(spec)
+                        .stream()
+                        .filter(servicio -> servicio.tieneCalificacionMayorOIgualA(calificacionMinimaFinal));
+
+        // Filtramos por frecuencia semanal
+        // Aseguramos que frecuencia es valida
+        if (frecuenciaSemanalClases != null && frecuenciaSemanalClases != 0) {
+            serviciosFiltrados = serviciosFiltrados
+                    .filter(servicio -> servicio.calcularFrecuenciasSemanales().contains(frecuenciaSemanalClases));
+        }
+
+        // Filtramos por frecuencia semanal
+        // Aseguramos que frecuencia es valida
+        if (precioMaximo != null && precioMaximo != 0
+                && cantCiclo != null && cantCiclo != 0
+                && unidadCiclo != null) {
+            serviciosFiltrados = serviciosFiltrados
+                    .filter(servicio -> {
+                        if (servicio.tieneEstaFrecuenciaPago(cantCiclo, unidadCiclo)) {
+                            return servicio.tienePrecioIgualOMenorA(precioMaximo);
+                        }
+                        return false;
+                    });
+        }
+
+        // Dias de la semana
+        if (! (diasSemanales == null || diasSemanales.isEmpty()) ) {
+            System.out.println("en dias semanales" + diasSemanales);
+            serviciosFiltrados = serviciosFiltrados
+                    .filter(servicio -> servicio.tieneGruposEnEstosDias(diasSemanales));
+        }
+
+        // Turnos
+        if (! (turnos == null || turnos.isEmpty())) {
+            serviciosFiltrados = serviciosFiltrados
+                    .filter(servicio -> servicio.tieneGruposEnEstosTurnos(turnos));
+        }
+
+        List<Servicio> listServiciosFiltrados = serviciosFiltrados.toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), listServiciosFiltrados.size());
+
+        List<Servicio> subList = (start < end) ? listServiciosFiltrados.subList(start, end) : List.of();
+        return new PageImpl<>(subList, pageable, listServiciosFiltrados.size());
+    }
+
 
     public List<Servicio> findServiciosAsistenciasActivas() {
         return servicioRepository.findAll().stream().filter(Servicio::isAsistenciasActivas).toList();
