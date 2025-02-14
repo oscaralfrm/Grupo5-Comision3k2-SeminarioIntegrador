@@ -17,15 +17,10 @@ public class RedesSocialesUsuario {
     private String tiktok;
     private String twitter;
     private String linkedin;
-
-    public RedesSocialesUsuario(Long usuario_id) {
-        this.usuario_id = usuario_id;
-    }
-
     private String youtube;
 
     @Id
-    @Column(name = "usuario_id")
-    @JsonIgnore
-    private Long usuario_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
 }

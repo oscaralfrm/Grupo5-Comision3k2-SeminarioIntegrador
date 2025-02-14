@@ -68,7 +68,7 @@ public class Usuario {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private RedesSocialesUsuario redesSociales = new RedesSocialesUsuario(this.id);
+    private RedesSocialesUsuario redesSociales = new RedesSocialesUsuario();
 
     // Relación con las Suspensiones... 1 a N
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
@@ -128,7 +128,7 @@ public class Usuario {
 
     public void completarRedesSociales(RedesSocialesUsuario redesSocialesNuevas) {
         if (this.redesSociales == null) {
-            this.redesSociales = new RedesSocialesUsuario(this.id);
+            this.redesSociales = new RedesSocialesUsuario();
         }
         RedesSocialesUsuario redesSociales = this.redesSociales;
         redesSociales.setFacebook(redesSocialesNuevas.getFacebook());

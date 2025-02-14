@@ -135,7 +135,10 @@ public class ReseniaService implements IReseniaService {
             throw new UnsupportedOperationException("El alumno no puede realizar una reseña de ese servicio porque no se encuentra inscripto al mismo.");
         }
         Resenia nuevaResenia = new Resenia(alumno, reseniaDTO.getCalificacion(), reseniaDTO.getMensaje(), false);
+
         reseniaRepository.save(nuevaResenia);
+        servicioService.agregarReseñaAServicio(servicio, nuevaResenia);
+
         return nuevaResenia;
     }
 
@@ -150,7 +153,7 @@ public class ReseniaService implements IReseniaService {
         borradorResenia.setPublicada(true);
         reseniaRepository.save(borradorResenia);
 
-        servicioService.agregarReseñaAServicio(servicio, borradorResenia);
+        //servicioService.agregarReseñaAServicio(servicio, borradorResenia);
 
         return borradorResenia;
     }
