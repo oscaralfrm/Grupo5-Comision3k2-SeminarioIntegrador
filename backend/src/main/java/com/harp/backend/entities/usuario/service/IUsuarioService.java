@@ -20,7 +20,7 @@ public interface IUsuarioService {
     void editarBiografia(Long idUsuario, String biografia);
     void completarRedesSocialesUsuario(Long idUsuario, RedesSocialesUsuario redesSociales);
     void cambiarContrasena(Long idUsuario, CambiarContrasenaDTO cambiarContrasenaDTO);
-    UsuarioLoginResponse verificarCredenciales(String email, String contrasena); // Actualización
+    UsuarioLoginResponse verificarCredenciales(String usuario, String contrasena); // Actualización
     // éste último es el method para poder verificar y devolver tanto el tipo de perfil, como el ID.
 //    public String encriptPassword(String password);
 }

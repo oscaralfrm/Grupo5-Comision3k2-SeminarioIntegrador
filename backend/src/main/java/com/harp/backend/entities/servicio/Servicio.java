@@ -719,7 +719,7 @@ public class Servicio {
     }
 
     public boolean tieneEstaFrecuenciaPago(Integer cantCiclo, ChronoUnit unidadCiclo) {
-        if (this.tipoFrecuenciaPago == null) {
+        if (this.tipoFrecuenciaPago == null || this.tipoFrecuenciaPago.getCantCiclo() == null || this.tipoFrecuenciaPago.getUnidadCiclo() == null ) {
             return false;
         }
         return this.tipoFrecuenciaPago.getCantCiclo().equals(cantCiclo) && this.tipoFrecuenciaPago.getUnidadCiclo().equals(unidadCiclo);

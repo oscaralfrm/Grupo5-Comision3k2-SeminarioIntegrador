@@ -9,6 +9,7 @@ import com.harp.backend.entities.servicio.FileStorageService;
 import com.harp.backend.entities.suspension.service.ISuspensionService;
 import com.harp.backend.entities.usuario.RedesSocialesUsuario;
 import com.harp.backend.entities.usuario.dto.CambiarContrasenaDTO;
+import com.harp.backend.entities.usuario.dto.LoginDTO;
 import com.harp.backend.entities.usuario.dto.UsuarioDTO;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.model.UsuarioLoginResponse;
@@ -79,8 +80,8 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioLoginResponse> verificarUsuario(@RequestBody Usuario usuario) {
-        UsuarioLoginResponse response = usuarioService.verificarCredenciales(usuario.getEmail(), usuario.getContrasena());
+    public ResponseEntity<UsuarioLoginResponse> verificarUsuario(@RequestBody LoginDTO loginDTO) {
+        UsuarioLoginResponse response = usuarioService.verificarCredenciales(loginDTO.getUsuario(), loginDTO.getContrasena());
         if (response != null) {
             return ResponseEntity.ok(response);
         }

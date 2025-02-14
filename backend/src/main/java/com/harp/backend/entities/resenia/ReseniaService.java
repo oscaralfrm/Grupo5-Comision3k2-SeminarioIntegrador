@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -36,6 +37,7 @@ public class ReseniaService implements IReseniaService {
 
     @Override
     public List<Resenia> getReseniasDeAlumno(Long idAlumno) {
+
         return reseniaRepository.findByAlumnoId(idAlumno);
     }
 
@@ -80,8 +82,27 @@ public class ReseniaService implements IReseniaService {
     @Override
     public List<Resenia> getReseniasDeServicio(Long idServicio) {
         Servicio servicio = servicioService.findServicio(idServicio);
+
+
         return servicio.getResenias().stream()
                 .filter(Resenia::isPublicada)
+                .sorted(Comparator.comparing(Resenia::getFechaHora).reversed())  // Ordena por fecha descendente
+                .collect(toList());
+    }
+
+    @Override
+    public List<Resenia> getReseniasDeServicio(Long idServicio, boolean publicadas, boolean borradores) {
+        Servicio servicio = servicioService.findServicio(idServicio);
+        Stream<Resenia> resenias = servicio.getResenias().stream();
+
+        if (publicadas && ! borradores) {
+            resenias = resenias.filter(Resenia::isPublicada);
+        }
+        if (! publicadas && borradores ) {
+            resenias = resenias.filter(resenia -> ! resenia.isPublicada());
+        }
+
+        return resenias
                 .sorted(Comparator.comparing(Resenia::getFechaHora).reversed())  // Ordena por fecha descendente
                 .collect(toList());
     }
@@ -180,9 +201,11 @@ public class ReseniaService implements IReseniaService {
     }
 
     @Override
-    public List<Resenia> getReseniasDeAlumnoYServicio(Long idServicio, Long idAlumno) {
+    public List<Resenia> getReseniasDeAlumnoYServicio(Long idServicio, Long idAlumno, boolean publicadas, boolean borradores) {
         Alumno alumno = alumnoService.findAlumno(idAlumno);
-        List<Resenia> resenias = this.getReseniasDeServicio(idServicio);
-        return resenias.stream().filter(resenia -> resenia.esDeEsteAlumno(alumno)).toList();
+
+        List<Resenia> reseniasDeServicio = this.getReseniasDeServicio(idServicio, publicadas, borradores);
+
+        return reseniasDeServicio.stream().filter(resenia -> resenia.esDeEsteAlumno(alumno)).toList();
     }
 }

@@ -30,8 +30,10 @@ public class ReseniaController {
     // hacer controller de traer reseña de un alumno y de un servicio
     @GetMapping("/alumnos/{idAlumno}/resenias/{idServicio}")
     public ResponseEntity<List<Resenia>> getReseniasDeAlumnoYServicio(@PathVariable Long idAlumno,
-                                                                      @PathVariable Long idServicio) {
-        List<Resenia> resenias = reseniaService.getReseniasDeAlumnoYServicio(idServicio, idAlumno);
+                                                                      @PathVariable Long idServicio,
+                                                                        @RequestParam boolean publicadas,
+                                                                      @RequestParam boolean borradores) {
+        List<Resenia> resenias = reseniaService.getReseniasDeAlumnoYServicio(idServicio, idAlumno, publicadas, borradores);
         return ResponseEntity.status(HttpStatus.OK).body(resenias);
     };
 

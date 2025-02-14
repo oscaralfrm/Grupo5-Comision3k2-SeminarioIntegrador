@@ -12,6 +12,7 @@ public interface IReseniaService {
     public List<Resenia> getReseniasPublicadasDeAlumno(Long idAlumno);
     public List<Resenia> getReseniasBorradorDeAlumno(Long idAlumno);
     public List<Resenia> getReseniasDeServicio(Long idServicio);
+    List<Resenia> getReseniasDeServicio(Long idServicio, boolean publicadas, boolean borradores);
     public List<Resenia> getReseniasConEstaCalificacionDeServicio(Long idServicio, int calificacion);
     public List<Resenia> getReseniasEntreEstasFechasDeServicio(Long idServicio, LocalDate fechaDesde, LocalDate fechaHasta);
     public List<Resenia> getReseñasPositivasDeServicio(Long idServicio);
@@ -26,6 +27,6 @@ public interface IReseniaService {
     public Resenia editResenia(Long idResenia, ReseniaDTO reseniaDTO);
     public void darDeBajaResenia(Long idServicio, Long idResenia);
     public ResumenReseniaDTO obtenerResumenReseniasDeServicio(Long idServicio);
-    public List<Resenia> getReseniasDeAlumnoYServicio(Long idServicio, Long idAlumno);
+    public List<Resenia> getReseniasDeAlumnoYServicio(Long idServicio, Long idAlumno, boolean publicadas, boolean borradores);
 
 }

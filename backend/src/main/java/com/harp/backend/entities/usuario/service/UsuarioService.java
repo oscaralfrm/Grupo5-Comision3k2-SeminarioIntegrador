@@ -35,10 +35,20 @@ public class UsuarioService implements IUsuarioService {
         return null;
     }
 
+
+
     // Éste es el método para poder veritifcar las credenciales del usuario y con eso... en la API devolver el String. IMPORTANTE
     @Override
-    public UsuarioLoginResponse verificarCredenciales(String email, String contrasena) {
-        Optional<Usuario> usuario = usuarioRepository.findByEmailOContrasena(email, contrasena);
+    public UsuarioLoginResponse verificarCredenciales(String login, String contrasena) {
+        Optional<Usuario> usuario;
+
+        // Verificamos si el usuario es un email o un nombre usuario
+        if ( login.contains("@") && login.contains(".") ) {
+            usuario = usuarioRepository.findByEmailAndContrasena(login, contrasena);
+        } else {
+            usuario = usuarioRepository.findByNombreUsuarioAndContrasena(login, contrasena);
+        }
+
         if (usuario.isPresent()) {
             Set<Perfil> perfiles = usuario.get().getPerfiles();
             for (Perfil perfil : perfiles) {
@@ -60,8 +70,6 @@ public class UsuarioService implements IUsuarioService {
         }
         return null; // Usuario no encontrado o sin un perfil válido
     }
-
-
 
     @Override
     public void deleteUsuario(Long idUsuario) {
