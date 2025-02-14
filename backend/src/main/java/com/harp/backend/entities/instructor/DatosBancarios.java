@@ -36,8 +36,9 @@ public class DatosBancarios {
 //    private Instructor instructor;
 
     public boolean estanCompletos() {
-        return (! alias.isBlank() && ! cbu.isBlank() && ! tipoCuenta.isBlank() &&
-                ! banco.isBlank() && ! cuit.isBlank());
+
+        return ( ! (alias.isBlank() || alias == null) && ! (cbu.isBlank() || cbu == null) &&
+                !(banco.isBlank() || banco == null) && ! (cuit.isBlank() || cuit == null));
     }
 
     public void completarDatos(DatosBancarios datosBancarios) {

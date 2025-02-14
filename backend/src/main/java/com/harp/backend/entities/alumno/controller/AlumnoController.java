@@ -81,6 +81,12 @@ public class AlumnoController {
         return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
     }
 
+    @GetMapping("{idAlumno}/inscripciones-pendientes")
+    public ResponseEntity<List<Inscripcion>> findInscripcionesPendientesDeAlumno(@PathVariable Long idAlumno) {
+        List<Inscripcion> inscripciones = alumnoService.findInscripcionesPendientesDeAlumno(idAlumno);
+        return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
+    }
+
 
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<Alumno> saveAlumno(@ModelAttribute AlumnoDTO alumnoDTO) {

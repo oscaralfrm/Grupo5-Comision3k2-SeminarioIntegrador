@@ -59,6 +59,9 @@ public class Instructor {
     }
 
     public boolean tieneDatosBancariosCompletos() {
+        if (this.datosBancarios == null ) {
+            return false;
+        }
         return this.datosBancarios.estanCompletos();
     }
 
