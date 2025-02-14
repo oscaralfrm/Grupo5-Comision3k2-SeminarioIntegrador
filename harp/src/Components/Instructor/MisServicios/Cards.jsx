@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getInstructorById } from "../../../services/Instructor";
+import WelcomeBlock from "./BloqueBienvenida";
 
 const CourseCards = ({ servicios, Instructorid }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,6 +48,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
       style={{ marginTop: "20px", fontFamily: "Roboto" }}
     >
       <div className="row">
+
         {currentServicios.map((servicio) => (
           <div className="col-md-4" key={servicio.id}>
             <div

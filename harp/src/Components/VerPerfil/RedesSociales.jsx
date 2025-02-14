@@ -183,26 +183,17 @@ const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
             </ListGroup>
 
             {sePuedeEditar &&
-                (Object.values(localSocials).every(valor => valor == "") || profileData?.usuario.redesSociales == null &&
+                ( (Object.values(localSocials).every(valor => valor == "" || valor == null )|| profileData?.usuario.redesSociales == null ) 
+                ?
                     <div className="alert alert-warning d-flex align-items-center" role="alert">
                         No has completado tu redes.
                     </div>
+                :  (Object.values(localSocials).some((valor) => valor == "" || valor == null) &&
+                        <div className="alert alert-warning d-flex align-items-center" role="alert">
+                            No has completado algunas redes.
+                        </div>)
                 )
             }
-
-            {sePuedeEditar &&
-                (Object.values(localSocials).some((valor) => valor == "") &&
-                    <div className="alert alert-warning d-flex align-items-center" role="alert">
-                        No has completado algunas redes.
-                    </div>)
-            }
-
-
-
-
-
-
-
         </div>
     );
 };
