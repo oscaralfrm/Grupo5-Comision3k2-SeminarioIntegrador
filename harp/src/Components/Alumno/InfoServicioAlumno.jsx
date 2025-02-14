@@ -9,12 +9,15 @@ import { getServicioById } from "../../services/Instructor";
 import { getGruposDeServicio } from "../../services/Grupo";
 import ReviewCarousel from "../Instructor/MiServicio/MenuOpciones/Dashboard/Reseñas";
 import InstructorInfo from "../Instructor/InfoServicioPage/InstructorInfo.jsx/InstructorInfo";
+import { getInscripcionesPendientesDeAlumno, getInscripcionesVigentesDeAlumno } from "../../services/Alumno";
 
 const InfoServicioAlumno = () => {
-  const { idServicio } = useParams();
+  const { idServicio, idAlumno } = useParams();
   const [serviceData, setServiceData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [grupos, setGrupos] = useState([]);
+  const [inscripcionesPendientes, setInscripcionesPendientes] = useState([]);
+  const [inscripcionesVigentes, setInscripcionesVigentes] = useState([]);
 
   const navigate = useNavigate();
 
@@ -25,6 +28,12 @@ const InfoServicioAlumno = () => {
 
       const gruposData = await getGruposDeServicio(idServicio);
       setGrupos(gruposData);
+
+      const inscripcionesPendientesData = await getInscripcionesPendientesDeAlumno(idAlumno);
+      const inscripcionesVigentesData = await getInscripcionesVigentesDeAlumno(idAlumno);
+      setInscripcionesPendientes(inscripcionesPendientesData);
+      setInscripcionesVigentes(inscripcionesVigentesData);
+
     } catch (error) {
       console.error("Error al traer el servicio:", error);
     }
@@ -66,7 +75,9 @@ const InfoServicioAlumno = () => {
 
       <Row className="mt-4">
         <Col>
-          <GruposServicio grupos={grupos} fetchServicio={fetchServicio} frecuenciaCobro={serviceData?.tipoFrecuenciaPago || {}} sePuedeEditar={false} />
+          <GruposServicio grupos={grupos} fetchServicio={fetchServicio} 
+          frecuenciaCobro={serviceData?.tipoFrecuenciaPago || {}} sePuedeEditar={false}
+          inscripcionesPendientesAlumno={inscripcionesPendientes} inscripcionesVigentesAlumno={inscripcionesVigentes} />
         </Col>
       </Row>
       <Row className="mt-4 align-items-stretch">

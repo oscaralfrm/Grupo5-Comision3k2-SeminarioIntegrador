@@ -122,18 +122,18 @@ export const LoginForm = () => {
                                 )}
                                 <form className="mt-3" onSubmit={handleSubmit(onSubmit)} id="login">
                                     <div className="mb-3">
-                                        <label htmlFor="email" className="form-label">Correo Electrónico</label>
+                                        <label htmlFor="email" className="form-label">Usuario o Correo</label>
                                         <input
-                                            type="email"
+                                            type="text"
                                             id="email"
                                             className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                                            placeholder="Correo Electrónico"
+                                            placeholder="Usuario o Correo"
                                             autoComplete="email"
                                             {...register("email", { required: true })}
                                         />
                                         {errors.email && (
                                             <div className="invalid-feedback">
-                                                Por favor, ingresa un correo electrónico
+                                                Por favor, ingresa un usuario o correo
                                             </div>
                                         )}
                                     </div>

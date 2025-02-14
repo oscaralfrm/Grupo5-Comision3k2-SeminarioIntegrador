@@ -16,7 +16,7 @@ import { crearInscripcion } from "../../../../services/Inscripcion";
 import SuccessModal from "../../../CartelDeExito/CartelDeExito";
 import ActualizarMontoModal from "../../MiServicio/MenuOpciones/ActualizarMonto";
 
-function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar }) {
+function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar, inscripcionesPendientesAlumno, inscripcionesVigentesAlumno}) {
   const { idServicio, idAlumno } = useParams();
   const [cuposLibres, setCuposLibres] = useState({});
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null); // Para editar grupos
@@ -27,6 +27,7 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
   const [montosProgramados, setMontosProgramados] = useState(0);
   const [sePuedeActualizarPrecio, setSePuedeActualizarPrecio] = useState(false);
   const navigate = useNavigate();
+
 
   // Estados para la inscripción con modales de Bootstrap
   const [showConfirm, setShowConfirm] = useState(false);
@@ -44,11 +45,35 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
     setMontosProgramados(montosPorGrupo);
   };
 
+  const esBotonDisable = (idGrupo) => {
+    console.log("En boton disable", inscripcionesPendientesAlumno, "idGrupo", idGrupo, "id serv insc", inscripcionesPendientesAlumno[0]?.servicio.id), "idGrupo", inscripcionesPendientesAlumno[0]?.grupo.id;
+    if (( !inscripcionesPendientesAlumno && !inscripcionesVigentesAlumno )
+       || (inscripcionesPendientesAlumno?.length === 0 && inscripcionesVigentesAlumno?.length === 0 ) ) {
+      return {esDisabled: false, tituloBoton: "Inscribirme"};
+    }
+    const tienePendientesDeEsteServicioYGrupo = inscripcionesPendientesAlumno?.some( (inscripcion) =>inscripcion &&
+     inscripcion.servicio && inscripcion.servicio.id && inscripcion.servicio.id == idServicio && inscripcion.grupo.id == idGrupo );
+    if (tienePendientesDeEsteServicioYGrupo) {
+      return {esDisabled: true, tituloBoton: "Inscripcion enviada"}
+    }
+
+    const tieneVigentesDeEsteServicioYGrupo = inscripcionesVigentesAlumno?.some( (inscripcion) =>inscripcion &&
+    inscripcion.servicio && inscripcion.servicio.id && inscripcion.servicio.id == idServicio && inscripcion.grupo.id == idGrupo );
+
+    if (tieneVigentesDeEsteServicioYGrupo) {
+      return {esDisabled: true, tituloBoton: "Inscripto"}
+    }
+
+    // Retorno por defecto en caso de no cumplir ninguna condición
+    return { esDisabled: false, tituloBoton: "Inscribirme" };
+
+  };
+
   useEffect(() => {
     setUltimoNumeroGrupo(calcularUltimoNumeroGrupo());
     obtenerMontosProgramadosPorGrupo(grupos);
     setSePuedeActualizarPrecio(definirSiServicioSePuedeActualizarPrecio(grupos));
-  }, [idServicio, grupos]);
+  }, [idServicio, grupos, inscripcionesPendientesAlumno, inscripcionesVigentesAlumno]);
 
   const calcularCuposLibres = async (grupo) => {
     if (grupo.cantMaxAlumnos === null) return "Con cupos libres";
@@ -240,8 +265,9 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                         className="mb-2 position-absolute"
                         style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }}
                         onClick={() => handleInscribirseClick(grupo)}
+                        disabled={esBotonDisable(grupo?.id)?.esDisabled}
                       >
-                        Inscribirme
+                        {esBotonDisable(grupo?.id)?.tituloBoton}
                       </Button>
                     )}
                     {ordenarPorDia(grupo.horarios).map((horario) => (
@@ -286,8 +312,9 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                         className="mb-2 position-absolute"
                         style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }}
                         onClick={() => handleInscribirseClick(grupo)}
+                        disabled={esBotonDisable(grupo?.id)?.esDisabled}
                       >
-                        Inscribirme
+                        {esBotonDisable(grupo?.id)?.tituloBoton}
                       </Button>
                     )}
                     {ordenarPorDia(grupo.horarios).map((horario) => (

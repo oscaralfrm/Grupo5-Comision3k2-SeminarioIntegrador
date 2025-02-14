@@ -8,6 +8,7 @@ export default function DatosPersonales({
 }) {
   return (
     <div>
+      <div style={{ height: '400px' }}> 
       {/* Campo Nombre */}
       <div className="form-group mt-1">
         <label htmlFor="nombre">Nombre</label>
@@ -121,7 +122,6 @@ export default function DatosPersonales({
         )}
       </div>
 
-
        {/* Campo Teléfono */}
        <div className="form-group mb-3">
         <label htmlFor="telefono">Teléfono</label>
@@ -143,6 +143,8 @@ export default function DatosPersonales({
         {errors?.telefono && (
           <div className="invalid-feedback">{errors.telefono.message}</div>
         )}
+      </div>
+
       </div>
 
       {/* Botón para ir al siguiente tab */}

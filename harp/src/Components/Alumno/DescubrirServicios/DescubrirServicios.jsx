@@ -230,7 +230,7 @@ const DescubrirServicios = () => {
   if (windowWidth >= 992) {
     panelTop = "76px";
   } else if (windowWidth > 235) {
-    panelTop = "67px";
+    panelTop = "66px";
   } else {
     panelTop = "106px";
   }
