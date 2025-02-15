@@ -28,7 +28,7 @@ const AppNavbar = () => {
   const isInstructorService = location.pathname === `/instructor/${idInstructor}/servicios`;
   const isLogin = location.pathname === `/login`;
   const isCreateServiceRoute = location.pathname === `/instructor/${idInstructor}/crear-servicio`;
-  const isProfile = location.pathname.includes("perfil");
+  const isNavbarSimple = location.pathname === `/instructor/${idInstructor}/editar-usuario`;
   const isRegisterRoute = location.pathname.startsWith('/registro');
   const isAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicios`; // Nueva condición para alumnos
   const isAlumnosDashRoute = location.pathname === `/alumno/${idAlumno}/inscripciones/${idInscripcion}/mi-inscripcion`
@@ -38,6 +38,7 @@ const AppNavbar = () => {
   const isDescubrirRoute = location.pathname === `/alumno/${idAlumno}/descubrir-servicios`;
   const isInfoServicioAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicio/${idServicio}/info-servicio`;
   const isEditService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`);
+  const isAlumnoResenia = location.pathname === `/alumno/${idAlumno}/inscripciones/${idInscripcion}/resenias` 
 
   useEffect(() => {
     const fetchInscripciones = async () => {
@@ -74,10 +75,7 @@ const AppNavbar = () => {
       {/* Muestra NavbarServicio en la ruta de creación de servicio */}
       {isCreateServiceRoute && <NavbarServicio />}
       {isEditService && <NavbarSimple />}
-
-       {/* Para ver perfil y editar perfil de usuario */}
-      {isProfile && <NavbarSimple />}
-
+      {isNavbarSimple && <NavbarSimple />}
       {isConfigService && <NavbarMisServicios />}
       {/* Muestra NavbarRegisterChooser en rutas de registro */}
       {isRegisterRoute && <NavbarRegisterChooser />}
@@ -88,6 +86,8 @@ const AppNavbar = () => {
       {isAlumnoRoute && <NavbarAlumno />}
 
       {isAlumnosDashRoute && <NavbarAlumnoDash />}
+
+      {isAlumnoResenia && <NavbarAlumnoDash />}
 
       {isAlumnoAtrasRoute && <NavbarAlumnoAtras />}
 
@@ -100,7 +100,7 @@ const AppNavbar = () => {
           <NavbarAlumno />
         ))}
 
-      {isInfoServicioAlumnoRoute && <NavbarGeneralAlumno />}
+      {isInfoServicioAlumnoRoute && <NavbarSimple />}
       {isAlumnoCuotas && <NavbarGeneralAlumno inscripcionesConCuotas={tieneInscripcionesConCuotas(inscripciones)} />}
     </>
   );
