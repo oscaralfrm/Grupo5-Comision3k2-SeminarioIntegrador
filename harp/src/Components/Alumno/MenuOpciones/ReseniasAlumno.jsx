@@ -11,7 +11,7 @@ import {
   deleteResenia,
   publicarBorrador,
   editResenia,
-  getReseniasDeAlumnoYServicio,
+  getReseniasDeAlumnoYServicioFiltradas,
 } from "../../../services/Reseñas";
 
 const ReseniasAlumno = () => {
@@ -31,8 +31,8 @@ const ReseniasAlumno = () => {
         const idServicio = inscripcion.servicio.id;
 
         // Obtener las reseñas del alumno para el servicio específico
-        const borradores = await getReseniasDeAlumnoYServicio(idAlumno, idServicio, false, true);
-        const publicadas = await getReseniasDeAlumnoYServicio(idAlumno, idServicio, true, false);
+        const borradores = await getReseniasDeAlumnoYServicioFiltradas(idAlumno, idServicio, false, true);
+        const publicadas = await getReseniasDeAlumnoYServicioFiltradas(idAlumno, idServicio, true, false);
 
         // Obtener todas las reseñas del servicio
         const todasResenias = await getReseniasDeServicio(idServicio);
