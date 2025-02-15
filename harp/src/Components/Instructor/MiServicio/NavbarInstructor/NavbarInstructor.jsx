@@ -3,9 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Navbar, Nav, NavDropdown, Dropdown } from "react-bootstrap";
 import img from "../../../../assets/LogoHarp420.png";
-import { getServiciosDeInstructor, getServiciosPublicadosDeInstructor } from "../../../../services/Instructor";
+import { getInstructorById, getServiciosDeInstructor, getServiciosPublicadosDeInstructor, tieneDatosBancariosCompletos } from "../../../../services/Instructor";
 import { getServicioById } from "../../../../services/Servicio";
 import profileImg from "../../../../assets/profile.png";
+import { FaExclamationCircle } from "react-icons/fa";
 
 function NavbarInstructor() {
   const navigate = useNavigate();
@@ -13,6 +14,13 @@ function NavbarInstructor() {
   const { idInstructor, idServicio } = useParams();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [instructor, setInstructor] = useState(null);
+  const [tieneDatosCompletos, setTieneDatosCompletos] = useState(null);
+
+  const esteInstructorTieneDatosCompletos = async () => {
+    const response = await tieneDatosBancariosCompletos(idInstructor);
+    return response;
+  }
 
   useEffect(() => {
     const fetchServicios = async () => {
@@ -27,6 +35,33 @@ function NavbarInstructor() {
     };
     fetchServicios();
   }, [idInstructor, idServicio]);
+
+  useEffect(() => {
+    const fetchInstructor = async () => {
+      try {
+        const data = await getInstructorById(idInstructor);
+        setInstructor(data);
+
+      } catch (error) {
+        console.error("Error al traer el instructor:", error);
+      }
+    };
+
+    fetchInstructor();
+  }, [idInstructor]);
+
+  useEffect(() => {
+    const fetchInstructorData = async () => {
+      try {
+        const response = await esteInstructorTieneDatosCompletos(); // Espera a que se resuelva la promesa
+        setTieneDatosCompletos(response); // Guarda el resultado en el estado
+      } catch (error) {
+        console.error("Error al verificar los datos bancarios:", error);
+      }
+    };
+
+    fetchInstructorData();
+  }, [idInstructor]);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -155,20 +190,38 @@ function NavbarInstructor() {
                 border: "none",
                 padding: "0",
                 cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "5px", // Espacio entre la imagen y el icono
+                position: "relative",
               }}
             >
-              <img
-                src={profileImg}
-                alt="Profile"
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  backgroundColor: "gray",
-                }}
-              />
+              <div style={{ position: "relative" }}>
+                <img
+                  src={instructor?.usuario?.fotoPerfilURL || profileImg}
+                  alt="Profile"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    backgroundColor: "gray",
+                  }}
+                />
+                {!tieneDatosCompletos && (
+                  <FaExclamationCircle
+                    style={{
+                      color: "yellow",
+                      fontSize: "18px",
+                      position: "absolute",
+                      top: "-5px",
+                      right: "-5px", // Ajustar posición del ícono de advertencia
+                    }}
+                  />
+                )}
+              </div>
             </Dropdown.Toggle>
+
 
             <Dropdown.Menu>
               <Dropdown.Item onClick={() => navigate(`/instructor/${idInstructor}/perfil/ver-perfil`)}>

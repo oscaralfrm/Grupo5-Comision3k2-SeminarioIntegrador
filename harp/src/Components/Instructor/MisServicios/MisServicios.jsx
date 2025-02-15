@@ -6,6 +6,7 @@ import Statistics from "./Estadisticas";
 import GraficoDeTorta from "./GráficoPastel";
 import { getServiciosDeInstructor } from "../../../services/Instructor";
 import { useParams } from "react-router-dom";
+import WelcomeBlock from "./BloqueBienvenida";
 
 const Dashboard = () => {
   const [servicios, setServicios] = useState([]);
@@ -54,9 +55,16 @@ const Dashboard = () => {
     <div >
       {/* Título "Mis Servicios" */}
 
-      <h2 style={{ textAlign: "center", marginLeft: "20px", color: "#1E1B4B", marginTop: "18vh" }}>
+      { servicios.length != 0 ?
+        <h2 style={{ textAlign: "center", marginLeft: "20px", color: "#1E1B4B", marginTop: "18vh" }}>
         Mis Servicios
-      </h2>
+        </h2>
+        :
+        <h1 style={{ textAlign: "center", marginLeft: "20px", color: "#1E1B4B", marginTop: "18vh", fontSize: "2.5rem",}}>
+          
+        </h1>
+      } 
+      
 
 
       {/* Filtro centrado en la parte superior */}
@@ -90,23 +98,32 @@ const Dashboard = () => {
 
       {/* Contenedor Principal */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", padding: "20px" }}>
+
+      {servicios.length == 0 &&
+          
+            <WelcomeBlock />
+          
+        }
+          
         {/* Cards de Cursos */}
-        <div style={{ flex: "1 1 60%", minWidth: "300px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
-            <CourseCards servicios={filteredServicios} idInstructor={idInstructor} />
-          </div>
-        </div>
+        { servicios.length != 0 &&
+           <div style={{ flex: "1 1 60%", minWidth: "300px" }}>
+           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
+             <CourseCards servicios={filteredServicios} idInstructor={idInstructor} />
+           </div>
+         </div>
 
+         
+        }
         <div
-          style={{
-            display: "flex",
-            gap: "20px",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            marginTop: "30px",
-          }}
-        >
-
+           style={{
+             display: "flex",
+             gap: "20px",
+             justifyContent: "center",
+             flexWrap: "wrap",
+             marginTop: "30px",
+           }}
+         >
         </div>
       </div>
     </div>

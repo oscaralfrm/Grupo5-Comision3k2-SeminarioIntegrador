@@ -1,13 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Navbar, Dropdown } from "react-bootstrap";
 import img from "../../assets/LogoHarp420.png"; // Ruta del logo
 import profileImg from "../../assets/profile.png"; // Ruta de la imagen de perfil
+import { FaExclamationCircle } from "react-icons/fa";
+import { tieneDatosBancariosCompletos } from "../../services/Instructor";
 
 export default function NavbarMisServicios() {
   const navigate = useNavigate();
   const { idInstructor } = useParams();
   const location = useLocation();
+
+  const [instructor, setInstructor] = useState(null);
+  const [tieneDatosCompletos, setTieneDatosCompletos] = useState(null);
+
+  const esteInstructorTieneDatosCompletos = async () => {
+    const response = await tieneDatosBancariosCompletos(idInstructor);
+    return response;
+  }
+
+  useEffect(() => {
+    const fetchInstructorData = async () => {
+      try {
+        const response = await esteInstructorTieneDatosCompletos(); // Espera a que se resuelva la promesa
+        setTieneDatosCompletos(response); // Guarda el resultado en el estado
+      } catch (error) {
+        console.error("Error al verificar los datos bancarios:", error);
+      }
+    };
+
+    fetchInstructorData();
+  }, [idInstructor]);
+
 
   const handleLogoClick = () => {
     navigate("/");
@@ -88,23 +112,38 @@ export default function NavbarMisServicios() {
               style={{
                 background: "none",
                 border: "none",
+                padding: "0",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                padding: 0,
+                gap: "5px", // Espacio entre la imagen y el icono
+                position: "relative",
               }}
             >
-              <img
-                src={profileImg}
-                alt="Profile"
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  backgroundColor: "gray",
-                }}
-              />
+              <div style={{ position: "relative" }}>
+                <img
+                  src={instructor?.usuario?.fotoPerfilURL || profileImg}
+                  alt="Profile"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    backgroundColor: "gray",
+                  }}
+                />
+                {!tieneDatosCompletos && (
+                  <FaExclamationCircle
+                    style={{
+                      color: "yellow",
+                      fontSize: "18px",
+                      position: "absolute",
+                      top: "-5px",
+                      right: "-5px", // Ajustar posición del ícono de advertencia
+                    }}
+                  />
+                )}
+              </div>
             </Dropdown.Toggle>
             <Dropdown.Menu style={{ marginTop: ".8rem" }}>
               <Dropdown.Item

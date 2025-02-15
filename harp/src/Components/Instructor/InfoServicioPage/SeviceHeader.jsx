@@ -76,21 +76,21 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
 
   return (
     <Col xs="12" md={sePuedeEditar ? 12 : 9}>
-    <Card
-      className="mb-4 p-4 position-relative"
-      md={sePuedeEditar ? "12" : "9"}
-      style={{
-        backgroundColor: "white",
-        padding: "20px",
-        borderRadius: "20px",
-        boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-        maxWidth: "100%",
-        margin: "auto",
-        marginTop: "80px",
-      }}
-    >
-      <Row className="g-3">
-        {/* Bloque del Instructor 
+      <Card
+        className="mb-4 p-4 position-relative"
+        md={sePuedeEditar ? "12" : "9"}
+        style={{
+          backgroundColor: "white",
+          padding: "20px",
+          borderRadius: "20px",
+          boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
+          maxWidth: "100%",
+          margin: "auto",
+          marginTop: "80px",
+        }}
+      >
+        <Row className="g-3">
+          {/* Bloque del Instructor 
         <Col
           xs="12"
           md="3"
@@ -116,117 +116,120 @@ function ServiceHeader({ serviceData, sePuedeEditar, fetchServicio, cantGrupos }
         </Col>
         */}
 
-        {/* Bloque de Información del Servicio */}
-        <Col xs="12">
-          {/* Título y botón de edición */}
-          <div
-            style={{
-              backgroundColor: "#1E1B4B",
-              padding: "10px",
-              borderTopLeftRadius: "20px",
-              borderTopRightRadius: "10px",
-              borderBottomLeftRadius: "20px",
-              borderBottomRightRadius: "20px",
-              color: "white",
-              position: "relative",
-              textAlign: "center",
-            }}
-          >
-            {sePuedeEditar && (
-              <Button
-                variant="light"
-                className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
-                onClick={handleEditClick}
-                style={{
-                  backgroundColor: "#1E1B4B",
-                  border: "none",
-                  top: "-7px",
-                  right: "0px",
-                  zIndex: 10,
-                }}
-              >
-                <FaCog color="white" size={20} />
-              </Button>
-            )}
-            <h4 className="fw-bold mb-2 mt-2">{serviceData?.nombre}</h4>
-          </div>
-
-          {/* Sección dividida en dos columnas: Logo y Info del servicio */}
-          <Row className="mt-3" style={{ width: "100%" }}>
-            {/* Columna Izquierda: Logo del Servicio */}
-            <Col
-              xs="12"
-              md="6"
-              className="d-flex justify-content-center align-items-center"
+          {/* Bloque de Información del Servicio */}
+          <Col xs="12">
+            {/* Título y botón de edición */}
+            <div
+              style={{
+                backgroundColor: "#1E1B4B",
+                padding: "10px",
+                borderTopLeftRadius: "20px",
+                borderTopRightRadius: "10px",
+                borderBottomLeftRadius: "20px",
+                borderBottomRightRadius: "20px",
+                color: "white",
+                position: "relative",
+                textAlign: "center",
+              }}
             >
-              <img
-                src={serviceData.logoURL || "https://via.placeholder.com/120"}
-                alt="Logo del servicio"
-                className="rounded-circle"
-                style={{ objectFit: "cover", width: "120px", height: "120px" }}
-              />
-            </Col>
-
-            {/* Columna Derecha: Información del Servicio */}
-            <Col xs="12" md="6">
-              <p className="mt-3">
-                <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
-              </p>
-              <p className="mb-3">
-                {serviceData.publico && (
-                  <div className="d-flex align-items-center">
-                    <strong>Calificación:</strong>
-                    <span className="ms-2">{renderStars(resumenResenias?.calificacion)}</span>
-                    <span className="ms-2">({resumenResenias?.calificacion})</span>
-                    <span className="ms-2">
-                      ({resumenResenias?.cantResenias || 0} reseñas)
-                    </span>
-                  </div>
-                )}
-              </p>
-              <p>
-                <strong>Ubicación: </strong>
-                <a
-                  href={generarLinkMaps(serviceData.ubicacion)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Ver en Google Maps"
-                  className="text-primary fw-semibold"
+              {sePuedeEditar && (
+                <Button
+                  variant="light"
+                  className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
+                  onClick={handleEditClick}
+                  style={{
+                    backgroundColor: "#1E1B4B",
+                    border: "none",
+                    top: "-7px",
+                    right: "0px",
+                    zIndex: 10,
+                  }}
                 >
-                  {serviceData.ubicacion} <i className="bi bi-geo-alt-fill"></i>
-                </a>
-              </p>
-              <p>
-                <strong>Clase de prueba:</strong>{" "}
-                {serviceData?.claseDePrueba === true ? "Gratis" : "No incluida"}
-              </p>
-              <p>
-                <strong>Modalidad Clases:</strong>{" "}
-                {serviceData?.modalidadClases
-                  ? serviceData.modalidadClases === "Hibrida"
-                    ? "Virtual y Presencial"
-                    : serviceData.modalidadClases
-                  : "Sin definir"}
-              </p>
-              <p>
-                <strong>Estado:</strong>{" "}
-                {serviceData?.estado }
-              </p>
-            </Col>
-          </Row>
-          {/* Fila para la Barra de Resumen */}
-          <Row className="mt-3">
-            <Col xs="12">
-              <BarraResumen
-                serviceData={serviceData}
-                grupos={grupos}
-                sePuedeEditar={sePuedeEditar}
-              />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </Card>
+                  <FaCog color="white" size={20} />
+                </Button>
+              )}
+              <h4 className="fw-bold mb-2 mt-2">{serviceData?.nombre}</h4>
+            </div>
+
+            {/* Sección dividida en dos columnas: Logo y Info del servicio */}
+            <Row className="mt-3" style={{ width: "100%" }}>
+              {/* Columna Izquierda: Logo del Servicio */}
+              <Col
+                xs="12"
+                md="6"
+                className="d-flex justify-content-center align-items-center"
+              >
+                <img
+                  src={serviceData.logoURL || "https://via.placeholder.com/120"}
+                  alt="Logo del servicio"
+                  className="rounded-circle"
+                  style={{ objectFit: "cover", width: "120px", height: "120px" }}
+                />
+              </Col>
+
+              {/* Columna Derecha: Información del Servicio */}
+              <Col xs="12" md="6">
+                <p className="mt-3">
+                  <strong>Categoría:</strong> {serviceData?.categoria?.nombre}
+                </p>
+                <p className="mb-3">
+                  {serviceData.publico && (
+                    <div className="d-flex align-items-center">
+                      <strong>Calificación:</strong>
+                      <span className="ms-2">{renderStars(resumenResenias?.calificacion)}</span>
+                      <span className="ms-2">({resumenResenias?.calificacion})</span>
+                      <span className="ms-2">
+                        ({resumenResenias?.cantResenias || 0} reseñas)
+                      </span>
+                    </div>
+                  )}
+                </p>
+                <p>
+                  <strong>Ubicación: </strong>
+                  <a
+                    href={generarLinkMaps(serviceData.ubicacion)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Ver en Google Maps"
+                    className="text-primary fw-semibold"
+                  >
+                    {serviceData.ubicacion} <i className="bi bi-geo-alt-fill"></i>
+                  </a>
+                </p>
+                <p>
+                  <strong>Clase de prueba:</strong>{" "}
+                  {serviceData?.claseDePrueba === true ? "Gratis" : "No incluida"}
+                </p>
+                <p>
+                  <strong>Modalidad Clases:</strong>{" "}
+                  {serviceData?.modalidadClases
+                    ? serviceData.modalidadClases === "Hibrida"
+                      ? "Virtual y Presencial"
+                      : serviceData.modalidadClases
+                    : "Sin definir"}
+                </p>
+                {sePuedeEditar &&
+                  <p>
+                    <strong>Estado:</strong>{" "}
+                    {serviceData?.estado}
+                  </p>
+                }
+
+              </Col>
+            </Row>
+            {/* Fila para la Barra de Resumen */}
+            <Row className="mt-3">
+              <Col xs="12">
+                <BarraResumen
+                  serviceData={serviceData}
+                  grupos={grupos}
+                  sePuedeEditar={sePuedeEditar}
+                />
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Card>
     </Col>
   );
 }

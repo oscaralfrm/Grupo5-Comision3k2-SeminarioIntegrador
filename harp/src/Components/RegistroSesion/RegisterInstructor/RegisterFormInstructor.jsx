@@ -32,8 +32,7 @@ export const RegisterFormInstructor = () => {
         data.email,
         data.telefono,
         data.direccion,
-        data.fechaNacimiento,
-        data.fotoPerfil[0]
+        data.fechaNacimiento
       );
       navigate(`/instructor/${instructorCreado.id}/servicios`);
       //navigate(`/instructor/${instructorCreado.id}/crear-servicio`);
@@ -44,13 +43,13 @@ export const RegisterFormInstructor = () => {
   };
 
   const goToNextTab = () => {
-    if (activeTab === "datosPersonales") setActiveTab("contacto");
-    else if (activeTab === "contacto") setActiveTab("contraseña");
+    if (activeTab === "datosPersonales") setActiveTab("contraseña");
+    else if (activeTab === "contraseña") setActiveTab("datosPersonales");
   };
 
   const goToPreviousTab = () => {
-    if (activeTab === "contraseña") setActiveTab("contacto");
-    else if (activeTab === "contacto") setActiveTab("datosPersonales");
+    if (activeTab === "contraseña") setActiveTab("datosPersonales");
+    else if (activeTab === "datosPersonales") setActiveTab("contraseña");
   };
 
   return (
@@ -108,6 +107,7 @@ export const RegisterFormInstructor = () => {
                                 />
               </Tab>
 
+              {/*
               <Tab eventKey="contacto" title="Contacto">
                 <Contacto
                   register={register}
@@ -117,8 +117,9 @@ export const RegisterFormInstructor = () => {
                   
                 />
               </Tab>
+               */}
 
-              <Tab eventKey="contraseña" title="Contraseña">
+              <Tab eventKey="contraseña" title="Datos Perfil">
                 <Password
                   register={register}
                   errors={errors}
