@@ -19,6 +19,15 @@ const MisCuotas = () => {
                         inscripcion.servicio.id,
                         inscripcion.id
                     );
+
+
+                      // Agregar el atributo inscripcion a cada cuota
+                const cuotasConInscripcion = cuotasInscripcion.map(cuota => ({
+                    ...cuota,
+                    inscripcion: inscripcion // Agregar el objeto inscripcion
+                }));
+
+                
                     todasLasCuotas = [...todasLasCuotas, ...cuotasInscripcion];
                 }
                 setCuotas(todasLasCuotas);
