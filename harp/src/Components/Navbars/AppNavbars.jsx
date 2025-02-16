@@ -62,8 +62,7 @@ const AppNavbar = () => {
   }, [idAlumno]);
 
   const tieneInscripcionesConCuotas = (inscripciones) => {
-    console.log("Tiene inscripciones con cuotas", inscripciones.every(inscripciones => inscripciones.estado != "PendienteAceptacion" || inscripciones.estado == "Rechazada"));
-    return inscripciones.every(inscripciones => inscripciones.estado != "PendienteAceptacion" || inscripciones.estado != "Rechazada");
+    return ! inscripciones.every(inscripciones => inscripciones.estado == "PendienteAceptacion" || inscripciones.estado == "Rechazada");
   }
 
   return (

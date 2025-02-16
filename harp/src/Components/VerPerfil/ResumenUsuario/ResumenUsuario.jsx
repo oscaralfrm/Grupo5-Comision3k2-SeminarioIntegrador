@@ -41,6 +41,8 @@ const ResumenUsuario = () => {
 
                     const resenias = await getReseniasDeAlumno(data.id, true, false);
                     setResenias(resenias);
+
+                    console.log("cantInscripciones", cantInscripciones, "resenias", resenias); 
                 } else if (nombreInstructor) {
                     data = await getInstructorByNombreUsuario(nombreInstructor);
                     const servicios = await getServiciosPublicadosDeInstructor(data.id);
@@ -155,7 +157,7 @@ const ResumenUsuario = () => {
                                         padding: "0.2rem 0.5rem",
                                     }}
                                 >
-                                    {cantInscripciones &&
+                                    {cantInscripciones != null &&
                                         <>
                                             <strong style={{ width: "40%" }}>Inscripto en: </strong>
                                             <div style={{ width: "60%" }}>{cantInscripciones} servicios</div>

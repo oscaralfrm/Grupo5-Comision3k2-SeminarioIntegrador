@@ -159,6 +159,8 @@ const ResumenInscripcion = () => {
                 // LA INSCRIPCION
                 const inscripcion = await traerUnaInscripcion(idInscripcion);
                 setInscripcion(inscripcion);
+                console.log("Inscripcion", inscripcion);
+
                 setAlumno(inscripcion.alumno);
                 setGrupo(inscripcion.grupo);
 
