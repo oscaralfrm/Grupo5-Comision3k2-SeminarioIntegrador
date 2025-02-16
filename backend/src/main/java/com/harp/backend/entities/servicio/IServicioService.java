@@ -31,6 +31,7 @@ public interface IServicioService {
     public Servicio editServicio(Long idServicio, ServicioDTO servicioDTO);
     //public String generarCodigoInscripcion(Long idServicio);
     public Page<Servicio> getAllServicios(Integer page, Integer size);
+    List<Servicio> getServiciosPublicadosConLogo();
     public List<Grupo> findGruposDeServicio(Long idServicio);
     public List<Servicio> findServiciosAsistenciasActivas();
     void agregarGrupoAServicio(Grupo grupo, Servicio servicio);
@@ -73,5 +74,6 @@ public interface IServicioService {
                                       List<DayOfWeek> diasSemanales,
                                       List<Turno> turnos,
                                       Long idAlumno,
+                                      Long idInstructor,
                                       int page, int size);
 }

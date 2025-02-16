@@ -65,6 +65,12 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     };
 
+    @GetMapping("/publicos-con-logo")
+    public ResponseEntity<List<Servicio>> traerServiciosPublicosConLogo() {
+        List<Servicio> servicios = servicioService.getServiciosPublicadosConLogo();
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
     @GetMapping("/publicos/sin-alumno/{idAlumno}")
     public ResponseEntity<Page<Servicio>> traerServiciosPublicosSinAlumno(
             @RequestParam(defaultValue = "0") Integer page,
@@ -105,13 +111,14 @@ public class ServicioController {
             @RequestParam(required = false) List<DayOfWeek> diasSemanales,
             @RequestParam(required = false) List<Turno> turnos,
             @RequestParam(required = false) Long idAlumno,
+            @RequestParam(required = false) Long idInstructor,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        System.out.println("idAlumno" + idAlumno);
+        System.out.println("idInstructor " + idInstructor);
         return servicioService.descubrirServicios(nombre, categoriaNombre, modalidadClasesNombre, ubicacion,
                 calificacionMinima, conClaseGratis, frecuenciaSemanalClases, precioMinimo, cantCiclo, unidadCiclo,
                 diasSemanales, turnos,
-                idAlumno, page, size);
+                idAlumno, idInstructor, page, size);
     }
 
     // GET DE UNO EN PARTICULAR

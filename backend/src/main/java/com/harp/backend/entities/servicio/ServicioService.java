@@ -89,6 +89,13 @@ public class ServicioService implements IServicioService {
         return listServicios;
     }
 
+    // PUBLICADOS CON LOGO
+    public List<Servicio> getServiciosPublicadosConLogo() {
+        List<Servicio> serviciosPublicados = servicioRepository.findByInscripcionesAbiertasTrue();
+        List<Servicio> listServicios = serviciosPublicados.stream().filter(Servicio::tieneLogo).toList();
+        return listServicios;
+    }
+
     // PAGINADO Y PUBLICADOS
     public Page<Servicio> getAllServiciosPublicadosSinInscripcionAlumno(Integer page, Integer size, Long idAlumno) {
         //Page<Servicio> listServicios = this.getAllServiciosPublicados(page, size);
@@ -173,6 +180,7 @@ public class ServicioService implements IServicioService {
                                                                         List<DayOfWeek> diasSemanales,
                                                                         List<Turno> turnos,
                                                                        Long idAlumno,
+                                                                        Long idInstructor,
                                                                        int page, int size) {
         // Crear una nueva página basada en la lista filtrada
         Pageable pageable = PageRequest.of(page, size);
@@ -234,6 +242,14 @@ public class ServicioService implements IServicioService {
         }
 
         List<Servicio> listServiciosFiltrados = serviciosFiltrados.toList();
+
+        // SIN INSTRUCTOR
+        if (idInstructor != null) {
+            List<Servicio> serviciosDeInstructor = instructorService.findServiciosPublicadosDeInstructor(idInstructor);
+            if (serviciosDeInstructor !=  null && ! serviciosDeInstructor.isEmpty()) {
+                listServiciosFiltrados.removeAll(serviciosDeInstructor);
+            }
+        }
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), listServiciosFiltrados.size());

@@ -747,4 +747,8 @@ public class Servicio {
     public boolean tieneGruposEnEstosTurnos(List<Turno> turnos) {
         return this.grupos.stream().anyMatch(grupo -> grupo.esDeAlgunoDeEstosTurnos(turnos));
     }
+
+    public boolean tieneLogo() {
+        return this.logoURL != null && ! this.logoURL.isEmpty();
+    }
 }
