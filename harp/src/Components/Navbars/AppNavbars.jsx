@@ -27,6 +27,9 @@ const AppNavbar = () => {
   // Define condiciones para mostrar las Navbars
   const isPrincipalRoute = location.pathname === '/';
   //const isInstructorRoute = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/`);
+  const isInstructorRoute = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/cobros`) 
+                            ||  location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/alumnos`) 
+                            ||  location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`) ;
   const isConfigService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/configurar`);
   const isInstructorService = location.pathname === `/instructor/${idInstructor}/servicios`;
   const isInstructorResumenAlumnos = location.pathname === `/instructor/${idInstructor}/alumnos/${nombreAlumno}`;
@@ -80,7 +83,7 @@ const AppNavbar = () => {
 
 
       {/* Muestra NavbarInstructor en la ruta específica del servicio */}
-      {/*isInstructorRoute && <NavbarInstructor />*/}
+      {isInstructorRoute && <NavbarInstructor />}
 
 
       {/* Muestra NavbarServicio en la ruta de creación de servicio */}
