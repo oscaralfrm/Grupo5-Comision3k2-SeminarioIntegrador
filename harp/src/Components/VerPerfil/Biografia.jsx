@@ -112,7 +112,7 @@ const Biography = ({ profileData, onSave, sePuedeEditar }) => {
                         editMode={editMode}
                         cvFile={cvFile}
                         setCvFile={setCvFile}
-                        sePuedeEditar={true}
+                        sePuedeEditar={sePuedeEditar}
                     />
                 </div>
             }

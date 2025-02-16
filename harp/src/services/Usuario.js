@@ -102,3 +102,14 @@ export const cambiarContrasena = async (idUsuario, contrasenaActual, contrasenaN
     throw new Error(errorMessage); // Pasa el mensaje al componente
   }
 };
+
+export const getUsuarioByNombreUsuario = async (nombreUsuario) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/by?nombreUsuario=${nombreUsuario}&email=&dni=`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener usuario', error.response.data.message);
+    const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+    throw new Error(errorMessage); // Pasa el mensaje al componente
+  }
+};

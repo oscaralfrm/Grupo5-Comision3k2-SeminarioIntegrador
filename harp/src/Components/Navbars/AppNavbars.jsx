@@ -18,7 +18,7 @@ import { obtenerUltimasCuotasDeInscripcion } from '../../services/Cuota.js';
 
 const AppNavbar = () => {
   const location = useLocation();
-  const { idInstructor, idServicio, idAlumno, idInscripcion } = useParams();
+  const { idInstructor, idServicio, idAlumno, idInscripcion, nombreAlumno, nombreInstructor } = useParams();
   const [inscripciones, setInscripciones] = useState([]);
 
   // Define condiciones para mostrar las Navbars
@@ -26,6 +26,9 @@ const AppNavbar = () => {
   const isInstructorRoute = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/`);
   const isConfigService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/info-servicio`);
   const isInstructorService = location.pathname === `/instructor/${idInstructor}/servicios`;
+  const isInstructorResumenAlumnos = location.pathname === `/instructor/${idInstructor}/alumnos/${nombreAlumno}`;
+  const isAlumnoResumenInstructor = location.pathname === `/alumno/${idAlumno}/instructores/${nombreInstructor}`;
+  const isResumenInscripcion = location.pathname === `/instructor/${idInstructor}/inscripciones/${idInscripcion}`;
   const isLogin = location.pathname === `/login`;
   const isCreateServiceRoute = location.pathname === `/instructor/${idInstructor}/crear-servicio`;
   const isNavbarSimple = location.pathname === `/instructor/${idInstructor}/editar-usuario`;
@@ -60,8 +63,7 @@ const AppNavbar = () => {
   }, [idAlumno]);
 
   const tieneInscripcionesConCuotas = (inscripciones) => {
-    console.log("Tiene inscripciones con cuotas", inscripciones.every(inscripciones => inscripciones.estado != "PendienteAceptacion" || inscripciones.estado == "Rechazada"));
-    return inscripciones.every(inscripciones => inscripciones.estado != "PendienteAceptacion" || inscripciones.estado != "Rechazada");
+    return ! inscripciones.every(inscripciones => inscripciones.estado == "PendienteAceptacion" || inscripciones.estado == "Rechazada");
   }
 
   return (
@@ -75,7 +77,14 @@ const AppNavbar = () => {
       {/* Muestra NavbarServicio en la ruta de creación de servicio */}
       {isCreateServiceRoute && <NavbarServicio />}
       {isEditService && <NavbarSimple />}
-      {isNavbarSimple && <NavbarSimple />}
+
+       {/* Para ver perfil y editar perfil de usuario */}
+      {isProfile && <NavbarSimple />}
+
+       {/* Para ver resumen de alumno por el instructor */}
+      {(isInstructorResumenAlumnos || isAlumnoResumenInstructor || isResumenInscripcion) && <NavbarSimple/>}
+
+
       {isConfigService && <NavbarMisServicios />}
       {/* Muestra NavbarRegisterChooser en rutas de registro */}
       {isRegisterRoute && <NavbarRegisterChooser />}

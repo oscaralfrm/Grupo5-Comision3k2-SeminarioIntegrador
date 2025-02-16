@@ -22,6 +22,17 @@ export const getInstructorById = async (id) => {
   }
 };
 
+export const getInstructorByNombreUsuario = async (nombreUsuario) => {
+  try {
+      const response = await axios.get(`/instructores/by-nombre-usuario?nombreUsuario=${nombreUsuario}`);
+      return response.data;  // Suponiendo que la respuesta es un alumno
+  } catch (error) {
+      console.error("Error fetching instructor by nombreUsuario: ", error);
+      throw error;
+  }
+};
+
+
 export const getServiciosDeInstructor = async (idInstructor) => {
   try {
     const response = await axios.get(`${BASE_URL}/${idInstructor}/servicios`);

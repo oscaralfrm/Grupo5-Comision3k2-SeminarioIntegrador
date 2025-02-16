@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const WelcomeBlock = ({ idInstructor }) => {
+const WelcomeBlock = () => {
   const welcomeRef = useRef(null);
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
+  const {idInstructor} = useParams();
 
   const cardHeight = "260px";
 

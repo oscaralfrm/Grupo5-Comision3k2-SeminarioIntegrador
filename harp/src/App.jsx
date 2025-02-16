@@ -32,6 +32,8 @@ import MisCuotas from "./Components/Alumno/Pagos/PagosPage.jsx";
 import ProfileInfo from "./Components/VerPerfil/Perfil.jsx";
 import ReseniasAlumno from "./Components/Alumno/MenuOpciones/ReseniasAlumno.jsx";
 import DescubrirServicios from "./Components/Alumno/DescubrirServicios/DescubrirServicios.jsx";
+import ResumenUsuario from "./Components/VerPerfil/ResumenUsuario/ResumenUsuario.jsx";
+import ResumenInscripcion from "./Components/Instructor/ResumenInscripcion/ResumenInscripcion.jsx";
 
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
@@ -49,6 +51,16 @@ function App() {
             element={<><AppNavbar /><RegisterFormInstructor /></>}
           />
           <Route path="registro/alumno" element={<><AppNavbar /><RegisterFormStudent /></>} />
+
+          {/* Para Cualquier Usuario */}
+          <Route
+            path="instructor/:idInstructor/alumnos/:nombreAlumno"
+            element={<><AppNavbar /><ResumenUsuario /></>}
+          />
+          <Route
+            path="alumno/:idAlumno/instructores/:nombreInstructor"
+            element={<><AppNavbar /><ResumenUsuario /></>}
+          />
 
           {/* Para Instructor */}
 
@@ -94,18 +106,17 @@ function App() {
             path="instructor/:idInstructor/editar-usuario"
             element={<><AppNavbar /><EditUsuario /></>}
           />
-          <Route
-            path="alumno/:idAlumno/editar-usuario"
-            element={<><AppNavbar /><EditUsuario /></>}
-          />
-          <Route
-            path="alumno/:idAlumno/perfil/ver-perfil"
-            element={<><AppNavbar /><ProfileInfo /></>}
-          />
+
           <Route
             path="instructor/:idInstructor/perfil/ver-perfil"
             element={<><AppNavbar /><ProfileInfo /></>}
           />
+
+          <Route
+            path="instructor/:idInstructor/inscripciones/:idInscripcion"
+            element={<><AppNavbar /><ResumenInscripcion /></>}
+          />
+
 
           {/* Para alumnos... */}
 
@@ -133,6 +144,15 @@ function App() {
           <Route
             path="alumno/:idAlumno/servicio/:idServicio/info-servicio"
             element={<><AppNavbar /><InfoServicioAlumno /></>}
+          />
+
+          <Route
+            path="alumno/:idAlumno/editar-usuario"
+            element={<><AppNavbar /><EditUsuario /></>}
+          />
+          <Route
+            path="alumno/:idAlumno/perfil/ver-perfil"
+            element={<><AppNavbar /><ProfileInfo /></>}
           />
 
 

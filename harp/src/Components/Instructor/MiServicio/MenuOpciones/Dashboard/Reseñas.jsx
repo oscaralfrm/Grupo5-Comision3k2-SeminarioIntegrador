@@ -4,7 +4,8 @@ import { getReseniasDeServicio } from "../../../../../services/Reseñas";
 import { useParams } from "react-router-dom";
 import { Card, Row, Col, Container, Button, Modal, Form } from "react-bootstrap";
 
-const ReviewCarousel = () => {
+
+const ReviewCarousel = ({resenias}) => {
   const { idServicio } = useParams();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,8 +14,13 @@ const ReviewCarousel = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const data = await getReseniasDeServicio(idServicio);
-        setReviews(data);
+        if (resenias) {
+          console.log("resenias", resenias);
+          setReviews(resenias);
+        } else {
+          const data = await getReseniasDeServicio(idServicio);
+          setReviews(data);
+        }
       } catch (err) {
         setError("Error al cargar las reseñas.");
       } finally {
@@ -22,9 +28,7 @@ const ReviewCarousel = () => {
       }
     };
 
-    if (idServicio) {
       fetchReviews();
-    }
   }, [idServicio]);
 
   const cardStyle = {
