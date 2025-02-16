@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 
+
 import Navbar from '../PaginaDeInicio/NavbarLandingPage/NavbarLandingPage.jsx';
 import NavbarInstructor from '../Instructor/MiServicio/NavbarInstructor/NavbarInstructor.jsx';
 import NavbarRegisterChooser from '../RegistroSesion/NavbarRegistrerChooser/NavbarRegisterChooser.jsx';
@@ -16,10 +17,12 @@ import NavbarGeneralAlumno from './NavbarGeneralAlumno.jsx';
 import { getInscripcionesDeAlumno } from '../../services/Alumno.js';
 import { obtenerUltimasCuotasDeInscripcion } from '../../services/Cuota.js';
 
+
 const AppNavbar = () => {
   const location = useLocation();
   const { idInstructor, idServicio, idAlumno, idInscripcion, nombreAlumno, nombreInstructor } = useParams();
   const [inscripciones, setInscripciones] = useState([]);
+
 
   // Define condiciones para mostrar las Navbars
   const isPrincipalRoute = location.pathname === '/';
@@ -42,6 +45,8 @@ const AppNavbar = () => {
   const isInfoServicioAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicio/${idServicio}/info-servicio`;
   const isInfoServicioInstructorRoute = location.pathname === `/instructor/${idInstructor}/servicio/${idServicio}/info-servicio`;
   const isEditService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`);
+  const isAlumnoResenia = location.pathname === `/alumno/${idAlumno}/inscripciones/${idInscripcion}/resenias` 
+
 
   useEffect(() => {
     const fetchInscripciones = async () => {
@@ -50,40 +55,47 @@ const AppNavbar = () => {
           const data = await getInscripcionesDeAlumno(idAlumno);
           setInscripciones(data);
           console.log("Inscripciones", inscripciones)
-  
+ 
           tieneInscripcionesConCuotas(inscripciones);
-  
+ 
         } catch (error) {
           console.error("Error al traer las inscripciones del alumno:", error);
         }
       }
-      
+     
     };
     fetchInscripciones();
   }, [idAlumno]);
 
+
   const tieneInscripcionesConCuotas = (inscripciones) => {
     return ! inscripciones.every(inscripciones => inscripciones.estado == "PendienteAceptacion" || inscripciones.estado == "Rechazada");
   }
+
 
   return (
     <>
       {/* Muestra la Navbar de inicio en la ruta principal */}
       {isPrincipalRoute && <Navbar />}
 
+
       {/* Muestra NavbarInstructor en la ruta específica del servicio */}
       {/*isInstructorRoute && <NavbarInstructor />*/}
+
 
       {/* Muestra NavbarServicio en la ruta de creación de servicio */}
       {isCreateServiceRoute && <NavbarServicio />}
       {isEditService && <NavbarSimple />}
 
+
        {/* Para ver perfil y editar perfil de usuario */}
       {isProfile && <NavbarSimple />}
+
 
        {/* Para ver resumen de alumno por el instructor */}
       {(isInstructorResumenAlumnos || isResumenInstructor || isResumenInscripcion) && <NavbarSimple/>}
 
+      {isAlumnoResenia && <NavbarAlumnoDash />}
 
       {isConfigService && <NavbarMisServicios />}
       {/* Muestra NavbarRegisterChooser en rutas de registro */}
@@ -91,14 +103,19 @@ const AppNavbar = () => {
       {isInstructorService && <NavbarServicio />}
       {isLogin && <NavbarRegisterChooser />}
 
+
       {/* Navbar Placeholder de los Alumnos... */}
       {isAlumnoRoute && <NavbarAlumno />}
 
+
       {isAlumnosDashRoute && <NavbarAlumnoDash />}
+
 
       {isAlumnoAtrasRoute && <NavbarAlumnoAtras />}
 
+
       {isAlumnoRouteIns && <NavbarGeneralAlumno inscripcionesConCuotas={tieneInscripcionesConCuotas(inscripciones)} />}
+
 
       {isDescubrirRoute &&
         (inscripciones.length > 0 ? (
@@ -113,5 +130,6 @@ const AppNavbar = () => {
     </>
   );
 };
+
 
 export default AppNavbar;

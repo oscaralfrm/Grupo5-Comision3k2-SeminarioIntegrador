@@ -48,10 +48,9 @@ const ReviewCarousel = ({resenias}) => {
   };
 
   const renderStars = (rating) => {
-    const safeRating = 5/rating; // Limita rating entre 0 y 5
+    const safeRating = Math.min(Math.max(rating || 0, 0), 5); // Asegura que rating esté entre 0 y 5
     return "★".repeat(safeRating) + "☆".repeat(5 - safeRating);
   };
-  
 
   return (
     <Container
@@ -64,11 +63,10 @@ const ReviewCarousel = ({resenias}) => {
         padding: "20px",
         borderRadius: "20px",
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-        minHeight: "100%"
-
-      }}>
-        
-        <div
+        minHeight: "100%",
+      }}
+    >
+      <div
         style={{
           backgroundColor: "#1E1B4B",
           padding: "10px",
@@ -92,9 +90,12 @@ const ReviewCarousel = ({resenias}) => {
       ) : (
         <Carousel variant="dark" interval={3000} indicators={false} controls={true}>
           {reviews.map((review) => (
-            <Carousel.Item key={review.id} style={{ padding: '20px' }}>
+            <Carousel.Item key={review.id} style={{ padding: "20px" }}>
               <div style={{ textAlign: "center", padding: "10px 20px" }}>
-                <p className="mt-0" style={{ fontSize: "16px", color: "#4F46E5", fontWeight: "bold" }}>
+                <p
+                  className="mt-0"
+                  style={{ fontSize: "16px", color: "#4F46E5", fontWeight: "bold" }}
+                >
                   {review.alumno.nombreCompleto}
                 </p>
                 <p style={{ fontSize: "14px", color: "#666", margin: "5px 0" }}>
@@ -108,8 +109,6 @@ const ReviewCarousel = ({resenias}) => {
           ))}
         </Carousel>
       )}
-    
-
     </Container>
   );
 };

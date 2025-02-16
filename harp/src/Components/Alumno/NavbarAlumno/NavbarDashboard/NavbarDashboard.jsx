@@ -116,7 +116,7 @@ function NavbarAlumnoDash() {
                 Alumnos
               </Nav.Link> */}
               <Nav.Link
-                href={`/alumno/${idAlumno}/inscripciones/${idInscripcion}/reseñas`}
+                href={`/alumno/${idAlumno}/inscripciones/${idInscripcion}/resenias`}
                 style={{ color: "white" }}
               >
                 Reseñas
