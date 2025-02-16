@@ -11,6 +11,19 @@ export default function ResumenServicio({ formData }) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
+   // Función para determinar la modalidad de clases
+   const determinarModalidad = (modalidadClases) => {
+    if (modalidadClases.includes("virtual") && modalidadClases.includes("presencial")) {
+      return "Híbrida";
+    } else if (modalidadClases.includes("virtual")) {
+      return "Virtual";
+    } else if (modalidadClases.includes("presencial")) {
+      return "Presencial";
+    } else {
+      return "Sin definir";
+    }
+  };
+
   // Vista previa del logo
   const logoUrl = formData.logo && formData.logo[0] instanceof File
     ? URL.createObjectURL(formData.logo[0])
@@ -67,7 +80,7 @@ export default function ResumenServicio({ formData }) {
             </Col>
             <Col xs="12" md="4" className="mb-2">
               <p className="mb-1 fw-bold">Modalidad:</p>
-              <p>{capitalizeFirstLetter(formData.modalidadClases) || "Sin definir"}</p>
+              <p>{determinarModalidad(formData.modalidadClases)}</p>
             </Col>
             <Col xs="12" md="4" className="mb-2">
               <p className="mb-1 fw-bold">Ubicación:</p>
