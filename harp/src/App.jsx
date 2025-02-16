@@ -30,6 +30,7 @@ import MisInscripciones from "./Components/Alumno/Cursos/MisInscripciones.jsx";
 import InfoServicioAlumno from "./Components/Alumno/InfoServicioAlumno.jsx";
 import MisCuotas from "./Components/Alumno/Pagos/PagosPage.jsx";
 import ProfileInfo from "./Components/VerPerfil/Perfil.jsx";
+import ReseniasAlumno from "./Components/Alumno/MenuOpciones/ReseniasAlumno.jsx";
 import DescubrirServicios from "./Components/Alumno/DescubrirServicios/DescubrirServicios.jsx";
 import ResumenUsuario from "./Components/VerPerfil/ResumenUsuario/ResumenUsuario.jsx";
 import ResumenInscripcion from "./Components/Instructor/ResumenInscripcion/ResumenInscripcion.jsx";
@@ -58,6 +59,10 @@ function App() {
           />
           <Route
             path="alumno/:idAlumno/instructores/:nombreInstructor"
+            element={<><AppNavbar /><ResumenUsuario /></>}
+          />
+          <Route
+            path="instructor/:idInstructor/instructores/:nombreInstructor"
             element={<><AppNavbar /><ResumenUsuario /></>}
           />
 
@@ -98,7 +103,7 @@ function App() {
             element={<><AppNavbar /><Dashboard /></>}
           />
           <Route
-            path="instructor/:idInstructor/servicio/:idServicio/info-servicio"
+            path="instructor/:idInstructor/servicio/:idServicio/configurar"
             element={<><AppNavbar /><InfoServicioPage /></>}
           />
           <Route
@@ -116,6 +121,14 @@ function App() {
             element={<><AppNavbar /><ResumenInscripcion /></>}
           />
 
+          <Route
+            path="instructor/:idInstructor/descubrir-servicios"
+            element={<><AppNavbar /><DescubrirServicios /></>}
+          />
+          <Route
+            path="instructor/:idInstructor/servicio/:idServicio/info-servicio"
+            element={<><AppNavbar /><InfoServicioAlumno /></>}
+          />
 
           {/* Para alumnos... */}
 
@@ -162,6 +175,9 @@ function App() {
           <Route path="alumno/:idAlumno/inscripciones/:idInscripcion/mi-inscripcion/asistencias" element={<><AppNavbar />< AsistenciasAlumno /></>}></Route>
 
           <Route path="alumno/:idAlumno/inscripciones/pagos" element={<><AppNavbar />< MisCuotas /></>}></Route>
+
+          <Route path="alumno/:idAlumno/inscripciones/:idInscripcion/resenias" element={<><AppNavbar />< ReseniasAlumno /></>}></Route>
+
         </Routes>
       </BrowserRouter>
     </div>

@@ -49,7 +49,7 @@ const CuotasInscripcion = ({ cuotas, inscripcion, resumenPagos }) => {
                                 margin: 0,
                             }}
                         >
-                            {resumenPagos.demoraPromedioPago} días
+                            {resumenPagos?.demoraPromedio} días
                         </p>
                     </Col>
                     {/* Columna 2: Demora Promedio de Pagos */}
@@ -71,19 +71,19 @@ const CuotasInscripcion = ({ cuotas, inscripcion, resumenPagos }) => {
                                 margin: 0,
                             }}
                         >
-                            {resumenPagos.porcentajeVencimientos}%
+                            {resumenPagos?.porcentajeVencimientos}%
                         </p>
                     </Col>
                     {/* Columna 3: Estado de Cuotas */}
                     <Col md={4}>
                         <p style={{ fontSize: "1rem", margin: "0" }}>
-                            <strong>Pagos:</strong> {resumenPagos.cantCuotasAbonadas}
+                            <strong>Pagos:</strong> {resumenPagos?.cantCuotasPagadas}
                         </p>
                         <p style={{ fontSize: "1rem", margin: "0" }}>
-                            <strong>Vencimientos:</strong> {resumenPagos.cantCuotasVencidas}
+                            <strong>Vencimientos:</strong> {resumenPagos?.cantVencimientos}
                         </p>
                         <p style={{ fontSize: "1rem", margin: "0" }}>
-                            <strong>Total Cuotas:</strong> {resumenPagos.cantCuotasTotales}
+                            <strong>Total Cuotas:</strong> {resumenPagos?.cantCuotas}
                         </p>
                     </Col>
                 </Row>

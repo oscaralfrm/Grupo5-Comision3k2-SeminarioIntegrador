@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const ServiciosCardRow = ({ servicios }) => {
-    const { idAlumno } = useParams();
+    const { idAlumno, idInstructor } = useParams();
     const containerRef = useRef(null);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
@@ -121,7 +121,9 @@ const ServiciosCardRow = ({ servicios }) => {
                                 e.currentTarget.style.boxShadow = '0 6px 10px rgba(0, 0, 0, 0.1)';
                             }}
                             onClick={() =>
+                                idAlumno ? 
                                 navigate(`/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`)
+                                : navigate(`/instructor/${idInstructor}/servicio/${servicio.id}/info-servicio`)
                             }
                         >
                             <div className="card-body">

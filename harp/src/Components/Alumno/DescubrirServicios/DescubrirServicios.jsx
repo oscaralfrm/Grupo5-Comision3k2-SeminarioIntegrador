@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Button, Container, Row, Col, Spinner } from "react-bootstrap";
 import { FaStar, FaRegStar } from "react-icons/fa";
-import { getAllServiciosPublicosSinAlumno, generarLinkMaps } from "../../../services/Servicio";
+import { generarLinkMaps, getAllServiciosPublicosSinAlumnoOInstructor } from "../../../services/Servicio";
 import { getInscripcionesDeAlumno } from "../../../services/Alumno";
 import { armarStringPrecioYFrecuenciaCobro } from "../../../services/frecuenciaPago";
 import placeholderImage from "../../../assets/placeholderForServices.png";
@@ -20,7 +20,7 @@ const useDebounce = (value, delay) => {
 };
 
 const DescubrirServicios = () => {
-  const { idAlumno } = useParams();
+  const { idAlumno, idInstructor } = useParams();
   const navigate = useNavigate();
 
   // Estados de servicios, paginación y carga
@@ -138,7 +138,7 @@ const DescubrirServicios = () => {
             ? getTipoFrecuenciaPagoParam(filters.tipoFrecuenciaPago)
             : { cantCiclo: "", unidadCiclo: "" };
 
-        const response = await getAllServiciosPublicosSinAlumno({
+        const response = await getAllServiciosPublicosSinAlumnoOInstructor({
           nombre: debouncedSearchTerm,
           categoriaNombre: filters.categoriaFilter,
           modalidadClasesNombre: filters.modalidadClases,
@@ -152,6 +152,7 @@ const DescubrirServicios = () => {
           diasSemanales: filters.diasSemanales,
           turnos: filters.turnos,
           idAlumno,
+          idInstructor, 
           page,
           size
         });
@@ -194,6 +195,7 @@ const DescubrirServicios = () => {
     filters.turnos,
     page,
     idAlumno,
+    idInstructor,
     size
   ]);
 
@@ -392,7 +394,9 @@ const DescubrirServicios = () => {
                                 size="sm"
                                 style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
                                 onClick={() =>
+                                  idAlumno ? 
                                   navigate(`/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`)
+                                  : navigate(`/instructor/${idInstructor}/servicio/${servicio.id}/info-servicio`)
                                 }
                               >
                                 Ver más

@@ -131,4 +131,15 @@ export const traerUnaInscripcion = async (idInscripcion) => {
     }
   };
 
+  // Obtener una inscripción por su ID
+export const getResumenPagosDeInscripcion = async (idServicio, idInscripcion) => {
+  try {
+    const response = await axios.get(`${API_URL}/${idServicio}/inscripciones/${idInscripcion}/resumen-pagos`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al traer el resumen pagos de inscripción:", error);
+    throw error;
+  }
+};
+
 

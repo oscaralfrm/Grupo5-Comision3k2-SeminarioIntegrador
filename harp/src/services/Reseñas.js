@@ -163,7 +163,9 @@ export const getResumenReseniasDeServicio = async (idServicio) => {
   // Obtener las reseñas de un alumno para un servicio específico
 export const getReseniasDeAlumnoYServicioPublicadas = async (idAlumno, idServicio) => {
     try {
-      const response = await axios.get(`${API_URL}alumnos/${idAlumno}/resenias/${idServicio}`);
+      const response = await axios.get(`${API_URL}alumnos/${idAlumno}/resenias/${idServicio}`, {
+        params: { publicadas, borradores }
+      });
       return response.data; // Lista de reseñas
     } catch (error) {
       console.error(`Error al obtener las reseñas del alumno con ID ${idAlumno} para el servicio con ID ${idServicio}`, error);
@@ -171,6 +173,16 @@ export const getReseniasDeAlumnoYServicioPublicadas = async (idAlumno, idServici
     }
   };
 
+// Eliminar una reseña por ID
+export const deleteResenia = async (idResenia) => {
+  try {
+    const response = await axios.delete(`${API_URL}resenias/${idResenia}`);
+    return response.data; // Se espera que el servidor retorne "Reseña eliminada"
+  } catch (error) {
+    console.error(`Error al eliminar la reseña con ID ${idResenia}`, error);
+    throw error;
+  }
+};
     // Obtener las reseñas de un alumno para un servicio específico
 export const getReseniasDeAlumnoYServicioFiltradas = async (idAlumno, idServicio, publicadas, borradores) => {
   try {

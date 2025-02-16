@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Container, Row, Col, Card } from "react-bootstrap";
+import ServiciosPreviewSection from "./ServiciosPreviewSection"; // Ajusta la ruta según corresponda
 
 const WelcomeBlock = () => {
   const welcomeRef = useRef(null);
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
-  const {idInstructor} = useParams();
+  const { idInstructor } = useParams();
 
   const cardHeight = "260px";
 
@@ -14,30 +16,26 @@ const WelcomeBlock = () => {
   };
 
   useEffect(() => {
-    const animateWelcome = () => {
-      if (welcomeRef.current) {
-        welcomeRef.current.animate(
-          [
-            { opacity: 0, transform: "translateY(-20px)" },
-            { opacity: 1, transform: "translateY(0)" }
-          ],
-          {
-            duration: 1500,
-            easing: "ease",
-            fill: "forwards"
-          }
-        );
-      }
-    };
-
-    animateWelcome(); // Animación inicial
-
+    if (welcomeRef.current) {
+      welcomeRef.current.animate(
+        [
+          { opacity: 0, transform: "translateY(-20px)" },
+          { opacity: 1, transform: "translateY(0)" }
+        ],
+        {
+          duration: 1500,
+          easing: "ease",
+          fill: "forwards"
+        }
+      );
+    }
   }, []);
 
   return (
-    <div className="container" >
-      <div
-        className="row g-3 align-items-stretch"
+    <Container>
+      {/* Primera fila */}
+      <Row
+        className="g-3 align-items-stretch"
         style={{
           minHeight: "500px",
           backgroundImage: "linear-gradient(to right, #1E1B4B, #4F46E5)",
@@ -46,7 +44,7 @@ const WelcomeBlock = () => {
         }}
       >
         {/* Cartel de bienvenida */}
-        <div className="col-12 col-md-6">
+        <Col xs={12} md={6}>
           <div
             ref={welcomeRef}
             style={{
@@ -68,19 +66,18 @@ const WelcomeBlock = () => {
               ¡Empieza ahora y transforma tu experiencia!
             </p>
           </div>
-        </div>
+        </Col>
 
         {/* Card para agregar un nuevo servicio */}
-        <div className="col-12 col-md-6 d-flex justify-content-center align-items-center">
-          <div
-            className="card"
+        <Col xs={12} md={6} className="d-flex justify-content-center align-items-center p-3">
+          <Card
             style={{
               padding: "15px",
               backgroundColor: "#E8F8FF",
               borderRadius: "20px",
               height: cardHeight,
               fontFamily: "Roboto",
-              maxWidth: "350px", // Tamaño controlado similar al anterior
+              maxWidth: "350px",
               width: "100%",
               textAlign: "center",
               cursor: "pointer",
@@ -88,7 +85,7 @@ const WelcomeBlock = () => {
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              transition: "transform 0.3s", // Transición para el efecto
+              transition: "transform 0.3s",
               transform: hover ? "scale(1.05)" : "scale(1)"
             }}
             onClick={handleAddNewService}
@@ -107,7 +104,13 @@ const WelcomeBlock = () => {
                 alignItems: "center"
               }}
             >
-              <span style={{ fontSize: "2rem", color: "#fff", fontWeight: "bold" }}>
+              <span
+                style={{
+                  fontSize: "2rem",
+                  color: "#fff",
+                  fontWeight: "bold"
+                }}
+              >
                 +
               </span>
             </div>
@@ -117,10 +120,25 @@ const WelcomeBlock = () => {
             >
               Agregar Servicio
             </h4>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Segunda fila: Sección de preview */}
+      <Row
+        className="g-3 align-items-stretch mt-4"
+        style={{
+          backgroundImage: "linear-gradient(to right, #1E1B4B, #4F46E5)",
+          borderRadius: "20px",
+          boxShadow: "0px 4px 18px rgba(0, 0, 0, 0.5)",
+          padding: "20px"
+        }}
+      >
+        <Col xs={12}>
+          <ServiciosPreviewSection />
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

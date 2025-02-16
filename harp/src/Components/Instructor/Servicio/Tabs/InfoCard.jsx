@@ -1,164 +1,180 @@
-import React from "react";
+import React, { useState } from "react";
+import { Card, Row, Col, Button } from "react-bootstrap";
+import { FaListAlt, FaMapMarkerAlt, FaInfoCircle, FaCoins, FaClock, FaUserAlt, FaCalendarAlt, FaUsers } from "react-icons/fa";
 
 export default function ResumenServicio({ formData }) {
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
   // Función para convertir a mayúsculas el primer carácter
   const capitalizeFirstLetter = (str) => {
     if (typeof str !== "string") return "";
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
+   // Función para determinar la modalidad de clases
+   const determinarModalidad = (modalidadClases) => {
+    if (modalidadClases.includes("virtual") && modalidadClases.includes("presencial")) {
+      return "Híbrida";
+    } else if (modalidadClases.includes("virtual")) {
+      return "Virtual";
+    } else if (modalidadClases.includes("presencial")) {
+      return "Presencial";
+    } else {
+      return "Sin definir";
+    }
+  };
+
+  // Vista previa del logo
+  const logoUrl = formData.logo && formData.logo[0] instanceof File
+    ? URL.createObjectURL(formData.logo[0])
+    : null;
+
   return (
-    <div
-      className="d-flex justify-content-center align-items-center "
-      style={{ marginTop: "0vh" }}
+    <Card
+      className="mb-4 p-3" // Padding reducido
+      style={{
+        borderRadius: "20px", // Bordes redondeados como antes
+        boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)", // Sombra como antes
+        width: "100%", // Ancho completo
+        height: "100%",
+        maxHeight: "700px", // Altura máxima reducida
+        //overflowY: "auto", // Scroll si el contenido es muy largo
+      }}
     >
-      <div className="col-sm-12 p-4">
-        <div
-          className="card shadow-lg rounded-3 bg-light"
-          style={{ transition: "0.3s" }}
-        >
-          {/* Encabezado de "Resumen del Servicio" */}
-          <div
-            className="d-flex justify-content-center align-items-center"
+      {/* Encabezado */}
+      <div
+        className="d-flex justify-content-between align-items-center mb-3" // Margen inferior reducido
+        style={{
+          backgroundColor: "#1E1B4B",
+          padding: "1rem", // Padding como antes
+          borderRadius: "20px", // Bordes redondeados como antes
+          color: "white",
+        }}
+      >
+        <h1 className="mb-0 fs-4">{formData.nombreServicio || "Nombre del Servicio"}</h1>
+        {logoUrl && (
+          <img
+            src={logoUrl}
+            alt="Logo del servicio"
             style={{
-              backgroundColor: "#1E1B4B",
-              padding: "1rem",
-              borderTopLeftRadius: "0.375rem",
-              borderTopRightRadius: "0.375rem",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              width: "50px", // Tamaño como antes
+              height: "50px", // Tamaño como antes
+              borderRadius: "50%",
+              objectFit: "cover",
             }}
-          >
-            <h1
-              className="mb-3 text-center fs-1 text-white"
-              style={{ fontFamily: "Roboto", fontWeight: "400" }}
-            >
-              Información Ingresada
-            </h1>
-          </div>
-          <div
-            className="card-body p-4"
-            style={{
-              backgroundColor: "#FFFFFF", // Fondo blanco sin degradado
-              borderRadius: "10px",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            {/* Información del formulario */}
-            <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>Categoría: </strong>
-              <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {capitalizeFirstLetter(formData.categoria)}
-              </span>
-            </div>
-            <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>Nombre: </strong>
-              <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {capitalizeFirstLetter(formData.nombreServicio)}
-              </span>
-            </div>
-            <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>
-                Frecuencia de cobro:{" "}
-              </strong>
-              <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {capitalizeFirstLetter(formData.frecuenciaCuotas)}
-              </span>
-            </div>
+          />
+        )}
+      </div>
 
+      {/* Cuerpo de la card */}
+      <Row className="text-center text-md-start">
+        {/* Sección de Datos Generales */}
+        <Col xs="12" className="mb-2 p-2" style={{ borderBottom: "2px solid #e9ecef" }}> {/* Borde como antes */}
+          <h4 className="fw-bold mb-2 d-flex align-items-center">
+            <FaInfoCircle className="me-2 text-primary" /> Datos Generales
+          </h4>
+          <Row>
+            <Col xs="12" md="4" className="mb-2">
+              <p className="mb-1 fw-bold">Categoría:</p>
+              <p>{capitalizeFirstLetter(formData.categoria)}</p>
+            </Col>
+            <Col xs="12" md="4" className="mb-2">
+              <p className="mb-1 fw-bold">Modalidad:</p>
+              <p>{determinarModalidad(formData.modalidadClases)}</p>
+            </Col>
+            <Col xs="12" md="4" className="mb-2">
+              <p className="mb-1 fw-bold">Ubicación:</p>
+              <p>{formData.ubicacion || "Sin ubicación"}</p>
+            </Col>
+            <Col xs="12" className="mb-2">
+              <p className="mb-1 fw-bold">Descripción:</p>
+              <p>
+                {showFullDescription
+                  ? formData.descripcion
+                  : formData.descripcion?.slice(0, 80) + "..."} {/* Menos caracteres por defecto */}
+                {formData.descripcion?.length > 80 && (
+                  <Button
+                    variant="link"
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    style={{ padding: "0", color: "#1E1B4B", fontSize: "0.9rem" }} // Tamaño de fuente reducido
+                  >
+                    {showFullDescription ? "Ver Menos" : "Ver Más"}
+                  </Button>
+                )}
+              </p>
+            </Col>
+          </Row>
+        </Col>
+
+        {/* Sección de Cobros */}
+        <Col xs="12" className="mb-2 p-2" style={{ borderBottom: "2px solid #e9ecef" }}> {/* Borde como antes */}
+          <h4 className="fw-bold mb-2 d-flex align-items-center">
+            <FaCoins className="me-2 text-warning" /> Cobros
+          </h4>
+          <Row>
+            <Col xs="12" md="4" className="mb-2">
+              <p className="mb-1 fw-bold">Frecuencia de cobro:</p>
+              <p>{capitalizeFirstLetter(formData.frecuenciaCuotas) || "Sin definir"}</p>
+            </Col>
             {formData.frecuenciaCuotas === "otros" && (
-              <div className="mb-3">
-                <strong style={{ fontSize: "1.2rem" }}>
-                  Frecuencia de cobro en días:{" "}
-                </strong>
-                <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                  {formData.duracionCuotasPersonalizada} días
-                </span>
-              </div>
+              <Col xs="12" md="4" className="mb-2">
+                <p className="mb-1 fw-bold">Frecuencia en días:</p>
+                <p>{formData.duracionCuotasPersonalizada} días</p>
+              </Col>
             )}
-
-            {formData.frecuenciaCuotas === "mensual" ||
-            formData.frecuenciaCuotas === "semanal" ||
-            formData.frecuenciaCuotas === "otros" ? (
-              <div className="mb-3">
-                <strong style={{ fontSize: "1.2rem" }}>
-                  Día límite de cobro:{" "}
-                </strong>
-                <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                  {capitalizeFirstLetter(formData.fechaLimitePago)}
-                </span>
-              </div>
-            ) : null}
-
-            <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>Tipo de cobro: </strong>
-              <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {capitalizeFirstLetter(formData.ciclos)}
-              </span>
-            </div>
-
-            <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>
-                Incluye cobro de inscripción:{" "}
-              </strong>
-              <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                {capitalizeFirstLetter(formData.incluyeInscripcion)}
-              </span>
-            </div>
-
+            {(formData.frecuenciaCuotas === "mensual" ||
+              formData.frecuenciaCuotas === "semanal" ||
+              formData.frecuenciaCuotas === "otros") && (
+              <Col xs="12" md="4" className="mb-2">
+                <p className="mb-1 fw-bold">Día límite de cobro:</p>
+                <p>{capitalizeFirstLetter(formData.fechaLimitePago) || "Sin definir"}</p>
+              </Col>
+            )}
+            <Col xs="12" md="4" className="mb-2">
+              <p className="mb-1 fw-bold">Tipo de cobro:</p>
+              <p>{capitalizeFirstLetter(formData.ciclos) || "Sin definir"}</p>
+            </Col>
+            <Col xs="12" md="4" className="mb-2">
+              <p className="mb-1 fw-bold">Inscripción:</p>
+              <p>{capitalizeFirstLetter(formData.incluyeInscripcion) || "Sin definir"}</p>
+            </Col>
             {formData.incluyeInscripcion === "si" && (
-              <>
-                {/* <div className="mb-3">
-                  <strong style={{ fontSize: "1.2rem" }}>
-                    Cobro de inscripción:{" "}
-                  </strong>
-                  <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                    {capitalizeFirstLetter(formData.pagoInscripcion)}
-                  </span>
-                </div> */}
-                <div className="mb-3">
-                  <strong style={{ fontSize: "1.2rem" }}>
-                    Monto por la inscripción:{" "}
-                  </strong>
-                  <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                    {"$" + formData.montoInscripcion}
-                  </span>
-                </div>
-              </>
+              <Col xs="12" md="4" className="mb-2">
+                <p className="mb-1 fw-bold">Monto inscripción:</p>
+                <p>${formData.montoInscripcion || 0}</p>
+              </Col>
             )}
+          </Row>
+        </Col>
 
+        {/* Sección de Modalidad */}
+        <Col xs="12" className="mb-2 p-2"> {/* Sin margen inferior adicional */}
+          <h4 className="fw-bold mb-2 d-flex align-items-center">
+            <FaUsers className="me-2 text-success" /> Modalidad
+          </h4>
+          <Row>
             {(formData.divideEnGrupos === "Grupales" ||
               formData.divideEnGrupos === "Individuales y grupales") && (
-              <div className="mb-3">
-                <strong style={{ fontSize: "1.2rem" }}>
-                  Cantidad máxima por grupo:{" "}
-                </strong>
-                <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                  {formData.cupoMaximoAlumnos}
-                </span>
-              </div>
+              <Col xs="12" md="4" className="mb-2">
+                <p className="mb-1 fw-bold">Cupo máximo:</p>
+                <p>{formData.cupoMaximoAlumnos || "Sin definir"}</p>
+              </Col>
             )}
-
             {formData.divideEnGrupos !== "Sin clases" && (
               <>
-                <div className="mb-3">
-                  <strong style={{ fontSize: "1.2rem" }}>Asistencias: </strong>
-                  <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                    {capitalizeFirstLetter(formData.asistencias)}
-                  </span>
-                </div>
-                <div className="mb-3">
-                  <strong style={{ fontSize: "1.2rem" }}>
-                    Clase prueba gratuita:{" "}
-                  </strong>
-                  <span style={{ fontSize: "1.1rem", color: "#333" }}>
-                    {capitalizeFirstLetter(formData.clasePrueba)}
-                  </span>
-                </div>
+                <Col xs="12" md="4" className="mb-2">
+                  <p className="mb-1 fw-bold">Asistencias:</p>
+                  <p>{capitalizeFirstLetter(formData.asistencias) || "Sin definir"}</p>
+                </Col>
+                <Col xs="12" md="4" className="mb-2">
+                  <p className="mb-1 fw-bold">Clase prueba:</p>
+                  <p>{capitalizeFirstLetter(formData.clasePrueba) || "Sin definir"}</p>
+                </Col>
               </>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </Row>
+        </Col>
+      </Row>
+    </Card>
   );
 }
