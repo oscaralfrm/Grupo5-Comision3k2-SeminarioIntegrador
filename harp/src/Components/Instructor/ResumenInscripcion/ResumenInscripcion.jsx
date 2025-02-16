@@ -13,7 +13,7 @@ import ReviewCarousel from "../MiServicio/MenuOpciones/Dashboard/Reseñas";
 import ServiciosCardRow from "../../VerPerfil/ResumenUsuario/CarruselServicios";
 import SocialNetworks from "../../VerPerfil/RedesSociales";
 import { calcularAntiguedadComoTexto } from "../MiServicio/MenuOpciones/Dashboard/Inscripciones";
-import { traerUnaInscripcion } from "../../../services/Inscripcion";
+import { getResumenPagosDeInscripcion, traerUnaInscripcion } from "../../../services/Inscripcion";
 import AsistenciasInscripcion from "./AsistenciasInscripcion";
 import CuotasInscripcion from "./CuotasInscripcion";
 
@@ -128,6 +128,9 @@ import CuotasInscripcion from "./CuotasInscripcion";
                                   "motivoRechazo": null
                                 }
                               }, ]
+
+
+                           resumenPagos =   {cantCuotasAbonadas: 10, cantCuotasVencidas: 5, cantCuotasTotales: 10, demoraPromedioPago: 25, porcentajeVencimientos: 32}
     
     */}
 
@@ -141,6 +144,7 @@ const ResumenInscripcion = () => {
     const [historialAsistencias, setHistorialAsistencias] = useState([]);
     const [ultimasCuotas, setUltimasCuotas] = useState([]);
     const [historialCuotas, setHistorialCuotas] = useState([]);
+    const [resumenPagos, setResumenPagos] = useState(null);
     const [cantInscripciones, setCantInscripciones] = useState(null);
     const [resenias, setResenias] = useState([]);
     const [error, setError] = useState(null);
@@ -190,6 +194,11 @@ const ResumenInscripcion = () => {
                 //const historialCuotas = await obtenerCuotasDeInscripcion(servicioId, inscripcion.id);
                 setUltimasCuotas(ultimasCuotas);
                 //setHistorialCuotas(historialCuotas);
+
+                // RESUMEN PAGOS
+                const resumenPagos = await getResumenPagosDeInscripcion(inscripcion.servicio.id, idInscripcion);
+                setResumenPagos(resumenPagos);
+                console.log("Resumen pagos", resumenPagos);
 
                 console.log("data", ultimasCuotas);
             } catch (err) {
@@ -259,7 +268,7 @@ const ResumenInscripcion = () => {
                         <CuotasInscripcion
                             inscripcion={inscripcion}
                             cuotas={ultimasCuotas}
-                            resumenPagos={{cantCuotasAbonadas: 10, cantCuotasVencidas: 5, cantCuotasTotales: 10, demoraPromedioPago: 25, porcentajeVencimientos: 32}}
+                            resumenPagos={resumenPagos}
                         />
 
                         {/* Reseñas realizadas */}

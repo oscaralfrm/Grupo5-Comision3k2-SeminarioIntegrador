@@ -60,6 +60,10 @@ function App() {
             path="alumno/:idAlumno/instructores/:nombreInstructor"
             element={<><AppNavbar /><ResumenUsuario /></>}
           />
+          <Route
+            path="instructor/:idInstructor/instructores/:nombreInstructor"
+            element={<><AppNavbar /><ResumenUsuario /></>}
+          />
 
           {/* Para Instructor */}
 
@@ -98,7 +102,7 @@ function App() {
             element={<><AppNavbar /><Dashboard /></>}
           />
           <Route
-            path="instructor/:idInstructor/servicio/:idServicio/info-servicio"
+            path="instructor/:idInstructor/servicio/:idServicio/configurar"
             element={<><AppNavbar /><InfoServicioPage /></>}
           />
           <Route
@@ -116,6 +120,14 @@ function App() {
             element={<><AppNavbar /><ResumenInscripcion /></>}
           />
 
+          <Route
+            path="instructor/:idInstructor/descubrir-servicios"
+            element={<><AppNavbar /><DescubrirServicios /></>}
+          />
+          <Route
+            path="instructor/:idInstructor/servicio/:idServicio/info-servicio"
+            element={<><AppNavbar /><InfoServicioAlumno /></>}
+          />
 
           {/* Para alumnos... */}
 

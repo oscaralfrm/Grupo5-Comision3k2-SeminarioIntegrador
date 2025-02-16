@@ -29,10 +29,13 @@ const InfoServicioAlumno = () => {
       const gruposData = await getGruposDeServicio(idServicio);
       setGrupos(gruposData);
 
-      const inscripcionesPendientesData = await getInscripcionesPendientesDeAlumno(idAlumno);
-      const inscripcionesVigentesData = await getInscripcionesVigentesDeAlumno(idAlumno);
-      setInscripcionesPendientes(inscripcionesPendientesData);
-      setInscripcionesVigentes(inscripcionesVigentesData);
+      if (idAlumno) {
+        const inscripcionesPendientesData = await getInscripcionesPendientesDeAlumno(idAlumno);
+        const inscripcionesVigentesData = await getInscripcionesVigentesDeAlumno(idAlumno);
+        setInscripcionesPendientes(inscripcionesPendientesData);
+        setInscripcionesVigentes(inscripcionesVigentesData);
+      }
+
 
     } catch (error) {
       console.error("Error al traer el servicio:", error);
@@ -65,7 +68,7 @@ const InfoServicioAlumno = () => {
           <InstructorInfo serviceData={serviceData} />
           <ServiceHeader serviceData={serviceData} sePuedeEditar={false} />
         </Row>
-        
+
 
       ) : (
         <p>Cargando servicio...</p>
@@ -75,9 +78,9 @@ const InfoServicioAlumno = () => {
 
       <Row className="mt-4">
         <Col>
-          <GruposServicio grupos={grupos} fetchServicio={fetchServicio} 
-          frecuenciaCobro={serviceData?.tipoFrecuenciaPago || {}} sePuedeEditar={false}
-          inscripcionesPendientesAlumno={inscripcionesPendientes} inscripcionesVigentesAlumno={inscripcionesVigentes} />
+          <GruposServicio grupos={grupos} fetchServicio={fetchServicio}
+            frecuenciaCobro={serviceData?.tipoFrecuenciaPago || {}} sePuedeEditar={false}
+            inscripcionesPendientesAlumno={inscripcionesPendientes} inscripcionesVigentesAlumno={inscripcionesVigentes} />
         </Col>
       </Row>
       <Row className="mt-4 align-items-stretch">

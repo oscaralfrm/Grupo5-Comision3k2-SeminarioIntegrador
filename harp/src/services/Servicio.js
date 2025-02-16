@@ -20,7 +20,7 @@ export const getAllServicios = async (page, size) => {
 };
 
 // Función para obtener todos los servicios con paginación
-export const getAllServiciosPublicos = async (page, size) => {
+export const getAllServiciosPublicos = async (page = 0, size = 20) => {
     try {
         const response = await axios.get(`${API_URL}servicios/publicos?page=${page}&size=${size}`);
         return response.data;
@@ -30,7 +30,19 @@ export const getAllServiciosPublicos = async (page, size) => {
     }
 };
 
-export const getAllServiciosPublicosSinAlumno = async ({
+
+// Función para obtener UNA PAGINA de servicios publicos con logo
+export const getServiciosPublicosConLogo = async (limit) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/publicos-con-logo`);
+        return response.data.slice(0, limit);
+    } catch (error) {
+        console.error('Error al obtener los servicios', error);
+        throw error;
+    }
+};
+
+export const getAllServiciosPublicosSinAlumnoOInstructor = async ({
     nombre,
     categoriaNombre,
     modalidadClasesNombre,
@@ -44,6 +56,7 @@ export const getAllServiciosPublicosSinAlumno = async ({
     diasSemanales,
     turnos,
     idAlumno,
+    idInstructor,
     page = 0,
     size = 20,
   }) => {
@@ -61,6 +74,7 @@ export const getAllServiciosPublicosSinAlumno = async ({
         diasSemanales,
         turnos,
         idAlumno,
+        idInstructor,
         page,
         size,
       });
@@ -79,6 +93,7 @@ export const getAllServiciosPublicosSinAlumno = async ({
         diasSemanales,
         turnos,
         idAlumno,
+        idInstructor,
         page,
         size,
       });
@@ -132,6 +147,7 @@ export const descubrirServicios = async ({
     diasSemanales,
     turnos,
     idAlumno,
+    idInstructor,
     page = 0,
     size = 20,
   }) => {
@@ -151,6 +167,7 @@ export const descubrirServicios = async ({
           diasSemanales, // se enviará como arreglo
           turnos,       // se enviará como arreglo
           idAlumno,
+          idInstructor,
           page,
           size,
         },
