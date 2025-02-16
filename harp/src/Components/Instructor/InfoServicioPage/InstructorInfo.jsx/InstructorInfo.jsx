@@ -4,6 +4,7 @@ import { obtenerInstructorDeServicio } from "../../../../services/Instructor";
 import { Link, useParams } from "react-router-dom";
 
 function calcularEdad(fechaNacimiento) {
+
     if (!fechaNacimiento) return null;
     const fechaNac = new Date(fechaNacimiento);
     const hoy = new Date();
@@ -19,7 +20,7 @@ function calcularEdad(fechaNacimiento) {
 
 function InstructorInfo({ serviceData }) {
     const [instructor, setInstructor] = useState(null);
-    const { idServicio } = useParams();
+    const { idServicio , idAlumno, idInstructor} = useParams();
 
     useEffect(() => {
         const fetchInstructor = async () => {
@@ -77,7 +78,9 @@ function InstructorInfo({ serviceData }) {
                         <p style={{ margin: 0 }}>
                             <strong>Instructor:</strong>{" "}
                             <Link
-                                to={`/instructor/${instructor?.id}/informacion`}
+                                to={ idAlumno ? `/alumno/${idAlumno}/instructores/${instructor?.usuario?.nombreUsuario}`
+                                              : `/instructor/${idInstructor}/instructores/${instructor?.usuario?.nombreUsuario}`}
+                                    
                                 className="text-primary text-decoration-none fw-bold"
                             >
                                 {instructor?.usuario.nombre} {instructor?.usuario.apellido}

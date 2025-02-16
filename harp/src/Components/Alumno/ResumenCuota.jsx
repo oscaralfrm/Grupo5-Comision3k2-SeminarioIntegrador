@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ModalPagarCuotaConComprobante from "./ModalPagarCuotaConComprobante";
 
-const CuotaCard = ({ cuota, idInscripcion, idServicio, grupo, fetchCuotas }) => {
+const CuotaCard = ({ cuota, idInscripcion, idServicio, grupo, fetchCuotas, sePuedePagar = true }) => {
     const [showAddPayment, setShowAddPayment] = useState(false);
 
     const onPagar = () => setShowAddPayment(true);
@@ -64,7 +64,7 @@ const CuotaCard = ({ cuota, idInscripcion, idServicio, grupo, fetchCuotas }) => 
                 </div>
 
                 {/* Botón de pago, si corresponde */}
-                {mostrarBotonPagar && (
+                {sePuedePagar && mostrarBotonPagar && (
                     <button className="btn btn-primary ms-3" onClick={onPagar}>
                         Pagar
                     </button>

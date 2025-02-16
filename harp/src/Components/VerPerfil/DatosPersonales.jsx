@@ -110,7 +110,7 @@ const PersonalData = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
                 ) : (
                   localData[item.field] || "No especificado"
                 )}
-                {isMissing(localData[item.field]) && !editMode && (
+                {isMissing(localData[item.field]) && !editMode && sePuedeEditar && (
                   <FaExclamationCircle className="ms-2 text-danger" />
                 )}
               </div>

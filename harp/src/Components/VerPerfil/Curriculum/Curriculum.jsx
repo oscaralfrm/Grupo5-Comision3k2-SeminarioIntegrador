@@ -11,33 +11,32 @@ const Curriculum = ({ profileData, editMode, cvFile, setCvFile, sePuedeEditar })
 
   return (
     <div>
-      {profileData?.cvURL ? (
-        <div>
-          <a
-            href={profileData.cvURL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="cv-link"
-          >
-            Ver Curriculum Vitae
-          </a>
-          {sePuedeEditar && (
+      {sePuedeEditar ? (
+        profileData?.cvURL ? (
+          <div>
+            <a
+              href={profileData.cvURL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cv-link"
+            >
+              Ver Curriculum Vitae
+            </a>
             <p className="mt-2">
               Archivo cargado:{" "}
               <strong>
-                {profileData?.cvURL.split("/").pop().split("_").slice(1).join("_") || "Documento adjunto"}
+                {profileData?.cvURL.split("/").pop().split("_").slice(1).join("_") ||
+                  "Documento adjunto"}
               </strong>
             </p>
-          )}
-          {editMode && (
-            <Form.Group controlId="uploadCV" className="mt-3">
-              <Form.Label>Reemplazar CV:</Form.Label>
-              <Form.Control type="file" onChange={handleFileChange} />
-            </Form.Group>
-          )}
-        </div>
-      ) : (
-        !editMode ? (
+            {editMode && (
+              <Form.Group controlId="uploadCV" className="mt-3">
+                <Form.Label>Reemplazar CV:</Form.Label>
+                <Form.Control type="file" onChange={handleFileChange} />
+              </Form.Group>
+            )}
+          </div>
+        ) : !editMode ? (
           <div className="alert alert-warning d-flex align-items-center" role="alert">
             <FaExclamationCircle className="me-2" />
             No has subido tu currículum vitae.
@@ -55,7 +54,18 @@ const Curriculum = ({ profileData, editMode, cvFile, setCvFile, sePuedeEditar })
             )}
           </div>
         )
-      )}
+      ) : profileData?.cvURL ? (
+        <div>
+          <a
+            href={profileData.cvURL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cv-link"
+          >
+            Ver Curriculum Vitae
+          </a>
+        </div>
+      ) : null}
       <style jsx>{`
         .cv-link {
           color: #4A47A3;

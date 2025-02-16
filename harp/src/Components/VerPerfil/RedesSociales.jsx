@@ -3,16 +3,18 @@ import React, { useState } from "react";
 import { ListGroup, Button, Form } from "react-bootstrap";
 import { FaCog, FaExclamationCircle } from "react-icons/fa";
 import { completarRedesSociales } from "../../services/Usuario";
+import { faFacebook, faInstagram, faLinkedin, faTiktok, faTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
     const [editMode, setEditMode] = useState(false);
     const [localSocials, setLocalSocials] = useState({
-        linkedin: profileData?.usuario.redesSociales?.linkedin || "",
-        twitter: profileData?.usuario.redesSociales?.twitter || "",
-        facebook: profileData?.usuario.redesSociales?.facebook || "",
-        instagram: profileData?.usuario.redesSociales?.instagram || "",
-        youtube: profileData?.usuario.redesSociales?.youtube || "",
-        tiktok: profileData?.usuario.redesSociales?.tiktok || "",
+        linkedin: profileData?.usuario?.redesSociales?.linkedin || "",
+        twitter: profileData?.usuario?.redesSociales?.twitter || "",
+        facebook: profileData?.usuario?.redesSociales?.facebook || "",
+        instagram: profileData?.usuario?.redesSociales?.instagram || "",
+        youtube: profileData?.usuario?.redesSociales?.youtube || "",
+        tiktok: profileData?.usuario?.redesSociales?.tiktok || "",
     });
 
     const handleChange = (field, value) => {
@@ -84,7 +86,10 @@ const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
                 ) : (
                     localSocials.linkedin &&
                     (<ListGroup.Item>
-                        <strong>LinkedIn: </strong>
+                        <a href={`https://www.linkedin.com/in/${localSocials.linkedin}`} target="_blank">
+                            <FontAwesomeIcon icon={faLinkedin} />
+                        </a>
+                        <strong> LinkedIn: </strong>
                         {localSocials.linkedin}
                     </ListGroup.Item>
                     )
@@ -102,8 +107,11 @@ const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
                     </ListGroup.Item>
                 ) : (
                     localSocials.twitter &&
-                    (<ListGroup.Item>
-                        <strong>Twitter: </strong>
+                    (<ListGroup.Item >
+                        <a href={`https://www.twitter.com/${localSocials.twitter}`} target="_blank">
+                            <FontAwesomeIcon icon={faTwitter} />
+                        </a>
+                        <strong> Twitter: </strong>
                         {localSocials.twitter}
                     </ListGroup.Item>
                     )
@@ -121,7 +129,10 @@ const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
                 ) : (
                     localSocials.facebook &&
                     (<ListGroup.Item>
-                        <strong>Facebook: </strong>
+                        <a href={`https://www.facebook.com/${localSocials.facebook}`} target="_blank">
+                            <FontAwesomeIcon icon={faFacebook} />
+                        </a>
+                        <strong> Facebook: </strong>
                         {localSocials.facebook}
                     </ListGroup.Item>
                     )
@@ -139,7 +150,10 @@ const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
                 ) : (
                     localSocials.instagram &&
                     (<ListGroup.Item>
-                        <strong>Instagram: </strong>
+                        <a href={`https://www.instagram.com/${localSocials.instagram}`} target="_blank">
+                            <FontAwesomeIcon icon={faInstagram} />
+                        </a>
+                        <strong> Instagram: </strong>
                         {localSocials.instagram}
                     </ListGroup.Item>
                     )
@@ -157,7 +171,10 @@ const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
                 ) : (
                     localSocials.youtube &&
                     (<ListGroup.Item>
-                        <strong>Youtube: </strong>
+                        <a href={`https://www.youtube.com/@${localSocials.youtube}` } target="_blank">
+                            <FontAwesomeIcon icon={faYoutube} />
+                        </a>
+                        <strong> Youtube: </strong>
                         {localSocials.youtube}
                     </ListGroup.Item>
                     )
@@ -175,7 +192,10 @@ const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
                 ) : (
                     localSocials.tiktok &&
                     (<ListGroup.Item>
-                        <strong>Tiktok: </strong>
+                        <a href={`https://www.tiktok.com/@${localSocials.tiktok}`} target="_blank">
+                            <FontAwesomeIcon icon={faTiktok} />
+                        </a>
+                        <strong> Tiktok: </strong>
                         {localSocials.tiktok}
                     </ListGroup.Item>
                     )
@@ -183,16 +203,22 @@ const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
             </ListGroup>
 
             {sePuedeEditar &&
-                ( (Object.values(localSocials).every(valor => valor == "" || valor == null )|| profileData?.usuario.redesSociales == null ) 
-                ?
+                ((Object.values(localSocials).every(valor => valor == "" || valor == null) || profileData?.usuario.redesSociales == null)
+                    ?
                     <div className="alert alert-warning d-flex align-items-center" role="alert">
                         No has completado tu redes.
                     </div>
-                :  (Object.values(localSocials).some((valor) => valor == "" || valor == null) &&
+                    : (Object.values(localSocials).some((valor) => valor == "" || valor == null) &&
                         <div className="alert alert-warning d-flex align-items-center" role="alert">
                             No has completado algunas redes.
                         </div>)
                 )
+            }
+            {!sePuedeEditar &&
+                (Object.values(localSocials).some(valor => valor == "" || valor == null) || profileData?.usuario.redesSociales == null) &&
+                <div className="alert alert-warning d-flex align-items-center" role="alert">
+                    No especificadas.
+                </div>
             }
         </div>
     );
