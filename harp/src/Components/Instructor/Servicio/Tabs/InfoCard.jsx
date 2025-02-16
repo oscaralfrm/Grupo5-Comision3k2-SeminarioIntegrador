@@ -25,7 +25,7 @@ export default function ResumenServicio({ formData }) {
         width: "100%", // Ancho completo
         height: "100%",
         maxHeight: "700px", // Altura máxima reducida
-        overflowY: "auto", // Scroll si el contenido es muy largo
+        //overflowY: "auto", // Scroll si el contenido es muy largo
       }}
     >
       {/* Encabezado */}
