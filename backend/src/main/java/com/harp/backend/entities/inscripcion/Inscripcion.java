@@ -8,6 +8,7 @@ import com.harp.backend.entities.cuota.CuotaService;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.pagos.Pago;
+import com.harp.backend.entities.pagos.metodoPago.MetodoPago;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
@@ -15,6 +16,7 @@ import lombok.*;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -259,6 +261,7 @@ public class Inscripcion {
                 .orElseThrow(() -> new NoSuchElementFoundException("No se encontró cuota para esa inscripcion"));
     }
 
+    // SECCION ES DE
 
     public boolean esDeEsteServicio(Servicio servicio) {
         return (servicio.tieneEsteGrupo(this.grupo));
@@ -271,6 +274,9 @@ public class Inscripcion {
     public boolean esDeEsteAlumno(Alumno alumno) {
         return (this.alumno == alumno);
     }
+
+
+    // SECCION DE ESTADOS
 
     // Vigente es tanto aceptada como en curso
     public boolean estaVigente() {
@@ -291,6 +297,77 @@ public class Inscripcion {
 
     public boolean esDeEsteAnio(int anio) {
         return ( this.fechaInicio.getYear() == anio );
+    }
+
+
+    // SECCION RESUMEN PAGOS
+
+    public Integer contarCuotas() {
+        return this.getCuotas().size();
+    }
+
+    public Integer contarVencimientos() {
+        return this.obtenerCuotasVencidas().size();
+    }
+
+    public Integer contarPagos() {
+        return this.obtenerCuotasAbonadas().size();
+    }
+
+    public double calcularDemoraPromedioPagos() {
+        List<Cuota> cuotasAbonadas = this.obtenerCuotasAbonadas();
+
+        int cantTotalCuotas = this.contarCuotas();
+        if (cantTotalCuotas == 0) return 0.0;
+
+        long acumDiferenciaFechas = 0;
+
+        for (Cuota cuotaAbonada : cuotasAbonadas) {
+            LocalDate fechaInicioCiclo = cuotaAbonada.getFechaInicioCiclo();
+            LocalDate fechaPago = cuotaAbonada.getPago().getFechaPago();
+
+            long diferenciaFechas = ChronoUnit.DAYS.between(fechaInicioCiclo, fechaPago);
+            acumDiferenciaFechas += diferenciaFechas;
+        }
+
+        double promedioDemoraPagos = (double) acumDiferenciaFechas / cantTotalCuotas;
+        return promedioDemoraPagos;
+    }
+
+    public double calcularPorcentajeVencimientos() {
+        int cantCuotas = this.contarCuotas(); // 100%
+        int cantVencimientos = this.contarVencimientos(); // ? %
+
+        if (cantCuotas == 0) return 0.0; // Evitar división por cero
+
+        double procentajeVencimientos = cantVencimientos * (100.0) / cantCuotas;
+        return procentajeVencimientos;
+    }
+
+    public Integer contarPagosEfectivo() {
+        return this.obtenerCuotasAbonadas().stream().map(Cuota::esPagadaEnEfectivo).toList().size();
+    }
+
+    public Integer contarPagosConMercadoPago() {
+        return this.obtenerCuotasAbonadas().stream().map(Cuota::esPagadaConMercadoPago).toList().size();
+    }
+
+    public Integer contarPagosConTransferencia() {
+        return this.obtenerCuotasAbonadas().stream().map(Cuota::esPagadaConMercadoPago).toList().size();
+    }
+
+    public Integer contarPagosCon(String metodoPago) {
+        return this.obtenerCuotasAbonadas().stream().map(cuota -> cuota.esPagadaCon(metodoPago)).toList().size();
+    }
+
+    public double calcularPorcentajePagosCon(String metodoPago) {
+        int cantPagos = this.contarPagos(); // 100%
+        int cantPagosCon = this.contarPagosCon(metodoPago); // ?%
+
+        if (cantPagos == 0) return 0.0;
+
+        double porcentajePagosCon = cantPagosCon * 100.0 / cantPagos;
+        return porcentajePagosCon;
     }
 
  }

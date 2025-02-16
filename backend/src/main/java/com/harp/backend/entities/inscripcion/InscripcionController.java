@@ -86,6 +86,13 @@ public class InscripcionController {
         return ResponseEntity.ok(cuotas);
     }
 
+    // GET RESUMEN PAGOS DE UNA INSCRIPCION
+    @GetMapping("/{idServicio}/inscripciones/{idInscripcion}/resumen-pagos")
+    public ResponseEntity<ResumenPagosDTO> obtenerResumenPagosDeInscripcion(@PathVariable @Min(1) Long idInscripcion) {
+        ResumenPagosDTO resumenPagos = inscripcionService.obtenerResumenPagosDeInscripcion(idInscripcion);
+        return ResponseEntity.ok(resumenPagos);
+    }
+
 
     // POST
     @PostMapping("/{idServicio}/inscribir")

@@ -50,4 +50,29 @@ public class Pago {
         this.fechaRechazo = LocalDate.now();
         this.motivoRechazo = motivoRechazo;
     }
+
+    public boolean esPagoEnEfectivo() {
+        if (this.metodoPago == null) {
+            return false;
+        }
+        return this.metodoPago.equals("Efectivo");
+    }
+
+    public boolean esPagoConTransferencia() {
+        if (this.metodoPago == null) {
+            return false;
+        }
+        return this.metodoPago.equals("Transferencia");
+    }
+
+    public boolean esPagoConMercadoPago() {
+        if (this.metodoPago == null) {
+            return false;
+        }
+        return this.metodoPago.equals("Mercado Pago") || this.metodoPago.equals("MercadoPago");
+    }
+
+    public boolean tieneEsteMetodoPago(String metodoPago) {
+        return this.metodoPago.getNombre().equals(metodoPago);
+    }
 }

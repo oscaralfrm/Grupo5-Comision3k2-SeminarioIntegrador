@@ -140,4 +140,32 @@ public class Cuota {
         // Si esta en anulada, o esta en abonada pero no rechazada, no puede abonarse
         return false;
     }
+
+    public boolean esPagadaEnEfectivo() {
+        if (! this.esAbonada()) {
+            return false;
+        }
+        return this.getPago().esPagoEnEfectivo();
+    }
+
+    public boolean esPagadaConTransferencia() {
+        if (! this.esAbonada()) {
+            return false;
+        }
+        return this.getPago().esPagoConTransferencia();
+    }
+
+    public boolean esPagadaConMercadoPago() {
+        if (! this.esAbonada()) {
+            return false;
+        }
+        return this.getPago().esPagoConMercadoPago();
+    }
+
+    public boolean esPagadaCon(String metodoPago) {
+        if (! this.esAbonada()) {
+            return false;
+        }
+        return this.getPago().tieneEsteMetodoPago(metodoPago);
+    }
 }

@@ -375,6 +375,23 @@ public class InscripcionService implements IInscripcionService {
         return cuotasOrdenadas;
     }
 
+    public ResumenPagosDTO obtenerResumenPagosDeInscripcion(Long idInscriprion) {
+        Inscripcion inscripcion = this.findInscripcion(idInscriprion);
+        double demoraPromedio = inscripcion.calcularDemoraPromedioPagos();
+        double porcentajeVencimientos = inscripcion.calcularPorcentajeVencimientos();
+
+        Integer cantCuotas = inscripcion.contarCuotas();
+        Integer cantVencimientos = inscripcion.contarVencimientos();
+        Integer cantCuotasPagadas = inscripcion.contarPagos();
+
+        double porcentajePagosEfectivo = inscripcion.calcularPorcentajePagosCon("Efectivo");
+        double porcentajePagosTransferencia = inscripcion.calcularPorcentajePagosCon("Trasferencia");
+        double porcentajePagosMercadoPago = inscripcion.calcularPorcentajePagosCon("Mercado Pago");
+
+        return new ResumenPagosDTO(demoraPromedio, porcentajeVencimientos, cantCuotas, cantVencimientos, cantCuotasPagadas,
+                                porcentajePagosEfectivo, porcentajePagosTransferencia, porcentajePagosMercadoPago);
+    }
+
 //    @Transactional
 //    public void setFechaFinInscripcionesDeServicio(Long idServicio) {
 //        Servicio servicio = servicioService.findServicio(idServicio);
