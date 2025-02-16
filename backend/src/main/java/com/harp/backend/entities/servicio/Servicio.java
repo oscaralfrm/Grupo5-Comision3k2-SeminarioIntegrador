@@ -362,7 +362,17 @@ public class Servicio {
         return (! this.publico);
     }
 
+    public boolean yaFinalizo() {
+        if (this.fechaFin == null) {
+            return false;
+        };
+        return this.fechaFin.isEqual(LocalDate.now()) || this.fechaFin.isBefore(LocalDate.now());
+    }
+
     public void hacerPublico() {
+        if (this.yaFinalizo()) {
+            throw new UnsupportedOperationException("El servicio ya finalizó por lo que no se pueden habilitar inscripciones.");
+        }
         this.inscripcionesAbiertas = true;
         this.setPublico(true);
         this.estado = EstadoServicio.Publicado;
@@ -378,6 +388,9 @@ public class Servicio {
 
     public boolean sePuedePublicar() {
         // SI ya es publico entonces no se puede volver a configurar la fecha inicio y eso
+        if (this.fechaFin != null) {
+            return false;
+        }
         if (this.isPublico()) {
             return false;
         }
@@ -509,6 +522,7 @@ public class Servicio {
         // Setteamos la fecha fin
         if (fechaFin != null && fechaFin.isBefore(LocalDate.now())) {
             this.estado = EstadoServicio.Finalizado;
+            this.inscripcionesAbiertas = false;
         }
     }
 

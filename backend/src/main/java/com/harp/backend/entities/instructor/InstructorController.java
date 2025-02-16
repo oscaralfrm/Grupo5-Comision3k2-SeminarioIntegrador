@@ -39,6 +39,12 @@ public class InstructorController {
         return ResponseEntity.ok(instructor);
     }
 
+    @GetMapping("/by-nombre-usuario")
+    public ResponseEntity<Instructor> getInstructorByNombreUsuario(@RequestParam String nombreUsuario) {
+        Instructor instructor = instructorService.findInstructorByNombreUsuario(nombreUsuario);
+        return ResponseEntity.ok(instructor);
+    }
+
     // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
     @GetMapping("/{idInstructor}/servicios")
     public ResponseEntity<List<Servicio>> traerServiciosDeInstructor(@PathVariable Long idInstructor) {

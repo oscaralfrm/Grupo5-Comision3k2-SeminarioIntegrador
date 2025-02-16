@@ -38,6 +38,11 @@ public class PerfilService implements IPerfilService {
     }
 
     @Override
+    public Perfil findPerfilByNombre(String nombre) {
+        return perfilRepository.findByNombre(nombre);
+    }
+
+    @Override
     public Perfil editPerfil(Perfil perfil) {
         return perfilRepository.save(perfil);
     }

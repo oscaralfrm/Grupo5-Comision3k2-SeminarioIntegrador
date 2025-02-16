@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IAlumnoRepository extends JpaRepository<Alumno, Long> {
-    public Alumno findAlumnoByInscripciones(Inscripcion inscripcion);
+    Alumno findAlumnoByInscripciones(Inscripcion inscripcion);
+    Alumno findByUsuarioNombreUsuario(String nombreUsuario);
 }

@@ -112,6 +112,7 @@ public class InscripcionController {
                                                      @PathVariable Long idServicio,
                                                      @RequestBody LocalDate fechaInicioActividad) {
         // REVISAR: Obtener el id del usuario de headers
+        System.out.println("fechaInicioActividad" + fechaInicioActividad);
         inscripcionService.aceptarInscripcion(idServicio, idInscripcion, fechaInicioActividad);
         return ResponseEntity.ok("Se aceptó la inscripción correctamente.");
     };

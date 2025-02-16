@@ -10,11 +10,12 @@ import java.util.Optional;
 
 @Repository
 public interface IUsuarioRepository extends JpaRepository<Usuario, Long> {
-    Optional<Usuario> findUsuarioByNombreUsuario(String nombreDeUsuario);
+    Usuario findByNombreUsuario(String nombreDeUsuario);
 
     boolean existsByEmail(String email);
 
     Usuario findByEmail(String email);
+    Usuario findByDni(String dni);
 
     @Query("SELECT u FROM Usuario u WHERE u.email = :email AND u.contrasena = :contrasena")
     Optional<Usuario> findByEmailAndContrasena(@Param("email") String email, @Param("contrasena") String contrasena);

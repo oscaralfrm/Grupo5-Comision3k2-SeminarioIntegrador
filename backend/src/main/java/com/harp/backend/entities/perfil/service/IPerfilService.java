@@ -11,6 +11,7 @@ public interface IPerfilService {
     Perfil savePerfil(Perfil perfil);
     void deletePerfil(Long idPerfil);
     Perfil findPerfil(Long idPerfil);
+    Perfil findPerfilByNombre(String nombre);
     Perfil editPerfil(Perfil perfil);
 
 }

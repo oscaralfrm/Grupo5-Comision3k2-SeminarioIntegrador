@@ -8,6 +8,7 @@ import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.service.IUsuarioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,18 +36,11 @@ public class InstructorService implements IInstructorService {
         return instructorRepository.findAll();
     }
 
-
+    @Transactional
     public Instructor createInstructor(InstructorDTO instructorDTO) {
         Instructor nuevoInstructor = instructorConverter.dtoToEntity(instructorDTO);
 
-        //Usuario
-        Usuario usuario = new Usuario(instructorDTO);
-
-        //Perfil al usuario
-        Perfil perfil = perfilService.findPerfil(2L);
-        usuario.setPerfiles(Set.of(perfil));
-
-        usuarioService.saveUsuario(usuario);
+        Usuario usuario = usuarioService.createUsuarioDeInstructor(instructorDTO);
         nuevoInstructor.setUsuario(usuario);
 
         return instructorRepository.save(nuevoInstructor);
@@ -62,6 +56,11 @@ public class InstructorService implements IInstructorService {
     @Override
     public Instructor findInstructor(Long idInstructor) {
         return instructorRepository.findById(idInstructor).orElseThrow(() -> new NoSuchElementFoundException("Instructor no encontrado"));
+    }
+
+    @Override
+    public Instructor findInstructorByNombreUsuario(String nombreUsuario) {
+        return instructorRepository.findByUsuarioNombreUsuario(nombreUsuario);
     }
 
 //    public Instructor findInstructorByIdUsuario(Long idUsuario) {

@@ -33,9 +33,6 @@ public class UsuarioController {
     private IUsuarioService usuarioService;
 
     @Autowired
-    private IPerfilService perfilService;
-
-    @Autowired
     private ISuspensionService suspensionService;
 
     @Autowired
@@ -54,29 +51,30 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
+    @GetMapping("/by")
+    public ResponseEntity getUserById(@RequestParam String nombreUsuario,
+                                      @RequestParam String email,
+                                      @RequestParam String dni) {
+        if (!nombreUsuario.isEmpty() && email.isEmpty() && dni.isEmpty() ) {
+            Usuario user = usuarioService.findUsuarioByNombreUsuario(nombreUsuario);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        } else if (!email.isEmpty() && nombreUsuario.isEmpty() && dni.isEmpty()) {
+            Usuario user = usuarioService.findUsuarioByEmail(nombreUsuario);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        } else if (!dni.isEmpty() && nombreUsuario.isEmpty() && email.isEmpty()) {
+            Usuario user = usuarioService.findUsuarioByDni(dni);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        }
+        return ResponseEntity.status(400).build();
+    }
+
     @PostMapping
     public ResponseEntity createUser(@RequestBody Usuario usuario) {
-
-        Set<Perfil> listaPerfiles = new HashSet<>();
-        Perfil perfilLeido;
-
-        // Encriptamos la contraseña...
-//        usuario.setContrasena(usuarioService.encriptPassword(usuario.getContrasena()));
-
-        // Recuperar la Permission/s por su ID
-        for (Perfil perfil : usuario.getPerfiles()){
-            perfilLeido = perfilService.findPerfil(perfil.getId());
-            listaPerfiles.add(perfilLeido);
-        }
-
-        if (!listaPerfiles.isEmpty()) {
-            usuario.setPerfiles(listaPerfiles);
-            usuario.setSuspensiones(new HashSet<>());
-
-            Usuario nuevoUsuario = usuarioService.saveUsuario(usuario);
+        Usuario nuevoUsuario = usuarioService.createUsuario(usuario);
+        if (nuevoUsuario != null) {
             return ResponseEntity.ok(nuevoUsuario);
         }
-        return null;
+        return ResponseEntity.status(400).build(); // Credenciales incorrectas
     }
 
     @PostMapping("/login")

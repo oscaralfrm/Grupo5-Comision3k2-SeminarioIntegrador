@@ -10,6 +10,7 @@ public interface IInstructorService {
     List<Instructor> getAllInstructores();
     void deleteInstructor(Long idInstructor);
     Instructor findInstructor(Long idInstructor);
+    Instructor findInstructorByNombreUsuario(String nombreUsuario);
     Instructor editInstructor(Long idInstructor, InstructorDTO instructorDTO);
     Instructor createInstructor(InstructorDTO instructorDTO);
     List<Servicio> findServiciosDeInstructor(Long idInstructor);

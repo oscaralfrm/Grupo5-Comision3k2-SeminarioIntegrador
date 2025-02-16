@@ -48,14 +48,7 @@ public class AlumnoService implements IAlumnoService {
     public Alumno createAlumno(AlumnoDTO alumnoDTO) {
         Alumno nuevoAlumno = new Alumno();
 
-        // Usuario
-        Usuario usuario = new Usuario(alumnoDTO);
-
-        //Perfil al usuario
-        Perfil perfil = perfilService.findPerfil(3L);
-        usuario.setPerfiles(Set.of(perfil));
-
-        usuarioService.saveUsuario(usuario);
+        Usuario usuario = usuarioService.createUsuarioDeAlumno(alumnoDTO);
         nuevoAlumno.setUsuario(usuario);
 
         return alumnoRepository.save(nuevoAlumno);
@@ -70,6 +63,11 @@ public class AlumnoService implements IAlumnoService {
     public Alumno findAlumno(Long idAlumno) {
         return alumnoRepository.findById(idAlumno)
                 .orElseThrow(() -> new NoSuchElementFoundException("Alumno no encontrado"));
+    }
+
+    @Override
+    public Alumno findAlumnoByNombreUsuario(String nombreUsuario) {
+        return alumnoRepository.findByUsuarioNombreUsuario(nombreUsuario);
     }
 
     public List<Alumno> getAlumnosInscriptosAServicio() {

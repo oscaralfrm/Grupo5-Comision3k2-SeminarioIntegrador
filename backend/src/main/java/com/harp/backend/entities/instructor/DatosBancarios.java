@@ -37,8 +37,8 @@ public class DatosBancarios {
 
     public boolean estanCompletos() {
 
-        return ( ! (alias.isBlank() || alias == null) && ! (cbu.isBlank() || cbu == null) &&
-                !(banco.isBlank() || banco == null) && ! (cuit.isBlank() || cuit == null));
+        return ( ! (alias == null || alias.isBlank()) && ! (cbu == null || cbu.isBlank()) &&
+                !(banco == null || banco.isBlank()) && ! (cuit == null || cuit.isBlank()));
     }
 
     public void completarDatos(DatosBancarios datosBancarios) {

@@ -47,6 +47,12 @@ public class AlumnoController {
         return ResponseEntity.status(HttpStatus.OK).body(alumno);
     }
 
+    @GetMapping("/by-nombre-usuario")
+    public ResponseEntity<Alumno> getAlumnoById(@RequestParam String nombreUsuario) {
+        Alumno alumno = alumnoService.findAlumnoByNombreUsuario(nombreUsuario);
+        return ResponseEntity.status(HttpStatus.OK).body(alumno);
+    }
+
     // Obtener las clases de un alumno por grupo id
     @GetMapping("/{idAlumno}/clases")
     public ResponseEntity<Map<Long, List<Clase>> > obtenerClasesDeAlumno(@PathVariable Long idAlumno,

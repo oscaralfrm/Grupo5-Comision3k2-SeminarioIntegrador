@@ -18,6 +18,7 @@ public interface IAlumnoService {
     Alumno createAlumno(AlumnoDTO alumnoDTO);
     void deleteAlumno(Long idAlumno);
     Alumno findAlumno(Long idAlumno);
+    Alumno findAlumnoByNombreUsuario(String nombreUsuario);
     Alumno editAlumno(Long idAlumno, AlumnoDTO alumnoDTO);
     List<Inscripcion> findInscripcionesDeAlumno(Long idAlumno);
     public List<Inscripcion> findInscripcionesVigentesDeAlumno(Long idAlumno);
