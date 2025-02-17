@@ -9,7 +9,7 @@ import { useParams } from "react-router-dom";
 import WelcomeBlock from "./BloqueBienvenida";
 
 const Dashboard = () => {
-  const [servicios, setServicios] = useState([]);
+  const [servicios, setServicios] = useState(null);
   const [filteredServicios, setFilteredServicios] = useState(servicios);
   const [selectedEstado, setSelectedEstado] = useState(""); // Estado para el filtro de estado
   const { idServicio } = useParams();
@@ -50,6 +50,8 @@ const Dashboard = () => {
       servicios.filter((servicio) => (estado ? (servicio.publico && estado == "Publicado" || !servicio.publico && estado == "No publicado") : true ))
     );
   };
+
+  if (servicios == null) return "Cargando...";
 
   return (
     <div >
