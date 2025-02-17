@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, ListGroup, Button, Image, Card } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { formatDistance } from "date-fns";
 import { es } from "date-fns/locale";
 import { FaCalendarAlt } from "react-icons/fa"; // Ícono de calendario
@@ -13,6 +13,7 @@ const calcularDiferenciaDeFechas = (fechaInicio, fechaFin) => {
 
 const InscripcionData = ({ inscripcionData }) => {
     const navigate = useNavigate();
+    const {idInstructor} = useParams();
     const { alumno, grupo, fechaSolicitud, fechaAceptacion, fechaFin } = inscripcionData;
 
     return (
@@ -37,7 +38,13 @@ const InscripcionData = ({ inscripcionData }) => {
 
                         {/* Datos del alumno */}
                         <Col xs={9} className="text-start">
-                            <h4 className="fw-bold text-dark mb-1">{alumno.nombreCompleto}</h4>
+                            <Link
+                                to={`/instructor/${idInstructor}/alumnos/${alumno?.usuario?.nombreUsuario}`}
+
+                                className="text-primary text-decoration-none fw-bold"
+                            >
+                                <h4 className="fw-bold text-dark mb-1">{alumno.nombreCompleto}</h4>
+                            </Link>
                             <p className="text-muted mb-1">{calcularEdad(alumno.usuario.fechaNacimiento)} años</p>
                             <p className="mb-1">{alumno.usuario.email}</p>
                         </Col>

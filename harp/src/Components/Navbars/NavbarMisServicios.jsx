@@ -6,12 +6,11 @@ import profileImg from "../../assets/profile.png"; // Ruta de la imagen de perfi
 import { FaExclamationCircle } from "react-icons/fa";
 import { tieneDatosBancariosCompletos } from "../../services/Instructor";
 
-export default function NavbarMisServicios() {
+export default function NavbarMisServicios({usuario}) {
   const navigate = useNavigate();
   const { idInstructor } = useParams();
   const location = useLocation();
 
-  const [instructor, setInstructor] = useState(null);
   const [tieneDatosCompletos, setTieneDatosCompletos] = useState(null);
 
   const esteInstructorTieneDatosCompletos = async () => {
@@ -122,7 +121,7 @@ export default function NavbarMisServicios() {
             >
               <div style={{ position: "relative" }}>
                 <img
-                  src={instructor?.usuario?.fotoPerfilURL || profileImg}
+                  src={usuario?.usuario?.fotoPerfilURL || profileImg}
                   alt="Profile"
                   style={{
                     width: "40px",

@@ -5,6 +5,7 @@ import { getServicioById } from "../../../../services/Servicio";
 const InfoCardAlumno = ({ serviceData, setServiceData }) => {
   const [showDetails, setShowDetails] = useState(true);
   const navigate = useNavigate();
+  const {idAlumno} = useParams();
 
   const toggleDetails = () => setShowDetails(!showDetails);
 
@@ -133,6 +134,20 @@ const InfoCardAlumno = ({ serviceData, setServiceData }) => {
       <button onClick={toggleDetails} style={buttonStyle}>
         {showDetails ? "Ocultar Detalles" : "Mostrar Detalles"}
       </button>
+      <button
+                type="button"
+                onClick={() => navigate(`/alumno/${idAlumno}/servicio/${serviceData?.id}/info-servicio`)}
+                style={{
+                  ...buttonStyle,
+                  backgroundColor: "white",
+                  color: "#4F46E5",
+                  borderColor: "#4F46E5",
+                  borderWidth: "2px",
+                  borderStyle: "solid",
+                }}
+              >
+                Ver más
+              </button>
 
       <style>
         {`

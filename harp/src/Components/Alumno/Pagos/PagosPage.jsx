@@ -27,10 +27,11 @@ const MisCuotas = () => {
                     inscripcion: inscripcion // Agregar el objeto inscripcion
                 }));
 
-                
-                    todasLasCuotas = [...todasLasCuotas, ...cuotasInscripcion];
+
+                    todasLasCuotas = [...todasLasCuotas, ...cuotasConInscripcion];
                 }
                 setCuotas(todasLasCuotas);
+                console.log("cuotas", todasLasCuotas);
             } catch (error) {
                 console.error("Error al obtener las cuotas del alumno:", error);
             }
@@ -48,7 +49,7 @@ const MisCuotas = () => {
             <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", padding: "20px" }}>
                 {cuotas.length > 0 ? (
                     cuotas.map((cuota) => (
-                        <CuotaCard key={cuota.id} cuota={cuota} idInscripcion={cuota.idInscripcion} idServicio={cuota.idServicio} fetchCuotas={() => {}} />
+                        <CuotaCard key={cuota.id} cuota={cuota} idInscripcion={cuota?.inscripcion?.id} idServicio={cuota?.inscripcion?.servicio?.id} fetchCuotas={() => {}} />
                     ))
                 ) : (
                     <p style={{ textAlign: "center", width: "100%" }}>No hay cuotas disponibles.</p>

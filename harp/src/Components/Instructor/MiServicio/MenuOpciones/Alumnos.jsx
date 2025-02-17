@@ -63,7 +63,7 @@ const Alumnos = () => {
   };
 
   const handleShowPayments = (inscripcion) => {
-    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/cobros?alumno=${encodeURIComponent(inscripcion.id)}`);
+    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/inscripciones/${inscripcion.id}`);
   };
 
   return (
@@ -255,7 +255,7 @@ const Alumnos = () => {
                         variant="primary"
                         onClick={() => handleShowPayments(inscripcion)}
                       >
-                        Pagos
+                        Ver más
                       </Button>
                     </div>
                   </Card.Body>
