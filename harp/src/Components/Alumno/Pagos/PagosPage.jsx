@@ -20,14 +20,18 @@ const MisCuotas = () => {
                         inscripcion.id
                     );
 
-                    const cuotasConInscripcion = cuotasInscripcion.map(cuota => ({
-                        ...cuota,
-                        inscripcion: inscripcion
-                    }));
-                    
+
+                      // Agregar el atributo inscripcion a cada cuota
+                const cuotasConInscripcion = cuotasInscripcion.map(cuota => ({
+                    ...cuota,
+                    inscripcion: inscripcion // Agregar el objeto inscripcion
+                }));
+
+
                     todasLasCuotas = [...todasLasCuotas, ...cuotasConInscripcion];
                 }
                 setCuotas(todasLasCuotas);
+                console.log("cuotas", todasLasCuotas);
             } catch (error) {
                 console.error("Error al obtener las cuotas del alumno:", error);
             }

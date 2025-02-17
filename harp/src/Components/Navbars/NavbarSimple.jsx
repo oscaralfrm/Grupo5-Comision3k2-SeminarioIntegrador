@@ -4,7 +4,7 @@ import { Navbar, Dropdown } from "react-bootstrap";
 import img from "../../assets/LogoHarp420.png"; // Ruta del logo
 import profileImg from "../../assets/profile.png"; // Ruta de la imagen de perfil
 
-export default function NavbarSimple() {
+export default function NavbarSimple({usuario}) {
   const navigate = useNavigate();
   const {idInstructor} = useParams();
   const location = useLocation();
@@ -106,7 +106,7 @@ export default function NavbarSimple() {
               }}
             >
               <img
-                src={profileImg}
+                src={usuario?.usuario?.fotoPerfilURL || profileImg}
                 alt="Profile"
                 style={{
                   width: "40px",

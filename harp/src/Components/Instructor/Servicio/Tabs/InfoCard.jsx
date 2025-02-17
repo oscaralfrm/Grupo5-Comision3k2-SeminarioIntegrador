@@ -13,15 +13,20 @@ export default function ResumenServicio({ formData }) {
 
    // Función para determinar la modalidad de clases
    const determinarModalidad = (modalidadClases) => {
-    if (modalidadClases.includes("virtual") && modalidadClases.includes("presencial")) {
-      return "Híbrida";
-    } else if (modalidadClases.includes("virtual")) {
-      return "Virtual";
-    } else if (modalidadClases.includes("presencial")) {
-      return "Presencial";
+    if (Array.isArray(modalidadClases)) {
+      if (modalidadClases.includes("virtual") && modalidadClases.includes("presencial")) {
+        return "Híbrida";
+      } else if (modalidadClases.includes("virtual")) {
+        return "Virtual";
+      } else if (modalidadClases.includes("presencial")) {
+        return "Presencial";
+      } else {
+        return "Sin definir";
+      }
     } else {
-      return "Sin definir";
+        return modalidadClases;
     }
+   
   };
 
   // Vista previa del logo

@@ -282,3 +282,14 @@ export const obtenerInstructorDeServicio = async (idServicio) => {
     throw error;
   }
 };
+
+export const tieneServicioConEsteNombre = async (idInstructor, nombreServicio) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/${idInstructor}/by-nombre?nombre=${nombreServicio}`);
+    console.log("nombre usado", response);
+    return response.data;
+  } catch (error) {
+    console.error(`Error buscando nombre usado por instructor`, error);
+    throw error;
+  }
+};

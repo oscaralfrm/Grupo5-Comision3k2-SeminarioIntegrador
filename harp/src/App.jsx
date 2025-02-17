@@ -34,6 +34,7 @@ import ReseniasAlumno from "./Components/Alumno/MenuOpciones/ReseniasAlumno.jsx"
 import DescubrirServicios from "./Components/Alumno/DescubrirServicios/DescubrirServicios.jsx";
 import ResumenUsuario from "./Components/VerPerfil/ResumenUsuario/ResumenUsuario.jsx";
 import ResumenInscripcion from "./Components/Instructor/ResumenInscripcion/ResumenInscripcion.jsx";
+import ServiciosFavoritos from "./Components/Alumno/ServiciosFavoritos/ServiciosFavoritos.jsx";
 
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
@@ -117,7 +118,7 @@ function App() {
           />
 
           <Route
-            path="instructor/:idInstructor/inscripciones/:idInscripcion"
+            path="instructor/:idInstructor/servicio/:idServicio/inscripciones/:idInscripcion"
             element={<><AppNavbar /><ResumenInscripcion /></>}
           />
 
@@ -165,6 +166,11 @@ function App() {
           <Route
             path="alumno/:idAlumno/perfil/ver-perfil"
             element={<><AppNavbar /><ProfileInfo /></>}
+          />
+
+          <Route
+            path="alumno/:idAlumno/servicios-favoritos"
+            element={<><AppNavbar /><ServiciosFavoritos /></>}
           />
 
 

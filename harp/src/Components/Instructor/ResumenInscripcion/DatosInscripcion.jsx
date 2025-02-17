@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col, ListGroup, Button, Image, Card } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { formatDistance } from "date-fns";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { formatDistance , isEqual, isSameDay, parse} from "date-fns";
 import { es } from "date-fns/locale";
 import { FaCalendarAlt } from "react-icons/fa"; // Ícono de calendario
 import { calcularEdad } from "../MiServicio/MenuOpciones/Dashboard/Inscripciones";
@@ -11,9 +11,15 @@ const calcularDiferenciaDeFechas = (fechaInicio, fechaFin) => {
     return formatDistance(new Date(fechaInicio), new Date(fechaFin), { locale: es });
 };
 
+const calcularFechasIgualAHoy = (fecha) => {
+    const fechaLocal = parse(fecha, "yyyy-MM-dd", new Date());
+    return isSameDay(fechaLocal, new Date());
+};
+
 const InscripcionData = ({ inscripcionData }) => {
     const navigate = useNavigate();
-    const { alumno, grupo, fechaSolicitud, fechaAceptacion, fechaFin } = inscripcionData;
+    const {idInstructor} = useParams();
+    const { alumno, grupo, fechaSolicitud, fechaAceptacion, fechaFin, fechaInicio } = inscripcionData;
 
     return (
         <div className="card shadow-lg p-4 mb-4 position-relative">
@@ -37,7 +43,13 @@ const InscripcionData = ({ inscripcionData }) => {
 
                         {/* Datos del alumno */}
                         <Col xs={9} className="text-start">
-                            <h4 className="fw-bold text-dark mb-1">{alumno.nombreCompleto}</h4>
+                            <Link
+                                to={`/instructor/${idInstructor}/alumnos/${alumno?.usuario?.nombreUsuario}`}
+
+                                className="text-primary text-decoration-none fw-bold"
+                            >
+                                <h4 className="fw-bold text-dark mb-1">{alumno.nombreCompleto}</h4>
+                            </Link>
                             <p className="text-muted mb-1">{calcularEdad(alumno.usuario.fechaNacimiento)} años</p>
                             <p className="mb-1">{alumno.usuario.email}</p>
                         </Col>
@@ -79,12 +91,20 @@ const InscripcionData = ({ inscripcionData }) => {
                 <Col>
                     <h5 className="text-primary">Fechas</h5>
                     <ListGroup variant="flush">
-                        <ListGroup.Item>
-                            <strong>Inscripto hace:</strong> {calcularDiferenciaDeFechas(fechaSolicitud, new Date())}
-                        </ListGroup.Item>
-                        <ListGroup.Item>
+                            {calcularFechasIgualAHoy(fechaAceptacion, new Date())
+                                ? <ListGroup.Item> <strong>Inscripto desde:</strong> Hoy </ListGroup.Item>
+                                : <ListGroup.Item> <strong>Inscripto hace:</strong> {calcularDiferenciaDeFechas(fechaAceptacion, new Date())} </ListGroup.Item>
+                            }
+                        {fechaInicio != fechaAceptacion &&
+                              <ListGroup.Item>
+                              <strong>Inicio de actividad:</strong> {fechaInicio}
+                          </ListGroup.Item>
+                        }
+                        {fechaAceptacion &&
+                            <ListGroup.Item>
                             <strong>Solicitud aceptada:</strong> {calcularDiferenciaDeFechas(fechaSolicitud, fechaAceptacion)} después
                         </ListGroup.Item>
+                        }
                         {fechaFin && (
                             <ListGroup.Item>
                                 <strong>Solicitud finalizada:</strong> {calcularDiferenciaDeFechas(fechaSolicitud, fechaFin)} después

@@ -1,8 +1,13 @@
 // import React from "react";
+import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
+import { tieneServicioConEsteNombre } from "../../../../services/Instructor";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 export default function General({ register, errors, categorias, goToNextTab, logoPreview, setLogoPreview }) {
-  
+  const [nombreServicio, setNombreServicio] = useState("");
+  const {idInstructor} = useParams();
+    const [nombreServicioDisponible, setNombreServicioDisponible] = useState(null);
   // Desestructuramos el registro para el input del logo para agregar un onChange personalizado
   const { ref, onChange, ...rest } = register("logo");
 
@@ -16,6 +21,26 @@ export default function General({ register, errors, categorias, goToNextTab, log
       setLogoPreview(previewURL);
     }
   };
+
+  // Validar si el nombre de usuario está disponible (con debounce)
+    useEffect(() => {
+      if (!nombreServicio) {
+        setNombreServicioDisponible(null);
+        return;
+      }
+  
+      const timer = setTimeout(async () => {
+        try {
+          const nombreUsado = await tieneServicioConEsteNombre(idInstructor, nombreServicio);
+          setNombreServicioDisponible(!nombreUsado);
+        } catch (error) {
+          console.error("Error validando el nombre servicio", error);
+          setNombreServicioDisponible(null);
+        }
+      }, 500); // Espera 500ms antes de llamar al servicio
+  
+      return () => clearTimeout(timer);
+    }, [nombreServicio]);
 
   return (
     <Form>
@@ -45,9 +70,24 @@ export default function General({ register, errors, categorias, goToNextTab, log
         </Form.Label>
         <Form.Control
           type="text"
-          {...register("nombreServicio", { required: "El nombre es obligatorio" })}
+          {...register("nombreServicio", 
+            { required: "El nombre es obligatorio",
+              onChange: (e) => {
+                setNombreServicio(e.target.value);
+              },
+             })}
           isInvalid={!!errors.nombreServicio}
         />
+        {/* Mensaje de validación */}
+        {nombreServicio && (
+            <small className={`mt-1 ${nombreServicioDisponible === null ? "text-muted" : nombreServicioDisponible ? "text-success" : "text-danger"}`}>
+              {nombreServicio === null
+                ? "Verificando disponibilidad..."
+                : nombreServicio
+                ? "Nombre de servicio disponible"
+                : "Nombre de servicio en uso"}
+            </small>
+          )}
         <Form.Control.Feedback type="invalid">
           {errors.nombreServicio?.message}
         </Form.Control.Feedback>

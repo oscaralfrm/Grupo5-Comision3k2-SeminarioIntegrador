@@ -98,17 +98,6 @@ export default function Modalidad({
         >
           &#8592;
         </span>
-        { nombreBoton == "Registrar" &&  
-              <Button
-              type="submit"
-              variant="primary"
-              className="position-absolute bottom-0 end-0 me-2 mb-2 btn-sm"
-              disabled={!isValid} // Disable the button if the form is not valid
-              >
-              {nombreBoton}
-              </Button>
-        }
-
       </div>
     </>
   );

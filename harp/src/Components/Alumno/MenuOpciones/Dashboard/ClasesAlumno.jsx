@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getClasesFuturasDeGrupo, getClasesDeGrupo, getGruposDeServicio } from "../../../../services/Grupo";
 import { useNavigate } from "react-router-dom";
+import { getResumenAsistencias } from "../../../../services/Alumno";
 
 const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
   const [classes, setClasses] = useState([]); // Clases totales
@@ -33,9 +34,10 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
       clasesFuturas.push(...futurasClases);
 
       // Calcular clases completadas
-      const hoy = new Date();
-      const completadas = clasesTotales.filter(cls => new Date(cls.fecha) < hoy).length;
-      setClasesCompletadas(completadas);
+      //const hoy = new Date();
+      //const completadas = clasesTotales.filter(cls => new Date(cls.fecha) < hoy).length;
+      const resumen = await getResumenAsistencias(idAlumno, grupoId);
+      setClasesCompletadas(resumen.cantAsistencias || 0);
 
       // Ordenar clases futuras de más cercana a más lejana
       const clasesFuturasOrdenadas = clasesFuturas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));

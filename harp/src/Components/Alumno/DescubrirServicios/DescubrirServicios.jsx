@@ -3,11 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Card, Button, Container, Row, Col, Spinner } from "react-bootstrap";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { generarLinkMaps, getAllServiciosPublicosSinAlumnoOInstructor } from "../../../services/Servicio";
-import { getInscripcionesDeAlumno } from "../../../services/Alumno";
+import { getInscripcionesDeAlumno, getServiciosFavoritosDeAlumno } from "../../../services/Alumno";
 import { armarStringPrecioYFrecuenciaCobro } from "../../../services/frecuenciaPago";
 import placeholderImage from "../../../assets/placeholderForServices.png";
 import { getAllCategorias } from "../../../services/Categoria";
 import FiltrosPanel from "./FiltrosDescubrir";
+import FavoriteButton from "./AgregarAFavs";
 
 // Hook de debounce
 const useDebounce = (value, delay) => {
@@ -29,6 +30,8 @@ const DescubrirServicios = () => {
   const [page, setPage] = useState(0);
   const [size] = useState(20);
   const [totalPages, setTotalPages] = useState(0);
+
+  const [serviciosFavoritos, setServiciosFavoritos] = useState([]);
 
   // Estado para mantener los filtros
   const [filters, setFilters] = useState({
@@ -152,7 +155,7 @@ const DescubrirServicios = () => {
           diasSemanales: filters.diasSemanales,
           turnos: filters.turnos,
           idAlumno,
-          idInstructor, 
+          idInstructor,
           page,
           size
         });
@@ -211,6 +214,19 @@ const DescubrirServicios = () => {
     };
     fetchCategorias();
   }, []);
+
+    // useEffect para cargar categorías
+    useEffect(() => {
+      const fetchServiciosFavoritos = async () => {
+        try {
+          const response = await getServiciosFavoritosDeAlumno(idAlumno);
+          setServiciosFavoritos(response);
+        } catch (error) {
+          console.error("Error al obtener categorías:", error);
+        }
+      };
+      fetchServiciosFavoritos();
+    }, [idAlumno]);
 
   // Para el panel de filtros:
   // En pantallas grandes, cuando abierto: ancho = 40vw; colapsado: 80px.
@@ -323,9 +339,12 @@ const DescubrirServicios = () => {
                         backgroundColor: "white",
                         borderRadius: "20px",
                         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
-                        minHeight: "200px"
+                        minHeight: "200px",
+                        position: "relative", // Asegura que el botón se posicione respecto a la card
                       }}
                     >
+
+
                       <Card.Header
                         style={{
                           textAlign: "center",
@@ -339,6 +358,15 @@ const DescubrirServicios = () => {
                         }}
                       >
                         {servicio.nombre}
+                        {/* Botón de Favoritos en la esquina superior derecha */}
+                        {idAlumno &&
+                          <div style={{ position: "absolute", top: "10px", right: "10px", zIndex: 10 }}>
+                          <FavoriteButton
+                           servicioId={servicio.id}
+                           serviciosFavoritos={serviciosFavoritos}
+                          />
+                        </div>
+                        }
                       </Card.Header>
                       <Card.Body>
                         <Row className="g-0 align-items-center">
@@ -394,9 +422,9 @@ const DescubrirServicios = () => {
                                 size="sm"
                                 style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5" }}
                                 onClick={() =>
-                                  idAlumno ? 
-                                  navigate(`/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`)
-                                  : navigate(`/instructor/${idInstructor}/servicio/${servicio.id}/info-servicio`)
+                                  idAlumno ?
+                                    navigate(`/alumno/${idAlumno}/servicio/${servicio.id}/info-servicio`)
+                                    : navigate(`/instructor/${idInstructor}/servicio/${servicio.id}/info-servicio`)
                                 }
                               >
                                 Ver más

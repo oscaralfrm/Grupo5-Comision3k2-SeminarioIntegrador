@@ -106,7 +106,7 @@ function MontosServicio({ sePuedeEditar }) {
       <br />
       <p className="mb-1 ">
         <strong>Frecuencia de cobro:</strong>{" "}
-        {armarStringFrecuenciaCobro(serviceData?.tipoFrecuenciaPago.cantCiclo, serviceData?.tipoFrecuenciaPago.unidadCiclo)}
+        {armarStringFrecuenciaCobro(serviceData?.tipoFrecuenciaPago?.cantCiclo, serviceData?.tipoFrecuenciaPago?.unidadCiclo)}
       </p>
       {
         serviceData?.diaLimitePago != 0 &&

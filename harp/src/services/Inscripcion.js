@@ -28,6 +28,7 @@ export const getInscripcionesDeServicio = async (idServicio, vigentes, pendiente
         const response = await axios.get(`${API_URL}/${idServicio}/inscripciones`, {
             params: { vigentes, pendientes },
         });
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error al obtener inscripciones del servicio', error);
