@@ -50,7 +50,7 @@ export const armarStringFrecuenciaCobro = (cantCiclo, unidadCiclo) => {
 
   let frecuencia = "Sin definir";
 
-  if (cantCiclo != null && unidadCiclo != null) {
+  if (cantCiclo != null && unidadCiclo != null && cantCiclo != undefined && unidadCiclo != undefined) {
     const { singular, plural, especial } = unidades[unidadCiclo];
 
     frecuencia = cantCiclo === 1 ? especial : `Cada ${cantCiclo} ${plural}`;
@@ -63,7 +63,8 @@ export const armarStringFrecuenciaCobro = (cantCiclo, unidadCiclo) => {
 export const armarStringDiaLimite = (diaLimite, tipoCiclo, cantCiclo, unidadCiclo) => {
   const unidades = {
     MONTHS: { singular: "mes", plural: "meses", especial: "Mensual" },
-    WEEKS: { singular: "semana", plural: "semanas", especial: "Semanal" }
+    WEEKS: { singular: "semana", plural: "semanas", especial: "Semanal" },
+    DAYS:  {singular: "día", plural: "días", especial: "Diario"}
   };
 
   let frecuencia = "Sin definir";

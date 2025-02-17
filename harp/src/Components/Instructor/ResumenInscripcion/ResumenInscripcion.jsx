@@ -280,6 +280,25 @@ const ResumenInscripcion = () => {
                                 </ListGroup>
                             </div>
                         }
+
+                        {/* Acciones */}
+                        <div className="card shadow-lg p-4 mb-4">
+                            <h3 style={{ color: "#6a5acd" }}>Acciones</h3>
+                            <ListGroup variant="flush">
+                                <ListGroup.Item
+                                    action
+                                    onClick={null}
+                                >
+                                    Finalizar Inscripción
+                                </ListGroup.Item>
+                                <ListGroup.Item action onClick={() => navigate("/")}>
+                                    Cambiar de Grupo
+                                </ListGroup.Item>
+                                <ListGroup.Item action onClick={() => navigate("/dar-de-baja")}>
+                                    Reportar alumno
+                                </ListGroup.Item>
+                            </ListGroup>
+                        </div>
                     </Col>
                 </Row>
             )}

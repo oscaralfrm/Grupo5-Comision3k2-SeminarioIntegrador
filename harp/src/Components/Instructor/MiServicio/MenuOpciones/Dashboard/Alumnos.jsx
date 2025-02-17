@@ -124,7 +124,7 @@ const StudentsCard = () => {
         inscripciones.map((inscripcion) => (
           <Link
             key={inscripcion.id}
-            to={`/instructor/${idInstructor}/inscripciones/${inscripcion.id}`} // Corregido para que funcione la ruta dinámica
+            to={`/instructor/${idInstructor}/servicio/${inscripcion.servicio.id}/inscripciones/${inscripcion.id}`} // Corregido para que funcione la ruta dinámica
             style={{
               display: "flex",
               justifyContent: "space-between",

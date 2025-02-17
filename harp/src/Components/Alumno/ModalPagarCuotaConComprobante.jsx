@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { pagarCuotaConTransferenciaPorAlumno } from "../../services/Cuota";
+import { obtenerInstructorDeServicio } from "../../services/Instructor";
 
 const ModalPagarCuotaConComprobante = ({
   showAddPayment,
@@ -15,6 +16,7 @@ const ModalPagarCuotaConComprobante = ({
   const [paymentDate, setPaymentDate] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const { idInscripcion } = useParams();
+  const [datosBancarios, setDatosBancarios] = useState(null);
 
   const handleSavePayment = async () => {
     try {
@@ -32,6 +34,18 @@ const ModalPagarCuotaConComprobante = ({
     }
     handleCloseAddPayment();
   };
+
+  useEffect(() => {
+    const fetchDatosBancarios = async () => {
+      try {
+        const instructor = await obtenerInstructorDeServicio(idServicio);
+        setDatosBancarios(instructor?.datosBancarios); 
+      } catch (error) {
+        console.error("Error al obtener instructor:", error);
+      }
+    };
+    fetchDatosBancarios();
+  }, [selectedCuota, idServicio]);
 
   return (
     <Modal show={showAddPayment} onHide={handleCloseAddPayment} centered>
@@ -73,19 +87,16 @@ const ModalPagarCuotaConComprobante = ({
           <div className="mt-4 p-3 border rounded">
             <h5>Datos Bancarios para Transferencia</h5>
             <p>
-              <strong>Banco:</strong> Banco XYZ
+              <strong>Banco:</strong> {datosBancarios?.banco}
             </p>
             <p>
-              <strong>Número de Cuenta:</strong> 1234567890
+              <strong>Alias:</strong> {datosBancarios?.alias}
             </p>
             <p>
-              <strong>CLABE:</strong> 012345678901234567
+              <strong>CBU:</strong> {datosBancarios?.cbu}
             </p>
             <p>
-              <strong>Beneficiario:</strong> Empresa ABC S.A.
-            </p>
-            <p>
-              <strong>Referencia:</strong> Incluir número de cuota o similar
+              <strong>CUIT:</strong> {datosBancarios?.cuit}
             </p>
           </div>
         )}

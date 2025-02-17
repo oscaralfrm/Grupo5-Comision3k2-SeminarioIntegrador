@@ -22,7 +22,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
 
   const handleMoreInfo = (servicioId) => {
     navigate(
-      `/instructor/${idInstructor}/servicio/${servicioId}/info-servicio`
+      `/instructor/${idInstructor}/servicio/${servicioId}/configurar`
     );
   };
 

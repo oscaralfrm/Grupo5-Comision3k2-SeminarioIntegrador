@@ -27,6 +27,7 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
     const closeDetails = () => setselectedInscripcion(null);
 
     const handleGoToService = (inscripcion) => {
+        console.log("Inscripcion", inscripcion);
         if (inscripcion.estado == "Finalizada") {
             if (inscripcion.servicio.publico) {
                 navigate(`/alumno/${idAlumno}/servicio/${inscripcion.servicio.id}/info-servicio`);

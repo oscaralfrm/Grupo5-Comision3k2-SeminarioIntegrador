@@ -44,6 +44,8 @@ const InfoServicioPage = () => {
       const sePuede = await sePuedeServicio(idServicio);
       console.log("se puede", sePuede);
       setServicioSePuede(sePuede);
+      console.log("servicio", data);
+      console.log("servicio", serviceData);
 
       const gruposData = await getGruposDeServicio(idServicio);
       setGrupos(gruposData);
@@ -107,6 +109,8 @@ const InfoServicioPage = () => {
     padding: "calc(0.5rem + 0.5vw) calc(1rem + 0.5vw)",
     minWidth: "100px"
   };
+
+  if (serviceData == null) return "Cargando servicio..."
 
   return (
     <div className="container mt-4" style={containerStyle}>

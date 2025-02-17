@@ -77,6 +77,13 @@ export default function ServicioForm() {
   }
 
   const onSubmit = async (data) => {
+    console.log("isValid:", isValid); // Agregar esta línea
+    console.log("errors:", errors); // Agregar esta línea
+    if (!isValid) {
+      const errorMessages = Object.values(errors).map((error) => error.message);
+      alert(`El formulario no es válido:\n${errorMessages.join("\n")}`);
+      return;
+    }
     console.log(data.logo);
     console.log(data.logo[0]);
     const ciclo = obtenerValoresCiclo(data.frecuenciaCuotas, data.duracionCuotasPersonalizada);
@@ -116,7 +123,7 @@ export default function ServicioForm() {
       setShowSuccessModal(true);
 
       navigate(
-        `/instructor/${idInstructor}/servicio/${response.id}/info-servicio`,
+        `/instructor/${idInstructor}/servicio/${response.id}/configurar`,
         { state: { from: window.location.pathname } }
       );
     } catch (error) {
@@ -137,7 +144,7 @@ export default function ServicioForm() {
 
   const handleCancel = () => {
     navigate(-1, { state: { from: window.location.pathname } });
-};
+  };
 
   return (
     <div
@@ -209,9 +216,20 @@ export default function ServicioForm() {
                 />
               </Tab>
             </Tabs>
-            <Button variant="secondary" onClick={handleCancel}>
-                                Cancelar
-                            </Button>
+            <div className="d-flex justify-content-end">
+              <Button variant="secondary" onClick={handleCancel}>
+                Cancelar
+              </Button>
+
+              <Button
+                type="submit"
+                variant="primary"
+                style={{ marginLeft: "2vh" }}
+              >
+                Registrar
+              </Button>
+            </div>
+
           </form>
         </div>
       </div>
