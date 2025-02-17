@@ -69,6 +69,7 @@ export const rechazarPagoCuotaConTrasnferencia = async (idServicio, idInscripcio
 export const obtenerCuotasDeInscripcion = async (idServicio, idInscripcion) => {
   try {
     const response = await axios.get(`${baseUrl}/${idServicio}/inscripciones/${idInscripcion}/cuotas`);
+    console.log(response.data);
     return response.data; // Devuelve las cuotas de la inscripción
   } catch (error) {
     console.error("Error al obtener las cuotas de la inscripción:", error.response?.data?.message || error.message);

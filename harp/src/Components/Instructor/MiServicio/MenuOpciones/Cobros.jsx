@@ -4,7 +4,7 @@ import { format, parseISO } from "date-fns";
 import { obtenerCuotasDeInscripcion, rechazarPagoCuotaConTrasnferencia } from "../../../../services/Cuota.js";
 import { useParams } from "react-router-dom";
 import { getGruposDeServicio } from "../../../../services/Grupo.js";
-import { definirSiServicioSePuedeActualizarPrecio, getMontoActualGrupoDeHistorial } from "../../../../services/HistorialMontoCuota.js";
+import { definirSiServicioSePuedeActualizarPrecio } from "../../../../services/HistorialMontoCuota.js";
 import { getInscripcionesDeServicio, traerUnaInscripcion } from "../../../../services/Inscripcion.js";
 import ActualizarMontoModal from "./ActualizarMonto.jsx";
 import HistorialPagoModal from "./HistorialPago.jsx";
@@ -23,7 +23,6 @@ const Cobros = ({ id }) => {
   const [studentFilter, setStudentFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
   const [showAddPayment, setShowAddPayment] = useState(false);
-  const [monto, setMonto] = useState([]);
   const [grupos, setGrupos] = useState([]);
   const [inscripciones, setInscripciones] = useState([]);
   const [showMontoModal, setShowMontoModal] = useState(false);
@@ -45,9 +44,11 @@ const Cobros = ({ id }) => {
         if (idInscripcionUrl) {
           data = [await traerUnaInscripcion(idInscripcionUrl)];
         } else {
+          console.log("id servicio", idServicio, "inscripcion url", idInscripcionUrl);
           data = await getInscripcionesDeServicio(idServicio, true, false);
         }
         setInscripciones(data);
+        console.log("Inscripciones", inscripciones);
       } catch (error) {
         console.error("Error al cargar inscripciones:", error);
       }
@@ -69,35 +70,6 @@ const Cobros = ({ id }) => {
     fetchGrupos();
   }, [idServicio]);
 
-  // Cargar montos de los grupos
-  useEffect(() => {
-    const fetchMontos = async () => {
-      try {
-        if (!grupos || grupos.length === 0) return;
-
-        const montos = await Promise.all(
-          grupos.map(async (grupo) => {
-            try {
-              const monto = await getMontoActualGrupoDeHistorial(grupo?.historialMontos);
-              console.log(`Precio del grupo ${grupo.id}:`, monto); // Depuración
-              return { idGrupo: grupo.id, nombreGrupo: grupo.nombre, monto };
-            } catch (error) {
-              console.error(`Error al obtener el monto del grupo ${grupo.id}:`, error);
-              return null;
-            }
-          })
-        );
-
-        console.log("Montos cargados:", montos); // Depuración
-        setMonto(montos.filter(Boolean));
-      } catch (error) {
-        console.error("Error al traer los montos de los grupos:", error);
-      }
-    };
-
-    fetchMontos();
-  }, [idServicio, grupos]);
-
   // Obtener cuotas
   const fetchCuotas = async () => {
     try {
@@ -109,15 +81,13 @@ const Cobros = ({ id }) => {
           try {
             const cuotas = await obtenerCuotasDeInscripcion(idServicio, id);
             console.log("cuotas", cuotas, "inscripcion", id);
-            const montoGrupo = monto.find((m) => m.idGrupo === grupo.id)?.monto || 0;
 
             return [
               { ...alumno, nombreGrupo: grupo ? grupo.nombre : "Sin Grupo", idGrupo: grupo.id },
               cuotas.map((cuota) => ({
                 ...cuota,
                 idInscripcion: id,
-                cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
-                montoGrupo, // Agregamos el monto del grupo aquí
+                cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null)
               })),
             ];
           } catch (error) {
@@ -135,7 +105,7 @@ const Cobros = ({ id }) => {
 
   useEffect(() => {
     fetchCuotas();
-  }, [inscripciones, idServicio, monto]);
+  }, [inscripciones, idServicio]);
 
   // Filtros de cuotas
   const filteredCuotas = cuotas.filter(([student, cuotasStudent]) =>
@@ -304,11 +274,6 @@ const Cobros = ({ id }) => {
           <tbody>
             {filteredCuotas.map(([student, cuotasStudent]) =>
               cuotasStudent.map((cuota) => {
-                const montoGrupo = monto.find((m) => m.idGrupo === student.idGrupo)?.monto || 0;
-                const montoValor = typeof montoGrupo === 'object' ? montoGrupo.monto : montoGrupo; // Extraer el valor correcto
-
-                console.log(`Monto del grupo para el alumno ${student.usuario.nombre}:`, montoValor); // Depuración
-
                 return (
                   <tr key={cuota.id}>
                     <td>
@@ -339,7 +304,7 @@ const Cobros = ({ id }) => {
                      }
                       
                     </td>
-                    <td>${montoValor}</td> {/* Mostrar el monto del grupo */}
+                    <td>${cuota.montoServicio.monto}</td> {/* Mostrar el monto del grupo */}
                     <td>${cuota.recargo || 0}</td>
                     <td>
                       {cuota.pago?.metodoPago.nombre || "N/A"}
@@ -408,9 +373,7 @@ const Cobros = ({ id }) => {
       <ActualizarMontoModal
         show={showMontoModal}
         onClose={() => setShowMontoModal(false)}
-        monto={monto}
         grupos={grupos}
-        onSave={(nuevoMonto) => setMonto((prev) => [...prev, ...nuevoMonto])}
         idServicio={idServicio}
       />
       <HistorialPagoModal

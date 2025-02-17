@@ -6,7 +6,7 @@ import { agregarServicioFavoritoAAlumno, quitarServicioFavoritoDeAlumno } from "
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeartBroken } from "@fortawesome/free-solid-svg-icons";
 
-const FavoriteButton = ({ servicioId, serviciosFavoritos }) => {
+const FavoriteButton = ({ servicioId, serviciosFavoritos, setServiciosFavoritos }) => {
     const [hovered, setHovered] = useState(false);
     const { idAlumno } = useParams();
     const [agregar, setAgregar] = useState();
@@ -25,12 +25,13 @@ const FavoriteButton = ({ servicioId, serviciosFavoritos }) => {
     const handleClick = async () => {
         if (agregar) {
             await agregarServicioFavoritoAAlumno(idAlumno, servicioId);
-            alert("Se ha agregado el servicio a tus favoritos.")
             setAgregar(false);    
         } else {
             await quitarServicioFavoritoDeAlumno(idAlumno, servicioId);
-            alert("Se ha quitado el servicio de tus favoritos.")
             setAgregar(true);    
+            setServiciosFavoritos(prevFavs =>
+                prevFavs.filter(servicio => servicio.id !== servicioId)
+              );
         }
     };
 
