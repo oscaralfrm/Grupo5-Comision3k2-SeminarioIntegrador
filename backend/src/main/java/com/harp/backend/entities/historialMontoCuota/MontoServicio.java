@@ -71,18 +71,18 @@ public class MontoServicio {
      public void setFechaInicio(LocalDate fechaInicio) {
           // Si se esta modificando, no creando (fechaInicio != null)
           // Solo se pueden modificar estos si la fecha actual es menor a la fecha inicio
-          if (this.fechaInicio != null && ! this.esMontoProgramadoFuturo()) {
-               throw new UnsupportedOperationException("La fecha inicio ya no puede ser modificada");
-          }
+//          if (this.fechaInicio != null && ! this.esMontoProgramadoFuturo()) {
+//               throw new UnsupportedOperationException("La fecha inicio ya no puede ser modificada");
+//          }
           this.fechaInicio = fechaInicio;
      }
 
      public void setMonto(double monto) {
           // Solo se pueden modificar estos si la fecha actual es menor a la fecha inicio
           // Si es el primer monto
-          if (! this.puedeSerModificado()) {
-               throw new UnsupportedOperationException("El monto ya no puede ser modificado");
-          }
+//          if (! this.puedeSerModificado()) {
+//               throw new UnsupportedOperationException("El monto ya no puede ser modificado");
+//          }
           this.monto = monto;
      }
 

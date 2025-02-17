@@ -340,6 +340,21 @@ public class GrupoService implements IGrupoService {
         }
     }
 
+    public MontoServicio editMontoGrupoProgramado(Long idServicio, Long idGrupo, MontoServicioDTO montoServicioDTO) {
+        Servicio servicio = servicioService.findServicio(idServicio);
+        Grupo grupo = this.findGrupo(idGrupo);
+        if (! grupo.tieneMontoProgramadoFuturo()) {
+            throw new UnsupportedOperationException("El grupo no tiene un monto programado a futuro para editar");
+        }
+        MontoServicio montoProgramadoActual = grupo.obtenerMontoFuturo();
+
+        // Si el servicio no tiene alumnos el monto puede modificarse siempre
+        if (montoProgramadoActual.puedeSerModificado() || ! servicio.tieneAlumnosConInscripcionesActivas()) {
+             return montoService.editMontoServicio(montoProgramadoActual.getId(), montoServicioDTO);
+        } else {
+            throw new UnsupportedOperationException("El monto ya no puede ser modificado.");
+        }
+    }
 
     public Set<MontoServicio> obtenerHistorialMontosDeGrupo(Long idGrupo) {
         Grupo grupo = this.findGrupo(idGrupo);

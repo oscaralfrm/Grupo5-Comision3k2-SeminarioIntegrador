@@ -129,6 +129,13 @@ public class GrupoController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Se han actualizado los montos de todos los grupos.");
     }
 
+        // EDITAR: se puede editar solo si es programado a futuro
+    @PutMapping("/{idServicio}/grupos/{idGrupo}/monto-programado")
+    public ResponseEntity<MontoServicio>  editarMontoGrupoProgramado(@PathVariable Long idServicio, @PathVariable Long idGrupo, @RequestBody MontoServicioDTO montoServicioDTO) {
+        MontoServicio montoEditado = grupoService.editMontoGrupoProgramado(idServicio, idGrupo, montoServicioDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(montoEditado);
+    }
+
     @GetMapping("/{idServicio}/grupos/{idGrupo}/monto-actual")
     public ResponseEntity<MontoServicio> traerMontosActualesDeServicio(@PathVariable @Min(1) Long idGrupo) {
         MontoServicio montoGrupo = grupoService.obtenerMontoActualGrupo(idGrupo);

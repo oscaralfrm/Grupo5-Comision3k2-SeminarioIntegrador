@@ -54,10 +54,10 @@ public class MontoServicioController {
         return ResponseEntity.noContent().build();
     };
 
-    // EDITAR: se puede editar solo si es programado a futuro
-    @PutMapping("/historiales-montos/{idMonto}")
-    public MontoServicio editarMontoServicio(@PathVariable Long idMonto, @RequestBody MontoServicioDTO montoServicioDTO) {
-        MontoServicio montoEditado = montoServicioService.editMontoServicio(idMonto, montoServicioDTO);
-        return montoEditado;
-    }
+//    // EDITAR: se puede editar solo si es programado a futuro
+//    @PutMapping("/historiales-montos/{idMonto}")
+//    public MontoServicio editarMontoServicio(@PathVariable Long idMonto, @RequestBody MontoServicioDTO montoServicioDTO) {
+//        MontoServicio montoEditado = montoServicioService.editMontoServicio(idMonto, montoServicioDTO);
+//        return montoEditado;
+//    }
 }
