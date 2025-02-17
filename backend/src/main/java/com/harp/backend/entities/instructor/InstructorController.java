@@ -45,6 +45,13 @@ public class InstructorController {
         return ResponseEntity.ok(instructor);
     }
 
+    @GetMapping("/{idInstructor}/by-nombre")
+    public ResponseEntity<Boolean> esteInstructorTieneServicioConEsteNombre(@PathVariable Long idInstructor,
+            @RequestParam String nombre) {
+        boolean nombreServicioUsado = instructorService.esteInstructorTieneServicioConEsteNombre(idInstructor, nombre);
+        return ResponseEntity.ok(nombreServicioUsado);
+    }
+
     // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
     @GetMapping("/{idInstructor}/servicios")
     public ResponseEntity<List<Servicio>> traerServiciosDeInstructor(@PathVariable Long idInstructor) {

@@ -159,4 +159,9 @@ public class InstructorService implements IInstructorService {
         return cvURL;
     }
 
+    public boolean esteInstructorTieneServicioConEsteNombre(Long idInstructor, String nombre) {
+        Instructor instructor = this.findInstructor(idInstructor);
+        return instructor.tieneServicioConEsteNombre(nombre);
+    }
+
 }
