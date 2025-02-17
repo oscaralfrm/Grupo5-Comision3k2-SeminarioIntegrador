@@ -85,7 +85,7 @@ export default function EditServicioForm() {
                 return { cantidad: 1, unidad: "WEEKS" };
             case "diario":
                 return { cantidad: 1, unidad: "DAYS" };
-            case "OTROS":
+            case "otros":
                 if (duracionCuotasPersonalizada % 7 === 0) {
                     return { cantidad: duracionCuotasPersonalizada / 7, unidad: "WEEKS" };
                 } else {
@@ -155,7 +155,7 @@ export default function EditServicioForm() {
         try {
             const response = await updateServicio(idServicio, servicioDTO);
             alert("Servicio editado con éxito");
-            navigate(`/instructor/${idInstructor}/servicio/${response.id}/info-servicio`);
+            navigate(`/instructor/${idInstructor}/servicio/${response.id}/configurar`);
         } catch (error) {
             console.error("Error al editar el servicio:", error);
             alert("Hubo un problema al editar el servicio.");
@@ -220,7 +220,6 @@ export default function EditServicioForm() {
                             <Button
                                 type="submit"
                                 variant="primary"
-                                disabled={!isValid}
                                 style={{marginLeft: "2vh"}}
                             >
                                 Editar

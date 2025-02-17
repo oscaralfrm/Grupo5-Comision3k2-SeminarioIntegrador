@@ -155,7 +155,7 @@ const Alumnos = () => {
                   {/* Foto del alumno */}
                   <Card.Img
                     variant="top"
-                    src={inscripcion.alumno.image || ""}
+                    src={inscripcion.alumno.usuario.fotoPerfilURL || ""}
                     alt={inscripcion.alumno.usuario.nombre}
                     style={{
                       borderRadius: "50%",
@@ -163,11 +163,10 @@ const Alumnos = () => {
                       height: "130px",
                       width: "130px",
                       margin: "15px auto 0",
-                      display: inscripcion.alumno.image ? "block" : "none",
-                      border: "3px solid #4F46E5",
+                      display: inscripcion.alumno.usuario.fotoPerfilURL ? "block" : "none",
                     }}
                   />
-                  {!inscripcion.alumno.image && (
+                  {!inscripcion.alumno.usuario.fotoPerfilURL && (
                     <div
                       style={{
                         borderRadius: "50%",

@@ -13,17 +13,17 @@ export default function Cobros({
 
  // Suponemos que formData.frecuenciaCuotas y formData.duracionCuotasPersonalizada
   // se actualizan mediante react-hook-form (por ejemplo, usando watch)
-  const frecuencia = formData.frecuenciaCuotas; // o bien: const frecuencia = watch("frecuenciaCuotas");
+  //const frecuencia = formData.frecuenciaCuotas; // o bien: const frecuencia = watch("frecuenciaCuotas");
 
   // Si la frecuencia es "otros", forzamos que ciclos sea "Según Inscripción"
   useEffect(() => {
-    if (frecuencia === "otros") {
+    if (formData.frecuenciaCuotas === "otros") {
       setValue("ciclos", "Según Inscripción");
     }
-  }, [frecuencia, setValue]);
+  }, [formData.frecuenciaCuotas]);
 
   // Determinamos si debemos deshabilitar la selección en ciclos
-  const disableCiclos = frecuencia === "otros";
+  const disableCiclos = formData.frecuenciaCuotas === "otros";
 
 
   return (
@@ -150,7 +150,7 @@ export default function Cobros({
                 label="Según Calendario"
                 value="En fechas fijas"
                 {...register("ciclos", {
-                  required: "Debes seleccionar una opción.",
+                  required: !disableCiclos ? "Debes seleccionar una opción." : undefined, // Validación condicional
                 })}
                 disabled={disableCiclos} // Se deshabilita si frecuencia es "otros"
               />
@@ -171,7 +171,7 @@ export default function Cobros({
                 value="Según Inscripción"
                 disabled={disableCiclos} // Se deshabilita si frecuencia es "otros"
                 {...register("ciclos", {
-                  required: "Debes seleccionar una opción.",
+                  required: !disableCiclos ? "Debes seleccionar una opción." : undefined, // Validación condicional
                 })}
               />
             </div>
