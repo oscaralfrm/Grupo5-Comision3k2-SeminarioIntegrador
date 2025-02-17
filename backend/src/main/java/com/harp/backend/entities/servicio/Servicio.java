@@ -583,7 +583,7 @@ public class Servicio {
 
     public List<Cuota> obtenerCuotasAbonadasAlumnosActuales() {
         return inscripciones.stream()
-                .filter(Inscripcion::estaEnCurso)
+                .filter(Inscripcion::estaVigente)
                 .flatMap(inscripcion -> inscripcion.obtenerCuotasAbonadas().stream())
                 .toList();
     }

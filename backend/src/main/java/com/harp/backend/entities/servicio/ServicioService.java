@@ -188,6 +188,7 @@ public class ServicioService implements IServicioService {
         // Filtramos con specifications
         Specification<Servicio> spec = Specification.where(ServicioSpecifications.nombreContains(nombre))
                 .and(ServicioSpecifications.inscripcionesAbiertasSpec())
+                .and(ServicioSpecifications.estadoEquals(EstadoServicio.Publicado))
                 .and(ServicioSpecifications.alumnoNoInscriptoSpec(idAlumno))
                 .and(ServicioSpecifications.categoriaEquals(categoriaNombre))
                 .and(ServicioSpecifications.claseDePruebaGratis(conClaseGratis))
@@ -380,6 +381,11 @@ public class ServicioService implements IServicioService {
 
         servicioExistente.agregarGrupo(grupo);
         servicioRepository.save(servicioExistente);
+    }
+
+    public boolean esteServiciotieneGrupoConEsteNombre(Long idServicio, String nombreGrupo) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.tieneGrupoConEsteNombre(nombreGrupo);
     }
 
     // Me llega una cantidad maxima de horarios por grupo

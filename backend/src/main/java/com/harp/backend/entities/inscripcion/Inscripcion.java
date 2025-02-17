@@ -326,8 +326,10 @@ public class Inscripcion {
             LocalDate fechaInicioCiclo = cuotaAbonada.getFechaInicioCiclo();
             LocalDate fechaPago = cuotaAbonada.getPago().getFechaPago();
 
-            long diferenciaFechas = ChronoUnit.DAYS.between(fechaInicioCiclo, fechaPago);
-            acumDiferenciaFechas += diferenciaFechas;
+            if (fechaPago.isAfter(fechaInicioCiclo)) {
+                long diferenciaFechas = ChronoUnit.DAYS.between(fechaInicioCiclo, fechaPago);
+                acumDiferenciaFechas += diferenciaFechas;
+            }
         }
 
         double promedioDemoraPagos = (double) acumDiferenciaFechas / cantTotalCuotas;

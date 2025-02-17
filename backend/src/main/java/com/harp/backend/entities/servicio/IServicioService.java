@@ -35,6 +35,7 @@ public interface IServicioService {
     public List<Grupo> findGruposDeServicio(Long idServicio);
     public List<Servicio> findServiciosAsistenciasActivas();
     void agregarGrupoAServicio(Grupo grupo, Servicio servicio);
+    boolean esteServiciotieneGrupoConEsteNombre(Long idServicio, String nombreGrupo);
     List<Inscripcion> findInscripcionesDeServicio(Long idServicio, boolean vigentes, boolean pendientes);
     public List<Alumno> obtenerAlumnosActualesDeServicio(Long idServicio);
     public long calcularDuracionTotalServicio(Long idServicio);

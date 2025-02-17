@@ -128,6 +128,14 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.OK).body(servicio);
     };
 
+    // GET DE UNO EN PARTICULAR
+    @GetMapping("/{idServicio}/by-nombre-grupo")
+    public ResponseEntity<Boolean> esteServiciotieneGrupoConEsteNombre(@PathVariable @Min(1) Long idServicio,
+                                                            @RequestParam String nombreGrupo) {
+        boolean nombreGrupoEnUso = servicioService.esteServiciotieneGrupoConEsteNombre(idServicio, nombreGrupo);
+        return ResponseEntity.status(HttpStatus.OK).body(nombreGrupoEnUso);
+    };
+
     // GET TODOS LOS GRUPOS DE UN SERVICIO
     @GetMapping("/{idServicio}/grupos")
     public ResponseEntity<List<Grupo>> traerGruposDeServicio(@PathVariable @Min(1) Long idServicio) {
