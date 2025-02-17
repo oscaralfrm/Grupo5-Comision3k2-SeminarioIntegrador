@@ -263,7 +263,6 @@ export const getAllServicios = async () => {
   }
 };
 
-
 export const getServicioById = async (idServicio) => {
   try {
     const response = await axios.get(`/servicios/${idServicio}`);
