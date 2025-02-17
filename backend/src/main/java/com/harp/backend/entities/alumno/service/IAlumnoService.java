@@ -7,6 +7,7 @@ import com.harp.backend.entities.asistencia.AsistenciaController;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.servicio.Servicio;
 
 import java.util.List;
 import java.util.Map;
@@ -26,4 +27,8 @@ public interface IAlumnoService {
     List<Cuota> obtenerHistorialCuotasEsteAlumnoYServicio(Long idAlumno, Long idServicio);
     Map<Long, List<Clase>> obtenerClasesDeAlumno(Long idAlumno, boolean proximas, boolean anteriores);
     void editarFotoPerfil(Long idAlumno, String fotoPerfilURL);
+
+    public void quitarServicioFavoritoDeAlumno(Long idAlumno, Long idServicio);
+    public void agregarServicioFavoritoAAlumno(Long idAlumno, Long idServicio);
+    List<Servicio> getServiciosFavoritosDeAlumno(Long idAlumno);
 }

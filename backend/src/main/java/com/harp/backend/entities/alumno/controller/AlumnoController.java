@@ -11,6 +11,7 @@ import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.instructor.Instructor;
 import com.harp.backend.entities.instructor.InstructorDTO;
 import com.harp.backend.entities.servicio.FileStorageService;
+import com.harp.backend.entities.servicio.Servicio;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -157,4 +158,24 @@ public class AlumnoController {
         alumnoService.editarFotoPerfil(idAlumno, alumnoDTO.getFotoPerfilURL());
         return ResponseEntity.status(HttpStatus.OK).body("La foto de perfil ha sido editada.");
     }
+
+    @PostMapping("/{idAlumno}/servicios-favoritos/{idServicio}")
+    public ResponseEntity<String> agregarServicioFavoritoAAlumno(@PathVariable Long idAlumno, @PathVariable Long idServicio) {
+        alumnoService.agregarServicioFavoritoAAlumno(idAlumno, idServicio);
+        return ResponseEntity.ok("Se ha agregado el servicio favorito al alumno.");
+    }
+
+    @DeleteMapping("/{idAlumno}/servicios-favoritos/{idServicio}")
+    public ResponseEntity<String> quitarServicioFavoritoDeAlumno(@PathVariable Long idAlumno, @PathVariable Long idServicio) {
+        alumnoService.quitarServicioFavoritoDeAlumno(idAlumno, idServicio);
+        return ResponseEntity.ok("Se ha quitado el servicio favorito al alumno.");
+    }
+
+    @GetMapping("/{idAlumno}/servicios-favoritos")
+    public ResponseEntity<List<Servicio>> getServiciosFavoritosDeAlumno(@PathVariable Long idAlumno) {
+        List<Servicio> serviciosFavoritos = alumnoService.getServiciosFavoritosDeAlumno(idAlumno);
+        return ResponseEntity.ok(serviciosFavoritos);
+    }
+
+
 }

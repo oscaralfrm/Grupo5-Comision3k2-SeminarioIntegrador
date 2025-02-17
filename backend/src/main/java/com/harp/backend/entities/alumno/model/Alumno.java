@@ -44,6 +44,15 @@ public class Alumno {
     @JsonIgnore
     private List<Inscripcion> inscripciones = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "alumnos_servicios_favoritos",
+            joinColumns = @JoinColumn(name = "alumno_id"),
+            inverseJoinColumns = @JoinColumn(name = "servicio_id")
+    )
+    @JsonIgnore
+    private List<Servicio> serviciosFavoritos = new ArrayList<>();
+
 //    @OneToMany
 //    @JoinColumn(name = "alumno_id")
 //    private List<Cuota> cuotas;
@@ -157,6 +166,20 @@ public class Alumno {
 
     public boolean tieneEsteId(Long id) {
         return this.id.equals(id);
+    }
+
+    public void agregarServicioAFavoritos(Servicio servicio) {
+        if (this.serviciosFavoritos.contains(servicio)) {
+            throw new UnsupportedOperationException("El alumno ya tiene ese servicio en favoritos.");
+        }
+        this.serviciosFavoritos.add(servicio);
+    }
+
+    public void quitarServicioDeFavoritos(Servicio servicio) {
+        if (! this.serviciosFavoritos.contains(servicio)) {
+            throw new UnsupportedOperationException("El alumno no tiene ese servicio en favoritos.");
+        }
+        this.serviciosFavoritos.remove(servicio);
     }
 
 }

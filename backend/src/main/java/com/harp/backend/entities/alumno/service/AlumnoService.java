@@ -157,4 +157,26 @@ public class AlumnoService implements IAlumnoService {
 
         return clasesPorGrupo;
     }
+
+    public void agregarServicioFavoritoAAlumno(Long idAlumno, Long idServicio) {
+        Servicio servicio = servicioService.findServicio(idServicio);
+        Alumno alumno = this.findAlumno(idAlumno);
+        if (! servicio.esPublicado()) {
+            throw new UnsupportedOperationException("El servicio no está publicado por lo que no se puede agregar a favoritos.");
+        }
+        alumno.agregarServicioAFavoritos(servicio);
+        alumnoRepository.save(alumno);
+    }
+
+    public void quitarServicioFavoritoDeAlumno(Long idAlumno, Long idServicio) {
+        Servicio servicio = servicioService.findServicio(idServicio);
+        Alumno alumno = this.findAlumno(idAlumno);
+        alumno.quitarServicioDeFavoritos(servicio);
+        alumnoRepository.save(alumno);
+    }
+
+    public List<Servicio> getServiciosFavoritosDeAlumno(Long idAlumno) {
+        Alumno alumno = this.findAlumno(idAlumno);
+        return alumno.getServiciosFavoritos();
+    }
 }
