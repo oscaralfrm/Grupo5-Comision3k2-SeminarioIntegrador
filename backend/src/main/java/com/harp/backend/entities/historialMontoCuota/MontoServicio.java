@@ -61,9 +61,11 @@ public class MontoServicio {
 
      public void setFechaFin(LocalDate fechaFin) {
           //Solo se puede modificar la fecha fin si esta estaba en null
-          if (this.fechaFin != null) {
-               throw new UnsupportedOperationException("La fecha fin ya no puede ser modificada");
-          }
+//          if (this.fechaFin != null) {
+//               throw new UnsupportedOperationException("La fecha fin ya no puede ser modificada");
+//          }
+          // La fecha fin si puede ser distinta de null cuando editamos un monto que estaba programado
+          // Debemos editar la fecha fin del monto actual que habia sido modificada
           this.fechaFin = fechaFin;
 
      }

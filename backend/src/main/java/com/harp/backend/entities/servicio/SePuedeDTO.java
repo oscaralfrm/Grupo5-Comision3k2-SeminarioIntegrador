@@ -15,4 +15,5 @@ public class SePuedeDTO {
     private boolean renaudar;
     private boolean volverAPublicar;
     private boolean cancelar;
+    private boolean abrirInscripciones;
 }

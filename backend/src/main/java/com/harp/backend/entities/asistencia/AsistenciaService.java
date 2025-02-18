@@ -69,6 +69,11 @@ public class AsistenciaService implements IAsistenciaService{
         return asistencias;
     }
 
+    public List<Asistencia> findInasistenciasDeClase(Long idClase) {
+        List<Asistencia> asistencias = asistenciaRepository.findByClaseId(idClase);
+        return asistencias.stream().filter(asistencia -> asistencia.getAsistio() == false).toList();
+    }
+
     public void editAsistencias(Long idClase, List<AsistenciaSolicitudEditar> asistenciasDto) {
         // Validamos que las asistencias sean de esa clase
         //ACA

@@ -19,8 +19,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ClaseService implements IClaseService {
@@ -112,6 +114,21 @@ public class ClaseService implements IClaseService {
 
     public List<Clase> findClasesDeGrupo(Long idGrupo) {
         return claseRepository.findClasesDeGrupo(idGrupo);
+    }
+
+    public List<Clase> findUltimasClasesDeGrupo(Long idGrupo, int cantClases) {
+        // Primero obtenemos todas las clases del grupo
+        List<Clase> clases = this.findClasesDeGrupo(idGrupo);
+
+        // Ordenamos las clases por fecha de forma descendente, es decir,
+        // las clases más recientes primero
+        clases.sort(Comparator.comparing(Clase::getFecha).reversed());
+
+        // Tomamos las primeras 'cantidad' clases de la lista ordenada
+        return clases.stream()
+                .limit(cantClases)
+                .collect(Collectors.toList());
+
     }
 
     public List<Clase> findClasesDeHorario(Horario horario) {

@@ -35,4 +35,8 @@ public class Asistencia {
         this.alumno = alumno;
         this.clase = clase;
     }
+
+    public boolean esDeEsteAlumno(Alumno alumno) {
+        return this.alumno.getId().equals(alumno.getId());
+    }
 }

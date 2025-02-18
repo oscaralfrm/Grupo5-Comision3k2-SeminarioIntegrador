@@ -1,5 +1,6 @@
 package com.harp.backend.entities.grupo;
 
+import ch.qos.logback.core.rolling.helper.MonoTypedConverter;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.AlumnoService;
 import com.harp.backend.entities.asistencia.Asistencia;
@@ -7,6 +8,7 @@ import com.harp.backend.entities.asistencia.AsistenciaResumenDTO;
 import com.harp.backend.entities.asistencia.AsistenciaService;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.IClaseService;
+import com.harp.backend.entities.diaSemana.DiaSemana;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioService;
@@ -24,9 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GrupoService implements IGrupoService {
@@ -297,14 +298,19 @@ public class GrupoService implements IGrupoService {
             // Si se define para mañana la fecha inicio, entonces la fecha fin del monto anterior es de hoy
             montoService.cambiarFechaFinMontoServicio(montoActual, nuevoMontoGrupo.getFechaInicio()); // Persistimos el cambio en la fecha fin
         } else {
-            // si no hay un monto anterior con esa frecuencia semanal es el primer monto por lo tanto se tiene
-            // que corroborar que si hay una fecha de inicio del servicio entonces que el monto
-            // sea igual a la fecha de inicio del servicio
+            MontoServicioDTO dtoConFecha;
+            if (servicio.getFechaInicio() == null) {
+                dtoConFecha = new MontoServicioDTO(montoServicioDTO.getMonto(), null);
+            } else if (servicio.yaInicio()) {
+                dtoConFecha = new MontoServicioDTO(montoServicioDTO.getMonto(), LocalDate.now());
+            } else {
+                dtoConFecha = new MontoServicioDTO(montoServicioDTO.getMonto(), servicio.getFechaInicio());
+            }
 
-            MontoServicioDTO dtoSinFecha = new MontoServicioDTO(montoServicioDTO.getMonto(), null);
+            //MontoServicioDTO dtoSinFecha = new MontoServicioDTO(montoServicioDTO.getMonto(), null);
 
             // Crear el nuevo monto
-            nuevoMontoGrupo = montoService.createMontoServicio(dtoSinFecha);
+            nuevoMontoGrupo = montoService.createMontoServicio(dtoConFecha);
         }
 
         // Asociar el nuevo monto al servicio
@@ -348,9 +354,13 @@ public class GrupoService implements IGrupoService {
         }
         MontoServicio montoProgramadoActual = grupo.obtenerMontoFuturo();
 
+        MontoServicio montoActual = grupo.obtenerMontoActual();
+
         // Si el servicio no tiene alumnos el monto puede modificarse siempre
         if (montoProgramadoActual.puedeSerModificado() || ! servicio.tieneAlumnosConInscripcionesActivas()) {
-             return montoService.editMontoServicio(montoProgramadoActual.getId(), montoServicioDTO);
+             MontoServicio montoEditado = montoService.editMontoServicio(montoProgramadoActual.getId(), montoServicioDTO);
+             montoService.cambiarFechaFinMontoServicio(montoActual, montoEditado.getFechaInicio());
+             return montoEditado;
         } else {
             throw new UnsupportedOperationException("El monto ya no puede ser modificado.");
         }
@@ -440,6 +450,7 @@ public class GrupoService implements IGrupoService {
         return asistenciasDeEsteAlumnoYGrupo;
     }
 
+    // PARA CALCULAR UN RESUMEN DE ASISTENCIAS DE UN ALUMNO
     public AsistenciaResumenDTO calcularAsistenciasEInasistencias(Long idAlumno, Long idGrupo) {
         List<Asistencia> asistencias = this.obtenerAsistenciasDeAlumnoYGrupo(idAlumno, idGrupo);
         List<Asistencia> asistenciasReales = asistencias.stream().filter(asistencia -> asistencia.getAsistio() != null).toList();
@@ -449,6 +460,205 @@ public class GrupoService implements IGrupoService {
         AsistenciaResumenDTO resumen = asistenciaService.createResumenAsistenciaDTO(idAlumno, idGrupo, cantAsistencias, cantInasistencias);
         return resumen;
     }
+
+    // ESTADISTICAS DE ASISTENCIAS DE GRUPO
+
+    public List<Clase> obtenerClasesPasadasDeGrupo(Grupo grupo) {
+        List<Clase> clases = claseService.findClasesDeGrupo(grupo.getId());
+        List<Clase> clasesPasadas =  clases.stream().filter(clase -> ! clase.esFutura()).toList();
+        return clasesPasadas;
+    }
+
+    public List<Asistencia> obtenerAllAsistenciasDeGrupo(Grupo grupo) {
+        List<Clase> clasesPasadas = this.obtenerClasesPasadasDeGrupo(grupo);
+        return clasesPasadas
+                .stream()
+                .flatMap(clase -> asistenciaService.findAsistenciasDeClase(clase.getId()).stream())
+                .toList();
+    }
+
+    public List<Asistencia> obtenerAllInasistenciasDeGrupo(Grupo grupo) {
+        List<Clase> clasesPasadas = this.obtenerClasesPasadasDeGrupo(grupo);
+        return clasesPasadas
+                .stream()
+                .flatMap(clase -> asistenciaService.findInasistenciasDeClase(clase.getId()).stream())
+                .toList();
+    }
+
+    public double calcularPorcentajePromedioAsistenciaDeGrupo(Long idGrupo) {
+        // Obtenemos la cantidad de clases pasadas de un grupo
+        List<Clase> clases = claseService.findClasesDeGrupo(idGrupo);
+        List<Clase> clasesPasadas =  clases.stream().filter(clase -> ! clase.esFutura()).toList();
+        int cantClasesPasadas = clasesPasadas.size();
+
+        // Recorremos las clases pasadas
+        // De cada clase obtenemos la cantidad de alumnos y la cantidad que asistieron
+
+        int acumPorcentajeAsistenciasTotalesGrupo = 0;
+        for (Clase clase : clasesPasadas) {
+            List<Asistencia> asistenciasRealesDeClase = asistenciaService.findAsistenciasDeClase(clase.getId())
+                    .stream()
+                    .filter(asistencia -> asistencia.getAsistio() != null).toList();
+            int cantAlumnosDeClase = asistenciasRealesDeClase.size();
+            int cantAsistenciasDeClase = asistenciasRealesDeClase.stream().filter(asistencia -> asistencia.getAsistio() == true).toList().size();
+
+            // Calculamos el porcentaje de alumnos que asistieron a esa clase
+            double porcentajeAsistenciasDeClase = cantAsistenciasDeClase * 100.0 / cantAlumnosDeClase;
+
+            // Acumulamos el porcentaje de asistencias
+            acumPorcentajeAsistenciasTotalesGrupo += porcentajeAsistenciasDeClase;
+        }
+
+        // Calculamos un promedio de asistencias de clases de grupo
+        // Dividiendo el porcentaje acumulado, dividido la cantidad de clases pasadas totales
+        double promedioDePorcentajesDeAsistenciasDeGrupoPorClase = (double) acumPorcentajeAsistenciasTotalesGrupo / cantClasesPasadas;
+        return promedioDePorcentajesDeAsistenciasDeGrupoPorClase;
+    }
+
+//    public String calcularMotivoMasFrecuenteDeAusencia(Grupo grupo) {
+//        List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo);
+//        Map<String, Integer> motivos = new HashMap<>();
+//        for (Asistencia asistencia : allInasistencias) {
+//            motivos.put(asistencia.getObservaciones(), motivos.get(asistencia.getObservaciones()) + 1 );
+//        }
+//        Integer maximoValor = motivos.values().stream().max();
+//        return motivos.
+//
+//    }
+
+    public List<Alumno> calcularAlumnosConMasFaltas(Grupo grupo) {
+        Map<Alumno, Integer> faltasAlumnos = new HashMap<>();
+        List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo);
+
+        for (Asistencia inasistencia : allInasistencias) {
+            Alumno alumno = inasistencia.getAlumno();
+            // Si no existe, se inicializa en 0 y luego se suma 1
+            int faltasActuales = faltasAlumnos.getOrDefault(alumno, 0);
+            faltasAlumnos.put(alumno, faltasActuales + 1);
+        }
+
+        // Si no hay inasistencias, devolvemos una lista vacía
+        if (faltasAlumnos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Obtenemos el número máximo de inasistencias
+        int maxFaltas = faltasAlumnos.values().stream()
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        // Filtramos y devolvemos los alumnos que tengan ese número máximo
+        List<Alumno> alumnosConMasFaltas = faltasAlumnos.entrySet().stream()
+                .filter(entry -> entry.getValue() == maxFaltas)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        return alumnosConMasFaltas;
+    }
+
+    public List<Alumno> calcularAlumnosConMenosFaltas(Grupo grupo) {
+        Map<Alumno, Integer> faltasAlumnos = new HashMap<>();
+        List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo);
+
+        for (Asistencia inasistencia : allInasistencias) {
+            Alumno alumno = inasistencia.getAlumno();
+            // Si no existe, se inicializa en 0 y luego se suma 1
+            int faltasActuales = faltasAlumnos.getOrDefault(alumno, 0);
+            faltasAlumnos.put(alumno, faltasActuales + 1);
+        }
+
+        // Si no hay inasistencias, devolvemos una lista vacía
+        if (faltasAlumnos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Obtenemos el número máximo de inasistencias
+        int minFaltas = faltasAlumnos.values().stream()
+                .min(Integer::compareTo)
+                .orElse(0);
+
+        // Filtramos y devolvemos los alumnos que tengan ese número máximo
+        List<Alumno> alumnosConMenosFaltas = faltasAlumnos.entrySet().stream()
+                .filter(entry -> entry.getValue() == minFaltas)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        return alumnosConMenosFaltas;
+    }
+
+    public Set<Alumno> calcularAlumnosConAsistenciaPerfecta(Grupo grupo) {
+        // Son los alumnos que no aparecen en inasistencias y si aparecen en asistencias
+
+        List<Asistencia> allAsistencias = this.obtenerAllAsistenciasDeGrupo(grupo);
+        List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo);
+
+        Set<Alumno> alumnosConInasistencias = allInasistencias.stream()
+                .map(Asistencia::getAlumno)
+                .collect(Collectors.toSet());
+
+        Set<Alumno> alumnosConAsistenciaPerfecta = allAsistencias.stream()
+                .map(Asistencia::getAlumno)
+                .filter(alumno -> !alumnosConInasistencias.contains(alumno))
+                .collect(Collectors.toSet());
+
+        return alumnosConAsistenciaPerfecta;
+    }
+
+    public List<Clase> obtenerUltimasClasesDeGrupo(Grupo grupo, int cantClases) {
+        if (cantClases == 0) {
+            return new ArrayList<>();
+        }
+        List<Clase> ultimasClases = claseService.findUltimasClasesDeGrupo(grupo.getId(), cantClases);
+        return ultimasClases;
+    }
+
+    public Set<Alumno> calcularAlumnosAusentesUltimasClases(Grupo grupo, int cantClases) {
+        List<Clase> ultimasClases = this.obtenerUltimasClasesDeGrupo(grupo, cantClases);
+
+        if (ultimasClases.isEmpty()) {
+            return new HashSet<>();
+        }
+
+        // Agregamos los alumnos que estan en la lista de inasitencias de todas las ultimas clases
+        Set<Alumno> alumnosAusentesUnaClase = asistenciaService
+                .findInasistenciasDeClase(ultimasClases.get(0).getId())
+                .stream().map(Asistencia::getAlumno).collect(Collectors.toSet());
+
+        // Recorremos los alumnos ausentes una clase
+        // De esos filtramos los alumnos que para todas las ultimas clases, tiene alguna inasistencia que es de él
+        Set<Alumno> alumnosAusentesUltimasClases =
+                alumnosAusentesUnaClase
+                .stream().filter(alumno ->
+                        ultimasClases
+                                .stream()
+                                .allMatch(clase ->
+                                        asistenciaService
+                                                .findInasistenciasDeClase(clase.getId())
+                                                .stream()
+                                                .anyMatch(asistencia -> asistencia.esDeEsteAlumno(alumno)) ))
+                        .collect(Collectors.toSet());
+
+        return alumnosAusentesUltimasClases;
+    }
+
+    public EstadisticasGrupoDTO obtenerEstadisticasGrupo(Long idGrupo) {
+        Grupo grupo = this.findGrupo(idGrupo);
+        double porcentajeAsistenciasGrupo = this.calcularPorcentajePromedioAsistenciaDeGrupo(idGrupo);
+//        String motivoMasFrecuenteAusencia = this.calcularMotivoMasFrecuenteDeAusencia(idGrupo);
+
+        List<Alumno> alumnosConMasFaltas = this.calcularAlumnosConMasFaltas(grupo);
+        List<Alumno> alumnosConMenosFaltas = this.calcularAlumnosConMenosFaltas(grupo);
+        Set<Alumno> alumnosConAsistenciaPerfecta = this.calcularAlumnosConAsistenciaPerfecta(grupo);
+        Set<Alumno> alumnosAusentesUltimasTresClases = this.calcularAlumnosAusentesUltimasClases(grupo,3);
+
+
+        return new EstadisticasGrupoDTO(porcentajeAsistenciasGrupo,
+                                        alumnosConMasFaltas,
+                                        alumnosConMenosFaltas,
+                                        alumnosConAsistenciaPerfecta,
+                                       alumnosAusentesUltimasTresClases);
+    }
+
 
 //    @Override
 //    public void agregarAlumnoAGrupo(Alumno alumno, Long idGrupo) {

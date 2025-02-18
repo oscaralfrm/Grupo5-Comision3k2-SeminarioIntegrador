@@ -67,7 +67,7 @@ public class Alumno {
 
     public boolean estaInscriptoAEsteServicio(Servicio servicio) {
         return inscripciones.stream()
-                .filter(Inscripcion::estaVigente)
+                .filter(Inscripcion::estaEnCurso)
                 .anyMatch(inscripcion -> inscripcion.esDeEsteServicio(servicio));
     }
 

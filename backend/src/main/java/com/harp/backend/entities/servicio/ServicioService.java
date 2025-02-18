@@ -17,6 +17,7 @@ import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioService;
 import com.harp.backend.entities.horario.Turno;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.EstrategiaAGrupos;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.EstrategiaCrearInscripcionFactory;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.IEstrategiaInscripcion;
 import com.harp.backend.entities.instructor.Instructor;
@@ -613,6 +614,19 @@ public class ServicioService implements IServicioService {
         notificacionService.notificarServicioCancelado(servicio);
     }
 
+    public boolean esteServicioTieneCupos(Servicio servicio) {
+        return servicio.getGrupos().stream().allMatch(grupo -> this.obtenerCuposLibresServicio(servicio.getId(), grupo.getId(), null) > 0);
+    }
+
+    public boolean sePuedeAbrirInscripcionesDeServicio(Servicio servicio) {
+        if (! servicio.sePuedenAbrirInscripciones()) {
+            System.out.println("No se pueden abrir inscripciones por servicio.");
+        }
+        if (!  this.esteServicioTieneCupos(servicio)) {
+            System.out.println("No se pueden abrir inscripciones por cupos.");
+        }
+        return servicio.sePuedenAbrirInscripciones() && this.esteServicioTieneCupos(servicio);
+    }
 
     public SePuedeDTO servicioSePuede(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
@@ -624,6 +638,7 @@ public class ServicioService implements IServicioService {
         sePuede.setSuspender(servicio.sePuedeSuspender());
         sePuede.setVolverAPublicar(servicio.sePuedeVolverAPublicar());
         sePuede.setCancelar(servicio.sePuedeCancelar());
+        sePuede.setAbrirInscripciones(this.sePuedeAbrirInscripcionesDeServicio(servicio));
         return sePuede;
     }
 

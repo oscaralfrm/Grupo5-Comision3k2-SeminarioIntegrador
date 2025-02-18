@@ -155,6 +155,12 @@ public class GrupoController {
         return ResponseEntity.status(HttpStatus.OK).body(montosGrupo);
     };
 
+    @GetMapping("/{idServicio}/grupos/{idGrupo}/estadisticas-asistencias")
+    public ResponseEntity<EstadisticasGrupoDTO> obtenerEstadisticasDeAsistenciasGrupo(@PathVariable @Min(1) Long idGrupo) {
+        EstadisticasGrupoDTO estadisticasGrupo = grupoService.obtenerEstadisticasGrupo(idGrupo);
+        return ResponseEntity.status(HttpStatus.OK).body(estadisticasGrupo);
+    };
+
     // POST CON HORARIOS DTOS
     @PostMapping("/{idServicio}/grupos/{idGrupo}/nuevos-horarios")
     public ResponseEntity<String> agregarHorariosAGrupo(@PathVariable Long idServicio,

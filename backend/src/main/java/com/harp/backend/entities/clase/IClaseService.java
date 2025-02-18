@@ -14,6 +14,7 @@ import java.util.Set;
 public interface IClaseService {
     public List<Clase> getAllClases();
     public List<Clase> findClasesDeGrupo(Long idGrupo);
+    public List<Clase> findUltimasClasesDeGrupo(Long idGrupo, int cantClases);
     public Clase createClaseConAsistencias(Clase clase,  List<Alumno> alumnos);
     public void deleteClase(Long idClase);
     public Clase findClase(Long idClase);
@@ -22,4 +23,6 @@ public interface IClaseService {
     void crearClasesParaSemanaSiguente(Servicio servicio, LocalDate fechaInicio);
     void crearClasesParaSemanaSiguienteGrupo(Grupo grupo, LocalDate fechaInicio);
     void crearClasesParaSemanaSiguienteHorario(Grupo grupo, LocalDate fechaInicio, Horario horario);
+
+
 }

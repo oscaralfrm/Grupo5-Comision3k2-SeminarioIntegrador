@@ -305,6 +305,7 @@ public class Grupo {
         // Devuelve true si todos los horarios del grupo cumplen con estar dentro de los turnos de la lista
         return this.horarios.stream().allMatch(horario -> horario.esDeAlgunoDeEstosTurnos(turnos));
     }
+
 }
 
 

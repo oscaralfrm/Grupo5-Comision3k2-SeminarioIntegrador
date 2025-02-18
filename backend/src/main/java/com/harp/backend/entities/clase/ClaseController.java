@@ -31,7 +31,7 @@ public class ClaseController {
         return  ResponseEntity.status(HttpStatus.OK).body(clase);
     }
 
-    @PutMapping("/clases/{idClase}")
+    @PutMapping("/clases/{idClase}/editar")
     public ResponseEntity<String> editarObservacionClase(@PathVariable @Min(1) Long idClase, @RequestBody ClaseDTO claseDTO) {
         claseService.editClase(idClase, claseDTO);
         return  ResponseEntity.ok("Se agregaron las observaciones a la clase correctamente");
