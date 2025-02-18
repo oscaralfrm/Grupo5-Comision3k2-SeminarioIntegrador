@@ -189,7 +189,7 @@ const Cobros = ({ id }) => {
         Cobros
       </h1>
 
-      {/* Botón Actualizar Monto */}
+      {/* Botón Actualizar Monto 
       {sePuedeActualizarPrecio && (
         <div className="d-flex justify-content-end mb-4">
           <Button
@@ -208,6 +208,7 @@ const Cobros = ({ id }) => {
           </Button>
         </div>
       )}
+     */}
 
       {/* Contenedor de Filtros */}
       <div className="mb-4">
@@ -369,13 +370,16 @@ const Cobros = ({ id }) => {
         </Table>
       </div>
 
-      {/* Modales */}
+      {/* Modales 
       <ActualizarMontoModal
         show={showMontoModal}
         onClose={() => setShowMontoModal(false)}
         grupos={grupos}
         idServicio={idServicio}
+        frecuenciaCobro={}
       />
+      */}
+
       <HistorialPagoModal
         show={showPaymentHistory}
         onClose={() => setShowPaymentHistory(false)}
