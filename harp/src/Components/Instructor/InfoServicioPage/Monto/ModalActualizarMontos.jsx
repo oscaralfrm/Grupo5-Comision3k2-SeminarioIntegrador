@@ -1,3 +1,4 @@
+{/*
 import React from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -107,3 +108,4 @@ export default function ModalActualizarMontos({
     </Modal>
   );
 }
+*/}

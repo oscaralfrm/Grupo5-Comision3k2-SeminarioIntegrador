@@ -139,3 +139,19 @@ export const calcularDuracionTotalDiasServicio = async (idServicio, idGrupo) => 
         throw error;
     }
 };
+
+// Te devuelve un objeto con los sigueintes atributos {double porcentajeAsistenciasPromedio, 
+// List<Alumno> alumnosConMasFaltas,
+// List<Alumno> alumnosConMenosFaltas,
+// Set<Alumno> alumnosConAsistenciaPerfecta,
+// Set<Alumno> alumnosAusentesUltimasTresClases }
+export const obtenerEstadisticasDeAsistenciasGrupo = async (idServicio, idGrupo) => {
+    try {
+        const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/estadisticas-asistencias`);
+        console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener las estadisticas de asistencias', error);
+        throw error;
+    }
+};
