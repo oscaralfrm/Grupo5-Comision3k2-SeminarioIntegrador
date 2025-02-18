@@ -14,18 +14,20 @@ const ServiciosFavoritos = () => {
     const [serviciosFavoritos, setServiciosFavoritos] = useState([]);
     const [loading, setLoading] = useState(false);
 
+
+    const fetchServiciosFavoritos = async () => {
+        setLoading(true);
+        try {
+            const response = await getServiciosFavoritosDeAlumno(idAlumno);
+            setServiciosFavoritos(response);
+        } catch (error) {
+            console.error("Error al obtener servicios favoritos:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchServiciosFavoritos = async () => {
-            setLoading(true);
-            try {
-                const response = await getServiciosFavoritosDeAlumno(idAlumno);
-                setServiciosFavoritos(response);
-            } catch (error) {
-                console.error("Error al obtener servicios favoritos:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchServiciosFavoritos();
     }, [idAlumno]);
 
@@ -156,6 +158,7 @@ const ServiciosFavoritos = () => {
                                                 <FavoriteButton
                                                     servicioId={servicio.id}
                                                     serviciosFavoritos={serviciosFavoritos}
+                                                    setServiciosFavoritos={setServiciosFavoritos}
                                                 />
                                             </div>
                                         </Card.Header>

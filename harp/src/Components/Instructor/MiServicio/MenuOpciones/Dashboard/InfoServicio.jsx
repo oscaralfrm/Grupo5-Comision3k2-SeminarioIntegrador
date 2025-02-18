@@ -24,7 +24,7 @@ const InfoCard = ({ serviceData, setServiceData }) => {
   }, [idServicio]);
 
   const handleVerServicio = () => {
-    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/info-servicio`);
+    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/configurar`);
   };
 
   const cardStyle = {

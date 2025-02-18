@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form, ListGroup, Alert } from 'react-bootstrap';
 import { createGrupoConHorarios } from '../../../../services/Grupo';
 import { armarStringFrecuenciaCobro } from '../../../../services/frecuenciaPago';
+import { tieneGrupoConEsteNombre } from '../../../../services/Servicio';
+import { useParams } from 'react-router-dom';
 
-const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, grupos, frecuenciaCobro}) => {
+const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, grupos, frecuenciaCobro }) => {
   const [nombreGrupo, setNombreGrupo] = useState('');
   const [monto, setMonto] = useState(null);
   const [diaSemana, setDiaSemana] = useState('');
@@ -12,49 +14,71 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
   const [tipoClase, setTipoClase] = useState('');
   const [horarios, setHorarios] = useState([]);
   const [cantMaxCupos, setCantMaxCupos] = useState(0);
-  
+  const [nombreGrupoDisponible, setNombreGrupoDisponible] = useState(null);
+
+
+  // Validar si el nombre de grupo está disponible (con debounce)
+  useEffect(() => {
+    if (!nombreGrupo) {
+      setNombreGrupoDisponible(null);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const nombreUsado = await tieneGrupoConEsteNombre(idServicio, nombreGrupo);
+        setNombreGrupoDisponible(!nombreUsado);
+      } catch (error) {
+        console.error("Error validando el nombre del grupo", error);
+        setNombreGrupoDisponible(null);
+      }
+    }, 500); // Espera 500ms antes de llamar al servicio
+
+    return () => clearTimeout(timer);
+  }, [nombreGrupo]);
+
   const agregarHorario = () => {
-      if (!diaSemana || !horaInicio || !horaFin) {
-          alert('Todos los campos del horario son obligatorios.');
-          return;
-      }
+    if (!diaSemana || !horaInicio || !horaFin) {
+      alert('Todos los campos del horario son obligatorios.');
+      return;
+    }
 
-      if (horaInicio >= horaFin) {
-        alert("La hora de inicio debe ser menor que la hora de fin.");
-        return;
-      }
+    if (horaInicio >= horaFin) {
+      alert("La hora de inicio debe ser menor que la hora de fin.");
+      return;
+    }
 
-        
+
     // Validación para no permitir dos grupos con horarios coincidentes
     const horarioExistente = grupos.some(
-        (grupo) =>
-          grupo.horarios.some(
-            (horario) =>
-              horario.diaSemana.nombre === diaSemana &&
-              ((horaInicio >= horario.horaInicio && horaInicio < horario.horaFin) ||
-                (horaFin > horario.horaInicio && horaFin <= horario.horaFin))
-          )
-      );
-    
-      if (horarioExistente) {
-        alert("Ya existe un grupo en este horario.");
-        return;
-      }
-  
-      // Crear un objeto con el formato esperado por el backend
-      const nuevoHorario = {
-          nombreDiaSemana: diaSemana,
-          horaInicio,
-          horaFin,
-      };
-  
-      // Agregar el nuevo horario al array de horarios
-      setHorarios([...horarios, nuevoHorario]);
-  
-      // Limpiar campos
-      setDiaSemana('');
-      setHoraInicio('');
-      setHoraFin('');
+      (grupo) =>
+        grupo.horarios.some(
+          (horario) =>
+            horario.diaSemana.nombre === diaSemana &&
+            ((horaInicio >= horario.horaInicio && horaInicio < horario.horaFin) ||
+              (horaFin > horario.horaInicio && horaFin <= horario.horaFin))
+        )
+    );
+
+    if (horarioExistente) {
+      alert("Ya existe un grupo en este horario.");
+      return;
+    }
+
+    // Crear un objeto con el formato esperado por el backend
+    const nuevoHorario = {
+      nombreDiaSemana: diaSemana,
+      horaInicio,
+      horaFin,
+    };
+
+    // Agregar el nuevo horario al array de horarios
+    setHorarios([...horarios, nuevoHorario]);
+
+    // Limpiar campos
+    setDiaSemana('');
+    setHoraInicio('');
+    setHoraFin('');
   };
 
   const eliminarHorario = (index) => {
@@ -71,7 +95,7 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
       alert('Debe seleccionar el tipo de clase.');
       return;
     }
-    
+
     if (!monto) {
       alert('El precio del grupo es obligatorio.');
       return;
@@ -92,14 +116,17 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
       return;
     }
     try {
-        await createGrupoConHorarios(nombreGrupo, ultimoNumeroGrupo+1, cantMaxCupos, horarios, idServicio, monto);
+      await createGrupoConHorarios(nombreGrupo, ultimoNumeroGrupo + 1, cantMaxCupos, horarios, idServicio, monto);
     } catch (error) {
-        alert(error.message); // El componente decide cómo manejar el error
+      alert(error.message); // El componente decide cómo manejar el error
     }
-    
+
     // Limpiar todo
     setNombreGrupo('');
     setHorarios([]);
+    setMonto(null);
+    setCantMaxCupos(0);
+    setTipoClase('');
     handleClose();
   };
 
@@ -119,20 +146,30 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
               placeholder="Nombre del grupo"
               required
             />
+            {/* Mensaje de validación */}
+            {nombreGrupo && (
+              <small className={`mt-1 ${nombreGrupoDisponible === null ? "text-muted" : nombreGrupoDisponible ? "text-success" : "text-danger"}`}>
+                {nombreGrupo === null
+                  ? "Verificando disponibilidad..."
+                  : nombreGrupo
+                    ? "Nombre de grupo disponible"
+                    : "Nombre de grupo en uso"}
+              </small>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Precio {armarStringFrecuenciaCobro(frecuenciaCobro.cantCiclo, frecuenciaCobro.unidadCiclo)} </Form.Label>
             <div className="input-group"> {/* Contenedor para el símbolo y el input */}
               <span className="input-group-text">$</span> {/* Símbolo $ a la izquierda */}
-            <Form.Control
-              type="number"
-              value={monto}
-              onChange={(e) => setMonto(e.target.value)}
-              placeholder="Precio"
-              required
-              onWheel={(e) => e.target.blur()}  // Evita el scroll
-            />
+              <Form.Control
+                type="number"
+                value={monto}
+                onChange={(e) => setMonto(e.target.value)}
+                placeholder="Precio"
+                required
+                onWheel={(e) => e.target.blur()}  // Evita el scroll
+              />
             </div>
           </Form.Group>
 
@@ -214,7 +251,7 @@ const CrearGrupoModal = ({ show, handleClose, ultimoNumeroGrupo, idServicio, gru
                 key={index}
                 className="d-flex justify-content-between align-items-center"
               >
-               {`${horario.nombreDiaSemana} de ${horario.horaInicio}hs a ${horario.horaFin}hs`}
+                {`${horario.nombreDiaSemana} de ${horario.horaInicio}hs a ${horario.horaFin}hs`}
                 <Button
                   variant="danger"
                   size="sm"

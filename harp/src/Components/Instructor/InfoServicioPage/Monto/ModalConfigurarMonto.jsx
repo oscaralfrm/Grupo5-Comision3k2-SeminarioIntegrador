@@ -1,3 +1,4 @@
+{/*
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Button, Row, Col } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -54,7 +55,7 @@ function ModalConfigurarMonto({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(onSubmit)}>
-          {/* Campo de Frecuencia de actividades */}
+         
           <Form.Group className="mb-3">
             <Form.Label>Frecuencia de actividades:</Form.Label>
             <Form.Control
@@ -64,7 +65,7 @@ function ModalConfigurarMonto({
             />
           </Form.Group>
 
-          {/* Campo de Monto */}
+       
           <Form.Group className="mb-3">
             <Form.Label>Monto</Form.Label>
             <Form.Control
@@ -87,7 +88,7 @@ function ModalConfigurarMonto({
         </Form>
       </Modal.Body>
 
-      {/* Botones de acción */}
+     
       <Modal.Footer>
         <Row style={{ width: "100%" }}>
           <Col className="d-flex justify-content-start">
@@ -111,3 +112,5 @@ function ModalConfigurarMonto({
 }
 
 export default ModalConfigurarMonto;
+
+*/}

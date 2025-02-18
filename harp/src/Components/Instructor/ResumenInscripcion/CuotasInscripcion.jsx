@@ -15,7 +15,7 @@ const CuotasInscripcion = ({ cuotas, inscripcion, resumenPagos }) => {
             <Card.Body>
                 <Button
                     variant="primary"
-                    onClick={() => navigate(`/instructor/${idInstructor}/servicio/${inscripcion.id}/cobros?alumno=${inscripcion.id}`)}
+                    onClick={() => navigate(`/instructor/${idInstructor}/servicio/${inscripcion.servicio.id}/cobros?alumno=${inscripcion.id}`)}
                     style={{
                         position: "absolute",
                         top: "15px",

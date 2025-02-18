@@ -12,6 +12,7 @@ import { getGruposDeServicio } from "../../../services/Grupo";
 import ConfirmModal from "../../CartelDeExito/ModalConfirmacion";
 import SuccessModal from "../../CartelDeExito/CartelDeExito";
 import ModalFinalizarServicio from "./ModalFinalizarServicio";
+import { habilitarInscripcionesDeServicio } from "../../../services/Inscripcion";
 
 const InfoServicioPage = () => {
   const { idServicio, idInstructor } = useParams();
@@ -303,6 +304,24 @@ const InfoServicioPage = () => {
                 className="fw-bold"
               >
                 Reiniciar
+              </Button>
+            </div>
+          )}
+          {servicioSePuede?.abrirInscripciones && (
+            <div className="flex-shrink-0">
+              <Button
+                variant="primary"
+                onClick={() =>
+                  handleOpenConfirmModal("Publicar", async () => {
+                    await habilitarInscripcionesDeServicio(idServicio);
+                    setShowSuccessModal(true);
+                    handleCloseConfirmModal();
+                  })
+                }
+                style={buttonResponsiveStyle}
+                className="fw-bold"
+              >
+                Publicar {/*Como un habilitar inscripciones */}
               </Button>
             </div>
           )}

@@ -202,6 +202,7 @@ export const getInscripcionesPendientesDeAlumno = async (idAlumno) => {
 export const getHistorialCuotasDeAlumno = async (idInscripcion, idServicio) => {
     try {
         const response = await axios.get(`/servicios/${idServicio}/inscripciones/${idInscripcion}/cuotas`);
+        console.log(response.data);
         return response.data;  // Suponiendo que la respuesta es el historial de cuotas
     } catch (error) {
         console.error("Error fetching historial de cuotas: ", error);

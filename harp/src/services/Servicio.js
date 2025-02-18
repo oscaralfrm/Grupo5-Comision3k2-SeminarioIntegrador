@@ -564,3 +564,14 @@ export const generarLinkMaps = (ubicacion) => {
     if (!ubicacion) return "#";
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicacion)}`;
   };
+
+  export const tieneGrupoConEsteNombre = async (idServicio, nombreGrupo) => {
+    try {
+      const response = await axios.get(`${API_URL}servicios/${idServicio}/by-nombre-grupo?nombreGrupo=${nombreGrupo}`);
+      console.log("nombre usado", response);
+      return response.data;
+    } catch (error) {
+      console.error(`Error buscando nombre grupo usado por servicio`, error);
+      throw error;
+    }
+  };

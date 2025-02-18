@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col, ListGroup, Button, Image, Card } from "react-bootstrap";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { formatDistance } from "date-fns";
+import { formatDistance , isEqual, isSameDay, parse} from "date-fns";
 import { es } from "date-fns/locale";
 import { FaCalendarAlt } from "react-icons/fa"; // Ícono de calendario
 import { calcularEdad } from "../MiServicio/MenuOpciones/Dashboard/Inscripciones";
@@ -11,10 +11,15 @@ const calcularDiferenciaDeFechas = (fechaInicio, fechaFin) => {
     return formatDistance(new Date(fechaInicio), new Date(fechaFin), { locale: es });
 };
 
+const calcularFechasIgualAHoy = (fecha) => {
+    const fechaLocal = parse(fecha, "yyyy-MM-dd", new Date());
+    return isSameDay(fechaLocal, new Date());
+};
+
 const InscripcionData = ({ inscripcionData }) => {
     const navigate = useNavigate();
     const {idInstructor} = useParams();
-    const { alumno, grupo, fechaSolicitud, fechaAceptacion, fechaFin } = inscripcionData;
+    const { alumno, grupo, fechaSolicitud, fechaAceptacion, fechaFin, fechaInicio } = inscripcionData;
 
     return (
         <div className="card shadow-lg p-4 mb-4 position-relative">
@@ -86,12 +91,20 @@ const InscripcionData = ({ inscripcionData }) => {
                 <Col>
                     <h5 className="text-primary">Fechas</h5>
                     <ListGroup variant="flush">
-                        <ListGroup.Item>
-                            <strong>Inscripto hace:</strong> {calcularDiferenciaDeFechas(fechaSolicitud, new Date())}
-                        </ListGroup.Item>
-                        <ListGroup.Item>
+                            {calcularFechasIgualAHoy(fechaAceptacion, new Date())
+                                ? <ListGroup.Item> <strong>Inscripto desde:</strong> Hoy </ListGroup.Item>
+                                : <ListGroup.Item> <strong>Inscripto hace:</strong> {calcularDiferenciaDeFechas(fechaAceptacion, new Date())} </ListGroup.Item>
+                            }
+                        {fechaInicio != fechaAceptacion &&
+                              <ListGroup.Item>
+                              <strong>Inicio de actividad:</strong> {fechaInicio}
+                          </ListGroup.Item>
+                        }
+                        {fechaAceptacion &&
+                            <ListGroup.Item>
                             <strong>Solicitud aceptada:</strong> {calcularDiferenciaDeFechas(fechaSolicitud, fechaAceptacion)} después
                         </ListGroup.Item>
+                        }
                         {fechaFin && (
                             <ListGroup.Item>
                                 <strong>Solicitud finalizada:</strong> {calcularDiferenciaDeFechas(fechaSolicitud, fechaFin)} después
