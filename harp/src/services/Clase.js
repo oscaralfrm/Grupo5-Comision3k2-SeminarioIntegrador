@@ -52,7 +52,10 @@ export const getClasesDeHorario = async (horario) => {
 // Servicio para editar una clase
 export const editClase = async (idClase, observaciones, noFueDada) => {
     try {
-        const response = await axios.put(`${API_URL}/clases/${idClase}`, observaciones, noFueDada);
+        const response = await axios.put(`${API_URL}/clases/${idClase}/editar`, {
+            observaciones: observaciones,
+            noFueDada: noFueDada,
+        });
         return response.data;  // Suponiendo que la respuesta es la clase editada
     } catch (error) {
         console.error("Error editing clase: ", error);
@@ -63,7 +66,7 @@ export const editClase = async (idClase, observaciones, noFueDada) => {
 // Servicio para marcar una clase como "No Fue Dada"
 export const cambiarClaseANoFueDada = async (idClase) => {
     try {
-        await axios.put(`${API_URL}/clases/${idClase}/no-fue-dada`);
+        await axios.put(`${API_URL}/clases/${idClase}/noFueDada`);
     } catch (error) {
         console.error("Error marking clase as 'No Fue Dada': ", error);
         throw error;
