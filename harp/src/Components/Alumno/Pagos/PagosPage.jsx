@@ -16,6 +16,9 @@ const MisCuotas = () => {
   const [estadoCuotaFilter, setEstadoCuotaFilter] = useState("");
   const [fechaLimitePagoFilter, setFechaLimitePagoFilter] = useState("");
   const [montoABonarFilter, setMontoABonarFilter] = useState("");
+  const [fechaInicioFilter, setFechaInicioFilter] = useState("");
+  const [fechaFinFilter, setFechaFinFilter] = useState("");
+  const [instructorFilter, setInstructorFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false); // Colapsado por defecto
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [loading, setLoading] = useState(true);
@@ -84,8 +87,20 @@ const MisCuotas = () => {
       filtered = filtered.filter(cuota => ((cuota.montoServicio?.monto || 0) + (cuota.recargo || 0)).toString() === montoABonarFilter);
     }
 
+    if (fechaInicioFilter) {
+      filtered = filtered.filter(cuota => cuota.fechaInicioCiclo?.slice(0, 10) === fechaInicioFilter);
+    }
+
+    if (fechaFinFilter) {
+      filtered = filtered.filter(cuota => cuota.fechaFinCiclo?.slice(0, 10) === fechaFinFilter);
+    }
+
+    if (instructorFilter) {
+      filtered = filtered.filter(cuota => cuota.instructor.toLowerCase().includes(instructorFilter.toLowerCase()));
+    }
+
     setFilteredCuotas(filtered);
-  }, [cuotas, searchTerm, estadoCuotaFilter, fechaLimitePagoFilter, montoABonarFilter]);
+  }, [cuotas, searchTerm, estadoCuotaFilter, fechaLimitePagoFilter, montoABonarFilter, fechaInicioFilter, fechaFinFilter, instructorFilter]);
 
   const isSmallScreen = windowWidth < 768;
   const isMediumScreen = windowWidth >= 768 && windowWidth < 992;
@@ -112,7 +127,7 @@ const MisCuotas = () => {
 
   const panelStyle = {
     width: panelWidth,
-    height: `calc(100vh - ${panelTop}px)`, // Corregido: Usamos template literals
+    height: `calc(100vh - ${panelTop})`,
     position: "fixed",
     top: panelTop,
     left: 0,
@@ -150,6 +165,12 @@ const MisCuotas = () => {
           setFechaLimitePagoFilter={setFechaLimitePagoFilter}
           montoABonarFilter={montoABonarFilter}
           setMontoABonarFilter={setMontoABonarFilter}
+          fechaInicioFilter={fechaInicioFilter}
+          setFechaInicioFilter={setFechaInicioFilter}
+          fechaFinFilter={fechaFinFilter}
+          setFechaFinFilter={setFechaFinFilter}
+          instructorFilter={instructorFilter}
+          setInstructorFilter={setInstructorFilter}
           showFilters={showFilters}
           setShowFilters={setShowFilters}
           isSmallScreen={isSmallScreen}

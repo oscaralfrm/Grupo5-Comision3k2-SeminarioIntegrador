@@ -127,13 +127,13 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas, isPanelCollapsed }) => {
                 <strong>Nombre del Instructor:</strong> {cuota.instructor}  {/* Ahora sí se muestra */}
               </p>
               <p>
-                <strong>Fecha de Inicio:</strong> {cuota.fechaInicioCiclo}
+                <strong>Inicio:</strong> {cuota.fechaInicioCiclo}
               </p>
               <p>
-                <strong>Fecha de Fin:</strong> {cuota.fechaFinCiclo}
+                <strong>Fin:</strong> {cuota.fechaFinCiclo}
               </p>
               <p>
-                <strong>Fecha Límite de Pago:</strong> {fechaLimitePago}
+                <strong>Límite de Pago:</strong> {fechaLimitePago}
               </p>
               {fechaPago && (
                 <p>
@@ -143,7 +143,7 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas, isPanelCollapsed }) => {
             </div>
             <div className="d-flex justify-content-between align-items-center">
               <p className="mb-0" style={{ marginLeft: '15px' }}>
-                <strong>Cantidad a Abonar:</strong> <strong style={{ fontSize: '1.5rem', color: '#4F46E5' }}>${totalMonto}</strong>
+                <strong>Cantidad a Abonar:</strong> <strong style={{ fontSize: '1.5rem' }}>${totalMonto}</strong>
               </p>
               {mostrarBotonPagar && (
                 <Button
