@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface IClaseRepository extends JpaRepository<Clase, Long> {
     List<Clase> findByHorario(Horario horario);
-    @Query(value = "SELECT * FROM clases c JOIN horarios h ON c.horario_id = h.id WHERE h.grupo_id = :idGrupo", nativeQuery = true)
+    @Query(value = "SELECT c.*  FROM clases c JOIN horarios h ON c.horario_id = h.id WHERE h.grupo_id = :idGrupo", nativeQuery = true)
     List<Clase> findClasesDeGrupo(@Param("idGrupo") Long idGrupo);
 }
