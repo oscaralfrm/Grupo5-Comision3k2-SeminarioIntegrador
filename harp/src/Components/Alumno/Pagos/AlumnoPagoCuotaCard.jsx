@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as cuotaService from '../../../services/Cuota.js';
 import * as servicioService from '../../../services/Servicio.js';
-import * as instructorService from '../../../services/Instructor.js';
 import { Card, Button, Row, Col, Badge, Modal } from 'react-bootstrap';
 import placeholderImage from "../../../assets/placeholderForServices.png";
 
@@ -9,7 +8,6 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas, isPanelCollapsed }) => {
   const [showModal, setShowModal] = useState(false);
   const [comprobante, setComprobante] = useState(null);
   const [servicio, setServicio] = useState(null);
-  const [instructor, setInstructor] = useState("Desconocido");
   const [loadingServicio, setLoadingServicio] = useState(true);
 
   const estadoActual = cuota.cambiosEstado?.find(estado => estado.fechaFin === null);
@@ -49,20 +47,18 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas, isPanelCollapsed }) => {
   };
 
   useEffect(() => {
-    const fetchServicioEInstructor = async () => {
+    const fetchServicio = async () => {
       setLoadingServicio(true);
       try {
         const servicioData = await servicioService.getDetallesDeServicio(cuota.inscripcion.servicio.id);
         setServicio(servicioData);
-        const instructorData = await instructorService.obtenerInstructorDeServicio(cuota.inscripcion.servicio.id);
-        setInstructor(instructorData.nombre || "Desconocido");
       } catch (error) {
-        console.error("Error fetching servicio or instructor details:", error);
+        console.error("Error fetching servicio details:", error);
       } finally {
         setLoadingServicio(false);
       }
     };
-    if (cuota.inscripcion.servicio.id) fetchServicioEInstructor();
+    if (cuota.inscripcion.servicio.id) fetchServicio();
   }, [cuota]);
 
   if (loadingServicio) {
@@ -90,7 +86,7 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas, isPanelCollapsed }) => {
         minHeight: '200px',
         position: 'relative',
         width: isPanelCollapsed ? '80vw' : 'auto',
-        boxShadow: '0px 4px 19px rgba(0, 0, 0, 0.5)', // Asegúrate de que este estilo esté presente
+        boxShadow: '0px 4px 19px rgba(0, 0, 0, 0.5)',
       }}
     >
       <Card.Header
@@ -128,7 +124,7 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas, isPanelCollapsed }) => {
                 <strong>Estado:</strong> <Badge bg={badgeVariant}>{estadoLabel}</Badge>
               </p>
               <p>
-                <strong>Nombre del Instructor:</strong> {instructor}
+                <strong>Nombre del Instructor:</strong> {cuota.instructor}  {/* Ahora sí se muestra */}
               </p>
               <p>
                 <strong>Fecha de Inicio:</strong> {cuota.fechaInicioCiclo}

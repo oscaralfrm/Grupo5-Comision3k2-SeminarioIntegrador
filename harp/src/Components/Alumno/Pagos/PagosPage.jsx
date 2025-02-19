@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getInscripcionesVigentesDeAlumno } from "../../../services/Alumno";
 import { obtenerUltimasCuotasDeInscripcion } from "../../../services/Cuota";
+import { obtenerInstructorDeServicio } from "../../../services/Instructor";
+import { getServicioById } from "../../../services/Servicio";
 import AlumnoPagoCuotaCard from "./AlumnoPagoCuotaCard.jsx";
 import FiltrosPagos from "./FiltrosPagos";
 import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
@@ -30,13 +32,26 @@ const MisCuotas = () => {
       const inscripciones = await getInscripcionesVigentesDeAlumno(idAlumno);
       let todasLasCuotas = [];
 
+      // Optimización: Procesar cada inscripción secuencialmente.
       for (const inscripcion of inscripciones) {
         const cuotasInscripcion = await obtenerUltimasCuotasDeInscripcion(
           inscripcion.servicio.id,
           inscripcion.id
         );
-        todasLasCuotas = [...todasLasCuotas, ...cuotasInscripcion.map(cuota => ({ ...cuota, inscripcion }))];
+
+        const servicio = await getServicioById(inscripcion.servicio.id);
+        const instructor = await obtenerInstructorDeServicio(servicio.id);
+
+        //Mapear las cuotas e incluir el nombre del instructor
+        for (const cuota of cuotasInscripcion) {
+          todasLasCuotas.push({
+            ...cuota,
+            inscripcion,
+            instructor: instructor.usuario.nombre + " " + instructor.usuario.apellido, // Guardamos el nombre del instructor
+          });
+        }
       }
+
       setCuotas(todasLasCuotas);
       setFilteredCuotas(todasLasCuotas);
     } catch (error) {
@@ -97,7 +112,7 @@ const MisCuotas = () => {
 
   const panelStyle = {
     width: panelWidth,
-    height: `calc(100vh - ${panelTop})`,
+    height: `calc(100vh - ${panelTop}px)`, // Corregido: Usamos template literals
     position: "fixed",
     top: panelTop,
     left: 0,
