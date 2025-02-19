@@ -86,6 +86,13 @@ public class InscripcionController {
         return ResponseEntity.ok(cuotas);
     }
 
+    // GET LAS CUOTAS PENDIENTES O VENCIDAS DE UNA INSCRIPCION
+    @GetMapping("/{idServicio}/inscripciones/{idInscripcion}/cuotas-pendientes-vencidas")
+    public ResponseEntity<List<Cuota>> getCuotasPendientesDeInscripcion(@PathVariable @Min(1) Long idInscripcion) {
+        List<Cuota> cuotas = inscripcionService.obtenerCuotasPendientesOVencidasDeInscripcion(idInscripcion);
+        return ResponseEntity.ok(cuotas);
+    }
+
     // GET RESUMEN PAGOS DE UNA INSCRIPCION
     @GetMapping("/{idServicio}/inscripciones/{idInscripcion}/resumen-pagos")
     public ResponseEntity<ResumenPagosDTO> obtenerResumenPagosDeInscripcion(@PathVariable @Min(1) Long idInscripcion) {

@@ -164,10 +164,19 @@ public class ClaseService implements IClaseService {
         System.out.println(34);
     }
 
-    public void eliminarAsistenciasDeAlumnoDeClasesFuturas(Alumno alumnoExistente, Horario horario) {
+    public void eliminarAsistenciasDeAlumnoDeClasesFuturasDeHorario(Alumno alumnoExistente, Horario horario) {
         List<Clase> claseFuturasHorario = findClasesFuturasDeHorario(horario);
         for (Clase clase : claseFuturasHorario) {
             asistenciaService.deleteAsistenciasDeAlumnoAndClase(alumnoExistente, clase);
+        }
+    }
+
+    public void eliminarAsistenciasDeAlumnoDeClasesFuturasDeGrupo(Alumno alumnoExistente, Grupo grupo) {
+        for (Horario horario : grupo.getHorarios()) {
+            List<Clase> claseFuturasHorario = findClasesFuturasDeHorario(horario);
+            for (Clase clase : claseFuturasHorario) {
+                asistenciaService.deleteAsistenciasDeAlumnoAndClase(alumnoExistente, clase);
+            }
         }
     }
 

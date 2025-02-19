@@ -2,8 +2,10 @@ package com.harp.backend.entities.inscripcion;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.AlumnoService;
+import com.harp.backend.entities.clase.ClaseService;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.cuota.CuotaService;
+import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.horario.HorarioService;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.EstrategiaCrearInscripcionFactory;
@@ -32,6 +34,7 @@ public class InscripcionService implements IInscripcionService {
     @Autowired
     private IInscripcionRepository inscripcionRepository;
 
+
 //    @Autowired
 //    private InscripcionConverter inscripcionConverter;
 
@@ -52,6 +55,9 @@ public class InscripcionService implements IInscripcionService {
 
     @Autowired
     private PagoService pagoService;
+
+    @Autowired
+    private ClaseService claseService;
 
     @Autowired
     private NotificacionService notificacionService;
@@ -301,16 +307,31 @@ public class InscripcionService implements IInscripcionService {
         inscipcionExistente.finalizar(); // se valida que se pueda finalizar
 
         //ACA ELIMINAR AL ALUMNO DE LOS HORARIOS EN LOS QUE ESTA!!!! y de sus clases futuras ya creadas
-        List<Horario> horarios = inscipcionExistente.getHorarios();
-        Alumno alumnoExistente = alumnoService.findAlumnoConEstaInscripcion(inscipcionExistente);
 
-        //REEMPLAZAR POR ELIMINAR ALUMNO DE ASISTENCIAS en caso de que esten activas
-        //horarioService.eliminarAlumnoDeHorarios(alumnoExistente, horarios);
+        //ELIMINAR ALUMNO DE ASISTENCIAS de clases futuras en caso de que esten activas
+        Servicio servicio = inscipcionExistente.getServicio();
+        if (servicio.isAsistenciasActivas()) {
+        if (servicio.esDeModalidadAGrupo()) {
+            Grupo grupo = inscipcionExistente.getGrupo();
+                claseService.eliminarAsistenciasDeAlumnoDeClasesFuturasDeGrupo(inscipcionExistente.getAlumno(), grupo);
+            }
+        }
 
         // ACA ANULAR LAS CUOTAS YA CREADAS DEL ALUMNO!!!
+        this.anularCuotasPendientesDeInscripcion(idInscripcion);
 
         inscripcionRepository.save(inscipcionExistente);
+
         // ACA deberiamos notificar al instructor que un alumno se dio de baja
+        // O al alumno que el instructor lo fletó
+        notificacionService.notificarInscripcionFinalizada(inscipcionExistente);
+    }
+
+    public void anularCuotasPendientesDeInscripcion(Long idInscripcion) {
+        List<Cuota> cuotasAAnular = this.obtenerCuotasPendientesOVencidasDeInscripcion(idInscripcion);
+        for (Cuota cuota : cuotasAAnular) {
+            cuotaService.anularCuota(cuota.getId());
+        }
     }
 
 
@@ -353,6 +374,14 @@ public class InscripcionService implements IInscripcionService {
     public List<Cuota> obtenerHistorialCuotasInscripcion(Long idInscripcion) {
         Inscripcion inscripcion = this.findInscripcion(idInscripcion);
         return inscripcion.getCuotas();
+    }
+
+    public List<Cuota> obtenerCuotasPendientesOVencidasDeInscripcion(Long idInscripcion) {
+        Inscripcion inscripcion = this.findInscripcion(idInscripcion);
+        List<Cuota> cuotas = new ArrayList<>();
+        cuotas.addAll(inscripcion.obtenerCuotasPendientes());
+        cuotas.addAll(inscripcion.obtenerCuotasVencidas());
+        return cuotas;
     }
 
     public List<Cuota> obtenerUltimaCuotaOVencidasYPendientes(Long idInscripcion) {

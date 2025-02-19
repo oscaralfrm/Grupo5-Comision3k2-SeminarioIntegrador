@@ -76,7 +76,7 @@ public class InstructorService implements IInstructorService {
 
     public List<Servicio> findServiciosPublicadosDeInstructor(Long idInstructor) {
         return this.findServiciosDeInstructor(idInstructor)
-                .stream().filter(Servicio::isPublico)
+                .stream().filter(Servicio::esPublicado)
                 .toList();
     }
 

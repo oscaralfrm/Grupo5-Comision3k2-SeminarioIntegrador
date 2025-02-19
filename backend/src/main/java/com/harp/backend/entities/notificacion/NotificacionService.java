@@ -77,6 +77,17 @@ public class NotificacionService implements INotificacionService {
         notificacionRepository.save(notificacion);
     }
 
+    public void notificarInscripcionFinalizada(Inscripcion inscripcion) {
+        Servicio servicio = inscripcion.getServicio();
+        Alumno alumno = inscripcion.getAlumno();
+
+        String titulo = "Inscripcion finalizada";
+        String mensaje = "Tu inscripción al servicio " + servicio.getNombre() + " ha sido finalizada el dia de la fecha " + inscripcion.getFechaFin()
+                + ". Ademas, se han anulado las cuotas que tenias pendientes.";
+        Notificacion notificacion = new Notificacion(servicio, alumno, null, titulo, mensaje);
+        notificacionRepository.save(notificacion);
+    }
+
     public void notificarPagoCuotaAAlumno(Servicio servicio, Instructor instructor, Alumno alumno, Cuota cuota) {
         double totalCuota = cuota.getMontoServicio().getMonto() + cuota.getRecargo();
 

@@ -230,9 +230,9 @@ public class Inscripcion {
         }
         // si se creó con una fecha fin especifica, no puede finalizarse antes
         // pero si hoy es dia de vencerse, su fechaFin no es null pero esta fechaFin es igual a la actual entonces si puede finalizarce
-        if (fechaFin != null && fechaFin.isAfter(LocalDate.now())) {
-            throw new UnsupportedOperationException("La inscripción fue programada previamente para finalizarce en una fecha futura.");
-        }
+//        if (fechaFin != null && fechaFin.isAfter(LocalDate.now())) {
+//            throw new UnsupportedOperationException("La inscripción fue programada previamente para finalizarce en una fecha futura.");
+//        }
         this.fechaFin = LocalDate.now();
         //cambiar el estado a Finalizada
         this.estado = EstadoInscripcion.Finalizada;

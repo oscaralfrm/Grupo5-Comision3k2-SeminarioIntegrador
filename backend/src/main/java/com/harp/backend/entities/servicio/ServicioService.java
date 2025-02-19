@@ -243,7 +243,7 @@ public class ServicioService implements IServicioService {
                     .filter(servicio -> servicio.tieneGruposEnEstosTurnos(turnos));
         }
 
-        List<Servicio> listServiciosFiltrados = serviciosFiltrados.toList();
+        List<Servicio> listServiciosFiltrados = serviciosFiltrados.collect(Collectors.toList());
 
         // SIN INSTRUCTOR
         if (idInstructor != null) {
@@ -639,6 +639,7 @@ public class ServicioService implements IServicioService {
         sePuede.setVolverAPublicar(servicio.sePuedeVolverAPublicar());
         sePuede.setCancelar(servicio.sePuedeCancelar());
         sePuede.setAbrirInscripciones(this.sePuedeAbrirInscripcionesDeServicio(servicio));
+        sePuede.setCerrarInscripciones(servicio.sePuedenCerrarInscripciones());
         return sePuede;
     }
 

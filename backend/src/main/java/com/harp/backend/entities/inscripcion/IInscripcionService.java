@@ -25,5 +25,6 @@ public interface IInscripcionService {
     //List<Inscripcion> findInscripcionesDeServicio(Long idServicio);
     public List<Cuota> obtenerHistorialCuotasInscripcion(Long idInscripcion);
     public List<Cuota> obtenerUltimaCuotaOVencidasYPendientes(Long idInscripcion);
+    public List<Cuota> obtenerCuotasPendientesOVencidasDeInscripcion(Long idInscripcion);
     public ResumenPagosDTO obtenerResumenPagosDeInscripcion(Long idInscripcion);
 }

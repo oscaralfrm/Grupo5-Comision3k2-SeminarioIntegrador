@@ -461,11 +461,20 @@ public class Servicio {
         // NO consideramos abrir inscripciones cuando se publica por primera vez por eso debe ya estar en publico
         System.out.println("inscripciones abiertas" + this.inscripcionesAbiertas);
         System.out.println("is publico" + this.isPublico());
-        if ( ! this.inscripcionesAbiertas && this.isPublico()) {
+        if ( ! this.inscripcionesAbiertas && this.isPublico() && ! this.esSuspendido()) {
             return true;
         }
         return false;
     }
+
+    public boolean sePuedenCerrarInscripciones() {
+        if ( this.inscripcionesAbiertas && this.isPublico() && ! this.esSuspendido()) {
+            return true;
+        }
+        return false;
+    }
+
+
 
     public boolean sePuedeRenaudar() {
         // Se puede eliminar si es borrador
