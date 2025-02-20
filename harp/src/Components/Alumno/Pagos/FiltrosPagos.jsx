@@ -11,6 +11,12 @@ const FiltrosPagos = ({
   setFechaLimitePagoFilter,
   montoABonarFilter,
   setMontoABonarFilter,
+  fechaInicioFilter,
+  setFechaInicioFilter,
+  fechaFinFilter,
+  setFechaFinFilter,
+  instructorFilter,
+  setInstructorFilter,
   showFilters,
   setShowFilters,
   isSmallScreen,
@@ -24,6 +30,9 @@ const FiltrosPagos = ({
     setEstadoCuotaFilter("");
     setFechaLimitePagoFilter("");
     setMontoABonarFilter("");
+    setFechaInicioFilter("");
+    setFechaFinFilter("");
+    setInstructorFilter("");
   };
 
   const headerStyle = showFilters
@@ -103,11 +112,31 @@ const FiltrosPagos = ({
                 </Form.Group>
 
                 <Form.Group className="mb-3">
+                  <Form.Label>Fecha de Inicio</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={fechaInicioFilter}
+                    onChange={(e) => setFechaInicioFilter(e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col xs={12} md={6}>
+                <Form.Group className="mb-3">
                   <Form.Label>Monto a Pagar</Form.Label>
                   <Form.Control
                     type="number"
                     value={montoABonarFilter}
                     onChange={(e) => setMontoABonarFilter(e.target.value)}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Fecha de Fin</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={fechaFinFilter}
+                    onChange={(e) => setFechaFinFilter(e.target.value)}
                   />
                 </Form.Group>
 
@@ -123,6 +152,16 @@ const FiltrosPagos = ({
                     <option value="Vencida">Anulada</option>
                     <option value="Vencida">Vencida</option>
                   </Form.Select>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Nombre del Instructor</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Buscar por nombre del instructor..."
+                    value={instructorFilter}
+                    onChange={(e) => setInstructorFilter(e.target.value)}
+                  />
                 </Form.Group>
               </Col>
             </Row>

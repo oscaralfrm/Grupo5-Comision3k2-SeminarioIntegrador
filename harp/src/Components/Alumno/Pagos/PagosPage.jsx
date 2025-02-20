@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getInscripcionesVigentesDeAlumno } from "../../../services/Alumno";
 import { obtenerUltimasCuotasDeInscripcion } from "../../../services/Cuota";
+import { obtenerInstructorDeServicio } from "../../../services/Instructor";
+import { getServicioById } from "../../../services/Servicio";
 import AlumnoPagoCuotaCard from "./AlumnoPagoCuotaCard.jsx";
 import FiltrosPagos from "./FiltrosPagos";
 import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
@@ -14,6 +16,9 @@ const MisCuotas = () => {
   const [estadoCuotaFilter, setEstadoCuotaFilter] = useState("");
   const [fechaLimitePagoFilter, setFechaLimitePagoFilter] = useState("");
   const [montoABonarFilter, setMontoABonarFilter] = useState("");
+  const [fechaInicioFilter, setFechaInicioFilter] = useState("");
+  const [fechaFinFilter, setFechaFinFilter] = useState("");
+  const [instructorFilter, setInstructorFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false); // Colapsado por defecto
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [loading, setLoading] = useState(true);
@@ -30,13 +35,26 @@ const MisCuotas = () => {
       const inscripciones = await getInscripcionesVigentesDeAlumno(idAlumno);
       let todasLasCuotas = [];
 
+      // Optimización: Procesar cada inscripción secuencialmente.
       for (const inscripcion of inscripciones) {
         const cuotasInscripcion = await obtenerUltimasCuotasDeInscripcion(
           inscripcion.servicio.id,
           inscripcion.id
         );
-        todasLasCuotas = [...todasLasCuotas, ...cuotasInscripcion.map(cuota => ({ ...cuota, inscripcion }))];
+
+        const servicio = await getServicioById(inscripcion.servicio.id);
+        const instructor = await obtenerInstructorDeServicio(servicio.id);
+
+        //Mapear las cuotas e incluir el nombre del instructor
+        for (const cuota of cuotasInscripcion) {
+          todasLasCuotas.push({
+            ...cuota,
+            inscripcion,
+            instructor: instructor.usuario.nombre + " " + instructor.usuario.apellido, // Guardamos el nombre del instructor
+          });
+        }
       }
+
       setCuotas(todasLasCuotas);
       setFilteredCuotas(todasLasCuotas);
     } catch (error) {
@@ -69,8 +87,20 @@ const MisCuotas = () => {
       filtered = filtered.filter(cuota => ((cuota.montoServicio?.monto || 0) + (cuota.recargo || 0)).toString() === montoABonarFilter);
     }
 
+    if (fechaInicioFilter) {
+      filtered = filtered.filter(cuota => cuota.fechaInicioCiclo?.slice(0, 10) === fechaInicioFilter);
+    }
+
+    if (fechaFinFilter) {
+      filtered = filtered.filter(cuota => cuota.fechaFinCiclo?.slice(0, 10) === fechaFinFilter);
+    }
+
+    if (instructorFilter) {
+      filtered = filtered.filter(cuota => cuota.instructor.toLowerCase().includes(instructorFilter.toLowerCase()));
+    }
+
     setFilteredCuotas(filtered);
-  }, [cuotas, searchTerm, estadoCuotaFilter, fechaLimitePagoFilter, montoABonarFilter]);
+  }, [cuotas, searchTerm, estadoCuotaFilter, fechaLimitePagoFilter, montoABonarFilter, fechaInicioFilter, fechaFinFilter, instructorFilter]);
 
   const isSmallScreen = windowWidth < 768;
   const isMediumScreen = windowWidth >= 768 && windowWidth < 992;
@@ -135,6 +165,12 @@ const MisCuotas = () => {
           setFechaLimitePagoFilter={setFechaLimitePagoFilter}
           montoABonarFilter={montoABonarFilter}
           setMontoABonarFilter={setMontoABonarFilter}
+          fechaInicioFilter={fechaInicioFilter}
+          setFechaInicioFilter={setFechaInicioFilter}
+          fechaFinFilter={fechaFinFilter}
+          setFechaFinFilter={setFechaFinFilter}
+          instructorFilter={instructorFilter}
+          setInstructorFilter={setInstructorFilter}
           showFilters={showFilters}
           setShowFilters={setShowFilters}
           isSmallScreen={isSmallScreen}
