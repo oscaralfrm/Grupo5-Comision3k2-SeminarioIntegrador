@@ -60,6 +60,7 @@ const CuotaCard = ({ cuota, idInscripcion, idServicio, grupo, fetchCuotas, sePue
 
                     {/* Fecha y estado */}
                     <p className="m-0"><strong>{fechaTexto}</strong> {fechaMostrada}</p>
+                    <p className="m-0"><strong>Ciclo: </strong> {cuota.fechaInicioCiclo} - {cuota.fechaFinCiclo} </p>
                     <span className={`badge ${badgeClass}`}>{estadoLabel}</span>
                 </div>
 
