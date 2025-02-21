@@ -428,4 +428,11 @@ public class CuotaService implements ICuotaService {
         Alumno alumno = inscripcion.getAlumno();
         notificacionService.notificarRechazoPagoCuota(servicio, instructor, alumno, cuota);
     }
+
+    public void aplicarDescuentoACuota(Cuota cuota, double descuento) {
+        cuota.aplicarDescuento(descuento);
+        cuotaRepository.save(cuota);
+    }
+
+
 }

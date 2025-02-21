@@ -1,6 +1,7 @@
 package com.harp.backend.entities.notificacion;
 
 import com.harp.backend.entities.alumno.model.Alumno;
+import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
@@ -230,6 +231,25 @@ public class NotificacionService implements INotificacionService {
         notificacionRepository.save(notificacionInstructor);
     }
 
+    // NOtiFICAR A ALUMNOS EN PARTICULAR
+    public void notificarClaseNoFueDada(Clase clase, double descuento,  List<Inscripcion> inscripciones) {
+        Servicio servicio = inscripciones.get(1).getServicio();
+
+        String titulo;
+
+        String mensaje = "La clase del servicio " + servicio.getNombre() + " en la fecha " + clase.getFecha()
+                + " no podrá ser dada. ";
+        if (descuento != 0) {
+            titulo = "Descuento a cuota";
+        } else {
+            titulo = "Clase no será dada";
+        }
+
+        inscripciones.forEach(inscripcion -> {
+            Notificacion notificacion = new Notificacion(servicio, inscripcion.getAlumno(), null, titulo, mensaje);
+            notificacionRepository.save(notificacion);
+        });
+    }
 
     public void deleteNotificacion(Long idNotificacion) {
         Notificacion notificacion = this.findNotificacion(idNotificacion);

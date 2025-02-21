@@ -17,10 +17,8 @@ import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -128,17 +126,40 @@ public class Inscripcion {
     // la ultima si es pendiente
     // y si tiene del mes anterior que tambien me la traiga
 
-    public List<Cuota> obtenerUltimasCuotas() {
+    public Set<Cuota> obtenerUltimasCuotas() {
+        // CORREGIDO
+        Set<Cuota> cuotas = new HashSet<>();
         Cuota ultimaCuota = obtenerUltimaCuota();
-        if (ultimaCuota.esAbonada()) {
-            return List.of(ultimaCuota);
-        } else {
-            if (tieneEstaCantCuotasPendientes(2)) {
-                return obtenerCuotasPendientes();
-            } else {
-                return List.of(ultimaCuota);
-            }
-        }
+
+        cuotas.add(ultimaCuota);
+        // Si hay cuotas vencidas o pendientes se agregan porque no si son pendientes o si son vencidas son ultimas
+        // Al ser un set, si la ultima cuota es pendiente o vencida, no se vuelve a agregar
+        cuotas.addAll(this.obtenerCuotasPendientes());
+        cuotas.addAll(this.obtenerCuotasVencidas());
+
+        // Agregamos alguna cuota anulada reciente
+        cuotas.addAll(this.obtenerUltimasCuotasAnuladas());
+
+        return cuotas;
+//        if (ultimaCuota.esAbonada()) {
+//            return List.of(ultimaCuota);
+//        } else {
+//            if (tieneEstaCantCuotasPendientes(2)) {
+//                return obtenerCuotasPendientes();
+//            } else {
+//                return List.of(ultimaCuota);
+//            }
+//        }
+    }
+
+    public List<Cuota> obtenerCuotasOrdenadas() {
+        // Las primeras son las mas antiguas, las ultimas las mas nuevas
+        return this.getCuotas().stream().sorted(Comparator.comparing(Cuota::getFechaInicioCiclo)).collect(Collectors.toList());
+    }
+
+    public List<Cuota> obtenerUltimasCuotasAnuladas() {
+        // Devolvemos las anuladas de las ultimas 3 cuotas mas recientes
+        return this.obtenerCuotasOrdenadas().stream().limit(3).filter(Cuota::esAnulada).toList();
     }
 
     public boolean tieneEstaCantCuotasPendientes(int cant) {
@@ -155,6 +176,14 @@ public class Inscripcion {
 
     public List<Cuota> obtenerCuotasVencidas() {
         return cuotas.stream().filter(Cuota::esVencida).toList();
+    }
+
+    public List<Cuota> obtenerCuotasAnuladas() {
+        return cuotas.stream().filter(Cuota::esAnulada).toList();
+    }
+
+    public Cuota obtenerCuotaEn(LocalDate fecha) {
+        return this.getCuotas().stream().filter(cuota -> cuota.incluyeEstaFecha(fecha)).findFirst().orElse(null);
     }
 
     public void iniciar() {
@@ -213,6 +242,18 @@ public class Inscripcion {
 
     public boolean esFinalizada() {
         return (this.estado == EstadoInscripcion.Finalizada);
+    }
+
+    public boolean esRecientementeFinalizada() {
+        if (! this.esFinalizada()) {
+            return false;
+            // Consideramos que si fue finalizada hace una semana o menos es reciente
+        } else if (this.fechaFin.plusWeeks(1).isAfter(LocalDate.now()) ||
+                this.fechaFin.plusWeeks(1).isEqual(LocalDate.now())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // Implementar según tipo de duración del servicio
@@ -293,6 +334,10 @@ public class Inscripcion {
 
     public boolean estaPendiente() {
         return (this.estado == EstadoInscripcion.PendienteAceptacion);
+    }
+
+    public boolean estaFinalizada() {
+        return (this.estado == EstadoInscripcion.Finalizada);
     }
 
     public boolean esDeEsteAnio(int anio) {

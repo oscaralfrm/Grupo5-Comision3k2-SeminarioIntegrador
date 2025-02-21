@@ -7,6 +7,7 @@ import com.harp.backend.entities.asistencia.Asistencia;
 import com.harp.backend.entities.asistencia.AsistenciaResumenDTO;
 import com.harp.backend.entities.asistencia.AsistenciaService;
 import com.harp.backend.entities.clase.Clase;
+import com.harp.backend.entities.clase.ClaseService;
 import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.diaSemana.DiaSemana;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
@@ -49,7 +50,7 @@ public class GrupoService implements IGrupoService {
     private IHorarioService horarioService;
 
     @Autowired
-    private IClaseService claseService;
+    private ClaseService claseService;
 
     @Autowired
     private MontoServicioService montoService;
@@ -180,7 +181,7 @@ public class GrupoService implements IGrupoService {
         if (servicio.isAsistenciasActivas() && servicio.tieneFechaInicio()) {
             // Creamos las clases a partir de la fecha inicio del servicio
             // Cuando setteamos la fecha inicio tambien deberiamos crear las clases
-            claseService.crearClasesParaSemanaSiguienteGrupo(grupoCreado, servicio.getFechaInicio());
+            claseService.crearClasesParaSemanaSiguienteGrupo(servicio, grupoCreado, servicio.getFechaInicio());
         }
 
         return grupoCreado;
@@ -226,10 +227,12 @@ public class GrupoService implements IGrupoService {
 
         // Aca creamos las clases para ese horario
         if (servicio.isAsistenciasActivas() && servicio.tieneFechaInicio()) {
+
             // Creamos las clases a partir de la fecha inicio del servicio
             // Cuando setteamos la fecha inicio tambien deberiamos crear las clases
             for (Horario horario : horarios) {
-                claseService.crearClasesParaSemanaSiguienteHorario(grupoExistente, servicio.getFechaInicio(), horario);
+
+                claseService.crearClasesParaSemanaSiguienteHorario(servicio, grupoExistente, servicio.getFechaInicio(), horario);
             }
         }
     }
@@ -455,8 +458,10 @@ public class GrupoService implements IGrupoService {
         List<Asistencia> asistencias = this.obtenerAsistenciasDeAlumnoYGrupo(idAlumno, idGrupo);
         List<Asistencia> asistenciasReales = asistencias.stream().filter(asistencia -> asistencia.getAsistio() != null).toList();
         int totalAsistencias = asistenciasReales.size();
-        int cantAsistencias = (int) asistenciasReales.stream().filter(Asistencia::getAsistio).count();
+        int cantAsistencias = (int) asistenciasReales.stream().filter(asistencia -> asistencia.getAsistio() == true).count();
         int cantInasistencias = totalAsistencias - cantAsistencias;
+        System.out.println("cant asistencias" + cantAsistencias);
+        System.out.println("asistencias reales" + asistenciasReales);
         AsistenciaResumenDTO resumen = asistenciaService.createResumenAsistenciaDTO(idAlumno, idGrupo, cantAsistencias, cantInasistencias);
         return resumen;
     }
@@ -473,7 +478,7 @@ public class GrupoService implements IGrupoService {
         List<Clase> clasesPasadas = this.obtenerClasesPasadasDeGrupo(grupo);
         return clasesPasadas
                 .stream()
-                .flatMap(clase -> asistenciaService.findAsistenciasDeClase(clase.getId()).stream())
+                .flatMap(clase -> asistenciaService.findAllAsistenciasDeClase(clase.getId()).stream())
                 .toList();
     }
 
@@ -496,7 +501,7 @@ public class GrupoService implements IGrupoService {
 
         int acumPorcentajeAsistenciasTotalesGrupo = 0;
         for (Clase clase : clasesPasadas) {
-            List<Asistencia> asistenciasRealesDeClase = asistenciaService.findAsistenciasDeClase(clase.getId())
+            List<Asistencia> asistenciasRealesDeClase = asistenciaService.findAllAsistenciasDeClase(clase.getId())
                     .stream()
                     .filter(asistencia -> asistencia.getAsistio() != null).toList();
             int cantAlumnosDeClase = asistenciasRealesDeClase.size();
@@ -531,7 +536,7 @@ public class GrupoService implements IGrupoService {
         List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo);
 
         for (Asistencia inasistencia : allInasistencias) {
-            Alumno alumno = inasistencia.getAlumno();
+            Alumno alumno = inasistencia.getInscripcion().getAlumno();
             // Si no existe, se inicializa en 0 y luego se suma 1
             int faltasActuales = faltasAlumnos.getOrDefault(alumno, 0);
             faltasAlumnos.put(alumno, faltasActuales + 1);
@@ -561,7 +566,7 @@ public class GrupoService implements IGrupoService {
         List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo);
 
         for (Asistencia inasistencia : allInasistencias) {
-            Alumno alumno = inasistencia.getAlumno();
+            Alumno alumno = inasistencia.getInscripcion().getAlumno();
             // Si no existe, se inicializa en 0 y luego se suma 1
             int faltasActuales = faltasAlumnos.getOrDefault(alumno, 0);
             faltasAlumnos.put(alumno, faltasActuales + 1);
@@ -593,11 +598,11 @@ public class GrupoService implements IGrupoService {
         List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo);
 
         Set<Alumno> alumnosConInasistencias = allInasistencias.stream()
-                .map(Asistencia::getAlumno)
+                .map(asistencia -> asistencia.getInscripcion().getAlumno())
                 .collect(Collectors.toSet());
 
         Set<Alumno> alumnosConAsistenciaPerfecta = allAsistencias.stream()
-                .map(Asistencia::getAlumno)
+                .map(asistencia -> asistencia.getInscripcion().getAlumno())
                 .filter(alumno -> !alumnosConInasistencias.contains(alumno))
                 .collect(Collectors.toSet());
 
@@ -622,7 +627,7 @@ public class GrupoService implements IGrupoService {
         // Agregamos los alumnos que estan en la lista de inasitencias de todas las ultimas clases
         Set<Alumno> alumnosAusentesUnaClase = asistenciaService
                 .findInasistenciasDeClase(ultimasClases.get(0).getId())
-                .stream().map(Asistencia::getAlumno).collect(Collectors.toSet());
+                .stream().map(asistencia -> asistencia.getInscripcion().getAlumno()).collect(Collectors.toSet());
 
         // Recorremos los alumnos ausentes una clase
         // De esos filtramos los alumnos que para todas las ultimas clases, tiene alguna inasistencia que es de él
@@ -727,4 +732,8 @@ public class GrupoService implements IGrupoService {
         // SI SE CAMBIA UN ALUMNO DE GRUPO SE DEBE VALIDAR QUE SE AGREGUE A LAS CLASES FUTURAS DE ESE GRUPO
     }
 */
+
+    public void eliminarAsistenciasDeAlumnoDeClasesFuturasDeGrupo(Alumno alumnoExistente, Grupo grupo) {
+        claseService.eliminarAsistenciasDeAlumnoDeClasesFuturasDeGrupo(alumnoExistente, grupo);
+    }
 }

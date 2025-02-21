@@ -320,6 +320,18 @@ public class Servicio {
         return inscripciones.stream().filter(i -> i.estaPendiente() && i.esDeEsteGrupo(grupo) ).toList();
     }
 
+    public List<Inscripcion> obtenerInscripcionesFinalizadas(){
+        return inscripciones.stream().filter(i -> i.estaFinalizada() ).toList();
+    }
+
+    public List<Inscripcion> obtenerInscripcionesFinalizadas(Grupo grupo){
+        return inscripciones.stream().filter(i -> i.estaFinalizada()  && i.esDeEsteGrupo(grupo) ).toList();
+    }
+
+    public List<Inscripcion> obtenerInscripcionesRecientementeFinalizadas() {
+        return this.obtenerInscripcionesFinalizadas().stream().filter(inscripcion -> inscripcion.esRecientementeFinalizada()).toList();
+    }
+
     public boolean tieneEstaInscripcion(Inscripcion inscripcion) {
         return (inscripciones.contains(inscripcion));
     }
@@ -611,6 +623,13 @@ public class Servicio {
         return inscripciones.stream()
                 .filter(Inscripcion::estaEnCurso)
                 .flatMap(inscripcion -> inscripcion.obtenerUltimasCuotas().stream())
+                .toList();
+    }
+
+    public List<Cuota>  obtenerUltimasCuotasDeInscripcionesRecientementeFinalizadas() {
+        return inscripciones.stream()
+                .filter(Inscripcion::esRecientementeFinalizada)
+                .flatMap(inscripcion -> inscripcion.obtenerUltimasCuotasAnuladas().stream())
                 .toList();
     }
 

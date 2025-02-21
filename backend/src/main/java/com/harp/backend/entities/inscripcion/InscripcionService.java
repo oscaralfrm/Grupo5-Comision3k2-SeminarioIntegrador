@@ -2,10 +2,14 @@ package com.harp.backend.entities.inscripcion;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.AlumnoService;
+import com.harp.backend.entities.asistencia.Asistencia;
+import com.harp.backend.entities.asistencia.AsistenciaService;
+import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.ClaseService;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.cuota.CuotaService;
 import com.harp.backend.entities.grupo.Grupo;
+import com.harp.backend.entities.grupo.GrupoService;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.horario.HorarioService;
 import com.harp.backend.entities.inscripcion.estrategiaCrearInscripcion.EstrategiaCrearInscripcionFactory;
@@ -54,10 +58,19 @@ public class InscripcionService implements IInscripcionService {
     private CuotaService cuotaService;
 
     @Autowired
-    private PagoService pagoService;
+    private ClaseService claseService;
 
     @Autowired
-    private ClaseService claseService;
+    private AsistenciaService asistenciaService;
+
+    @Autowired
+    private PagoService pagoService;
+//
+//    @Autowired
+//    private ClaseService claseService;
+
+    @Autowired
+    private GrupoService grupoService;
 
     @Autowired
     private NotificacionService notificacionService;
@@ -247,7 +260,7 @@ public class InscripcionService implements IInscripcionService {
                 horariosInscripcion = inscripcionExistente.getGrupo().getHorarios().stream().toList();
             }
             for (Horario horario : horariosInscripcion) {
-                horarioService.agregarAlumnoAAsistencias(alumnoExistente, horario);
+                horarioService.agregarAlumnoAAsistencias(inscripcionExistente, horario);
             }
         }
 
@@ -313,7 +326,7 @@ public class InscripcionService implements IInscripcionService {
         if (servicio.isAsistenciasActivas()) {
         if (servicio.esDeModalidadAGrupo()) {
             Grupo grupo = inscipcionExistente.getGrupo();
-                claseService.eliminarAsistenciasDeAlumnoDeClasesFuturasDeGrupo(inscipcionExistente.getAlumno(), grupo);
+                grupoService.eliminarAsistenciasDeAlumnoDeClasesFuturasDeGrupo(inscipcionExistente.getAlumno(), grupo);
             }
         }
 
@@ -432,4 +445,26 @@ public class InscripcionService implements IInscripcionService {
 //            inscripcionRepository.save(inscripcion);
 //        }
 //    }
+
+
+    @Transactional
+    public void cambiarClaseANoFueDada(Long idClase, double descuento) {
+        Clase clase = claseService.findClase(idClase);
+        LocalDate fechaClase = clase.getFecha();
+
+        // Si descuento es distinto de 0 o de null significa que debemos:
+        // Buscar todas los alumnos de la clase, buscar su ultima cuota y hacerle un descuento
+        List<Inscripcion> inscripciones = asistenciaService.findAllAsistenciasDeClase(idClase).stream().map(Asistencia::getInscripcion).collect(Collectors.toList());
+
+        for (Inscripcion inscripcion : inscripciones) {
+            // obtenemos la cuota de la inscripcion correspondiente al ciclo en el que no se dió la clase
+            Cuota cuota = inscripcion.obtenerCuotaEn(fechaClase);
+            cuotaService.aplicarDescuentoACuota(cuota, descuento);
+            // aca guardar cambios de la inscripcion o de la cuota
+        }
+
+        claseService.cambiarClaseANoFueDada(idClase);
+
+        notificacionService.notificarClaseNoFueDada(clase, descuento, inscripciones);
+    };
 }

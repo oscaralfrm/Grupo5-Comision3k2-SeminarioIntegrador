@@ -8,6 +8,7 @@ import com.harp.backend.entities.clase.IClaseService;
 import com.harp.backend.entities.diaSemana.DiaSemana;
 import com.harp.backend.entities.diaSemana.DiaSemanaService;
 import com.harp.backend.entities.grupo.GrupoService;
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,8 +85,8 @@ public class HorarioService implements IHorarioService {
 
     // FALTA IMPLEMENTAR EL CAMBIO DE GRUPO o de HORARIO
 
-    public void agregarAlumnoAAsistencias(Alumno alumnoExistente, Horario horario) {
-        claseService.agregarAsistenciasDeAlumnoNuevoAClasesFuturas(alumnoExistente, horario);
+    public void agregarAlumnoAAsistencias(Inscripcion inscripcionExistente, Horario horario) {
+        claseService.agregarAsistenciasDeAlumnoNuevoAClasesFuturas(inscripcionExistente, horario);
     }
 
 //    public void agregarAlumnoAHorario(Alumno alumnoExistente, Horario horario) {

@@ -43,7 +43,7 @@ public class AsistenciaController {
 
     @GetMapping("/{idClase}/asistencias")
     public ResponseEntity<List<Asistencia>> getAsistenciasDeClase(@PathVariable @Min(1) Long idClase) {
-        List<Asistencia> asistencias = asistenciaService.findAsistenciasDeClase(idClase);
+        List<Asistencia> asistencias = asistenciaService.findAllAsistenciasDeClase(idClase);
         return ResponseEntity.status(HttpStatus.OK).body(asistencias);
     };
 

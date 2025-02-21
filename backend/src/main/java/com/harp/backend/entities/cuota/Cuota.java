@@ -36,6 +36,9 @@ public class Cuota {
     @Column(name = "recargo")
     private double recargo;
 
+    @Column(name = "descuento")
+    private double descuento = 0;
+
     @Column(name = "fecha_inicio_ciclo")
     private LocalDate fechaInicioCiclo;
 
@@ -167,5 +170,14 @@ public class Cuota {
             return false;
         }
         return this.getPago().tieneEsteMetodoPago(metodoPago);
+    }
+
+    public void aplicarDescuento(double descuento) {
+        this.descuento += descuento;
+    }
+
+    public boolean incluyeEstaFecha(LocalDate fecha) {
+        return (fecha.isAfter(this.fechaInicioCiclo) || fecha.isEqual(this.fechaInicioCiclo) )
+                && ( fecha.isBefore(this.fechaFinCiclo) || fecha.isEqual(this.fechaFinCiclo));
     }
 }

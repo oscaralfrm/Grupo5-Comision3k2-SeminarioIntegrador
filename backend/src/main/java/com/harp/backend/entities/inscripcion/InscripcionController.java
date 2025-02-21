@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/servicios")
@@ -55,10 +56,18 @@ public class InscripcionController {
 
     // GET TODAS LAS DE UN SERVICIO
     @GetMapping("/{idServicio}/inscripciones")
-    public ResponseEntity<List<Inscripcion>> traerInscripcionesDeServicio(@PathVariable @Min(1) Long idServicio,
+    public ResponseEntity<Set<Inscripcion>> traerInscripcionesDeServicio(@PathVariable @Min(1) Long idServicio,
                                                                             @RequestParam boolean vigentes,
-                                                                          @RequestParam boolean pendientes) {
-        List<Inscripcion> inscripciones = servicioService.findInscripcionesDeServicio(idServicio, vigentes, pendientes);
+                                                                          @RequestParam boolean pendientes,
+                                                                          @RequestParam boolean finalizadas) {
+        Set<Inscripcion> inscripciones = servicioService.findInscripcionesDeServicio(idServicio, vigentes, pendientes, finalizadas);
+        return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
+    };
+
+    // GET INSCRIPCIONES RECIENTEMENTE FINALIZADAS
+    @GetMapping("/{idServicio}/inscripciones-finalizadas-recientemente")
+    public ResponseEntity<List<Inscripcion>> traerInscripcionesRecientementeFinalizadas(@PathVariable @Min(1) Long idServicio) {
+        List<Inscripcion> inscripciones = servicioService.findInscripcionesRecientementeFinalizadasDeServicio(idServicio);
         return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
     };
 

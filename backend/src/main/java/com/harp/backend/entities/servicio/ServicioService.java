@@ -1,6 +1,8 @@
 package com.harp.backend.entities.servicio;
 
 import com.harp.backend.entities.alumno.model.Alumno;
+import com.harp.backend.entities.asistencia.Asistencia;
+import com.harp.backend.entities.asistencia.AsistenciaService;
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.categoria.CategoriaService;
 import com.harp.backend.entities.clase.Clase;
@@ -43,10 +45,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -400,22 +399,40 @@ public class ServicioService implements IServicioService {
 //        servicio.agregarAlumnoAGrupo(numGrupo, idAlumno);
 //    }
 
-    public List<Inscripcion> findInscripcionesDeServicio(Long idServicio, boolean vigentes, boolean pendientes) {
+    public Set<Inscripcion> findInscripcionesDeServicio(Long idServicio, boolean vigentes, boolean pendientes, boolean finalizadas) {
         Servicio servicio = this.findServicio(idServicio);
+        Set<Inscripcion> inscripciones = new HashSet<>();
         if (vigentes) {
-            return servicio.obtenerInscripcionesVigentes();
-        } else {
-            if (pendientes) {
-                return servicio.obtenerInscripcionesPendientes();
-            }
+            inscripciones.addAll(servicio.obtenerInscripcionesVigentes());
+            inscripciones.addAll(servicio.obtenerInscripcionesRecientementeFinalizadas());
         }
-        return servicio.getInscripciones();
+        if (pendientes) {
+            inscripciones.addAll(servicio.obtenerInscripcionesPendientes());
+        }
+        if (finalizadas) {
+            inscripciones.addAll(servicio.obtenerInscripcionesFinalizadas());
+        }
+        return inscripciones;
+    }
+
+    public List<Inscripcion> findInscripcionesRecientementeFinalizadasDeServicio(Long idServicio) {
+        Servicio servicio = this.findServicio(idServicio);
+        List<Inscripcion> inscripcionesFinalizadasRecientes = servicio.obtenerInscripcionesRecientementeFinalizadas();
+        return inscripcionesFinalizadasRecientes;
     }
 
     public List<Cuota> findUltimasCuotasDeServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
             //return servicio.obtenerCuotasPendientesAlumnosActuales();
-        return servicio.obtenerUltimasCuotasAlumnosActuales();
+        List<Cuota> cuotas = new ArrayList<>();
+
+        cuotas.addAll(servicio.obtenerUltimasCuotasAlumnosActuales());
+
+
+        // Agregamos a la lista las ultimas cuotas de los alumnos recientemente finalizada su inscripcion
+        cuotas.addAll(servicio.obtenerUltimasCuotasDeInscripcionesRecientementeFinalizadas());
+
+        return cuotas;
     }
 
     // ver como hacer a
@@ -751,4 +768,6 @@ public class ServicioService implements IServicioService {
         Servicio servicio = this.findServicio(idServicio);
         return instructorService.findInstructorDeEsteServicio(servicio);
     }
+
+
 }

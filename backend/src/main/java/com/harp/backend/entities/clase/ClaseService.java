@@ -5,10 +5,14 @@ import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.asistencia.Asistencia;
 import com.harp.backend.entities.asistencia.AsistenciaDTO;
 import com.harp.backend.entities.asistencia.AsistenciaService;
+import com.harp.backend.entities.cuota.Cuota;
+import com.harp.backend.entities.cuota.CuotaService;
 import com.harp.backend.entities.diaSemana.DiaSemana;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.grupo.GrupoService;
 import com.harp.backend.entities.horario.Horario;
+import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.inscripcion.InscripcionService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.transaction.Transactional;
@@ -33,16 +37,19 @@ public class ClaseService implements IClaseService {
     @Autowired
     private AsistenciaService asistenciaService;
 
+//    @Autowired
+//    private CuotaService cuotaService;
+
     @Override
     public List<Clase> getAllClases() {
         return claseRepository.findAll();
     };
 
     @Override
-    public Clase createClaseConAsistencias(Clase clase, List<Alumno> alumnos) {
+    public Clase createClaseConAsistencias(Clase clase, List<Inscripcion> inscripciones) {
         //Creamos las asistenacias vacías de cada alumno del grupo a la clase
-        for (Alumno alumno : alumnos) {
-            asistenciaService.createAsistencia(alumno, clase);
+        for (Inscripcion inscripcion : inscripciones) {
+            asistenciaService.createAsistencia(inscripcion, clase);
         }
 
         return claseRepository.save(clase);
@@ -55,24 +62,24 @@ public class ClaseService implements IClaseService {
         Set<Grupo> grupos = servicio.getGrupos();
         // Iteramos sobre cada grupo y sus horarios para crear clases para la semana siguiente
         for (Grupo grupo : grupos) {
-                this.crearClasesParaSemanaSiguienteGrupo(grupo, fechaInicio);
+                this.crearClasesParaSemanaSiguienteGrupo(servicio, grupo, fechaInicio);
             }
     }
 
 
     @Override
-    public void crearClasesParaSemanaSiguienteGrupo(Grupo grupo, LocalDate fechaInicio) {
+    public void crearClasesParaSemanaSiguienteGrupo(Servicio servicio, Grupo grupo, LocalDate fechaInicio) {
         Set<Horario> horarios = grupo.getHorarios(); // Obtener los horarios del grupo
         //System.out.println("horarios2" + horarios);
         //System.out.println("grupo" + grupo);
 
         // Iteramos sobre cada horario del grupo
         for (Horario horario : horarios) {
-            crearClasesParaSemanaSiguienteHorario(grupo, fechaInicio, horario);
+            crearClasesParaSemanaSiguienteHorario(servicio, grupo, fechaInicio, horario);
         }
     }
 
-    public void crearClasesParaSemanaSiguienteHorario(Grupo grupo, LocalDate fechaInicio, Horario horario) {
+    public void crearClasesParaSemanaSiguienteHorario(Servicio servicio, Grupo grupo, LocalDate fechaInicio, Horario horario) {
         DiaSemana diaSemanaHorario = horario.getDiaSemana();
         DayOfWeek dayOfWeek = diaSemanaHorario.toDayOfWeek();
 
@@ -95,9 +102,9 @@ public class ClaseService implements IClaseService {
         nuevaClase.setFecha(fechaClase);
         nuevaClase.setHorario(horario);
         grupo.agregarClase(nuevaClase);
-        System.out.println("nueva clase" + nuevaClase);
 
-        this.createClaseConAsistencias(nuevaClase, horario.getAlumnos());
+        // Aca tenemos que buscar las inscripciones vigentes del grupo
+        this.createClaseConAsistencias(nuevaClase, servicio.obtenerInscripcionesVigentes());
     }
 
     @Override
@@ -148,20 +155,24 @@ public class ClaseService implements IClaseService {
         return claseRepository.save(clase);
     };
 
-    @Override
     public void cambiarClaseANoFueDada(Long idClase) {
         Clase clase = this.findClase(idClase);
         clase.setNoFueDada(true);
         claseRepository.save(clase);
+    }
+
+    @Override
+    public void cambiarClaseAFueDada(Long idClase) {
+        Clase clase = this.findClase(idClase);
+        clase.cambiarAFueDada();
+        claseRepository.save(clase);
     };
 
-    public void agregarAsistenciasDeAlumnoNuevoAClasesFuturas(Alumno alumnoNuevo, Horario horario) {
+    public void agregarAsistenciasDeAlumnoNuevoAClasesFuturas(Inscripcion inscripcionNueva, Horario horario) {
         List<Clase> claseFuturasHorario = findClasesFuturasDeHorario(horario);
-        System.out.println(33);
         for (Clase clase : claseFuturasHorario) {
-            asistenciaService.createAsistencia(alumnoNuevo, clase);
+            asistenciaService.createAsistencia(inscripcionNueva, clase);
         }
-        System.out.println(34);
     }
 
     public void eliminarAsistenciasDeAlumnoDeClasesFuturasDeHorario(Alumno alumnoExistente, Horario horario) {

@@ -2,6 +2,7 @@ package com.harp.backend.entities.asistencia;
 
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.clase.Clase;
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,8 +21,8 @@ public class Asistencia {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "alumno_id")
-    private Alumno alumno;
+    @JoinColumn(name = "inscripcion_id")
+    private Inscripcion inscripcion;
 
     @ManyToOne
     @JoinColumn(name = "clase_id")
@@ -31,12 +32,12 @@ public class Asistencia {
 
     private String observaciones;
 
-    public Asistencia(Alumno alumno, Clase clase) {
-        this.alumno = alumno;
+    public Asistencia(Inscripcion inscripcion, Clase clase) {
+        this.inscripcion = inscripcion;
         this.clase = clase;
     }
 
     public boolean esDeEsteAlumno(Alumno alumno) {
-        return this.alumno.getId().equals(alumno.getId());
+        return this.inscripcion.getAlumno().getId().equals(alumno.getId());
     }
 }
