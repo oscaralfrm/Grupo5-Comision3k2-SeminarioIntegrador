@@ -33,7 +33,6 @@ export const RegisterFormStudent = () => {
         telefono: data.telefono,
         direccion: data.direccion,
         fechaNacimiento: data.fechaNacimiento,
-        fotoPerfil: data.fotoPerfil[0]
       }
       const alumnoCreado = await createAlumno(
         alumnoDTO
@@ -46,102 +45,112 @@ export const RegisterFormStudent = () => {
   };
 
   const goToNextTab = () => {
-    if (activeTab === "datosPersonales") setActiveTab("contacto");
-    else if (activeTab === "contacto") setActiveTab("contraseña");
+    if (activeTab === "datosPersonales") setActiveTab("contraseña");
+    else if (activeTab === "contraseña") setActiveTab("datosPersonales");
   };
 
   const goToPreviousTab = () => {
-    if (activeTab === "contraseña") setActiveTab("contacto");
-    else if (activeTab === "contacto") setActiveTab("datosPersonales");
+    if (activeTab === "contraseña") setActiveTab("datosPersonales");
+    else if (activeTab === "datosPersonales") setActiveTab("contraseña");
   };
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        height: "100vh",
-        fontFamily: "Roboto",
-        flexWrap: "wrap",
-      }}
-    >
-      {/* Columna Izquierda (Formulario) */}
+   return (
       <div
         style={{
-          flex: 1,
-          padding: "20px",
           display: "flex",
-          flexDirection: "column",
+          flexWrap: "wrap",
+          justifyContent: "center",
           alignItems: "center",
+          width: "100%",
+          minHeight: "100vh",
+          fontFamily: "Roboto",
+          overflow: "hidden",
+          padding: "20px",
         }}
-        className="col-12 col-md-6"
       >
-        <div className="col-md-10 col-sm-12 p-4">
-          <h1 className="mb-1 text-center fs-1">Regístrate como Alumno</h1>
-          <p className="text-center text-muted fs-6">
-            ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
-          </p>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="card shadow-lg rounded-3 bg-light p-4"
-            style={{
-              width: "100%",
-              maxWidth: "600px",
-              margin: "0 auto",
-            }}
-          >
-            <Tabs
-              id="register-tabs"
-              activeKey={activeTab}
-              onSelect={(k) => setActiveTab(k)}
-              className="mb-3"
+        {/* Columna Izquierda (Formulario) */}
+        <div
+          style={{
+            flex: "1 1 auto",
+            maxWidth: "600px",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            padding: "20px",
+          }}
+          className="col-12 col-md-6"
+        >
+          <div style={{ width: "100%" }}>
+            <h1 className="mb-1 text-center fs-1">Regístrate como Alumno</h1>
+            <p className="text-center text-muted fs-6">
+              ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+            </p>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="card shadow-lg rounded-3 bg-light p-4"
+              style={{
+                width: "100%",
+                maxWidth: "600px",
+                margin: "0 auto",
+              }}
             >
-              <Tab eventKey="datosPersonales" title="Datos Personales">
-                <DatosPersonales
-                  register={register}
-                  errors={errors}
-                  goToNextTab={goToNextTab}
-                />
-              </Tab>
-
-              <Tab eventKey="contacto" title="Contacto">
-                <Contactos
-                  register={register}
-                  errors={errors}
-                  goToNextTab={goToNextTab}
-                  goToPreviousTab={goToPreviousTab}
-                />
-              </Tab>
-
-              <Tab eventKey="contraseña" title="Contraseña">
-                <Password
-                  register={register}
-                  errors={errors}
-                  goToPreviousTab={goToPreviousTab}
-                  contrasena={contrasena}
-                  isValid={isValid}
-                />
-              </Tab>
-            </Tabs>
-          </form>
+              <Tabs
+                id="register-tabs"
+                activeKey={activeTab}
+                onSelect={(k) => setActiveTab(k)}
+                className="mb-3"
+              >
+                <Tab eventKey="datosPersonales" title="Datos Personales">
+                  <DatosPersonales
+                    register={register}
+                    errors={errors}
+                    goToNextTab={goToNextTab}
+                                  />
+                </Tab>
+  
+                {/*
+                <Tab eventKey="contacto" title="Contacto">
+                  <Contacto
+                    register={register}
+                    errors={errors}
+                    goToNextTab={goToNextTab}
+                    goToPreviousTab={goToPreviousTab}
+                    
+                  />
+                </Tab>
+                 */}
+  
+                <Tab eventKey="contraseña" title="Datos Perfil">
+                  <Password
+                    register={register}
+                    errors={errors}
+                    goToPreviousTab={goToPreviousTab}
+                    contrasena={contrasena}
+                    isValid={isValid}
+                    
+                  />
+                </Tab>
+              </Tabs>
+            </form>
+          </div>
+        </div>
+  
+        {/* Columna Derecha (InfoCard) */}
+        <div
+          style={{
+            flex: "1 1 100%",
+            maxWidth: "600px",
+            width: "100%",
+            padding: "20px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+          className="col-12 col-md-6 mt-4 mt-md-0 mb-3"
+        >
+          <InfoCard formData={watch()} />
         </div>
       </div>
-
-      {/* Columna Derecha (InfoCard) */}
-      <div
-        style={{
-          flex: "1 1 100%",
-          maxWidth: "600px",
-          width: "100%",
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-        className="col-12 col-md-6 mt-4 mt-md-0 mb-3"
-      >
-        <InfoCard formData={watch()} />
-      </div>
-    </div>
-  );
-};
+    );
+  };

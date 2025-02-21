@@ -8,7 +8,7 @@ import {
   habilitarInscripcionesDeServicio,
   deshabilitarInscripcionesDeServicio,
 } from "../../../../../services/Inscripcion.js";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import EnrollmentModal from "./ModalAceptarRechazarInscripcion.jsx";
 import SuccessModal from "../../../../CartelDeExito/CartelDeExito.jsx";
 import AlumnoInfoModal from "./AlumnoInfoModal.jsx"; // Importar el nuevo modal
@@ -31,7 +31,7 @@ export function calcularAntiguedadComoTexto(fechaRegistro) {
   const hoy = new Date();
   const registro = new Date(fechaRegistro);
 
-  if (hoy <= registro ) {
+  if (hoy <= registro) {
     return "No iniciado"
   }
 
@@ -79,7 +79,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
   const [showAlumnoInfoModal, setShowAlumnoInfoModal] = useState(false);
   const [selectedAlumnoId, setSelectedAlumnoId] = useState(null);
 
-  const { idServicio } = useParams();
+  const { idServicio, idInstructor } = useParams();
 
   const pendingEnrollments = enrollments.filter(
     (enroll) =>
@@ -164,7 +164,7 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
     setShowAlumnoInfoModal(true);
   };
 
-  
+
 
   return (
     <div
@@ -221,9 +221,12 @@ const Enrollments = ({ habilitadas, fetchServicio }) => {
                   marginTop: "2vh",
                 }}
               >
-                <span style={{ flex: "1 1 60%" }}>
+                <Link
+                  to={`/instructor/${idInstructor}/alumnos/${enroll.alumno.usuario.nombreUsuario}`}
+                  className="text-primary text-decoration-none fw-bold"
+                >
                   {enroll.alumno.usuario.nombre} {enroll.alumno.usuario.apellido}
-                </span>
+                </Link>
                 <span style={{ flex: "1 1 40%" }}>{enroll.grupo.nombre}</span>
                 <div style={{ display: "flex", justifyContent: "flex-end", flex: "1 1 40%" }}>
                   <button

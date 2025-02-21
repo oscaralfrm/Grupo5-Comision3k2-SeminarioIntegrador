@@ -6,9 +6,10 @@ import Statistics from "./Estadisticas";
 import GraficoDeTorta from "./GráficoPastel";
 import { getServiciosDeInstructor } from "../../../services/Instructor";
 import { useParams } from "react-router-dom";
+import WelcomeBlock from "./BloqueBienvenida";
 
 const Dashboard = () => {
-  const [servicios, setServicios] = useState([]);
+  const [servicios, setServicios] = useState(null);
   const [filteredServicios, setFilteredServicios] = useState(servicios);
   const [selectedEstado, setSelectedEstado] = useState(""); // Estado para el filtro de estado
   const { idServicio } = useParams();
@@ -46,17 +47,26 @@ const Dashboard = () => {
   const handleEstadoFilter = (estado) => {
     setSelectedEstado(estado);
     setFilteredServicios(
-      servicios.filter((servicio) => (estado ? (servicio.publico && estado == "Publicado" || !servicio.publico && estado == "No publicado") : true ))
+        servicios.filter((servicio) => !estado || servicio.estado === estado)
     );
-  };
+};
+
+  if (servicios == null) return "Cargando...";
 
   return (
     <div >
       {/* Título "Mis Servicios" */}
 
-      <h2 style={{ textAlign: "center", marginLeft: "20px", color: "#1E1B4B", marginTop: "18vh" }}>
+      { servicios.length != 0 ?
+        <h2 style={{ textAlign: "center", marginLeft: "20px", color: "#1E1B4B", marginTop: "18vh" }}>
         Mis Servicios
-      </h2>
+        </h2>
+        :
+        <h1 style={{ textAlign: "center", marginLeft: "20px", color: "#1E1B4B", marginTop: "18vh", fontSize: "2.5rem",}}>
+          
+        </h1>
+      } 
+      
 
 
       {/* Filtro centrado en la parte superior */}
@@ -81,7 +91,11 @@ const Dashboard = () => {
         >
           <option value="">Todos</option>
           <option value="Publicado">Publicado</option>
-          <option value="No publicado">No publicado</option>
+          <option value="Privado">Privado</option>
+          <option value="Suspendido">Suspendido</option>
+          <option value="Finalizado">Finalizado</option>
+          <option value="Borrador">Borrador</option>
+          <option value="Cancelado">Cancelado</option>
         </select>
       </div>
       </div>
@@ -90,23 +104,32 @@ const Dashboard = () => {
 
       {/* Contenedor Principal */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", padding: "20px" }}>
+
+      {servicios.length == 0 &&
+          
+            <WelcomeBlock />
+          
+        }
+          
         {/* Cards de Cursos */}
-        <div style={{ flex: "1 1 60%", minWidth: "300px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
-            <CourseCards servicios={filteredServicios} idInstructor={idInstructor} />
-          </div>
-        </div>
+        { servicios.length != 0 &&
+           <div style={{ flex: "1 1 60%", minWidth: "300px" }}>
+           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
+             <CourseCards servicios={filteredServicios} idInstructor={idInstructor} />
+           </div>
+         </div>
 
+         
+        }
         <div
-          style={{
-            display: "flex",
-            gap: "20px",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            marginTop: "30px",
-          }}
-        >
-
+           style={{
+             display: "flex",
+             gap: "20px",
+             justifyContent: "center",
+             flexWrap: "wrap",
+             marginTop: "30px",
+           }}
+         >
         </div>
       </div>
     </div>

@@ -7,12 +7,20 @@ import { Navbar, Dropdown, Container, Badge, ListGroup, Button, Card, Tab, Nav }
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faCheck } from "@fortawesome/free-solid-svg-icons"; // Íconos necesario
 import NotificationPanel from "../../../../Notificaciones/NotificacionPanel";
+import { FaExclamationCircle } from "react-icons/fa";
+import { tieneDatosBancariosCompletos } from "../../../../../services/Instructor";
 
-export default function NavbarServicio() {
+export default function NavbarServicio({usuario}) {
   const navigate = useNavigate();
   const { idInstructor } = useParams();
   const [notificaciones, setNotificaciones] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [tieneDatosCompletos, setTieneDatosCompletos] = useState(null);
+
+  const esteInstructorTieneDatosCompletos = async () => {
+    const response = await tieneDatosBancariosCompletos(idInstructor);
+    return response;
+  }
 
   const handleClick = () => {
     navigate('/');
@@ -33,7 +41,19 @@ export default function NavbarServicio() {
   }, [idInstructor]);
 
   const hasUnreadNotifications = notificaciones.some(notif => !notif.leido);
- 
+
+  useEffect(() => {
+    const fetchInstructorData = async () => {
+      try {
+        const response = await esteInstructorTieneDatosCompletos(); // Espera a que se resuelva la promesa
+        setTieneDatosCompletos(response); // Guarda el resultado en el estado
+      } catch (error) {
+        console.error("Error al verificar los datos bancarios:", error);
+      }
+    };
+
+    fetchInstructorData();
+  }, [idInstructor]);
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
@@ -100,23 +120,40 @@ export default function NavbarServicio() {
                 border: "none",
                 padding: "0",
                 cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "5px", // Espacio entre la imagen y el icono
+                position: "relative",
               }}
             >
-              <img
-                src={profileImg}
-                alt="Profile"
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  backgroundColor: "gray",
-                }}
-              />
+              <div style={{ position: "relative" }}>
+                <img
+                  src={usuario?.usuario?.fotoPerfilURL || profileImg}
+                  alt="Profile"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    backgroundColor: "gray",
+                  }}
+                />
+                {!tieneDatosCompletos && (
+                  <FaExclamationCircle
+                    style={{
+                      color: "yellow",
+                      fontSize: "18px",
+                      position: "absolute",
+                      top: "-5px",
+                      right: "-5px", // Ajustar posición del ícono de advertencia
+                    }}
+                  />
+                )}
+              </div>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => navigate(`/instructor/${idInstructor}/editar-usuario`)}>
-                Editar perfil
+              <Dropdown.Item onClick={() => navigate(`/instructor/${idInstructor}/perfil/ver-perfil`)}>
+                Ver perfil  
               </Dropdown.Item>
               <Dropdown.Item onClick={() => navigate("/")}>
                 Cerrar sesión
@@ -126,7 +163,7 @@ export default function NavbarServicio() {
         </Container>
       </Navbar>
 
-       {/* Panel de notificaciones */}
+      {/* Panel de notificaciones */}
       {showNotifications && (
         <NotificationPanel
           notifications={notificaciones}

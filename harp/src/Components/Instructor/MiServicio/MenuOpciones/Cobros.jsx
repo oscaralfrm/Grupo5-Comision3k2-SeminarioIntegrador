@@ -1,17 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Table, Button, Form, Modal } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Table,
+  Button,
+  Form
+} from "react-bootstrap";
 import { format, parseISO } from "date-fns";
-import { obtenerCuotasDeInscripcion, rechazarPagoCuotaConTrasnferencia } from "../../../../services/Cuota.js";
-import { useParams } from "react-router-dom";
+import {
+  obtenerCuotasDeInscripcion,
+  rechazarPagoCuotaConTrasnferencia
+} from "../../../../services/Cuota.js";
+import { useParams, useLocation } from "react-router-dom";
 import { getGruposDeServicio } from "../../../../services/Grupo.js";
-import { definirSiServicioSePuedeActualizarPrecio, getMontoActualGrupo } from "../../../../services/HistorialMontoCuota.js";
-import { getInscripcionesDeServicio, traerUnaInscripcion } from "../../../../services/Inscripcion.js";
+import { definirSiServicioSePuedeActualizarPrecio } from "../../../../services/HistorialMontoCuota.js";
+import {
+  getInscripcionesDeServicio,
+  traerUnaInscripcion
+} from "../../../../services/Inscripcion.js";
 import ActualizarMontoModal from "./ActualizarMonto.jsx";
 import HistorialPagoModal from "./HistorialPago.jsx";
 import { getHistorialCuotasDeAlumno } from "../../../../services/Alumno.js";
-import { useLocation } from 'react-router-dom';
-import Pagos from "./PagosInstructor.jsx"; // Importar el nuevo componente
+import Pagos from "./PagosInstructor.jsx";
 import RechazoPagoModal from "./RechazoPagoModal.jsx";
+import DetalleCuota from "./DetalleCuota"; // Componente que muestra el detalle de la cuota
 
 const Cobros = ({ id }) => {
   // Estados principales
@@ -19,11 +32,11 @@ const Cobros = ({ id }) => {
   const [showPaymentHistory, setShowPaymentHistory] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedCuota, setSelectedCuota] = useState(null);
+  const [selectedDetalleCuota, setSelectedDetalleCuota] = useState(null); // Cuota seleccionada para detalle
   const [groupFilter, setGroupFilter] = useState("");
   const [studentFilter, setStudentFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
   const [showAddPayment, setShowAddPayment] = useState(false);
-  const [monto, setMonto] = useState([]);
   const [grupos, setGrupos] = useState([]);
   const [inscripciones, setInscripciones] = useState([]);
   const [showMontoModal, setShowMontoModal] = useState(false);
@@ -34,8 +47,16 @@ const Cobros = ({ id }) => {
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const idInscripcion = queryParams.get('alumno') || null;
+  const idInscripcion = queryParams.get("alumno") || null;
   const [idInscripcionUrl, setIdInscripcionUrl] = useState(idInscripcion);
+
+  // Hook para detectar tamaño de pantalla
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
+  useEffect(() => {
+    const handleResize = () => setIsLargeScreen(window.innerWidth >= 992);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Cargar inscripciones
   useEffect(() => {
@@ -45,7 +66,7 @@ const Cobros = ({ id }) => {
         if (idInscripcionUrl) {
           data = [await traerUnaInscripcion(idInscripcionUrl)];
         } else {
-          data = await getInscripcionesDeServicio(idServicio, true, false);
+          data = await getInscripcionesDeServicio(idServicio, true, false, false);
         }
         setInscripciones(data);
       } catch (error) {
@@ -61,7 +82,9 @@ const Cobros = ({ id }) => {
       try {
         const response = await getGruposDeServicio(idServicio);
         setGrupos(response);
-        setSePuedeActualizarPrecio(definirSiServicioSePuedeActualizarPrecio(response));
+        setSePuedeActualizarPrecio(
+          definirSiServicioSePuedeActualizarPrecio(response)
+        );
       } catch (error) {
         console.error("Error al obtener los grupos:", error);
       }
@@ -69,56 +92,28 @@ const Cobros = ({ id }) => {
     fetchGrupos();
   }, [idServicio]);
 
-  // Cargar montos de los grupos
-  useEffect(() => {
-    const fetchMontos = async () => {
-      try {
-        if (!grupos || grupos.length === 0) return;
-
-        const montos = await Promise.all(
-          grupos.map(async (grupo) => {
-            try {
-              const monto = await getMontoActualGrupo(idServicio, grupo.id);
-              console.log(`Precio del grupo ${grupo.id}:`, monto); // Depuración
-              return { idGrupo: grupo.id, nombreGrupo: grupo.nombre, monto };
-            } catch (error) {
-              console.error(`Error al obtener el monto del grupo ${grupo.id}:`, error);
-              return null;
-            }
-          })
-        );
-
-        console.log("Montos cargados:", montos); // Depuración
-        setMonto(montos.filter(Boolean));
-      } catch (error) {
-        console.error("Error al traer los montos de los grupos:", error);
-      }
-    };
-
-    fetchMontos();
-  }, [idServicio, grupos]);
-
   // Obtener cuotas
   const fetchCuotas = async () => {
     try {
       if (inscripciones.length === 0) return;
-
       const cuotasConGrupo = await Promise.all(
         inscripciones.map(async (inscripcion) => {
           const { alumno, grupo, id } = inscripcion;
           try {
             const cuotas = await obtenerCuotasDeInscripcion(idServicio, id);
-            console.log("cuotas", cuotas, "inscripcion", id);
-            const montoGrupo = monto.find((m) => m.idGrupo === grupo.id)?.monto || 0;
-
             return [
-              { ...alumno, nombreGrupo: grupo ? grupo.nombre : "Sin Grupo", idGrupo: grupo.id },
+              {
+                ...alumno,
+                nombreGrupo: grupo ? grupo.nombre : "Sin Grupo",
+                idGrupo: grupo.id
+              },
               cuotas.map((cuota) => ({
                 ...cuota,
                 idInscripcion: id,
-                cambiosEstado: cuota.cambiosEstado.filter((estado) => estado.fechaFin === null),
-                montoGrupo, // Agregamos el monto del grupo aquí
-              })),
+                cambiosEstado: cuota.cambiosEstado.filter(
+                  (estado) => estado.fechaFin === null
+                )
+              }))
             ];
           } catch (error) {
             console.error(`Error al obtener cuotas para el alumno ${alumno.id}:`, error);
@@ -126,7 +121,6 @@ const Cobros = ({ id }) => {
           }
         })
       );
-
       setCuotas(cuotasConGrupo.filter(Boolean));
     } catch (error) {
       console.error("Error al traer las cuotas:", error);
@@ -135,284 +129,425 @@ const Cobros = ({ id }) => {
 
   useEffect(() => {
     fetchCuotas();
-  }, [inscripciones, idServicio, monto]);
+  }, [inscripciones, idServicio]);
 
   // Filtros de cuotas
   const filteredCuotas = cuotas.filter(([student, cuotasStudent]) =>
     cuotasStudent.some((cuota) => {
       const estadoActual = cuota.cambiosEstado[0]?.estadoCuota;
       const nombreCompleto = `${student.usuario.nombre} ${student.usuario.apellido}`;
-
       return (
         (groupFilter === "" || student.nombreGrupo === groupFilter) &&
         (paymentFilter === "" ||
           (paymentFilter === "Pendiente" && estadoActual === "Pendiente") ||
           (paymentFilter === "Abonada" && estadoActual === "Abonada") ||
           (paymentFilter === "Vencida" && estadoActual === "Vencida")) &&
-        (studentFilter === "" || nombreCompleto.toLowerCase().includes(studentFilter.toLowerCase()))
+        (studentFilter === "" ||
+          nombreCompleto.toLowerCase().includes(studentFilter.toLowerCase()))
       );
     })
   );
 
   // Funciones de manejo de pagos
-  const handleShowPaymentHistory = async (student, cuota) => {
+  const handleShowPaymentHistory = async (student, cuota, e) => {
+    e.stopPropagation();
     setSelectedStudent(student);
     setShowPaymentHistory(true);
-
     try {
       const historial = await getHistorialCuotasDeAlumno(cuota.idInscripcion, idServicio);
       setSelectedStudent((prevStudent) => ({
         ...prevStudent,
-        historialPagos: historial,
+        historialPagos: historial
       }));
     } catch (error) {
       console.error("Error al cargar historial de pagos:", error);
     }
   };
 
-  const handleAddPayment = (student, cuota) => {
+  const handleAddPayment = (student, cuota, e) => {
+    e.stopPropagation();
     setSelectedStudent(student);
     setSelectedCuota(cuota);
     setShowAddPayment(true);
   };
 
-  const handleOpenRechazoModal = (cuota) => {
+  const handleOpenRechazoModal = (cuota, e) => {
+    e.stopPropagation();
     setShowModalMotivoRechazo(true);
     setSelectedCuota(cuota);
   };
-
 
   const handleConfirmRechazoModal = async () => {
     if (!selectedCuota || !motivoRechazo.trim()) {
       alert("Debes ingresar un motivo.");
       return;
     }
-
-    await rechazarPagoCuotaConTrasnferencia(idServicio, selectedCuota.idInscripcion, selectedCuota.id, selectedCuota.pago.id, motivoRechazo);
+    await rechazarPagoCuotaConTrasnferencia(
+      idServicio,
+      selectedCuota.idInscripcion,
+      selectedCuota.id,
+      selectedCuota.pago.id,
+      motivoRechazo
+    );
     setShowModalMotivoRechazo(false);
     alert("Se ha rechazado el pago");
     fetchCuotas();
-  }
+  };
 
-
-  // Formato de fecha
   const formatDate = (dateString) => {
     const date = parseISO(dateString);
     return format(date, "dd/MM/yyyy");
   };
 
+  useEffect(() => {
+    console.log("Cuota seleccionada:", selectedDetalleCuota);
+  }, [selectedDetalleCuota]);
+
+  // Renderiza la tabla de cuotas
+  const renderTabla = () => (
+    <div style={{ maxHeight: "calc(100vh - 150px)", overflowY: "auto" }}>
+      <Table bordered hover responsive="sm" className="w-100">
+        <thead className="table-primary">
+          <tr>
+            <th>Alumno</th>
+            <th>Grupo</th>
+            <th>Estado</th>
+            <th>Precio</th>
+            <th>Forma de Pago</th>
+            <th>Fecha de Pago</th>
+            {/* <th>Acciones</th>*/}
+           
+          </tr>
+        </thead>
+        <tbody>
+          {filteredCuotas.map(([student, cuotasStudent]) =>
+            cuotasStudent.map((cuota) => {
+              const estado = cuota.cambiosEstado[0]?.estadoCuota;
+              const isSelected =
+                selectedDetalleCuota &&
+                selectedDetalleCuota.cuota.id == cuota.id;
+              return (
+                <tr
+                  key={cuota.id}
+                  onClick={() => setSelectedDetalleCuota({ cuota, student })}
+                  style={{
+                    cursor: "pointer",
+                    backgroundColor: isSelected ? "#D3E4CD !important" : "inherit"
+                  }}
+                >
+                  <td>
+                      <img
+                                    src={student?.usuario?.fotoPerfilURL || ""}
+                                    alt="Profile"
+                                    style={{
+                                      width: "40px",
+                                      height: "40px",
+                                      borderRadius: "50%",
+                                      objectFit: "cover",
+                                      backgroundColor: "gray",
+                                    }}
+                                  />
+                      {" " + student.usuario.nombre} {student.usuario.apellido}
+                  </td>
+                  <td>{student.nombreGrupo}</td>
+                  <td>
+                    <span
+                      className={`badge bg-${
+                        estado === "Pendiente"
+                          ? "warning"
+                          : estado === "Abonada"
+                          ? "success"
+                          : estado === "Anulada" || estado === "Vencida"
+                          ? "danger"
+                          : "secondary"
+                      }`}
+                    >
+                      {estado}
+                    </span>
+                    {cuota?.pago?.rechazado && (
+                      <span className="badge bg-danger">Pago Rechazado</span>
+                    )}
+                  </td>
+                  <td>${cuota.montoServicio.monto + (cuota.recargo || 0) - (cuota.descuento || 0)}</td>
+                  <td>
+                    {cuota.pago?.metodoPago.nombre || "N/A"}
+                    {cuota.pago?.comprobanteURL && (
+                      <div>
+                        <a
+                          href={cuota.pago.comprobanteURL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            fontSize: "0.9rem",
+                            display: "block",
+                            marginTop: "4px"
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Ver comprobante
+                        </a>
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    {cuota.pago ? formatDate(cuota.pago.fechaPago) : "N/A"}
+                  </td>
+                  {/*
+                  <td>
+                    <Button
+                      variant="info"
+                      size="sm"
+                      style={{
+                        backgroundColor: "#4F46E5",
+                        color: "white",
+                        padding: "10px 20px",
+                        borderRadius: "4px",
+                        fontSize: "14px"
+                      }}
+                      onClick={(e) => handleShowPaymentHistory(student, cuota, e)}
+                    >
+                      Historial de Pago
+                    </Button>
+                    {estado === "Pendiente" && (
+                      <Button
+                        variant="success"
+                        size="sm"
+                        className="ms-2"
+                        onClick={(e) => handleAddPayment(student, cuota, e)}
+                      >
+                        Pagar
+                      </Button>
+                    )}
+                    {cuota?.pago?.comprobanteURL && !cuota.pago.rechazado && (
+                      <Button
+                        variant="success"
+                        size="sm"
+                        className="ms-2"
+                        onClick={(e) => handleOpenRechazoModal(cuota, e)}
+                      >
+                        Rechazar Pago
+                      </Button>
+                    )}
+                  </td>
+                  */}
+                  
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </Table>
+    </div>
+  );
+
   return (
-    <div
-      className="responsive-container"
+    <Container
+      fluid
       style={{
-        height: "100vh",
-        paddingTop: "15vh",
-        paddingLeft: "3rem",
-        paddingRight: "3rem",
-        width: "100%",
-        overflow: "hidden",
+        minHeight: "100vh",
         boxSizing: "border-box",
+        padding: "1rem",
+        marginTop: "100px" // Evita que la navbar tape el contenido
       }}
     >
-      {/* Título */}
-      <h1 className="text-center mb-4" style={{ color: "#1E1B4B", fontWeight: "bold" }}>
-        Cobros
-      </h1>
-
-      {/* Botón Actualizar Monto */}
-      {sePuedeActualizarPrecio && (
-        <div className="d-flex justify-content-end mb-4">
-          <Button
-            variant="primary"
-            className="btn-sm px-3"
-            style={{
-              fontSize: "16px",
-              backgroundColor: "#1E1B4B",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "5px",
-            }}
-            onClick={() => setShowMontoModal(true)}
+      {selectedDetalleCuota ? (
+        isLargeScreen ? (
+          // Layout de dos columnas para pantallas grandes (≥992px)
+          <Row style={{ height: "calc(100vh - 150px)" }}>
+            <Col
+              xs={12}
+              lg={8}
+              style={{
+                height: "100%",
+                overflowY: "auto",
+                paddingRight: "1rem"
+              }}
+            >
+              <h1
+                className="text-center mb-4"
+                style={{ color: "#1E1B4B", fontWeight: "bold" }}
+              >
+                Cobros
+              </h1>
+              <div className="mb-4">
+                <Row className="d-flex justify-content-between align-items-center">
+                  <Col lg={4} className="p-0 pe-2">
+                    <Form.Control
+                      type="text"
+                      placeholder="Filtrar por Nombre"
+                      value={studentFilter}
+                      onChange={(e) => setStudentFilter(e.target.value)}
+                    />
+                  </Col>
+                  <Col lg={4} className="p-0 pe-2">
+                    <Form.Control
+                      as="select"
+                      onChange={(e) => setGroupFilter(e.target.value)}
+                      value={groupFilter}
+                    >
+                      <option value="">Filtrar por Grupo</option>
+                      {grupos.map((grupo) => (
+                        <option key={grupo.id} value={grupo.nombre}>
+                          {grupo.nombre}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Col>
+                  <Col lg={4} className="p-0 ps-2">
+                    <Form.Control
+                      as="select"
+                      onChange={(e) => setPaymentFilter(e.target.value)}
+                      value={paymentFilter}
+                    >
+                      <option value="">Filtrar por Estado de Pago</option>
+                      <option value="Pendiente">Pendiente</option>
+                      <option value="Abonada">Abonada</option>
+                      <option value="Vencida">Vencida</option>
+                      <option value="Anulada">Anulada</option>
+                    </Form.Control>
+                  </Col>
+                </Row>
+              </div>
+              {renderTabla()}
+            </Col>
+            <Col
+              xs={12}
+              lg={4}
+              style={{
+                height: "100%",
+                paddingLeft: "1rem"
+              }}
+            >
+              <DetalleCuota
+                cuota={selectedDetalleCuota.cuota}
+                student={selectedDetalleCuota.student}
+                onClose={() => setSelectedDetalleCuota(null)}
+                // En layout side-by-side usamos alto completo
+                fullHeight={true}
+                onPagar={handleAddPayment}
+                onRechazarTransferencia={handleOpenRechazoModal}
+                onVerHistorial={handleShowPaymentHistory}
+              />
+            </Col>
+          </Row>
+        ) : (
+          // Layout en _stack_ para pantallas medianas y menores (<992px)
+          <>
+            <Row>
+              <Col xs={12} style={{ overflowY: "auto", paddingRight: "1rem" }}>
+                <h1
+                  className="text-center mb-4"
+                  style={{ color: "#1E1B4B", fontWeight: "bold" }}
+                >
+                  Cobros
+                </h1>
+                <div className="mb-4">
+                  <Row className="d-flex justify-content-between align-items-center">
+                    <Col xs={12} className="mb-2">
+                      <Form.Control
+                        type="text"
+                        placeholder="Filtrar por Nombre"
+                        value={studentFilter}
+                        onChange={(e) => setStudentFilter(e.target.value)}
+                      />
+                    </Col>
+                    <Col xs={12} className="mb-2">
+                      <Form.Control
+                        as="select"
+                        onChange={(e) => setGroupFilter(e.target.value)}
+                        value={groupFilter}
+                      >
+                        <option value="">Filtrar por Grupo</option>
+                        {grupos.map((grupo) => (
+                          <option key={grupo.id} value={grupo.nombre}>
+                            {grupo.nombre}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Col>
+                    <Col xs={12}>
+                      <Form.Control
+                        as="select"
+                        onChange={(e) => setPaymentFilter(e.target.value)}
+                        value={paymentFilter}
+                      >
+                        <option value="">Filtrar por Estado de Pago</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Abonada">Abonada</option>
+                        <option value="Vencida">Vencida</option>
+                        <option value="Anulada">Anulada</option>
+                      </Form.Control>
+                    </Col>
+                  </Row>
+                </div>
+                {renderTabla()}
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={12} style={{ paddingTop: "1rem" }}>
+                <DetalleCuota
+                  cuota={selectedDetalleCuota.cuota}
+                  student={selectedDetalleCuota.student}
+                  onClose={() => setSelectedDetalleCuota(null)}
+                  // En layout _stack_ usamos alto automático para evitar espacios excesivos
+                  fullHeight={false}
+                />
+              </Col>
+            </Row>
+          </>
+        )
+      ) : (
+        // Modo sin división: se muestra el contenido completo en ancho completo
+        <>
+          <h1
+            className="text-center mb-4"
+            style={{ color: "#1E1B4B", fontWeight: "bold" }}
           >
-            Actualizar Precios
-          </Button>
-        </div>
+            Cobros
+          </h1>
+          <div className="mb-4">
+            <Row className="d-flex justify-content-between align-items-center">
+              <Col md={4} className="p-0 pe-2">
+                <Form.Control
+                  type="text"
+                  placeholder="Filtrar por Nombre"
+                  value={studentFilter}
+                  onChange={(e) => setStudentFilter(e.target.value)}
+                />
+              </Col>
+              <Col md={4} className="p-0 pe-2">
+                <Form.Control
+                  as="select"
+                  onChange={(e) => setGroupFilter(e.target.value)}
+                  value={groupFilter}
+                >
+                  <option value="">Filtrar por Grupo</option>
+                  {grupos.map((grupo) => (
+                    <option key={grupo.id} value={grupo.nombre}>
+                      {grupo.nombre}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Col>
+              <Col md={4} className="p-0 ps-2">
+                <Form.Control
+                  as="select"
+                  onChange={(e) => setPaymentFilter(e.target.value)}
+                  value={paymentFilter}
+                >
+                  <option value="">Filtrar por Estado de Pago</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Abonada">Abonada</option>
+                  <option value="Vencida">Vencida</option>
+                  <option value="Anulada">Anulada</option>
+                </Form.Control>
+              </Col>
+            </Row>
+          </div>
+          {renderTabla()}
+        </>
       )}
-
-      {/* Contenedor de Filtros */}
-      <div className="mb-4">
-        <Row className="d-flex justify-content-between align-items-center">
-          {/* Filtro por Nombre de Alumno */}
-          <Col md={4} className="p-0 pe-2">
-            <Form.Control
-              type="text"
-              placeholder="Filtrar por Nombre"
-              value={studentFilter}
-              onChange={(e) => setStudentFilter(e.target.value)}
-              style={{ width: "100%" }}
-            />
-          </Col>
-          {/* Filtro por Grupo */}
-          <Col md={4} className="p-0 pe-2">
-            <Form.Control
-              as="select"
-              onChange={(e) => setGroupFilter(e.target.value)}
-              value={groupFilter}
-              style={{ width: "100%" }}
-            >
-              <option value="">Filtrar por Grupo</option>
-              {grupos.map((grupo) => (
-                <option key={grupo.id} value={grupo.nombre}>
-                  {grupo.nombre}
-                </option>
-              ))}
-            </Form.Control>
-          </Col>
-          {/* Filtro por Estado de Pago */}
-          <Col md={4} className="p-0 ps-2">
-            <Form.Control
-              as="select"
-              onChange={(e) => setPaymentFilter(e.target.value)}
-              value={paymentFilter}
-              style={{ width: "100%" }}
-            >
-              <option value="">Filtrar por Estado de Pago</option>
-              <option value="Pendiente">Pendiente</option>
-              <option value="Abonada">Abonada</option>
-              <option value="Vencida">Vencida</option>
-              <option value="Anulada">Anulada</option>
-            </Form.Control>
-          </Col>
-        </Row>
-      </div>
-
-      {/* Tabla */}
-      <div style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}>
-        <Table striped bordered hover responsive="sm" className="w-100">
-          <thead className="table-primary">
-            <tr>
-              <th>Nombre</th>
-              <th>Grupo</th>
-              <th>Estado</th>
-              <th>Precio del Grupo</th>
-              <th>Recargo</th>
-              <th>Forma de Pago</th>
-              <th>Fecha de Pago</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredCuotas.map(([student, cuotasStudent]) =>
-              cuotasStudent.map((cuota) => {
-                const montoGrupo = monto.find((m) => m.idGrupo === student.idGrupo)?.monto || 0;
-                const montoValor = typeof montoGrupo === 'object' ? montoGrupo.monto : montoGrupo; // Extraer el valor correcto
-
-                console.log(`Monto del grupo para el alumno ${student.usuario.nombre}:`, montoValor); // Depuración
-
-                return (
-                  <tr key={cuota.id}>
-                    <td>
-                      {student.usuario.nombre} {student.usuario.apellido}
-                    </td>
-                    <td>{student.nombreGrupo}</td>
-                    <td>
-                      <span
-                        className={`badge bg-${cuota.cambiosEstado[0].estadoCuota === "Pendiente"
-                            ? "warning"
-                            : cuota.cambiosEstado[0].estadoCuota === "Abonada"
-                              ? "success"
-                              : cuota.cambiosEstado[0].estadoCuota === "Anulada" ||
-                                cuota.cambiosEstado[0].estadoCuota === "Vencida"
-                                ? "danger"
-                                : "secondary"
-                          }`}
-                      >
-                        {cuota.cambiosEstado[0].estadoCuota}
-                       
-                      </span>
-                      {cuota?.pago?.rechazado &&
-                      <span
-                        className={`badge bg-danger`}
-                      >
-                        Pago Rechazado
-                      </span>
-                     }
-                      
-                    </td>
-                    <td>${montoValor}</td> {/* Mostrar el monto del grupo */}
-                    <td>${cuota.recargo || 0}</td>
-                    <td>
-                      {cuota.pago?.metodoPago.nombre || "N/A"}
-                      {cuota.pago?.comprobanteURL && (
-                        <div>
-                          <a
-                            href={cuota.pago.comprobanteURL}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ fontSize: "0.9rem", display: "block", marginTop: "4px" }}
-                          >
-                            Ver comprobante
-                          </a>
-                        </div>
-                      )}
-                    </td>
-
-                    <td>{cuota.pago ? formatDate(cuota.pago.fechaPago) : "N/A"}</td>
-                    <td>
-                      <Button
-                        variant="info"
-                        size="sm"
-                        style={{
-                          backgroundColor: "#4F46E5",
-                          color: "white",
-                          padding: "10px 20px",
-                          borderRadius: "4px",
-                          textDecoration: "none",
-                          fontSize: "14px",
-                        }}
-                        onClick={() => handleShowPaymentHistory(student, cuota)}
-                      >
-                        Historial de Pago
-                      </Button>
-                      {cuota.cambiosEstado[0].estadoCuota === "Pendiente" && (
-                        <Button
-                          variant="success"
-                          size="sm"
-                          className="ms-2"
-                          onClick={() => handleAddPayment(student, cuota)}
-                        >
-                          Pagar
-                        </Button>
-                      )}
-                      {cuota?.pago?.comprobanteURL && !cuota.pago.rechazado && (
-                        <Button
-                          variant="success"
-                          size="sm"
-                          className="ms-2"
-                          onClick={() => handleOpenRechazoModal(cuota)}
-                        >
-                          Rechazar Pago
-                        </Button>
-
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </Table>
-      </div>
-
       {/* Modales */}
-      <ActualizarMontoModal
-        show={showMontoModal}
-        onClose={() => setShowMontoModal(false)}
-        monto={monto}
-        grupos={grupos}
-        onSave={(nuevoMonto) => setMonto((prev) => [...prev, ...nuevoMonto])}
-        idServicio={idServicio}
-      />
       <HistorialPagoModal
         show={showPaymentHistory}
         onClose={() => setShowPaymentHistory(false)}
@@ -426,16 +561,15 @@ const Cobros = ({ id }) => {
         fetchCuotas={fetchCuotas}
         idServicio={idServicio}
       />
-        <RechazoPagoModal
+      <RechazoPagoModal
         show={showModalMotivoRechazo}
         onClose={() => setShowModalMotivoRechazo(false)}
-        handleSubmit={() => handleConfirmRechazoModal()}
+        handleSubmit={handleConfirmRechazoModal}
         motivoRechazo={motivoRechazo}
         setMotivoRechazo={setMotivoRechazo}
         cuota={selectedCuota}
       />
-      
-    </div>
+    </Container>
   );
 };
 

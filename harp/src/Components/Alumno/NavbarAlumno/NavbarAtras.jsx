@@ -4,7 +4,7 @@ import { Navbar, Dropdown, Container } from "react-bootstrap";
 import img from "../../../assets/LogoHarp420.png"; // Ruta del logo
 import profileImg from "../../../assets/profile.png"; // Ruta de la imagen de perfil
 
-export default function NavbarAlumnoAtras() {
+export default function NavbarAlumnoAtras({usuario}) {
   const navigate = useNavigate();
   const { idAlumno } = useParams();
   
@@ -89,7 +89,7 @@ export default function NavbarAlumnoAtras() {
               }}
             >
               <img
-                src={profileImg}
+                src={usuario?.usuario?.fotoPerfilURL ||  profileImg}
                 alt="Profile"
                 style={{
                   width: "40px",
@@ -101,8 +101,8 @@ export default function NavbarAlumnoAtras() {
               />
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/editar-perfil`)}>
-                Editar perfil
+              <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/perfil/ver-perfil`)}>
+                Ver perfil
               </Dropdown.Item>
               <Dropdown.Item onClick={() => navigate("/")}>Cerrar sesión</Dropdown.Item>
             </Dropdown.Menu>

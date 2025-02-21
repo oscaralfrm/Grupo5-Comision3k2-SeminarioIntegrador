@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { getResumenAsistencias, getHistorialAsistencias, getInscripcionesDeAlumno } from '../../../services/Alumno';
+import { getInscripcionesDeAlumno } from '../../../services/Alumno';
 import { FaCheckCircle, FaTimesCircle, FaCalendarAlt, FaChartBar } from 'react-icons/fa'; // Íconos
-import { traerUnaInscripcion } from '../../../services/Inscripcion';
+import { getHistorialAsistencias, getResumenAsistencias, traerUnaInscripcion } from '../../../services/Inscripcion';
 
 const AsistenciasAlumno = () => {
     const [resumen, setResumen] = useState(null);
@@ -19,8 +19,8 @@ const AsistenciasAlumno = () => {
                 const inscripcion = await traerUnaInscripcion(idInscripcion);
                 setInscripcion(inscripcion);
                 // Obtener los datos usando el idGrupo
-                const resumenData = await getResumenAsistencias(idAlumno, inscripcion?.grupo?.id);
-                const historialData = await getHistorialAsistencias(idAlumno, inscripcion?.grupo?.id);
+                const resumenData = await getResumenAsistencias(idInscripcion);
+                const historialData = await getHistorialAsistencias(idInscripcion);
 
                 console.log(historialData);
                 setResumen(resumenData);
@@ -104,8 +104,12 @@ const AsistenciasAlumno = () => {
                         <p style={styles.text}>
                             <strong>Asistió:</strong> {asistencia.asistio ? (
                                 <span style={{ color: '#4CAF50' }}>Sí</span>
-                            ) : (
-                                <span style={{ color: '#F44336' }}>No</span>
+                            ) : 
+                            (
+                                asistencia.asistio == false 
+                                ? <span style={{ color: '#F44336' }}>No</span>
+                                : <span style={{ color: '#F44336' }}>Sin definir</span>
+
                             )}
                         </p>
                         {asistencia.clase.observaciones && (

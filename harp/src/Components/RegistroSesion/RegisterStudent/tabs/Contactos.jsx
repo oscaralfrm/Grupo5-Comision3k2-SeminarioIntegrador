@@ -24,73 +24,7 @@ export default function Contactos({
 
   return (
     <div>
-      {/* Campo Email */}
-      <div className="form-group mb-3">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          className={`form-control ${errors?.email ? "is-invalid" : ""}`}
-          placeholder="Email"
-          {...register("email", {
-            required: "El email es obligatorio",
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "El email no es válido",
-            },
-            onChange: handleInputChange,
-          })}
-        />
-        {errors?.email && (
-          <div className="invalid-feedback">{errors.email.message}</div>
-        )}
-      </div>
-
-      {/* Campo Nombre de Usuario */}
-      <div className="form-group mb-3">
-        <label htmlFor="nombreUsuario">Nombre de usuario</label>
-        <input
-          type="text"
-          id="nombreUsuario"
-          name="nombreUsuario"
-          className={`form-control ${errors?.nombreUsuario ? "is-invalid" : ""
-            }`}
-          placeholder="Nombre de usuario"
-          {...register("nombreUsuario", {
-            required: "El nombre de usuario es obligatorio",
-            onChange: handleInputChange,
-          })}
-        />
-        {errors?.nombreUsuario && (
-          <div className="invalid-feedback">{errors.nombreUsuario.message}</div>
-        )}
-      </div>
-
-      {/* Campo Foto Perfil */}
-      <div className="form-group mb-3">
-        <label htmlFor="fotoPerfil">Foto de Perfil</label>
-        <input
-          type="file"
-          id="fotoPerfil"
-          name="fotoPerfil"
-          className="form-control"
-          {...register("fotoPerfil", {
-            onChange: handleLogoChange,
-          })}
-        />
-        {/* Muestra la vista previa si existe */}
-        {fotoPreview && (
-          <div className="mt-3">
-            <img
-              src={fotoPreview}
-              alt="Vista previa del foto perfil"
-              style={{ maxWidth: "200px", border: "1px solid #ddd", padding: "5px" }}
-            />
-          </div>
-        )}
-      </div>
-
+    
       {/* Botones para navegar entre las pestañas */}
       <div className="d-flex justify-content-between">
         {/* Flecha para ir a la sección anterior */}

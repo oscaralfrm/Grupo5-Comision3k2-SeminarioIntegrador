@@ -7,8 +7,9 @@ import {
   definirSiGrupoSePuedeActualizarPrecio,
   getMontoProgramadoDeHistorial,
 } from "../../../../services/HistorialMontoCuota";
+import { armarStringFrecuenciaCobro } from "../../../../services/frecuenciaPago";
 
-const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
+const ActualizarMontoModal = ({ idServicio, grupos, show, onClose, onSave, frecuenciaCobro }) => {
   if (!grupos || grupos.length === 0) {
     return (
       <Modal show={show} onHide={onClose} centered>
@@ -75,6 +76,7 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
         await actualizarMontosVariosGrupos(idServicio, update.idsGrupos, update.montoDTO);
       }
       alert("Montos actualizados con éxito");
+      onSave();
       onClose();
     } catch (error) {
       console.error("Error al actualizar los montos:", error);
@@ -128,13 +130,16 @@ const ActualizarMontoModal = ({ idServicio, grupos, show, onClose }) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Nuevo monto:</Form.Label>
+            <Form.Label>Nuevo precio {armarStringFrecuenciaCobro(frecuenciaCobro.cantCiclo, frecuenciaCobro.unidadCiclo)} </Form.Label>
+            <div className="input-group">
+              <span className="input-group-text">$</span>
             <Form.Control
               type="number"
               placeholder="Ingresa el monto"
               value={newMonto}
               onChange={(e) => setNewMonto(e.target.value)}
             />
+            </div>
           </Form.Group>
 
           <Form.Group className="mb-3">

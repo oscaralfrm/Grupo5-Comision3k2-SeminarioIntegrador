@@ -107,14 +107,24 @@ const BarraResumen = ({ serviceData, grupos, sePuedeEditar }) => {
             <Button variant="warning" size="sm" className="mb-3" onClick={handleSuspendService}>
             Editar
             </Button>
-          */}
+          
 
           {serviceData?.fechaInicio && sePuedeEditar && (
             <Button variant="warning" size="sm" className="mb-3" onClick={handleSuspendService}>
               Suspender
             </Button>
           )}
+            */}
         </Col>
+        {serviceData?.fechaFin != null &&
+          <Col className="d-flex flex-column align-items-center">
+            <FaRegCalendarAlt size={25} className="mb-2 mt-2 text-primary" />
+            <p className="mb-1 fw-bold">Fecha Fin:</p>
+            <p>{formatDate(serviceData?.fechaFin) || "Sin definir"}</p>
+
+          </Col>
+        }
+
         <Col className="d-flex flex-column align-items-center text-center">
           <FaClock size={25} className="mb-2 text-success" />
           <p className="mb-1 fw-bold">Frecuencia clases:</p>
@@ -134,7 +144,7 @@ const BarraResumen = ({ serviceData, grupos, sePuedeEditar }) => {
           <Col className="d-flex flex-column align-items-center">
             <i className="bi bi-binoculars-fill mb-2 text-primary" style={{ fontSize: '25px' }} />
             <p className="mb-1 fw-bold">Actividad</p>
-            
+
             <Button variant="primary" size="sm" onClick={handleViewActivity}>
               Ver Actividad
             </Button>

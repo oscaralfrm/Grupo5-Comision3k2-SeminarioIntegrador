@@ -54,7 +54,7 @@ export const LoginForm = () => {
                 if (alumno) {
                     const userProfileId = alumno.id; // Usar el id del alumno directamente
                     console.log('ID del alumno encontrado:', userProfileId); // Log del idAlumno
-                    navigate(`/alumno/${userProfileId}/descubrir-servicios`);
+                    navigate(`/alumno/${userProfileId}/inscripciones`);
                 } else {
                     console.error('Alumno no encontrado');
                     setErrorMessage('No se encontró el alumno.');
@@ -122,18 +122,18 @@ export const LoginForm = () => {
                                 )}
                                 <form className="mt-3" onSubmit={handleSubmit(onSubmit)} id="login">
                                     <div className="mb-3">
-                                        <label htmlFor="email" className="form-label">Correo Electrónico</label>
+                                        <label htmlFor="email" className="form-label">Usuario o Correo</label>
                                         <input
-                                            type="email"
+                                            type="text"
                                             id="email"
                                             className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                                            placeholder="Correo Electrónico"
+                                            placeholder="Usuario o Correo"
                                             autoComplete="email"
                                             {...register("email", { required: true })}
                                         />
                                         {errors.email && (
                                             <div className="invalid-feedback">
-                                                Por favor, ingresa un correo electrónico
+                                                Por favor, ingresa un usuario o correo
                                             </div>
                                         )}
                                     </div>

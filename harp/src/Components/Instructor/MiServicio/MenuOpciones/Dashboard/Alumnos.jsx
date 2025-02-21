@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom"; // Asegúrate de importar Link
 import { getAlumnosDeServicio } from "../../../../../services/Alumno.js";
+import { traerInscripcionesDeServicio } from "../../../../../services/Inscripcion.js";
 
 const StudentsCard = () => {
   const [expanded, setExpanded] = useState(false);
-  const [students, setStudents] = useState([]);
+  //const [students, setStudents] = useState([]);
+  const [inscripciones, setInscripciones] = useState([]);
   const { idServicio, idInstructor } = useParams();
 
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
-        const data = await getAlumnosDeServicio(idServicio);
-        setStudents(data);
-        console.log(data);
+        //const data = await getAlumnosDeServicio(idServicio);
+        //setStudents(data);
+        const inscripciones = await traerInscripcionesDeServicio(idServicio, true, false, false);
+        setInscripciones(inscripciones);
+        console.log(inscripciones);
       } catch (error) {
         console.error("Error al traer los alumnos:", error);
       }
@@ -20,8 +24,6 @@ const StudentsCard = () => {
     fetchAlumnos();
   }, [idServicio]);
 
-  // Mostrar solo tres estudiantes si la lista no está expandida
-  const displayedStudents = expanded ? students : students.slice(0, 3);
 
   const handleExpandToggle = () => {
     setExpanded(!expanded);
@@ -118,11 +120,11 @@ const StudentsCard = () => {
       <hr />
 
       {/* Mapeo de estudiantes */}
-      {students &&
-        students.map((student) => (
+      {inscripciones &&
+        inscripciones.map((inscripcion) => (
           <Link
-            key={student.id}
-            to={`/student/${student.id}`} // Corregido para que funcione la ruta dinámica
+            key={inscripcion.id}
+            to={`/instructor/${idInstructor}/servicio/${inscripcion.servicio.id}/inscripciones/${inscripcion.id}`} // Corregido para que funcione la ruta dinámica
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -134,7 +136,7 @@ const StudentsCard = () => {
               borderBottom: "1px solid #ccc",
             }}
           >
-            <span>{student.usuario.nombre + " " + student.usuario.apellido}</span>
+            <span>{inscripcion.alumno.nombreCompleto}</span>
             <div style={{ display: "flex", alignItems: "center" }}>
               <div
                 style={{
@@ -149,13 +151,13 @@ const StudentsCard = () => {
                 <div
                   style={{
                     height: "100%",
-                    width: `${student.attendance}%`, // Corregido para interpolar el valor de asistencia
+                    width: `${inscripcion.attendance}%`, // Corregido para interpolar el valor de asistencia
                     backgroundColor: "#4a47a3",
                   }}
                 ></div>
               </div>
               <span style={{ color: "#4a47a3", fontSize: "12px" }}>
-                {student.attendance}%
+                {inscripcion.attendance}%
               </span>
             </div>
           </Link>

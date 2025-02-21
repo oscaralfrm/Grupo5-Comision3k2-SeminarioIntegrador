@@ -14,9 +14,12 @@ import { format, parseISO } from "date-fns";
 import GrupoHorariosMontos from "./GrupoHorariosMontos";
 import { crearInscripcion } from "../../../../services/Inscripcion";
 import SuccessModal from "../../../CartelDeExito/CartelDeExito";
+import ActualizarMontoModal from "../../MiServicio/MenuOpciones/ActualizarMonto";
+import { FaPencilAlt } from "react-icons/fa";
+import ModalEditarMontoProgramado from "./ModalEditarMontoProgramado";
 
-function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar }) {
-  const { idServicio, idAlumno } = useParams();
+function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar, inscripcionesPendientesAlumno, inscripcionesVigentesAlumno }) {
+  const { idServicio, idAlumno, idInstructor } = useParams();
   const [cuposLibres, setCuposLibres] = useState({});
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null); // Para editar grupos
   const [showModalEdit, setShowModalEdit] = useState(false);
@@ -26,6 +29,11 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
   const [montosProgramados, setMontosProgramados] = useState(0);
   const [sePuedeActualizarPrecio, setSePuedeActualizarPrecio] = useState(false);
   const navigate = useNavigate();
+
+
+  // Estados para editar el monto programado
+  const [showModalEditarMontoProgramado, setShowModalEditarMontoProgramado] = useState(false);
+
 
   // Estados para la inscripción con modales de Bootstrap
   const [showConfirm, setShowConfirm] = useState(false);
@@ -43,11 +51,41 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
     setMontosProgramados(montosPorGrupo);
   };
 
+  const esBotonDisable = (idGrupo) => {
+
+    // Si es el instructor el que está en el Descubrir servicios entonces no aparece el botón
+
+    // Si el alumno no tiene inscripciones pendientes o vigentes entonces puede inscribirse a cualquier sevicio que este publicado
+    if ((!inscripcionesPendientesAlumno && !inscripcionesVigentesAlumno)
+      || (inscripcionesPendientesAlumno?.length === 0 && inscripcionesVigentesAlumno?.length === 0)) {
+      return { esDisabled: false, tituloBoton: "Inscribirme" };
+    }
+    // Si tiene inscripcion pendiente en ese grupo, entonces no puede volver a inscribirse y aparece como Inscripcion enviada
+    const tienePendientesDeEsteServicioYGrupo = inscripcionesPendientesAlumno?.some((inscripcion) => inscripcion &&
+      inscripcion.servicio && inscripcion.servicio.id && inscripcion.servicio.id == idServicio && inscripcion.grupo.id == idGrupo);
+    if (tienePendientesDeEsteServicioYGrupo) {
+      return { esDisabled: true, tituloBoton: "Inscripcion enviada" }
+    }
+
+    // Si tiene una inscripcion vigente a ese grupo, es decir aceptada o EnCurso etonces no puede volver a inscribirse y aparece Inscripto
+    const tieneVigentesDeEsteServicioYGrupo = inscripcionesVigentesAlumno?.some((inscripcion) => inscripcion &&
+      inscripcion.servicio && inscripcion.servicio.id && inscripcion.servicio.id == idServicio && inscripcion.grupo.id == idGrupo);
+
+    if (tieneVigentesDeEsteServicioYGrupo) {
+      return { esDisabled: true, tituloBoton: "Inscripto" }
+    }
+
+
+    // Retorno por defecto en caso de no cumplir ninguna condición
+    return { esDisabled: false, tituloBoton: "Inscribirme" };
+
+  };
+
   useEffect(() => {
     setUltimoNumeroGrupo(calcularUltimoNumeroGrupo());
     obtenerMontosProgramadosPorGrupo(grupos);
     setSePuedeActualizarPrecio(definirSiServicioSePuedeActualizarPrecio(grupos));
-  }, [idServicio, grupos]);
+  }, [idServicio, grupos, inscripcionesPendientesAlumno, inscripcionesVigentesAlumno]);
 
   const calcularCuposLibres = async (grupo) => {
     if (grupo.cantMaxAlumnos === null) return "Con cupos libres";
@@ -74,6 +112,11 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
   const handleEditClick = (grupo) => {
     setGrupoSeleccionado(grupo);
     setShowModalEdit(true);
+  };
+
+  const handleEditarMontoProgramado = (grupo) => {
+    setGrupoSeleccionado(grupo);
+    setShowModalEditarMontoProgramado(true);
   };
 
   const cargarCuposLibres = async () => {
@@ -233,14 +276,15 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                         <FaCog color="white" size={10} />
                       </Button>
                     )}
-                    {!sePuedeEditar && cuposLibres[grupo.id] !== "Sin cupos libres" && (
+                    {!sePuedeEditar && cuposLibres[grupo.id] !== "Sin cupos libres" && idInstructor == null && (
                       <Button
                         size="sm"
                         className="mb-2 position-absolute"
                         style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }}
                         onClick={() => handleInscribirseClick(grupo)}
+                        disabled={esBotonDisable(grupo?.id)?.esDisabled}
                       >
-                        Inscribirme
+                        {esBotonDisable(grupo?.id)?.tituloBoton}
                       </Button>
                     )}
                     {ordenarPorDia(grupo.horarios).map((horario) => (
@@ -254,6 +298,13 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                         {montosProgramados[grupo.id]
                           ? `$${montosProgramados[grupo.id].monto} desde ${formatDate(montosProgramados[grupo.id].fechaInicio)}`
                           : "Monto no disponible"}
+
+                        {sePuedeEditar && (
+                          <FaPencilAlt
+                            style={{ cursor: "pointer", marginLeft: "8px" }}
+                            onClick={() => handleEditarMontoProgramado(grupo)}
+                          />
+                        )}
                       </Card.Text>
                     )}
                   </Card.Body>
@@ -279,14 +330,15 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                         <FaCog color="white" size={10} />
                       </Button>
                     )}
-                    {!sePuedeEditar && cuposLibres[grupo.id] !== "Sin cupos libres" && (
+                    {!sePuedeEditar && cuposLibres[grupo.id] !== "Sin cupos libres" && idInstructor == null && (
                       <Button
                         size="sm"
                         className="mb-2 position-absolute"
                         style={{ backgroundColor: "#4F46E5", borderColor: "#4F46E5", bottom: "10px", right: "10px" }}
                         onClick={() => handleInscribirseClick(grupo)}
+                        disabled={esBotonDisable(grupo?.id)?.esDisabled}
                       >
-                        Inscribirme
+                        {esBotonDisable(grupo?.id)?.tituloBoton}
                       </Button>
                     )}
                     {ordenarPorDia(grupo.horarios).map((horario) => (
@@ -300,6 +352,14 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
                         {montosProgramados[grupo.id]
                           ? `$${montosProgramados[grupo.id].monto} desde ${formatDate(montosProgramados[grupo.id].fechaInicio)}`
                           : "Monto no disponible"}
+
+                        {sePuedeEditar && (
+                          <FaPencilAlt
+                            style={{ cursor: "pointer", marginLeft: "8px" }}
+                            onClick={() => handleEditarMontoProgramado(grupo)}
+                          />
+                        )}
+
                       </Card.Text>
                     )}
                   </Card.Body>
@@ -310,11 +370,32 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar 
         )}
       </Row>
 
+      {/* Modal Actualizar Precio */}
+      <ActualizarMontoModal
+        show={showModalActualizarPrecio}
+        onClose={() => setShowModalActualizarPrecio(false)}
+        grupos={grupos}
+        onSave={fetchServicio}
+        idServicio={idServicio}
+        frecuenciaCobro={frecuenciaCobro}
+      />
+
       {/* Modal para Crear Grupo */}
-      <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos} frecuenciaCobro={frecuenciaCobro}/>
+      <CrearGrupoModal show={showModalCrear} handleClose={handleCerrarModalCrear} ultimoNumeroGrupo={ultimoNumeroGrupo} idServicio={idServicio} grupos={grupos} frecuenciaCobro={frecuenciaCobro} />
 
       {/* Modal para Editar Grupo */}
-      <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchServicio} frecuenciaCobro={frecuenciaCobro}/>
+      <EditarGrupoModal show={showModalEdit} handleClose={handleCerrarModalEdit} grupo={grupoSeleccionado} idServicio={idServicio} grupos={grupos} onGrupoEditado={fetchServicio} frecuenciaCobro={frecuenciaCobro} />
+
+
+      {/* Modal para Editar monto programado */}
+      <ModalEditarMontoProgramado
+        show={showModalEditarMontoProgramado}
+        onClose={() =>
+          setShowModalEditarMontoProgramado(false)}
+        grupo={grupoSeleccionado}
+        onSave={fetchServicio}
+        frecuenciaCobro={frecuenciaCobro}
+      />
 
       {/* ───────── Modal de confirmación de inscripción ───────── */}
       <Modal show={showConfirm} onHide={handleCancelInscription} centered>

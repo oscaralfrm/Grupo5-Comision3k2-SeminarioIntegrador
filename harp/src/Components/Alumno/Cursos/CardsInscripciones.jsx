@@ -27,6 +27,7 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
     const closeDetails = () => setselectedInscripcion(null);
 
     const handleGoToService = (inscripcion) => {
+        console.log("Inscripcion", inscripcion);
         if (inscripcion.estado == "Finalizada") {
             if (inscripcion.servicio.publico) {
                 navigate(`/alumno/${idAlumno}/servicio/${inscripcion.servicio.id}/info-servicio`);
@@ -36,6 +37,8 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
             
         } else if (inscripcion.estado == "EnCurso" || inscripcion.estado == "Aceptada") {
             navigate(`/alumno/${idAlumno}/inscripciones/${inscripcion.id}/mi-inscripcion`);
+        } else if (inscripcion.estado == "PendienteAceptacion") {
+            navigate(`/alumno/${idAlumno}/servicio/${inscripcion.servicio.id}/info-servicio`);
         }
     };
 

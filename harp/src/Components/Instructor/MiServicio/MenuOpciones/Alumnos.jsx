@@ -26,12 +26,12 @@ const Alumnos = () => {
         const grupos = await getGruposDeServicio(idServicio);
         setGroups(grupos);
 
-        const inscripciones = await getInscripcionesDeServicio(idServicio, true, false);
+        const inscripciones = await getInscripcionesDeServicio(idServicio, true, false, false);
         setInscripciones(inscripciones);
         setFilteredInscripciones(inscripciones);
 
         console.log("inscripciones", inscripciones);
-        
+
       } catch (error) {
         console.error("Error al cargar los grupos o alumnos:", error);
       }
@@ -40,19 +40,19 @@ const Alumnos = () => {
     fetchGroupsAndStudents();
   }, [idServicio]);
 
-    // Aplicar filtros cuando cambian
-    useEffect(() => {
-      setFilteredInscripciones(
-        inscripciones.filter((inscripcion) => {
-          console.log("Inscripciones", inscripcion)
-          return (
-            inscripcion?.alumno?.usuario?.nombre.toLowerCase().includes(filters.name.toLowerCase()) &&
-            inscripcion?.alumno?.usuario?.dni?.includes(filters.dni) &&
-            (filters.group ? inscripcion.grupo.nombre === filters.group : true)
-          );
-        })
-      );
-    }, [filters, inscripciones]);
+  // Aplicar filtros cuando cambian
+  useEffect(() => {
+    setFilteredInscripciones(
+      inscripciones.filter((inscripcion) => {
+        console.log("Inscripciones", inscripcion)
+        return (
+          inscripcion?.alumno?.usuario?.nombre.toLowerCase().includes(filters.name.toLowerCase()) &&
+          inscripcion?.alumno?.usuario?.dni?.includes(filters.dni) &&
+          (filters.group ? inscripcion.grupo.nombre === filters.group : true)
+        );
+      })
+    );
+  }, [filters, inscripciones]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -63,7 +63,7 @@ const Alumnos = () => {
   };
 
   const handleShowPayments = (inscripcion) => {
-    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/cobros?alumno=${encodeURIComponent(inscripcion.id)}`);
+    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/inscripciones/${inscripcion.id}`);
   };
 
   return (
@@ -152,10 +152,19 @@ const Alumnos = () => {
                       "transform 0.3s, box-shadow 0.3s, background-color 0.3s",
                   }}
                 >
+                  {inscripcion.estado === "Finalizada" &&
+                    <span
+                      className={`badge bg-danger`}
+                    >
+                      {inscripcion.estado}
+                    </span>
+                  }
+
+
                   {/* Foto del alumno */}
                   <Card.Img
                     variant="top"
-                    src={inscripcion.alumno.image || ""}
+                    src={inscripcion.alumno.usuario.fotoPerfilURL || ""}
                     alt={inscripcion.alumno.usuario.nombre}
                     style={{
                       borderRadius: "50%",
@@ -163,11 +172,10 @@ const Alumnos = () => {
                       height: "130px",
                       width: "130px",
                       margin: "15px auto 0",
-                      display: inscripcion.alumno.image ? "block" : "none",
-                      border: "3px solid #4F46E5",
+                      display: inscripcion.alumno.usuario.fotoPerfilURL ? "block" : "none",
                     }}
                   />
-                  {!inscripcion.alumno.image && (
+                  {!inscripcion.alumno.usuario.fotoPerfilURL && (
                     <div
                       style={{
                         borderRadius: "50%",
@@ -185,7 +193,7 @@ const Alumnos = () => {
                       <Person />
                     </div>
                   )}
-  
+
                   {/* Cuerpo de la tarjeta */}
                   <Card.Body className="text-center">
                     <Card.Title
@@ -200,72 +208,77 @@ const Alumnos = () => {
                     >
                       Grupo: {inscripcion.grupo.nombre}
                     </Card.Subtitle>
-  
+
                     {/* Información adicional del alumno */}
                     <Card.Text>
-                      <strong>Inscripto hace </strong> {calcularAntiguedadComoTexto(inscripcion.fechaAceptacion)}
-                      <br />
-                      <strong>Edad:</strong> {calcularEdad(inscripcion.alumno.usuario.fechaNacimiento)}
-                      <br />
-                      {/* <strong>Teléfono:</strong>{" "} */}
-                      <Button
-                        onClick={() => {
-                          const telefono = inscripcion.alumno.usuario.telefono;
-                          if (telefono) {
-                            window.open(`https://wa.me/${telefono}`, "_blank");
-                          } else {
-                            alert(
-                              "El alumno no tiene un número de teléfono registrado."
-                            );
-                          }
-                        }}
-                        style={{
-                          padding: 0 /* Mantén el padding en 0 para el icono */,
-                          border: "none" /* Quita el borde del botón */,
-                          backgroundColor:"transparent" /* Quita el fondo azul */,
-                          color:"inherit" /* Hereda el color del texto padre */,
-                          display:"inline-flex" /* Usa inline-flex para alinear icono y texto */,
-                          alignItems:"center" /* Alinea verticalmente el icono y el texto */,
-                          textDecoration:"none" /* Quita el subrayado del enlace */,
-                          fontFamily:"inherit" /* Hereda la fuente del texto padre */,
-                          fontSize:"inherit" /* Hereda el tamaño de fuente del texto padre */,
-                          cursor:"pointer" /* Indica que es un elemento clickable */,
-                        }}
-                      >
-                        <FontAwesomeIcon
-                          icon={faWhatsapp}
-                          size="lg"
-                          color="blue"
-                          style={{ marginRight: "5px" }}
-                        />
-                        {inscripcion.alumno.usuario.telefono}
-                      </Button>
-                      {/* Aquí se cierra la etiqueta del botón */}
-                    </Card.Text>
+                      <strong>
+                        {inscripcion.estado == "EnCurso" || inscripcion.estado == "Aceptada"
+                          ? `Inscripto hace ${calcularAntiguedadComoTexto(inscripcion.fechaAceptacion)}`
+                          : `Finalizada hace ${calcularAntiguedadComoTexto(inscripcion.fechaFin)}`}
+                      </strong>
 
-                    {/* Botones de acciones */}
-                    <div className="d-flex justify-content-around mt-3">
-                      {/* <Button
+                    <br />
+                    <strong>Edad:</strong> {calcularEdad(inscripcion.alumno.usuario.fechaNacimiento)}
+                    <br />
+                    {/* <strong>Teléfono:</strong>{" "} */}
+                    <Button
+                      onClick={() => {
+                        const telefono = inscripcion.alumno.usuario.telefono;
+                        if (telefono) {
+                          window.open(`https://wa.me/${telefono}`, "_blank");
+                        } else {
+                          alert(
+                            "El alumno no tiene un número de teléfono registrado."
+                          );
+                        }
+                      }}
+                      style={{
+                        padding: 0 /* Mantén el padding en 0 para el icono */,
+                        border: "none" /* Quita el borde del botón */,
+                        backgroundColor: "transparent" /* Quita el fondo azul */,
+                        color: "inherit" /* Hereda el color del texto padre */,
+                        display: "inline-flex" /* Usa inline-flex para alinear icono y texto */,
+                        alignItems: "center" /* Alinea verticalmente el icono y el texto */,
+                        textDecoration: "none" /* Quita el subrayado del enlace */,
+                        fontFamily: "inherit" /* Hereda la fuente del texto padre */,
+                        fontSize: "inherit" /* Hereda el tamaño de fuente del texto padre */,
+                        cursor: "pointer" /* Indica que es un elemento clickable */,
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faWhatsapp}
+                        size="lg"
+                        color="blue"
+                        style={{ marginRight: "5px" }}
+                      />
+                      {inscripcion.alumno.usuario.telefono}
+                    </Button>
+                    {/* Aquí se cierra la etiqueta del botón */}
+                  </Card.Text>
+
+                  {/* Botones de acciones */}
+                  <div className="d-flex justify-content-around mt-3">
+                    {/* <Button
                         variant="primary"
                         onClick={() => handleShowAttendance(inscripcion.alumno)}
                       >
                         Asistencias
                       </Button> */}
-                      <Button
-                        variant="primary"
-                        onClick={() => handleShowPayments(inscripcion)}
-                      >
-                        Pagos
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
+                    <Button
+                      variant="primary"
+                      onClick={() => handleShowPayments(inscripcion)}
+                    >
+                      Ver más
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
               </Col>
             ))}
-          </Row>
         </Row>
-      </div>
-    </Container>
+      </Row>
+    </div>
+    </Container >
   );  
 
 };

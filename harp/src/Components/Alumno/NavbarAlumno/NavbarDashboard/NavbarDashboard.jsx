@@ -8,7 +8,7 @@ import { getServicioById } from "../../../../services/Servicio";
 import profileImg from "../../../../assets/profile.png";
 import { traerUnaInscripcion } from "../../../../services/Inscripcion";
 
-function NavbarAlumnoDash() {
+function NavbarAlumnoDash({usuario}) {
   const navigate = useNavigate();
   const [inscripciones, setInscripciones] = useState([]);
   const { idAlumno, idInscripcion } = useParams();
@@ -116,7 +116,7 @@ function NavbarAlumnoDash() {
                 Alumnos
               </Nav.Link> */}
               <Nav.Link
-                href={`/alumno/${idAlumno}/inscripciones/${idInscripcion}/reseñas`}
+                href={`/alumno/${idAlumno}/inscripciones/${idInscripcion}/resenias`}
                 style={{ color: "white" }}
               >
                 Reseñas
@@ -149,10 +149,10 @@ function NavbarAlumnoDash() {
         <div className="d-flex align-items-center">
           <Dropdown align="end">
             <Dropdown.Toggle id="dropdown-profile" style={{ background: "none", border: "none", padding: "0", cursor: "pointer" }}>
-              <img src={profileImg} alt="Profile" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", backgroundColor: "gray" }} />
+              <img src={usuario?.usuario.fotoPerfilURL || profileImg} alt="Profile" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", backgroundColor: "gray" }} />
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/editar-usuario`)}>Editar perfil</Dropdown.Item>
+              <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/perfil/ver-perfil`)}>Ver perfil</Dropdown.Item>
               <Dropdown.Item onClick={() => navigate("/")}>Cerrar sesión</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>

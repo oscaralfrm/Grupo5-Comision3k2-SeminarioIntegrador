@@ -5,11 +5,16 @@ import { Navbar, Nav, Dropdown } from "react-bootstrap";
 import img from "../../assets/LogoHarp420.png";
 import profileImg from "../../assets/profile.png";
 import { getInscripcionesDeAlumno } from "../../services/Alumno";
+import { MdFavorite } from "react-icons/md";
+import { motion } from "framer-motion";
 
-function NavbarGeneralAlumno({ inscripcionesConCuotas }) {
+
+
+function NavbarGeneralAlumno({ inscripcionesConCuotas, usuario }) {
     const navigate = useNavigate();
     const { idAlumno } = useParams();
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [hovered, setHovered] = useState(false);
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
@@ -80,12 +85,31 @@ function NavbarGeneralAlumno({ inscripcionesConCuotas }) {
                 </Navbar.Collapse>
 
                 <div className="d-flex align-items-center">
+                    {/* Ícono de corazón para acceder a servicios favoritos */}
+                    <motion.span
+                        onMouseEnter={() => setHovered(true)}
+                        onMouseLeave={() => setHovered(false)}
+                        initial={{ scale: 1 }}
+                        animate={{ scale: hovered ? 1.2 : 1 }}
+                        transition={{ duration: 0.3 }}
+                        style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", 
+                            cursor: "pointer",
+                            margin: "0 15px"}}
+                    >
+                     <MdFavorite
+                        size={30}
+                        color="white"
+                        onClick={()  => navigate(`/alumno/${idAlumno}/servicios-favoritos`) } 
+                        
+                    />  
+                    </motion.span>
+
                     <Dropdown align="end">
                         <Dropdown.Toggle id="dropdown-profile" style={{ background: "none", border: "none", padding: "0", cursor: "pointer" }}>
-                            <img src={profileImg} alt="Profile" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", backgroundColor: "gray" }} />
+                            <img src={usuario?.usuario?.fotoPerfilURL || profileImg} alt="Profile" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", backgroundColor: "gray" }} />
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/editar-usuario`)}>Editar perfil</Dropdown.Item>
+                            <Dropdown.Item onClick={() => navigate(`/alumno/${idAlumno}/perfil/ver-perfil`)}>Ver perfil</Dropdown.Item>
                             <Dropdown.Item onClick={() => navigate("/")}>Cerrar sesión</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>

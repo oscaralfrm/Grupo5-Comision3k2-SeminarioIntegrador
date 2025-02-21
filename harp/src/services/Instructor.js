@@ -22,6 +22,17 @@ export const getInstructorById = async (id) => {
   }
 };
 
+export const getInstructorByNombreUsuario = async (nombreUsuario) => {
+  try {
+      const response = await axios.get(`/instructores/by-nombre-usuario?nombreUsuario=${nombreUsuario}`);
+      return response.data;  // Suponiendo que la respuesta es un alumno
+  } catch (error) {
+      console.error("Error fetching instructor by nombreUsuario: ", error);
+      throw error;
+  }
+};
+
+
 export const getServiciosDeInstructor = async (idInstructor) => {
   try {
     const response = await axios.get(`${BASE_URL}/${idInstructor}/servicios`);
@@ -124,6 +135,9 @@ export const editInstructor = async ({  idInstructor, nombre, apellido, dni, nom
 }
 };
 
+
+
+{/*
 export const editFotoPerfil = async (idInstructor, fotoFile) => {
     try {
       const response = await fetch(`http://localhost:9001/api/instructores/${idInstructor}/foto-perfil`, {
@@ -143,9 +157,34 @@ export const editFotoPerfil = async (idInstructor, fotoFile) => {
     throw error;
   }
 };
+*/}
 
 
-export const completarDatosBancarios = async (idInstructor, alias, cbu, banco, cuit, tipoCuenta) => {
+export const agregarCvInstructor = async (idInstructor, cvFile) => {
+  try {
+    const formDataToSend = new FormData();
+    formDataToSend.append("cv", cvFile);
+    const response = await fetch(`http://localhost:9001/api/instructores/${idInstructor}/cv`, {
+      method: 'PUT',
+      body: formDataToSend
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al subir cv instructor: ${response.status} - ${response.statusText} - ${JSON.stringify(errorData)}`);
+    }
+
+    const data = await response.json();
+    return data.url;
+} catch (error) {
+  console.error('Error subiendo el cv:', error);
+  throw error;
+}
+};
+
+
+
+export const completarDatosBancarios = async (idInstructor, {alias, cbu, banco, cuit, tipoCuenta}) => {
   try {
     const response = await axios.put(`${BASE_URL}/${idInstructor}/datos-bancarios`, { alias, cbu, banco, cuit, tipoCuenta });
     return response.data;
@@ -154,6 +193,20 @@ export const completarDatosBancarios = async (idInstructor, alias, cbu, banco, c
     throw error;
   }
 };
+
+{/*
+export const completarRedesSociales = async (idInstructor, redesSocialesDTO ) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/${idInstructor}/redes-sociales`, { alias, cbu, banco, cuit, tipoCuenta });
+    return response.data;
+  } catch (error) {
+    console.error('Error completando datos bancarios:', error);
+    throw error;
+  }
+};
+*/}
+
+
 
 export const tieneDatosBancariosCompletos = async (idInstructor) => {
   try {
@@ -210,7 +263,6 @@ export const getAllServicios = async () => {
   }
 };
 
-
 export const getServicioById = async (idServicio) => {
   try {
     const response = await axios.get(`/servicios/${idServicio}`);
@@ -227,6 +279,17 @@ export const obtenerInstructorDeServicio = async (idServicio) => {
     return response.data; // Instructor
   } catch (error) {
     console.error("Error al obtener el instructor del servicio:", error);
+    throw error;
+  }
+};
+
+export const tieneServicioConEsteNombre = async (idInstructor, nombreServicio) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/${idInstructor}/by-nombre?nombre=${nombreServicio}`);
+    console.log("nombre usado", response);
+    return response.data;
+  } catch (error) {
+    console.error(`Error buscando nombre usado por instructor`, error);
     throw error;
   }
 };

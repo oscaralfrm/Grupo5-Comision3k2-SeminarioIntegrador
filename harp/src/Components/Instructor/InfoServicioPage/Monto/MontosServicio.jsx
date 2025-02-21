@@ -68,7 +68,7 @@ function MontosServicio({ sePuedeEditar }) {
         borderRadius: "20px",
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         maxWidth: "100%",
-        margin: "auto",
+        margin: "auto"
       }}
     >
       <div
@@ -106,7 +106,7 @@ function MontosServicio({ sePuedeEditar }) {
       <br />
       <p className="mb-1 ">
         <strong>Frecuencia de cobro:</strong>{" "}
-        {armarStringFrecuenciaCobro(serviceData?.tipoFrecuenciaPago.cantCiclo, serviceData?.tipoFrecuenciaPago.unidadCiclo)}
+        {armarStringFrecuenciaCobro(serviceData?.tipoFrecuenciaPago?.cantCiclo, serviceData?.tipoFrecuenciaPago?.unidadCiclo)}
       </p>
       {
         serviceData?.diaLimitePago != 0 &&

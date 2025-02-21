@@ -69,6 +69,7 @@ export const rechazarPagoCuotaConTrasnferencia = async (idServicio, idInscripcio
 export const obtenerCuotasDeInscripcion = async (idServicio, idInscripcion) => {
   try {
     const response = await axios.get(`${baseUrl}/${idServicio}/inscripciones/${idInscripcion}/cuotas`);
+    console.log(response.data);
     return response.data; // Devuelve las cuotas de la inscripción
   } catch (error) {
     console.error("Error al obtener las cuotas de la inscripción:", error.response?.data?.message || error.message);
@@ -95,6 +96,18 @@ export const traerUltimasCuotasDeServicio = async (idServicio) => {
     return response.data; // Devuelve las últimas cuotas de los alumnos del servicio
   } catch (error) {
     console.error("Error al buscar las últimas cuotas:", error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || "Error al buscar las últimas cuotas");
+  }
+};
+
+
+// NO USAR ESTE SERVICIO EN PAGOS PAGE. NO ES LO MISMO QUE OBTENER ULTIMAS CUOTAS DE INSCRIPCION
+export const getCuotasPendientesYVencidasDeInscripcion = async (idServicio, idInscripcion) => {
+  try {
+    const response = await axios.get(`${baseUrl}/${idServicio}/inscripciones/${idInscripcion}/cuotas-pendientes-vencidas`);
+    return response.data; // Devuelve las últimas cuotas de los alumnos del servicio
+  } catch (error) {
+    console.error("Error al buscar las cuotas:", error.response?.data?.message || error.message);
     throw new Error(error.response?.data?.message || "Error al buscar las últimas cuotas");
   }
 };

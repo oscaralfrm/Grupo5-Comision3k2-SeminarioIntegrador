@@ -2,23 +2,7 @@ import axios from './axiosConfig.js';
 
 const API_URL = '/servicios';
 
-// Función para agregar un monto a un servicio
-export const addMontoToServicio = async (monto, cantVecesSemanales, fechaInicio, idServicio) => {
-    try {
-        const response = await axios.post(`${API_URL}/${idServicio}/monto`,
-            {
-                monto,
-                cantVecesSemanales,
-                fechaInicio
-            });
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener el servicio', error.response.data.message);
-        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
-        throw new Error(errorMessage); // Pasa el mensaje al componente
-    }
-};
-
+{/*
 export const getMontosProgramadosServicio = async (idServicio) => {
     try {
         const response = await axios.get(`${API_URL}/${idServicio}/grupos/montos-programados`);
@@ -29,6 +13,25 @@ export const getMontosProgramadosServicio = async (idServicio) => {
         throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
+
+// Servicio para obtener el monto actual de un grupo
+export const getMontoActualGrupo = async (idServicio, idGrupo) => {
+    try {
+      const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/monto-actual`);
+      console.log(`Monto actual del grupo ${idGrupo}:`, response.data); // Depuración
+  
+      // Si el backend devuelve un objeto, extrae el valor del monto
+      const monto = response.data?.monto || 0;
+      return monto;
+    } catch (error) {
+      console.error('Error al obtener el monto actual del grupo:', error.response?.data?.message || error.message);
+      console.warn(`No hay historial de montos para el grupo ${idGrupo}. Usando monto predeterminado: 0`); // Depuración
+      return 0; // Valor predeterminado si no hay historial
+    }
+  };
+
+*/}
+
 
 export const getMontoProgramadoDeHistorial = (historialMontos) => {
 
@@ -68,7 +71,7 @@ export const getHistorialMontosServicio = async (idServicio) => {
     }
 };
 
-
+{/*
 export const editarMontoServicio = async (idMonto, monto, fechaInicio, cantVecesSemanales) => {
     try {
         const response = await axios.put(`${API_URL}/historiales-montos/${idMonto}`, { monto, fechaInicio, cantVecesSemanales });
@@ -79,6 +82,8 @@ export const editarMontoServicio = async (idMonto, monto, fechaInicio, cantVeces
         throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
+*/}
+
 
 // Nuevo de montos con grupos 
 
@@ -115,21 +120,17 @@ export const actualizarMontoGrupo = async (idServicio, idGrupo, monto, fechaInic
     }
 };
 
-// Servicio para obtener el monto actual de un grupo
-export const getMontoActualGrupo = async (idServicio, idGrupo) => {
+// Servicio para editar el monto programado de un grupo
+export const editarMontoProgramadoDeGrupo = async (idServicio, idGrupo, monto, fechaInicio) => {
     try {
-      const response = await axios.get(`${API_URL}/${idServicio}/grupos/${idGrupo}/monto-actual`);
-      console.log(`Monto actual del grupo ${idGrupo}:`, response.data); // Depuración
-  
-      // Si el backend devuelve un objeto, extrae el valor del monto
-      const monto = response.data?.monto || 0;
-      return monto;
+        const response = await axios.put(`${API_URL}/${idServicio}/grupos/${idGrupo}/monto-programado`, { monto, fechaInicio });
+        return response.data; // Devuelve la confirmación de la operación
     } catch (error) {
-      console.error('Error al obtener el monto actual del grupo:', error.response?.data?.message || error.message);
-      console.warn(`No hay historial de montos para el grupo ${idGrupo}. Usando monto predeterminado: 0`); // Depuración
-      return 0; // Valor predeterminado si no hay historial
+        console.error('Error al editar el monto programado:', error.response?.data?.message || error.message);
+        throw new Error(error.response?.data?.message || 'Error al actualizar el monto del grupo');
     }
-  };
+};
+
 
 export const definirSiGrupoSePuedeActualizarPrecio  = (grupo) => {
     const montoActual = getMontoActualGrupoDeHistorial(grupo.historialMontos) ;
