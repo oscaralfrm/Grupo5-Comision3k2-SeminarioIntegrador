@@ -21,7 +21,8 @@ const DetalleCuota = ({
 
     const precio = cuota.montoServicio.monto;
     const recargo = cuota.recargo || 0;
-    const total = precio + recargo;
+    const descuento = cuota.descuento || 0;
+    const total = precio + recargo - descuento;
 
     // Determinar el estado y si está abonada
     const estado = cuota.cambiosEstado[0]?.estadoCuota;
@@ -86,9 +87,11 @@ const DetalleCuota = ({
                     {/* Columna Derecha */}
                     <div className="col-6 d-flex flex-column align-items-end justify-content-between">
                         <div style={{ fontSize: "0.9rem", color: "#6c757d" }}>
-                            {recargo === 0
+                            {recargo === 0 && descuento === 0
                                 ? `$${precio}`
-                                : `$${precio} + Recargo: $${recargo}`}
+                                : recargo === 0
+                                    ?  `$${precio} - Descuento: $${descuento}`
+                                    : `$${precio} + Recargo: $${recargo}`}
                         </div>
                         <div style={{ fontSize: "2rem", fontWeight: "bold" }}>
                             ${total}
@@ -158,6 +161,7 @@ const DetalleCuota = ({
                                 )}
                             </div>
                         ) : (
+                            estado != "Anulada" &&
                             <Button
                                 variant="outline-primary"
                                 onClick={(e) => onPagar(student, cuota, e)}
@@ -190,7 +194,8 @@ const DetalleCuota = ({
                             </ListGroup.Item>
                         )
                     ) : (
-                        <ListGroup.Item action onClick={onAnular}>
+                         estado != "Anulada" &&
+                            <ListGroup.Item action onClick={onAnular}>
                             Anular cuota
                         </ListGroup.Item>
                     )}

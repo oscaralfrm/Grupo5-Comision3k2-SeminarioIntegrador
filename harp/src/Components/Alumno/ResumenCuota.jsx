@@ -16,7 +16,7 @@ const CuotaCard = ({ cuota, idInscripcion, idServicio, grupo, fetchCuotas, sePue
             (estadoActual.estadoCuota === "Abonada" && cuota.pago?.rechazado));
 
     // Calcular el monto total
-    const totalMonto = (cuota.montoServicio?.monto || 0) + (cuota.recargo || 0);
+    const totalMonto = (cuota.montoServicio?.monto || 0) + (cuota.recargo || 0) - (cuota.descuento || 0);
     const nombreServicio = grupo?.nombre || "Grupo no disponible";
 
     // Configurar estado visual

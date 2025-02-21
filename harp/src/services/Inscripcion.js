@@ -23,10 +23,10 @@ export const deshabilitarInscripcionesDeServicio = async (idServicio) => {
 };
 
 // Función para obtener las inscripciones de un servicio
-export const getInscripcionesDeServicio = async (idServicio, vigentes, pendientes) => {
+export const getInscripcionesDeServicio = async (idServicio, vigentes, pendientes, finalizadas = false) => {
     try {
         const response = await axios.get(`${API_URL}/${idServicio}/inscripciones`, {
-            params: { vigentes, pendientes },
+            params: { vigentes, pendientes, finalizadas },
         });
         console.log(response.data);
         return response.data;
@@ -61,10 +61,10 @@ export const traerUnaInscripcion = async (idInscripcion) => {
   };
   
   // Obtener todas las inscripciones de un servicio
-  export const traerInscripcionesDeServicio = async (idServicio, vigentes, pendientes) => {
+  export const traerInscripcionesDeServicio = async (idServicio, vigentes, pendientes, finalizadas) => {
     try {
       const response = await axios.get(`${API_URL}/${idServicio}/inscripciones`, {
-        params: { vigentes, pendientes }
+        params: { vigentes, pendientes, finalizadas }
       });
       return response.data;
     } catch (error) {
@@ -72,6 +72,17 @@ export const traerUnaInscripcion = async (idInscripcion) => {
       throw error;
     }
   };
+
+    // Obtener todas las inscripciones de un servicio
+    export const traerInscripcionesFinalizadasRecientementeDeServicio = async (idServicio) => {
+      try {
+        const response = await axios.get(`${API_URL}/${idServicio}/inscripciones-finalizadas-recientemente`);
+        return response.data;
+      } catch (error) {
+        console.error("Error al traer inscripciones finalizadas del servicio:", error);
+        throw error;
+      }
+    };
   
   // Crear una inscripción
   export const crearInscripcion = async (idAlumno, idServicio, idGrupo, idsHorarios) => {
@@ -143,4 +154,25 @@ export const getResumenPagosDeInscripcion = async (idServicio, idInscripcion) =>
   }
 };
 
+// Servicio para obtener el resumen de asistencias de un alumno en un grupo
+export const getResumenAsistencias = async (idInscripcion) => {
+  try {
+      const response = await axios.get(`${API_URL}/inscripciones/${idInscripcion}/resumen-asistencias`);
+      return response.data; // Devuelve un objeto AsistenciaResumenDTO
+  } catch (error) {
+      console.error("Error fetching resumen asistencias: ", error.response?.data?.message || error.message);
+      throw new Error(error.response?.data?.message || 'Error al obtener el resumen de asistencias');
+  }
+};
+
+// Servicio para obtener el historial de asistencias de un alumno en un grupo
+export const getHistorialAsistencias = async (idInscripcion) => {
+  try {
+      const response = await axios.get(`${API_URL}/inscripciones/${idInscripcion}/historial-asistencias`);
+      return response.data; // Devuelve una lista de asistencias
+  } catch (error) {
+      console.error("Error fetching historial asistencias: ", error.response?.data?.message || error.message);
+      throw new Error(error.response?.data?.message || 'Error al obtener el historial de asistencias');
+  }
+};
 

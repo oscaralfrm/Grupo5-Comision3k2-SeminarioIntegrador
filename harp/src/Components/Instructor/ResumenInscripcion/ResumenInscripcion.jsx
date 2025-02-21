@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, ListGroup } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { getInstructorById } from "../../../services/Instructor";
-import { getAlumnoById, getHistorialAsistencias, getInscripcionesVigentesDeAlumno, getResumenAsistencias } from "../../../services/Alumno";
+import { getAlumnoById, getInscripcionesVigentesDeAlumno } from "../../../services/Alumno";
 import { getReseniasDeAlumnoYServicioFiltradas } from "../../../services/Reseñas";
 import { obtenerCuotasDeInscripcion, obtenerUltimasCuotasDeInscripcion } from "../../../services/Cuota";
 import PhotoProfile from "../../VerPerfil/FotoPerfilSeccion";
@@ -13,7 +13,7 @@ import ReviewCarousel from "../MiServicio/MenuOpciones/Dashboard/Reseñas";
 import ServiciosCardRow from "../../VerPerfil/ResumenUsuario/CarruselServicios";
 import SocialNetworks from "../../VerPerfil/RedesSociales";
 import { calcularAntiguedadComoTexto } from "../MiServicio/MenuOpciones/Dashboard/Inscripciones";
-import { getResumenPagosDeInscripcion, traerUnaInscripcion } from "../../../services/Inscripcion";
+import { getResumenAsistencias, getHistorialAsistencias, getResumenPagosDeInscripcion, traerUnaInscripcion } from "../../../services/Inscripcion";
 import AsistenciasInscripcion from "./AsistenciasInscripcion";
 import CuotasInscripcion from "./CuotasInscripcion";
 import FinalizarInscripcionModal from "./ModalFinalizarInscripcion";
@@ -136,7 +136,7 @@ import FinalizarInscripcionModal from "./ModalFinalizarInscripcion";
     */}
 
 const ResumenInscripcion = () => {
-  const { idInscripcion, idInstructor } = useParams();
+  const { idInscripcion, idInstructor, idServicio } = useParams();
   const navigate = useNavigate();
   const [inscripcion, setInscripcion] = useState(null);
   const [alumno, setAlumno] = useState(null);
@@ -188,8 +188,8 @@ const ResumenInscripcion = () => {
         setResenias(resenias);
 
         // ASISTENCIAS
-        const resumenData = await getResumenAsistencias(alumnoId, grupoId);
-        //const historialData = await getHistorialAsistencias(alumnoId, grupoId);
+        const resumenData = await getResumenAsistencias(idInscripcion);
+        //const historialData = await getHistorialAsistencias(inscripcion.id);
         setResumenAsistencias(resumenData);
         console.log("resumen asistencias", resumenData);
         //setHistorialAsistencias(historialData);
@@ -216,8 +216,8 @@ const ResumenInscripcion = () => {
   const isMissing = (value) =>
     !value || (typeof value === "string" && value.trim() === "");
 
-   // Función para confirmar la finalización de la inscripción
-   const handleConfirmarFinalizacion = () => {
+  // Función para confirmar la finalización de la inscripción
+  const handleConfirmarFinalizacion = () => {
     // Se redirige a /instructor/idInstructor/servicio/idServicio/alumnos
     const servicioId = inscripcion?.servicio?.id;
     setShowFinalizarModal(false);
@@ -298,15 +298,19 @@ const ResumenInscripcion = () => {
             <div className="card shadow-lg p-4 mb-4">
               <h3 style={{ color: "#6a5acd" }}>Acciones</h3>
               <ListGroup variant="flush">
-              <ListGroup.Item
-                  action
-                  onClick={() => setShowFinalizarModal(true)}
-                >
-                  Finalizar Inscripción
-                </ListGroup.Item>
-                <ListGroup.Item action onClick={() => navigate("/")}>
-                  Cambiar de Grupo
-                </ListGroup.Item>
+                {inscripcion.estado != "Finalizada" &&
+                  <>
+                    <ListGroup.Item
+                      action
+                      onClick={() => setShowFinalizarModal(true)}
+                    >
+                      Finalizar Inscripción
+                    </ListGroup.Item>
+                    <ListGroup.Item action onClick={() => navigate("/")}>
+                      Cambiar de Grupo
+                    </ListGroup.Item>
+                  </>
+                }
                 <ListGroup.Item action onClick={() => navigate("/dar-de-baja")}>
                   Reportar alumno
                 </ListGroup.Item>

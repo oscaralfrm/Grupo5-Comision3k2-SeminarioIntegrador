@@ -66,7 +66,7 @@ const Cobros = ({ id }) => {
         if (idInscripcionUrl) {
           data = [await traerUnaInscripcion(idInscripcionUrl)];
         } else {
-          data = await getInscripcionesDeServicio(idServicio, true, false);
+          data = await getInscripcionesDeServicio(idServicio, true, false, false);
         }
         setInscripciones(data);
       } catch (error) {
@@ -237,7 +237,7 @@ const Cobros = ({ id }) => {
                 >
                   <td>
                       <img
-                                    src={student?.usuario?.fotoPerfilURL || profileImg}
+                                    src={student?.usuario?.fotoPerfilURL || ""}
                                     alt="Profile"
                                     style={{
                                       width: "40px",
@@ -268,7 +268,7 @@ const Cobros = ({ id }) => {
                       <span className="badge bg-danger">Pago Rechazado</span>
                     )}
                   </td>
-                  <td>${cuota.montoServicio.monto + (cuota.recargo || 0)}</td>
+                  <td>${cuota.montoServicio.monto + (cuota.recargo || 0) - (cuota.descuento || 0)}</td>
                   <td>
                     {cuota.pago?.metodoPago.nombre || "N/A"}
                     {cuota.pago?.comprobanteURL && (
