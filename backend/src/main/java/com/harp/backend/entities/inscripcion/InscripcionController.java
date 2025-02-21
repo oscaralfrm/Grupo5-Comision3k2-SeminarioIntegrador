@@ -1,9 +1,12 @@
 package com.harp.backend.entities.inscripcion;
 
 import com.harp.backend.entities.alumno.service.IAlumnoService;
+import com.harp.backend.entities.asistencia.Asistencia;
+import com.harp.backend.entities.asistencia.AsistenciaResumenDTO;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.grupo.GrupoDTO;
+import com.harp.backend.entities.grupo.GrupoService;
 import com.harp.backend.entities.grupo.IGrupoService;
 import com.harp.backend.entities.servicio.IServicioService;
 import jakarta.validation.Valid;
@@ -21,7 +24,7 @@ import java.util.Set;
 @RequestMapping("/api/servicios")
 public class InscripcionController {
     @Autowired
-    private IInscripcionService inscripcionService;
+    private InscripcionService inscripcionService;
 
     @Autowired
     private IAlumnoService alumnoService;
@@ -30,7 +33,7 @@ public class InscripcionController {
     private IServicioService servicioService;
 
     @Autowired
-    private IGrupoService grupoService;
+    private GrupoService grupoService;
 
 //    // No tiene mucho sentido, siempre buscamos las inscripciones de un servicio o de un alumno
 //    @GetMapping("/inscripciones")
@@ -154,4 +157,18 @@ public class InscripcionController {
         inscripcionService.finalizarInscripcion(idInscripcion);
         return ResponseEntity.ok("Se finalizó la inscripción correctamente.");
     };
+
+    @GetMapping("/inscripciones/{idInscripcion}/resumen-asistencias")
+    public ResponseEntity<AsistenciaResumenDTO> calcularResumenAsistencias(@PathVariable @Min(1) Long idInscripcion) {
+        AsistenciaResumenDTO resumen = inscripcionService.calcularAsistenciasEInasistencias(idInscripcion);
+        return ResponseEntity.status(HttpStatus.OK).body(resumen);
+    };
+
+    // Ahora uno que me traiga las asistencias de un alumno con sus clases
+    @GetMapping("/inscripciones/{idInscripcion}/historial-asistencias")
+    public ResponseEntity<List<Asistencia>> traerClasesDeAlumnoAGrupoConAsistencias(@PathVariable @Min(1) Long idInscripcion) {
+        List<Asistencia> asistencias = inscripcionService.obtenerAsistenciasDeInscripcion(idInscripcion);
+        return ResponseEntity.status(HttpStatus.OK).body(asistencias);
+    };
+
 }

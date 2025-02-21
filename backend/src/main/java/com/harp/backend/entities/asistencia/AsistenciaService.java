@@ -31,8 +31,8 @@ public class AsistenciaService implements IAsistenciaService{
     };
 
 
-    public AsistenciaResumenDTO createResumenAsistenciaDTO(Long idAlumno, Long idGrupo, int cantAsistencias, int cantInasistencias) {
-        AsistenciaResumenDTO asistenciaResumenDTO = new AsistenciaResumenDTO(idAlumno, idGrupo, cantAsistencias, cantInasistencias);
+    public AsistenciaResumenDTO createResumenAsistenciaDTO(Long idInscripcion, Long idAlumno, Long idGrupo, int cantAsistencias, int cantInasistencias) {
+        AsistenciaResumenDTO asistenciaResumenDTO = new AsistenciaResumenDTO(idInscripcion, idAlumno, idGrupo, cantAsistencias, cantInasistencias);
         return asistenciaResumenDTO;
     };
 

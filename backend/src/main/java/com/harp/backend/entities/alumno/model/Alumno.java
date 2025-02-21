@@ -142,6 +142,19 @@ public class Alumno {
         return this.inscripciones.stream().filter(Inscripcion::estaVigente).toList();
     }
 
+//    public Inscripcion obtenerUltimaInscripcionDeGrupo(Grupo grupo) {
+//        // Te devuleve la ultima inscripcion finalizada del alumno a ese grupo
+//        return this.obtenerInscripcionesQueSonOFueronVigentesOrdenadas(grupo).stream().findFirst().orElse(null);
+//    }
+
+//    public List<Inscripcion> obtenerInscripcionesQueSonOFueronVigentesOrdenadas() {
+//        // Devuelve una lista ordenada de las inscripciones que estuvieron vigenetes o lo estan, del alumno a un grupo
+//        // Las mas recientes quedan adelante
+//        return this.inscripciones.stream()
+//                .filter(inscripcion -> ! inscripcion.estaRechazada() && ! inscripcion.estaPendiente() )
+//                .sorted(Comparator.comparing(Inscripcion::getFechaAceptacion).reversed());
+//    }
+
     public Inscripcion obtenerInscripcionDeEsteServicio(Servicio servicio) {
         for (Inscripcion inscripcion : this.obtenerInscripcionesVigentes() ) {
             if ( inscripcion.esDeEsteServicio(servicio) ) {
@@ -151,14 +164,15 @@ public class Alumno {
         throw new NoSuchElementFoundException("El alumno no está inscripto a ese servicio");
     }
 
-    public Inscripcion obtenerInscripcionDeEsteGrupo(Grupo grupo) {
-        for (Inscripcion inscripcion : this.obtenerInscripcionesVigentes() ) {
-            if ( inscripcion.esDeEsteGrupo(grupo) ) {
-                return inscripcion;
-            }
-        }
-        throw new NoSuchElementFoundException("El alumno no está inscripto a ese grupo");
-    }
+//    public Inscripcion obtenerInscripcionDeEsteGrupo(Grupo grupo) {
+//        // Devuleve la inscripcion mas reciente a ese grupo, finalizada o vigente
+//        for (Inscripcion inscripcion : this.obtenerInscripcionesQueSonOFueronVigentesOrdenadas() ) {
+//            if ( inscripcion.esDeEsteGrupo(grupo) ) {
+//                return inscripcion;
+//            }
+//        }
+//        throw new NoSuchElementFoundException("El alumno no está ni ha estado inscripto a ese grupo");
+//    }
 
     public String getNombreCompleto() {
         return usuario.getNombre() + " " + usuario.getApellido();

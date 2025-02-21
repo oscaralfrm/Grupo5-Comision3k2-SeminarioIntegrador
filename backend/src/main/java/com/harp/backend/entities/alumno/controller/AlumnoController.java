@@ -113,21 +113,6 @@ public class AlumnoController {
         return ResponseEntity.ok(nuevoAlumno);
     }
 
-    @GetMapping("/{idAlumno}/grupos/{idGrupo}/resumen-asistencias")
-    public ResponseEntity<AsistenciaResumenDTO> calcularResumenAsistencias(@PathVariable @Min(1) Long idAlumno,
-                                                                           @PathVariable @Min(1) Long idGrupo) {
-        AsistenciaResumenDTO resumen = grupoService.calcularAsistenciasEInasistencias(idAlumno, idGrupo);
-        return ResponseEntity.status(HttpStatus.OK).body(resumen);
-    };
-
-    // Ahora uno que me traiga las asistencias de un alumno con sus clases
-    @GetMapping("/{idAlumno}/grupos/{idGrupo}/historial-asistencias")
-    public ResponseEntity<List<Asistencia>> traerClasesDeAlumnoAGrupoConAsistencias(@PathVariable @Min(1) Long idAlumno,
-                                                                           @PathVariable @Min(1) Long idGrupo) {
-        List<Asistencia> asistencias = grupoService.obtenerAsistenciasDeAlumnoYGrupo(idAlumno, idGrupo);
-        return ResponseEntity.status(HttpStatus.OK).body(asistencias);
-    };
-
     @PutMapping(value = "/{idAlumno}", consumes = {"multipart/form-data"})
     public ResponseEntity<Alumno> editarAlumno(@PathVariable @Min(1) Long idAlumno, @ModelAttribute AlumnoDTO alumnoDTO) {
 

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AsistenciaResumenDTO {
+    private Long idInscripcion;
     private Long idAlumno;
     private Long idGrupo;
     private int cantidadAsistencias;

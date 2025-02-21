@@ -439,33 +439,6 @@ public class GrupoService implements IGrupoService {
         return grupoRepository.save(grupoExistente);
     };
 
-    public List<Asistencia> obtenerAsistenciasDeAlumnoYGrupo(Long idAlumno, Long idGrupo) {
-        Alumno alumno = alumnoService.findAlumno(idAlumno);
-        Grupo grupo = this.findGrupo(idGrupo);
-        // Obtengo la inscripcion, el grupo de la inscripcion, las clases del grupo, y filtro las asistencias que son de ese alumno
-        Inscripcion inscripcion = alumno.obtenerInscripcionDeEsteGrupo(grupo);
-
-        List<Asistencia> asistenciasDeEsteAlumnoYGrupo = grupo.getClases().stream().map(clase ->
-            asistenciaService.findAsistenciaDeAlumnoAndClase(alumno, clase)
-                ).filter(asistencia -> asistencia != null) // Filtra las clases que no tengan asistencia
-                .toList();
-
-        return asistenciasDeEsteAlumnoYGrupo;
-    }
-
-    // PARA CALCULAR UN RESUMEN DE ASISTENCIAS DE UN ALUMNO
-    public AsistenciaResumenDTO calcularAsistenciasEInasistencias(Long idAlumno, Long idGrupo) {
-        List<Asistencia> asistencias = this.obtenerAsistenciasDeAlumnoYGrupo(idAlumno, idGrupo);
-        List<Asistencia> asistenciasReales = asistencias.stream().filter(asistencia -> asistencia.getAsistio() != null).toList();
-        int totalAsistencias = asistenciasReales.size();
-        int cantAsistencias = (int) asistenciasReales.stream().filter(asistencia -> asistencia.getAsistio() == true).count();
-        int cantInasistencias = totalAsistencias - cantAsistencias;
-        System.out.println("cant asistencias" + cantAsistencias);
-        System.out.println("asistencias reales" + asistenciasReales);
-        AsistenciaResumenDTO resumen = asistenciaService.createResumenAsistenciaDTO(idAlumno, idGrupo, cantAsistencias, cantInasistencias);
-        return resumen;
-    }
-
     // ESTADISTICAS DE ASISTENCIAS DE GRUPO
 
     public List<Clase> obtenerClasesPasadasDeGrupo(Grupo grupo) {

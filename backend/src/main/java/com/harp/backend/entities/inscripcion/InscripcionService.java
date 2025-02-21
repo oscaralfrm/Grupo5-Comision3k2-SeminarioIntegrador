@@ -3,6 +3,7 @@ package com.harp.backend.entities.inscripcion;
 import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.alumno.service.AlumnoService;
 import com.harp.backend.entities.asistencia.Asistencia;
+import com.harp.backend.entities.asistencia.AsistenciaResumenDTO;
 import com.harp.backend.entities.asistencia.AsistenciaService;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.ClaseService;
@@ -467,4 +468,34 @@ public class InscripcionService implements IInscripcionService {
 
         notificacionService.notificarClaseNoFueDada(clase, descuento, inscripciones);
     };
+
+    // PARA CALCULAR UN RESUMEN DE ASISTENCIAS DE UN ALUMNO
+    public AsistenciaResumenDTO calcularAsistenciasEInasistencias(Long idInscripcion) {
+        Inscripcion inscripcion = this.findInscripcion(idInscripcion);
+
+        List<Asistencia> asistencias = this.obtenerAsistenciasDeInscripcion(idInscripcion);
+
+        List<Asistencia> asistenciasReales = asistencias.stream().filter(asistencia -> asistencia.getAsistio() != null).toList();
+        int totalAsistencias = asistenciasReales.size();
+        int cantAsistencias = (int) asistenciasReales.stream().filter(asistencia -> asistencia.getAsistio() == true).count();
+        int cantInasistencias = totalAsistencias - cantAsistencias;
+
+        AsistenciaResumenDTO resumen = asistenciaService.createResumenAsistenciaDTO(idInscripcion, inscripcion.getAlumno().getId(),
+                inscripcion.getGrupo().getId(), cantAsistencias, cantInasistencias);
+        return resumen;
+    }
+
+    public List<Asistencia> obtenerAsistenciasDeInscripcion(Long idInscripcion) {
+        // Obtengo la inscripcion, el grupo de la inscripcion, las clases del grupo, y filtro las asistencias que son de ese alumno
+        Inscripcion inscripcion = this.findInscripcion(idInscripcion);
+        Grupo grupo = inscripcion.getGrupo();
+        Alumno alumno = inscripcion.getAlumno();
+
+        List<Asistencia> asistenciasDeEstaInscripcion = grupo.getClases().stream().map(clase ->
+                        asistenciaService.findAsistenciaDeAlumnoAndClase(alumno, clase)
+                ).filter(asistencia -> asistencia != null) // Filtra las clases que no se hayan registrado
+                .toList();
+
+        return asistenciasDeEstaInscripcion;
+    }
 }
