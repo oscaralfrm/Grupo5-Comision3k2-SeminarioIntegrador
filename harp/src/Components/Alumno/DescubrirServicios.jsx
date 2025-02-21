@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Button, Container, Row, Col, Spinner } from "react-bootstrap";
-import { getAllServiciosPublicosSinAlumno, generarLinkMaps } from "../../services/Servicio";
+import {
+  getAllServiciosPublicosSinAlumno,
+  generarLinkMaps,
+} from "../../services/Servicio";
 import { getInscripcionesDeAlumno } from "../../services/Alumno"; // Importar el servicio
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { armarStringPrecioYFrecuenciaCobro } from "../../services/frecuenciaPago";
@@ -32,7 +35,11 @@ const DescubrirServicios = () => {
     const fetchServicios = async () => {
       setLoading(true);
       try {
-        const response = await getAllServiciosPublicosSinAlumno(page, size, idAlumno);
+        const response = await getAllServiciosPublicosSinAlumno(
+          page,
+          size,
+          idAlumno
+        );
         setServicios(response);
       } catch (error) {
         console.error("Error al obtener servicios:", error);
@@ -122,8 +129,17 @@ const DescubrirServicios = () => {
 
         {loading ? (
           <div className="d-flex flex-column align-items-center my-5">
-            <Spinner animation="border" role="status" style={{ width: "4rem", height: "4rem", color: "#4F46E5" }} />
-            <p className="mt-3" style={{ color: "#4F46E5", fontWeight: "bold" }}>Cargando servicios, por favor espere...</p>
+            <Spinner
+              animation="border"
+              role="status"
+              style={{ width: "4rem", height: "4rem", color: "#4F46E5" }}
+            />
+            <p
+              className="mt-3"
+              style={{ color: "#4F46E5", fontWeight: "bold" }}
+            >
+              Cargando servicios, por favor espere...
+            </p>
           </div>
         ) : (
           <Row className="justify-content-center">
@@ -188,14 +204,16 @@ const DescubrirServicios = () => {
                             </p>
                             <p>
                               <strong>Ubicación: </strong>
-                              <a href={generarLinkMaps(servicio.ubicacion)}
+                              <a
+                                href={generarLinkMaps(servicio.ubicacion)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title="Ver en Google Maps"
-                                className="text-primary fw-semibold">
-                                {servicio.ubicacion} <i className="bi bi-geo-alt-fill"></i> 
+                                className="text-primary fw-semibold"
+                              >
+                                {servicio.ubicacion}{" "}
+                                <i className="bi bi-geo-alt-fill"></i>
                               </a>
-
                             </p>
                             <p>
                               <strong>Instructor:</strong>{" "}
@@ -203,8 +221,11 @@ const DescubrirServicios = () => {
                             </p>
                           </Card.Body>
 
-                          <div className="d-flex justify-content-between align-items-center">
-                            <p className="mb-0" style={{ marginLeft: "15px" }}>
+                          <div
+                            className="d-flex align-items-center flex-column flex-md-row justify-content-between"
+                            style={{ marginLeft: "15px" }}
+                          >
+                            <p className="mb-0 me-md-auto">
                               <strong>Desde:</strong>
                               <strong style={{ fontSize: "1.5rem" }}>
                                 {" "}
