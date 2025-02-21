@@ -1,35 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaTimesCircle, FaCalendarAlt, FaChartBar, FaEdit } from 'react-icons/fa';
 import { getClasesDeGrupo, editClase, cambiarClaseANoFueDada, getClaseHoyDeServicio } from '../../../../../services/Clase';
 import { getAsistenciasDeClase } from '../../../../../services/Asistencia';
-import { getGruposDeServicio } from '../../../../../services/Grupo';
+import { getGruposDeServicio, obtenerEstadisticasDeAsistenciasGrupo } from '../../../../../services/Grupo';
+import EstadisticasAsistencia from "./EstadisticasAsistencias"; // Importar el nuevo componente
 
 const HistorialClasesInstructor = () => {
     const [clasesPorGrupo, setClasesPorGrupo] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { idServicio } = useParams();
+    const { idServicio, idInstructor } = useParams();
     const [observacionesEdit, setObservacionesEdit] = useState({});
     const [noFueDadaEdit, setNoFueDadaEdit] = useState({});
-    const [grupos, setGrupos] = useState([]); // Para almacenar los grupos con sus nombres
-    const [clasesDeHoy, setClasesDeHoy] = useState([]); // Para almacenar las clases de hoy
+    const [grupos, setGrupos] = useState([]);
+    const [clasesDeHoy, setClasesDeHoy] = useState([]);
     const [isEditingObservaciones, setIsEditingObservaciones] = useState({});
+    const [estadisticasAsistencia, setEstadisticasAsistencia] = useState(null);
+    const navigate = useNavigate();
 
     // Función para formatear la fecha y hora
     const formatClassDateTime = (clase) => {
-        // Crear un objeto de fecha en la zona horaria local
-        const fecha = new Date(clase.fecha + "T00:00:00"); // Añadir la hora para evitar desfases
-
-        // Formatear la fecha en la zona horaria local
+        const fecha = new Date(clase.fecha + "T00:00:00");
         const fechaFormateada = fecha.toLocaleDateString("es-ES", {
             day: "numeric",
             month: "long",
-            timeZone: "UTC", // Forzar a usar UTC para evitar desfases
+            timeZone: "UTC",
         });
-
         return fechaFormateada;
     };
+
+    // Función para obtener las estadísticas de asistencia
+    /*    const fetchEstadisticasAsistencia = async (idGrupo) => {
+           try {
+               const estadisticas = await obtenerEstadisticasDeAsistenciasGrupo(idServicio, idGrupo);
+               setEstadisticasAsistencia(estadisticas);
+           } catch (error) {
+               console.error('Error al obtener estadísticas de asistencia:', error);
+           }
+       }; */
 
     useEffect(() => {
         const fetchData = async () => {
@@ -50,13 +59,13 @@ const HistorialClasesInstructor = () => {
                     clasesSinHoy.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
                     clasesPorGrupoTemp[grupo.id] = { nombre: grupo.nombre, clases: clasesSinHoy };
 
-                    // Inicializar noFueDadaEdit con los valores actuales de las clases
                     clasesSinHoy.forEach((clase) => {
                         setNoFueDadaEdit((prev) => ({
                             ...prev,
                             [clase.id]: clase.noFueDada,
                         }));
                     });
+                    /* fetchEstadisticasAsistencia(grupo.id); */
                 }
 
                 const clasesDeHoyConGrupo = clasesHoy.map((claseHoy) => {
@@ -84,17 +93,23 @@ const HistorialClasesInstructor = () => {
 
     const handleEditObservaciones = async (idClase) => {
         try {
-            const noFueDada = noFueDadaEdit[idClase] !== undefined ? noFueDadaEdit[idClase] : clasesPorGrupo[idClase]?.noFueDada || false;
+            // Obtener el valor actual de las observaciones y el estado de "noFueDada"
+            const observaciones = observacionesEdit[idClase] || '';
+            const noFueDada = noFueDadaEdit[idClase] || false;
 
-            await editClase(idClase, observacionesEdit[idClase], noFueDada ? 1 : 0);
+            console.log("Enviando datos al backend:", { idClase, observaciones, noFueDada });
 
-            // Actualizar el estado local de las observaciones
+            // Llamar a la API para editar la clase
+            await editClase(idClase, observaciones, noFueDada ? 1 : 0);
+            console.log("Datos actualizados correctamente en el backend");
+
+            // Actualizar el estado local con las nuevas observaciones
             setClasesPorGrupo((prev) => {
                 const updatedClasesPorGrupo = { ...prev };
                 Object.keys(updatedClasesPorGrupo).forEach((grupoId) => {
                     updatedClasesPorGrupo[grupoId].clases = updatedClasesPorGrupo[grupoId].clases.map((clase) => {
                         if (clase.id === idClase) {
-                            return { ...clase, observaciones: observacionesEdit[idClase] };
+                            return { ...clase, observaciones: observaciones };
                         }
                         return clase;
                     });
@@ -102,10 +117,10 @@ const HistorialClasesInstructor = () => {
                 return updatedClasesPorGrupo;
             });
 
-            // Cambiar el estado de edición
+            // Desactivar el modo de edición
             setIsEditingObservaciones((prev) => ({
                 ...prev,
-                [idClase]: false, // Desactivar el modo de edición
+                [idClase]: false,
             }));
 
             alert('Observaciones actualizadas correctamente');
@@ -115,17 +130,16 @@ const HistorialClasesInstructor = () => {
         }
     };
 
+
     const handleMarcarNoFueDada = async (idClase) => {
         try {
             await cambiarClaseANoFueDada(idClase);
 
-            // Actualizar el estado local
             setNoFueDadaEdit((prev) => ({
                 ...prev,
-                [idClase]: true, // Marcar como "No Fue Dada"
+                [idClase]: true,
             }));
 
-            // Actualizar el estado de las clases
             setClasesPorGrupo((prev) => {
                 const updatedClasesPorGrupo = { ...prev };
                 Object.keys(updatedClasesPorGrupo).forEach((grupoId) => {
@@ -154,7 +168,17 @@ const HistorialClasesInstructor = () => {
             {/* Encabezado */}
             <div style={styles.header}>
                 <h2 style={styles.headerTitle}>Historial de Clases</h2>
+                <button
+                    style={styles.botonEstadisticas}
+                    onClick={() => navigate(`/instructor/${idInstructor}/servicio/${idServicio}/historial-clases/estadisticas`)}
+                >
+                    <FaChartBar /> Ver Estadísticas
+                </button>
             </div>
+
+            {estadisticasAsistencia && (
+                <EstadisticasAsistencia idGrupo={idGrupo} />
+            )}
 
             {/* Menú de navegación rápida */}
             <div style={styles.menuNavegacion}>
@@ -219,21 +243,14 @@ const HistorialClasesInstructor = () => {
                                                 [clase.id]: e.target.value,
                                             })
                                         }
-                                    />
-                                    <button
+                                    /> <button
                                         style={styles.botonEditar}
-                                        onClick={() => {
-                                            if (isEditingObservaciones[clase.id]) {
-                                                handleEditObservaciones(clase.id);
-                                            } else {
-                                                setIsEditingObservaciones((prev) => ({
-                                                    ...prev,
-                                                    [clase.id]: true, // Activar el modo de edición
-                                                }));
-                                            }
-                                        }}
+                                        onClick={() => handleEditObservaciones(clase.id)}
                                     >
-                                        <FaEdit /> {isEditingObservaciones[clase.id] ? 'Guardar Observaciones' : 'Editar Observaciones'}
+                                        <FaEdit />{" "}
+                                        {clase.observaciones && clase.observaciones.trim() !== ""
+                                            ? "Editar Observaciones"
+                                            : "Guardar Observaciones"}
                                     </button>
                                 </div>
                             </div>
@@ -295,19 +312,10 @@ const HistorialClasesInstructor = () => {
                                     />
                                     <button
                                         style={styles.botonEditar}
-                                        onClick={() => {
-                                            if (isEditingObservaciones[clase.id]) {
-                                                handleEditObservaciones(clase.id);
-                                            } else {
-                                                setIsEditingObservaciones((prev) => ({
-                                                    ...prev,
-                                                    [clase.id]: true,
-                                                }));
-                                            }
-                                        }}
+                                        onClick={() => handleEditObservaciones(clase.id)}
                                     >
                                         <FaEdit />{" "}
-                                        {isEditingObservaciones[clase.id] || (clase.observaciones && clase.observaciones.trim() !== "")
+                                        {clase.observaciones && clase.observaciones.trim() !== ""
                                             ? "Editar Observaciones"
                                             : "Guardar Observaciones"}
                                     </button>
@@ -338,12 +346,27 @@ const styles = {
         borderRadius: '10px',
         marginBottom: '20px',
         textAlign: 'center',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     headerTitle: {
         color: 'white',
         fontSize: '1.8em',
         margin: 0,
         fontWeight: 'bold',
+        textAlign: 'center'
+    },
+    botonEstadisticas: {
+        backgroundColor: '#4F46E5',
+        color: 'white',
+        border: 'none',
+        padding: '10px 15px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '5px',
     },
     menuNavegacion: {
         display: 'flex',
