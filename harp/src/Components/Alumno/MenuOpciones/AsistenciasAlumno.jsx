@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaCheckCircle, FaTimesCircle, FaCalendarAlt, FaChartBar } from 'react-icons/fa';
-import { getResumenAsistencias, getHistorialAsistencias } from '../../../services/Alumno';
-import { traerUnaInscripcion } from '../../../services/Inscripcion';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { getInscripcionesDeAlumno } from '../../../services/Alumno';
+import { FaCheckCircle, FaTimesCircle, FaCalendarAlt, FaChartBar } from 'react-icons/fa'; // Íconos
+import { getHistorialAsistencias, getResumenAsistencias, traerUnaInscripcion } from '../../../services/Inscripcion';
 
 const AsistenciasAlumno = () => {
     const [resumen, setResumen] = useState(null);
@@ -17,9 +18,9 @@ const AsistenciasAlumno = () => {
             try {
                 const inscripcion = await traerUnaInscripcion(idInscripcion);
                 setInscripcion(inscripcion);
-
-                const resumenData = await getResumenAsistencias(idAlumno, inscripcion?.grupo?.id);
-                const historialData = await getHistorialAsistencias(idAlumno, inscripcion?.grupo?.id);
+                // Obtener los datos usando el idGrupo
+                const resumenData = await getResumenAsistencias(idInscripcion);
+                const historialData = await getHistorialAsistencias(idInscripcion);
 
                 // Ordenar las clases de la más reciente a la más antigua
                 historialData.sort((a, b) => new Date(b.clase.fecha) - new Date(a.clase.fecha));

@@ -175,8 +175,11 @@ const DescubrirServicios = () => {
 
     const checkInscripciones = async () => {
       try {
-        const inscripciones = await getInscripcionesDeAlumno(idAlumno);
-        setHasInscripciones(inscripciones.length > 0);
+        if (idAlumno) {
+          const inscripciones = await getInscripcionesDeAlumno(idAlumno);
+          setHasInscripciones(inscripciones.length > 0);
+        }
+       
       } catch (error) {
         console.error("Error al verificar inscripciones:", error);
       }
@@ -219,8 +222,11 @@ const DescubrirServicios = () => {
     useEffect(() => {
       const fetchServiciosFavoritos = async () => {
         try {
-          const response = await getServiciosFavoritosDeAlumno(idAlumno);
-          setServiciosFavoritos(response);
+          if (idAlumno) {
+            const response = await getServiciosFavoritosDeAlumno(idAlumno);
+            setServiciosFavoritos(response);
+          }
+         
         } catch (error) {
           console.error("Error al obtener categorías:", error);
         }

@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import * as cuotaService from '../../../services/Cuota.js';
 import * as servicioService from '../../../services/Servicio.js';
-import * as instructorService from '../../../services/Instructor.js';
 import { Card, Button, Row, Col, Badge, Modal } from 'react-bootstrap';
 import placeholderImage from "../../../assets/placeholderForServices.png";
 
-const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas }) => {
+const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas, isPanelCollapsed }) => {
   const [showModal, setShowModal] = useState(false);
   const [comprobante, setComprobante] = useState(null);
   const [servicio, setServicio] = useState(null);
-  const [instructor, setInstructor] = useState("Desconocido");
   const [loadingServicio, setLoadingServicio] = useState(true);
 
   const estadoActual = cuota.cambiosEstado?.find(estado => estado.fechaFin === null);
@@ -49,20 +47,18 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas }) => {
   };
 
   useEffect(() => {
-    const fetchServicioEInstructor = async () => {
+    const fetchServicio = async () => {
       setLoadingServicio(true);
       try {
         const servicioData = await servicioService.getDetallesDeServicio(cuota.inscripcion.servicio.id);
         setServicio(servicioData);
-        const instructorData = await instructorService.obtenerInstructorDeServicio(cuota.inscripcion.servicio.id);
-        setInstructor(instructorData.nombre || "Desconocido");
       } catch (error) {
-        console.error("Error fetching servicio or instructor details:", error);
+        console.error("Error fetching servicio details:", error);
       } finally {
         setLoadingServicio(false);
       }
     };
-    if (cuota.inscripcion.servicio.id) fetchServicioEInstructor();
+    if (cuota.inscripcion.servicio.id) fetchServicio();
   }, [cuota]);
 
   if (loadingServicio) {
@@ -72,7 +68,7 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas }) => {
       </Card>
     );
   }
-  
+
   if (!servicio) {
     return (
       <Card className="mb-3 shadow-sm" style={{ borderRadius: '20px', border: 'none' }}>
@@ -82,46 +78,83 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas }) => {
   }
 
   return (
-    <Card className="mb-3 shadow-sm" style={{ borderRadius: '20px', border: 'none' }}>
-      <Card.Header style={{ backgroundColor: '#1E1B4B', color: 'white', textAlign: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>
+    <Card
+      className="mb-3"
+      style={{
+        borderRadius: '20px',
+        border: 'none',
+        minHeight: '200px',
+        position: 'relative',
+        width: isPanelCollapsed ? '80vw' : 'auto',
+        boxShadow: '0px 4px 19px rgba(0, 0, 0, 0.5)',
+      }}
+    >
+      <Card.Header
+        style={{
+          backgroundColor: '#1E1B4B',
+          color: 'white',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          fontSize: '1.5rem',
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
+          padding: '15px',
+        }}
+      >
         {servicio.nombre}
       </Card.Header>
       <Card.Body>
-        <Row className="align-items-center">
+        <Row className="g-0 align-items-center">
           <Col xs={12} md={4} className="text-center mb-3 mb-md-0">
-            <img src={servicio.logoURL || placeholderImage} alt={servicio.nombre} style={{ width: '100%', maxWidth: '150px', height: '150px', objectFit: 'cover', borderRadius: '10px' }} />
+            <img
+              src={servicio.logoURL || placeholderImage}
+              alt={servicio.nombre}
+              style={{
+                width: '100%',
+                maxWidth: '120px',
+                height: '120px',
+                objectFit: 'cover',
+                borderRadius: '10px',
+              }}
+            />
           </Col>
           <Col xs={12} md={8}>
-            <Row>
-              <Col xs={12} className="mb-2">
+            <div style={{ padding: '20px 15px' }}>
+              <p>
                 <strong>Estado:</strong> <Badge bg={badgeVariant}>{estadoLabel}</Badge>
-              </Col>
-              <Col xs={12} className="mb-2">
-                <strong>Nombre del Instructor:</strong> {instructor}
-              </Col>
-              <Col xs={12} className="mb-2">
-                <strong>Fecha de Inicio:</strong> {cuota.fechaInicioCiclo}
-              </Col>
-              <Col xs={12} className="mb-2">
-                <strong>Fecha de Fin:</strong> {cuota.fechaFinCiclo}
-              </Col>
-              <Col xs={12} className="mb-2">
-                <strong>Fecha Límite de Pago:</strong> {fechaLimitePago}
-              </Col>
+              </p>
+              <p>
+                <strong>Nombre del Instructor:</strong> {cuota.instructor}  {/* Ahora sí se muestra */}
+              </p>
+              <p>
+                <strong>Inicio:</strong> {cuota.fechaInicioCiclo}
+              </p>
+              <p>
+                <strong>Fin:</strong> {cuota.fechaFinCiclo}
+              </p>
+              <p>
+                <strong>Límite de Pago:</strong> {fechaLimitePago}
+              </p>
               {fechaPago && (
-                <Col xs={12} className="mb-2">
+                <p>
                   <strong>Fecha de Pago:</strong> {fechaPago}
-                </Col>
+                </p>
               )}
-              <Col xs={12} className="mb-3">
-                <span className="fs-5 fw-bold" style={{ color: '#4F46E5' }}>Cantidad a Abonar: ${totalMonto}</span>
-              </Col>
+            </div>
+            <div className="d-flex justify-content-between align-items-center">
+              <p className="mb-0" style={{ marginLeft: '15px' }}>
+                <strong>Cantidad a Abonar:</strong> <strong style={{ fontSize: '1.5rem' }}>${totalMonto}</strong>
+              </p>
               {mostrarBotonPagar && (
-                <Col xs={12} className="d-flex justify-content-end">
-                  <Button variant="primary" onClick={handlePago} style={{ backgroundColor: '#4F46E5', borderColor: '#4F46E5' }}>Pagar</Button>
-                </Col>
+                <Button
+                  size="sm"
+                  style={{ backgroundColor: '#4F46E5', borderColor: '#4F46E5' }}
+                  onClick={handlePago}
+                >
+                  Pagar
+                </Button>
               )}
-            </Row>
+            </div>
           </Col>
         </Row>
       </Card.Body>

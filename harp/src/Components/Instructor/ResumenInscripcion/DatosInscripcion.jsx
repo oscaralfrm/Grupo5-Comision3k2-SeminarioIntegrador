@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col, ListGroup, Button, Image, Card } from "react-bootstrap";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { formatDistance , isEqual, isSameDay, parse} from "date-fns";
+import { formatDistance, isEqual, isSameDay, parse } from "date-fns";
 import { es } from "date-fns/locale";
 import { FaCalendarAlt } from "react-icons/fa"; // Ícono de calendario
 import { calcularEdad } from "../MiServicio/MenuOpciones/Dashboard/Inscripciones";
@@ -18,12 +18,30 @@ const calcularFechasIgualAHoy = (fecha) => {
 
 const InscripcionData = ({ inscripcionData }) => {
     const navigate = useNavigate();
-    const {idInstructor} = useParams();
+    const { idInstructor } = useParams();
     const { alumno, grupo, fechaSolicitud, fechaAceptacion, fechaFin, fechaInicio } = inscripcionData;
 
     return (
         <div className="card shadow-lg p-4 mb-4 position-relative">
-            <h3 style={{ color: "#6a5acd" }}>Inscripción</h3>
+             <Row className="align-items-center">
+                <Col xs="auto"> {/* El ancho se ajusta al contenido */}
+                    <h3 style={{ color: "#6a5acd", marginBottom: 0 }}>Inscripción</h3>
+                </Col>
+                <Col xs="auto" className="ms-2"> {/* Margen a la izquierda para separar */}
+                    <span
+                        className={`badge bg-${inscripcionData.estado === "PendienteAceptacion"
+                            ? "warning"
+                            : inscripcionData.estado === "EnCurso" || inscripcionData.estado === "Aceptada"
+                                ? "success"
+                                : inscripcionData.estado === "Anulada" || inscripcionData.estado === "Finalizada"
+                                    ? "danger"
+                                    : "secondary"
+                        }`}
+                    >
+                        {inscripcionData.estado}
+                    </span>
+                </Col>
+            </Row>
             <hr />
 
             {/* Sección Alumno */}
@@ -91,24 +109,32 @@ const InscripcionData = ({ inscripcionData }) => {
                 <Col>
                     <h5 className="text-primary">Fechas</h5>
                     <ListGroup variant="flush">
-                            {calcularFechasIgualAHoy(fechaAceptacion, new Date())
+                        {fechaFin == null
+                            ? calcularFechasIgualAHoy(fechaAceptacion, new Date())
                                 ? <ListGroup.Item> <strong>Inscripto desde:</strong> Hoy </ListGroup.Item>
                                 : <ListGroup.Item> <strong>Inscripto hace:</strong> {calcularDiferenciaDeFechas(fechaAceptacion, new Date())} </ListGroup.Item>
-                            }
+                            : <ListGroup.Item> <strong>Inicio:</strong> {inscripcionData.fechaInicio} </ListGroup.Item>
+                        }
+
                         {fechaInicio != fechaAceptacion &&
-                              <ListGroup.Item>
-                              <strong>Inicio de actividad:</strong> {fechaInicio}
-                          </ListGroup.Item>
+                            <ListGroup.Item>
+                                <strong>Inicio de actividad:</strong> {fechaInicio}
+                            </ListGroup.Item>
                         }
                         {fechaAceptacion &&
                             <ListGroup.Item>
-                            <strong>Solicitud aceptada:</strong> {calcularDiferenciaDeFechas(fechaSolicitud, fechaAceptacion)} después
-                        </ListGroup.Item>
+                                <strong>Solicitud aceptada:</strong> {calcularDiferenciaDeFechas(fechaSolicitud, fechaAceptacion)} después
+                            </ListGroup.Item>
                         }
                         {fechaFin && (
-                            <ListGroup.Item>
-                                <strong>Solicitud finalizada:</strong> {calcularDiferenciaDeFechas(fechaSolicitud, fechaFin)} después
-                            </ListGroup.Item>
+                            <>
+                                <ListGroup.Item>
+                                    <strong>Duración:</strong> {calcularDiferenciaDeFechas(fechaSolicitud, fechaFin)}
+                                </ListGroup.Item>
+                                <ListGroup.Item>
+                                    <strong>Inscripcion finalizada:</strong> Hace {calcularDiferenciaDeFechas(fechaFin, new Date())}
+                                </ListGroup.Item>
+                            </>
                         )}
                     </ListGroup>
                 </Col>
