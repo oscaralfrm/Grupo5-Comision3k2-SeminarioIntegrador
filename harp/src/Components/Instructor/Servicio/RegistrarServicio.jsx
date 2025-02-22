@@ -148,25 +148,26 @@ export default function ServicioForm() {
 
   return (
     <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        gap: "20px", // Espacio entre el formulario y la card
-        marginTop: "15vh",
-        fontFamily: "Roboto",
-      }}
+    style={{
+      display: "flex",
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "center",
+      gap: "10px",
+      marginTop: "15vh",
+      fontFamily: "Roboto",
+      overflowX: "hidden", // Evita la barra de desplazamiento horizontal
+      width: "100vw" // Asegura que el contenido no sobrepase el ancho de la pantalla
+    }}
       className="d-flex flex-column flex-md-row align-item-center"
     >
       {/* Columna Izquierda (Formulario) */}
       <div
         style={{
           flex: 1,
-          maxWidth: "800px", // Ancho máximo del formulario
-          minWidth: "300px",
+          padding:"3px"
         }}
-        className="col-12 col-md-12"
+        className="col-11 col-md-12"
       >
         <div className="col-md-12 col-sm-12 p-4">
           <h1 className="mb-1 text-center fs-1 mb-4">Agregar Servicio</h1>
@@ -238,10 +239,9 @@ export default function ServicioForm() {
       <div
         style={{
           flex: 1,
-          maxWidth: "600px", // Ancho máximo de la card
-          minWidth: "300px", // Ancho mínimo para responsividad
+          maxWidth: "80vh", // Ancho máximo de la card
         }}
-        className="col-12 col-md-6 col-lg-12 mt-4 mt-md-0 mb-3"
+        className="col-11 col-md-6 col-lg-11 mt-4 mt-md-0 mb-3 p-3"
       >
         <ResumenServicio formData={formData} />
       </div>
