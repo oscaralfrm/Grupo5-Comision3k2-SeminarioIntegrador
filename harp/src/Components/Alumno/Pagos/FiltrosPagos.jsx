@@ -37,20 +37,14 @@ const FiltrosPagos = ({
 
   const headerStyle = showFilters
     ? {
-        backgroundColor: "#f8f9fa",
-        color: "#495057",
         padding: "10px",
-        borderBottom: "1px solid #ccc",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         cursor: "pointer"
       }
     : {
-        backgroundColor: "#ffffff",
-        color: "#495057",
         padding: "10px",
-        border: "1px solid #ccc",
         textAlign: "center",
         cursor: "pointer"
       };
@@ -67,8 +61,8 @@ const FiltrosPagos = ({
       <Card.Header onClick={() => setShowFilters(!showFilters)} style={headerStyle}>
         {showFilters ? (
           <>
-            <span style={{ fontWeight: "bold" }}>Filtros</span>
-            <FaChevronLeft />
+          <i class="bi bi-sliders fs-3"></i>
+
             <Button
               variant="outline-secondary"
               size="sm"
@@ -82,8 +76,7 @@ const FiltrosPagos = ({
           </>
         ) : (
           <>
-            <span style={{ fontWeight: "bold" }}>Filtros</span>
-            <FaChevronRight />
+          <i class="bi bi-sliders fs-2"></i> 
           </>
         )}
       </Card.Header>

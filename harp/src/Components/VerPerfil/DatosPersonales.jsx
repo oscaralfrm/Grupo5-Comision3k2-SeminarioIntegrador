@@ -24,18 +24,18 @@ const PersonalData = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
 
   const handleSave = async () => {
     try {
-    const usuarioDTO = {
+      const usuarioDTO = {
         idUsuario: profileData.usuario.id,
-        nombre: localData.nombre,      // Usamos nombreUsuario como "nombre"
+        nombre: localData.nombre, // Usamos nombreUsuario como "nombre"
         apellido: localData.apellido,
         dni: localData.dni,
-        nombreUsuario: profileData.usuario.nombreUsuario,      // nombreUsuario  permanece igual
-        contrasena: "",                           // contrasena (no se edita aquí)
-        email: profileData.usuario.email,    // email permanece igual
+        nombreUsuario: profileData.usuario.nombreUsuario, // nombreUsuario  permanece igual
+        contrasena: "", // contrasena (no se edita aquí)
+        email: profileData.usuario.email, // email permanece igual
         telefono: localData.telefono,
         fechaNacimiento: localData.fechaNacimiento,
-        fotoPerfilURL: profileData.usuario.fotoPerfilURL // fotoPerfil permanece igual
-    }
+        fotoPerfilURL: profileData.usuario.fotoPerfilURL, // fotoPerfil permanece igual
+      };
       await editUsuario(usuarioDTO);
       setEditMode(false);
       if (onSave) onSave(localData);
@@ -57,34 +57,81 @@ const PersonalData = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
   };
 
   return (
-    <div className="card shadow-lg p-4 mb-4" style={{ position: "relative", height: "100%" }}>
+    <div
+      className="card shadow-lg p-4 mb-4"
+      style={{ position: "relative", height: "100%" }}
+    >
       {sePuedeEditar &&
-      (!editMode ? (
-        <Button
-          variant="light"
-          className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
-          onClick={() => setEditMode(true)}
-          style={{ backgroundColor: "#1E1B4B", border: "none", top: "10px", right: "10px", zIndex: 10 }}
+        (!editMode ? (
+          <Button
+            variant="light"
+            className="position-absolute end-1 top-11"
+            onClick={() => setEditMode(true)}
+            style={{
+              backgroundColor: "White",
+              border: "none",
+              top: "30px",
+              right: "30px",
+              zIndex: 10,
+            }}
+          >
+            <i class="bi bi-pencil-fill"></i>
+          </Button>
+        ) : (
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              zIndex: 10,
+            }}
+          >
+            <Button
+              variant="success"
+              size="sm"
+              onClick={handleSave}
+              className="me-2"
+            >
+              Guardar
+            </Button>
+            <Button variant="secondary" size="sm" onClick={handleCancel}>
+              Cancelar
+            </Button>
+          </div>
+        ))}
+      <h3
+        style={{
+          color: "#1E1B4B",
+          padding: "10px",
+ 
+        }}
+      >
+        Datos Personales
+      </h3>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "calc(100% - 50px)",
+        }}
+      >
+        <ListGroup
+          variant="flush"
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            margin: 0,
+          }}
         >
-          <FaCog color="white" size={20} />
-        </Button>
-      ) : (
-        <div style={{ position: "absolute", top: "10px", right: "10px", zIndex: 10 }}>
-          <Button variant="success" size="sm" onClick={handleSave} className="me-2">
-            Guardar
-          </Button>
-          <Button variant="secondary" size="sm" onClick={handleCancel}>
-            Cancelar
-          </Button>
-        </div>
-      ))}
-      <h3 style={{ color: "#6a5acd" }}>Datos Personales</h3>
-      <div style={{ display: "flex", flexDirection: "column", height: "calc(100% - 50px)" }}>
-        <ListGroup variant="flush" style={{ flex: 1, display: "flex", flexDirection: "column", margin: 0 }}>
           {[
             { label: "Nombre", field: "nombre", type: "text" },
             { label: "Apellido", field: "apellido", type: "text" },
-            { label: "Fecha de Nacimiento", field: "fechaNacimiento", type: "date" },
+            {
+              label: "Fecha de Nacimiento",
+              field: "fechaNacimiento",
+              type: "date",
+            },
             { label: "DNI", field: "dni", type: "text" },
             { label: "Nacionalidad", field: "ubicacion", type: "text" },
             { label: "Teléfono", field: "telefono", type: "text" },
@@ -110,9 +157,11 @@ const PersonalData = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
                 ) : (
                   localData[item.field] || "No especificado"
                 )}
-                {isMissing(localData[item.field]) && !editMode && sePuedeEditar && (
-                  <FaExclamationCircle className="ms-2 text-danger" />
-                )}
+                {isMissing(localData[item.field]) &&
+                  !editMode &&
+                  sePuedeEditar && (
+                    <FaExclamationCircle className="ms-2 text-danger" />
+                  )}
               </div>
             </ListGroup.Item>
           ))}
