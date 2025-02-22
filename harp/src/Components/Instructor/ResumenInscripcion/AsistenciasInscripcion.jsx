@@ -8,10 +8,10 @@ const AsistenciasInscripcion = ({ inscripcion, resumenAsistencias }) => {
 
   // Calculamos totales y porcentajes
   const total = resumenAsistencias
-    ? resumenAsistencias.cantAsistencias + resumenAsistencias.cantInasistencias
+    ? resumenAsistencias.cantidadAsistencias + resumenAsistencias.cantidadInasistencias
     : 0;
   const percentAsistencias = total
-    ? Math.round((resumenAsistencias.cantAsistencias / total) * 100)
+    ? Math.round((resumenAsistencias.cantidadAsistencias / total) * 100)
     : 0;
   const percentInasistencias = total ? 100 - percentAsistencias : 0;
 
@@ -70,11 +70,11 @@ const AsistenciasInscripcion = ({ inscripcion, resumenAsistencias }) => {
             {/* Leyenda con los conteos */}
             <div style={{ fontSize: "0.9rem" }}>
               <span style={{ color: "#6A0DAD", fontWeight: "bold" }}>
-                Asistencias: {resumenAsistencias.cantAsistencias}
+                Asistencias: {resumenAsistencias.cantidadAsistencias}
               </span>
               <br />
               <span style={{ color: "#6495ED", fontWeight: "bold" }}>
-                Inasistencias: {resumenAsistencias.cantInasistencias}
+                Inasistencias: {resumenAsistencias.cantidadInasistencias}
               </span>
             </div>
           </div>

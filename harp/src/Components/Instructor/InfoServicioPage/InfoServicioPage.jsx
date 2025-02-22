@@ -325,6 +325,24 @@ const InfoServicioPage = () => {
               </Button>
             </div>
           )}
+          {servicioSePuede?.cerrarInscripciones && (
+            <div className="flex-shrink-0">
+              <Button
+                variant="primary"
+                onClick={() =>
+                  handleOpenConfirmModal("Publicar", async () => {
+                    await habilitarInscripcionesDeServicio(idServicio);
+                    setShowSuccessModal(true);
+                    handleCloseConfirmModal();
+                  })
+                }
+                style={buttonResponsiveStyle}
+                className="fw-bold"
+              >
+                Ocultar {/*Como un habilitar inscripciones */}
+              </Button>
+            </div>
+          )}
           
 
         </div>

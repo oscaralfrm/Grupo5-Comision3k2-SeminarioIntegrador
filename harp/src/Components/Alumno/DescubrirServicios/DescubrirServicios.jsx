@@ -175,8 +175,11 @@ const DescubrirServicios = () => {
 
     const checkInscripciones = async () => {
       try {
-        const inscripciones = await getInscripcionesDeAlumno(idAlumno);
-        setHasInscripciones(inscripciones.length > 0);
+        if (idAlumno) {
+          const inscripciones = await getInscripcionesDeAlumno(idAlumno);
+          setHasInscripciones(inscripciones.length > 0);
+        }
+       
       } catch (error) {
         console.error("Error al verificar inscripciones:", error);
       }
@@ -219,8 +222,11 @@ const DescubrirServicios = () => {
     useEffect(() => {
       const fetchServiciosFavoritos = async () => {
         try {
-          const response = await getServiciosFavoritosDeAlumno(idAlumno);
-          setServiciosFavoritos(response);
+          if (idAlumno) {
+            const response = await getServiciosFavoritosDeAlumno(idAlumno);
+            setServiciosFavoritos(response);
+          }
+         
         } catch (error) {
           console.error("Error al obtener categorías:", error);
         }
@@ -261,7 +267,6 @@ const DescubrirServicios = () => {
     left: 0,
     zIndex: 9999,
     transition: "width 0.3s",
-    backgroundColor: "#f8f9fa"
   };
 
   // En pantallas grandes, el contenido se desplaza; en pequeñas, ocupa el ancho completo.
@@ -392,7 +397,7 @@ const DescubrirServicios = () => {
                                 <strong>Calificación:</strong> {renderStars(servicio.resumen?.calificacion)} ({servicio.resumen?.cantResenias})
                               </p>
                               <p>
-                                <strong>Ubicación:</strong>
+                                <strong>Ubicación: </strong>
                                 <a
                                   href={generarLinkMaps(servicio.ubicacion)}
                                   target="_blank"

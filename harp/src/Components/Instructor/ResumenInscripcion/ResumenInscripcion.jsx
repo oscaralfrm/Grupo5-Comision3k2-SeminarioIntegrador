@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, ListGroup } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { getInstructorById } from "../../../services/Instructor";
-import { getAlumnoById, getHistorialAsistencias, getInscripcionesVigentesDeAlumno, getResumenAsistencias } from "../../../services/Alumno";
+import { getAlumnoById, getInscripcionesVigentesDeAlumno } from "../../../services/Alumno";
 import { getReseniasDeAlumnoYServicioFiltradas } from "../../../services/Reseñas";
 import { obtenerCuotasDeInscripcion, obtenerUltimasCuotasDeInscripcion } from "../../../services/Cuota";
 import PhotoProfile from "../../VerPerfil/FotoPerfilSeccion";
@@ -13,9 +13,10 @@ import ReviewCarousel from "../MiServicio/MenuOpciones/Dashboard/Reseñas";
 import ServiciosCardRow from "../../VerPerfil/ResumenUsuario/CarruselServicios";
 import SocialNetworks from "../../VerPerfil/RedesSociales";
 import { calcularAntiguedadComoTexto } from "../MiServicio/MenuOpciones/Dashboard/Inscripciones";
-import { getResumenPagosDeInscripcion, traerUnaInscripcion } from "../../../services/Inscripcion";
+import { getResumenAsistencias, getHistorialAsistencias, getResumenPagosDeInscripcion, traerUnaInscripcion } from "../../../services/Inscripcion";
 import AsistenciasInscripcion from "./AsistenciasInscripcion";
 import CuotasInscripcion from "./CuotasInscripcion";
+import FinalizarInscripcionModal from "./ModalFinalizarInscripcion";
 
 {/* resumenAsistencias = { cantAsistencias: 10, cantInasistencias: 5} 
     cuotas = [  {
@@ -135,176 +136,201 @@ import CuotasInscripcion from "./CuotasInscripcion";
     */}
 
 const ResumenInscripcion = () => {
-    const { idInscripcion, idInstructor } = useParams();
-    const navigate = useNavigate();
-    const [inscripcion, setInscripcion] = useState(null);
-    const [alumno, setAlumno] = useState(null);
-    const [grupo, setGrupo] = useState(null);
-    const [resumenAsistencias, setResumenAsistencias] = useState(null);
-    const [historialAsistencias, setHistorialAsistencias] = useState([]);
-    const [ultimasCuotas, setUltimasCuotas] = useState([]);
-    const [historialCuotas, setHistorialCuotas] = useState([]);
-    const [resumenPagos, setResumenPagos] = useState(null);
-    const [cantInscripciones, setCantInscripciones] = useState(null);
-    const [resenias, setResenias] = useState([]);
-    const [error, setError] = useState(null);
+  const { idInscripcion, idInstructor, idServicio } = useParams();
+  const navigate = useNavigate();
+  const [inscripcion, setInscripcion] = useState(null);
+  const [alumno, setAlumno] = useState(null);
+  const [grupo, setGrupo] = useState(null);
+  const [resumenAsistencias, setResumenAsistencias] = useState(null);
+  const [historialAsistencias, setHistorialAsistencias] = useState([]);
+  const [ultimasCuotas, setUltimasCuotas] = useState([]);
+  const [historialCuotas, setHistorialCuotas] = useState([]);
+  const [resumenPagos, setResumenPagos] = useState(null);
+  const [cantInscripciones, setCantInscripciones] = useState(null);
+  const [resenias, setResenias] = useState([]);
+  const [error, setError] = useState(null);
 
-    // Detectar si es desktop para estilos
-    const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 992);
-    useEffect(() => {
-        const handleResize = () => setIsDesktop(window.innerWidth >= 992);
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+  // Estado para controlar el modal de finalización
+  const [showFinalizarModal, setShowFinalizarModal] = useState(false);
 
-    useEffect(() => {
-        const fetchInscripcion = async () => {
-            try {
-                // LA INSCRIPCION
-                const inscripcion = await traerUnaInscripcion(idInscripcion);
-                setInscripcion(inscripcion);
-                console.log("Inscripcion", inscripcion);
+  // Detectar si es desktop para estilos
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 992);
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 992);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-                setAlumno(inscripcion.alumno);
-                setGrupo(inscripcion.grupo);
+  useEffect(() => {
+    const fetchInscripcion = async () => {
+      try {
+        // LA INSCRIPCION
+        const inscripcion = await traerUnaInscripcion(idInscripcion);
+        setInscripcion(inscripcion);
+        console.log("Inscripcion", inscripcion);
 
-                const alumnoId = inscripcion?.alumno?.id;
-                const servicioId = inscripcion?.servicio?.id;
-                const grupoId = inscripcion?.grupo?.id;
+        setAlumno(inscripcion.alumno);
+        setGrupo(inscripcion.grupo);
 
-                //const alumnoData = await getAlumnoById(alumnoId);
-                //setProfileData(alumnoData);
+        const alumnoId = inscripcion?.alumno?.id;
+        const servicioId = inscripcion?.servicio?.id;
+        const grupoId = inscripcion?.grupo?.id;
 
-                // OTRAS INSCRIPCIONES
-                //const inscripciones = await getInscripcionesVigentesDeAlumno(alumnoId);
-                //setCantInscripciones(inscripciones.length);
+        //const alumnoData = await getAlumnoById(alumnoId);
+        //setProfileData(alumnoData);
 
-                // RESENIAS DEL SERVICIO
-                const resenias = await getReseniasDeAlumnoYServicioFiltradas(alumnoId, servicioId, true, false);
-                setResenias(resenias);
+        // OTRAS INSCRIPCIONES
+        //const inscripciones = await getInscripcionesVigentesDeAlumno(alumnoId);
+        //setCantInscripciones(inscripciones.length);
 
-                // ASISTENCIAS
-                const resumenData = await getResumenAsistencias(alumnoId, grupoId);
-                //const historialData = await getHistorialAsistencias(alumnoId, grupoId);
-                setResumenAsistencias(resumenData);
-                //setHistorialAsistencias(historialData);
+        // RESENIAS DEL SERVICIO
+        const resenias = await getReseniasDeAlumnoYServicioFiltradas(alumnoId, servicioId, true, false);
+        setResenias(resenias);
 
-                // CUOTAS
-                const ultimasCuotas = await obtenerUltimasCuotasDeInscripcion(servicioId, inscripcion.id);
-                //const historialCuotas = await obtenerCuotasDeInscripcion(servicioId, inscripcion.id);
-                setUltimasCuotas(ultimasCuotas);
-                //setHistorialCuotas(historialCuotas);
+        // ASISTENCIAS
+        const resumenData = await getResumenAsistencias(idInscripcion);
+        //const historialData = await getHistorialAsistencias(inscripcion.id);
+        setResumenAsistencias(resumenData);
+        console.log("resumen asistencias", resumenData);
+        //setHistorialAsistencias(historialData);
 
-                // RESUMEN PAGOS
-                const resumenPagos = await getResumenPagosDeInscripcion(inscripcion.servicio.id, idInscripcion);
-                setResumenPagos(resumenPagos);
-                console.log("Resumen pagos", resumenPagos);
+        // CUOTAS
+        const ultimasCuotas = await obtenerUltimasCuotasDeInscripcion(servicioId, inscripcion.id);
+        //const historialCuotas = await obtenerCuotasDeInscripcion(servicioId, inscripcion.id);
+        setUltimasCuotas(ultimasCuotas);
+        //setHistorialCuotas(historialCuotas);
 
-                console.log("data", ultimasCuotas);
-            } catch (err) {
-                setError("Error al obtener datos del usuario.");
+        // RESUMEN PAGOS
+        const resumenPagos = await getResumenPagosDeInscripcion(inscripcion.servicio.id, idInscripcion);
+        setResumenPagos(resumenPagos);
+        console.log("Resumen pagos", resumenPagos);
+
+        console.log("data", ultimasCuotas);
+      } catch (err) {
+        setError("Error al obtener datos del usuario.");
+      }
+    };
+    fetchInscripcion();
+  }, [idInscripcion]);
+
+  const isMissing = (value) =>
+    !value || (typeof value === "string" && value.trim() === "");
+
+  // Función para confirmar la finalización de la inscripción
+  const handleConfirmarFinalizacion = () => {
+    // Se redirige a /instructor/idInstructor/servicio/idServicio/alumnos
+    const servicioId = inscripcion?.servicio?.id;
+    setShowFinalizarModal(false);
+    navigate(`/instructor/${idInstructor}/servicio/${servicioId}/alumnos`);
+  };
+
+  // Estilos para la columna izquierda y derecha
+  const leftColumnStyle = isDesktop
+    ? {
+      position: "fixed",
+      top: "10vh",
+      left: 0,
+      bottom: 0,
+      width: "33.33%",
+      padding: "30px",
+      backgroundColor: "#f8f9fa",
+      // No scroll global
+    }
+    : { padding: "20px" };
+
+  const rightColumnStyle = isDesktop
+    ? {
+      marginLeft: "33.33%",
+      padding: "20px",
+    }
+    : { padding: "20px" };
+
+  return (
+    <Container fluid style={{ marginTop: "12vh", fontFamily: "Roboto" }}>
+      {error && <p className="text-danger">{error}</p>}
+      {!inscripcion ? (
+        <p>Cargando datos de la inscripcion...</p>
+      ) : (
+        <Row>
+          {/* Columna Izquierda */}
+          <Col xs={12} lg={4} style={leftColumnStyle}>
+            <div
+              style={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "20px"
+              }}
+            >
+              <div style={{ flex: "1 1 70%" }}>
+                <InscripcionData
+                  inscripcionData={inscripcion}
+                  sePuedeEditar={false}
+                />
+              </div>
+            </div>
+          </Col>
+
+          {/* Columna Derecha */}
+          <Col xs={12} lg={8} style={rightColumnStyle}>
+            <AsistenciasInscripcion
+              inscripcion={inscripcion}
+              resumenAsistencias={resumenAsistencias}
+            />
+
+            <CuotasInscripcion
+              inscripcion={inscripcion}
+              cuotas={ultimasCuotas}
+              resumenPagos={resumenPagos}
+            />
+
+            {/* Reseñas realizadas */}
+            {resenias.length > 0 &&
+              <div className="card shadow-lg p-4 mb-4">
+                <h3 style={{ color: "#6a5acd" }}>Reseñas realizadas</h3>
+                <ListGroup variant="flush">
+                  <ReviewCarousel resenias={resenias} />
+                </ListGroup>
+              </div>
             }
-        };
-        fetchInscripcion();
-    }, [idInscripcion]);
 
-    const isMissing = (value) =>
-        !value || (typeof value === "string" && value.trim() === "");
+            {/* Acciones */}
+            <div className="card shadow-lg p-4 mb-4">
+              <h3 style={{ color: "#6a5acd" }}>Acciones</h3>
+              <ListGroup variant="flush">
+                {inscripcion.estado != "Finalizada" &&
+                  <>
+                    <ListGroup.Item
+                      action
+                      onClick={() => setShowFinalizarModal(true)}
+                    >
+                      Finalizar Inscripción
+                    </ListGroup.Item>
+                    <ListGroup.Item action onClick={() => navigate("/")}>
+                      Cambiar de Grupo
+                    </ListGroup.Item>
+                  </>
+                }
+                <ListGroup.Item action onClick={() => navigate("/dar-de-baja")}>
+                  Reportar alumno
+                </ListGroup.Item>
+              </ListGroup>
+            </div>
+          </Col>
+        </Row>
+      )}
 
-    // Estilos para la columna izquierda y derecha
-    const leftColumnStyle = isDesktop
-        ? {
-            position: "fixed",
-            top: "10vh",
-            left: 0,
-            bottom: 0,
-            width: "33.33%",
-            padding: "30px",
-            backgroundColor: "#f8f9fa",
-            // No scroll global
-        }
-        : { padding: "20px" };
-
-    const rightColumnStyle = isDesktop
-        ? {
-            marginLeft: "33.33%",
-            padding: "20px",
-        }
-        : { padding: "20px" };
-
-    return (
-        <Container fluid style={{ marginTop: "12vh", fontFamily: "Roboto" }}>
-            {error && <p className="text-danger">{error}</p>}
-            {!inscripcion ? (
-                <p>Cargando datos de la inscripcion...</p>
-            ) : (
-                <Row>
-                    {/* Columna Izquierda */}
-                    <Col xs={12} lg={4} style={leftColumnStyle}>
-                        <div
-                            style={{
-                                height: "100%",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "20px"
-                            }}
-                        >
-                            <div style={{ flex: "1 1 70%" }}>
-                                <InscripcionData
-                                    inscripcionData={inscripcion}
-                                    sePuedeEditar={false}
-                                />
-                            </div>
-                        </div>
-                    </Col>
-
-                    {/* Columna Derecha */}
-                    <Col xs={12} lg={8} style={rightColumnStyle}>
-                        <AsistenciasInscripcion
-                            inscripcion={inscripcion}
-                            resumenAsistencias={resumenAsistencias}
-                        />
-
-                        <CuotasInscripcion
-                            inscripcion={inscripcion}
-                            cuotas={ultimasCuotas}
-                            resumenPagos={resumenPagos}
-                        />
-
-                        {/* Reseñas realizadas */}
-                        {resenias.length > 0 &&
-                            <div className="card shadow-lg p-4 mb-4">
-                                <h3 style={{ color: "#6a5acd" }}>Reseñas realizadas</h3>
-                                <ListGroup variant="flush">
-                                    <ReviewCarousel resenias={resenias} />
-                                </ListGroup>
-                            </div>
-                        }
-
-                        {/* Acciones */}
-                        <div className="card shadow-lg p-4 mb-4">
-                            <h3 style={{ color: "#6a5acd" }}>Acciones</h3>
-                            <ListGroup variant="flush">
-                                <ListGroup.Item
-                                    action
-                                    onClick={null}
-                                >
-                                    Finalizar Inscripción
-                                </ListGroup.Item>
-                                <ListGroup.Item action onClick={() => navigate("/")}>
-                                    Cambiar de Grupo
-                                </ListGroup.Item>
-                                <ListGroup.Item action onClick={() => navigate("/dar-de-baja")}>
-                                    Reportar alumno
-                                </ListGroup.Item>
-                            </ListGroup>
-                        </div>
-                    </Col>
-                </Row>
-            )}
-
-        </Container>
-    );
+      {/* Modal para finalizar inscripción */}
+      {inscripcion && (
+        <FinalizarInscripcionModal
+          show={showFinalizarModal}
+          onHide={() => setShowFinalizarModal(false)}
+          inscripcionSeleccionada={inscripcion}
+          onConfirmar={handleConfirmarFinalizacion}
+        />
+      )}
+    </Container>
+  );
 };
 
 export default ResumenInscripcion;

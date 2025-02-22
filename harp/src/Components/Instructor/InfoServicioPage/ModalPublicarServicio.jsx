@@ -4,6 +4,7 @@ import { Modal, Form, Button, Row, Col } from "react-bootstrap";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useParams, useNavigate } from "react-router-dom";
+import { format } from 'date-fns';
 
 const ModalPublicarServicio = ({ serviceData, setServiceData, handleCloseModal, showModal, fetchServicio }) => {
     const [selectedDate, setSelectedDate] = useState(null);
@@ -31,6 +32,11 @@ const ModalPublicarServicio = ({ serviceData, setServiceData, handleCloseModal, 
         }
     };
 
+    // Obtiene la fecha actual en la zona horaria de Argentina
+    const todayArgentina = new Date().toLocaleDateString('en-CA', {
+        timeZone: 'America/Argentina/Buenos_Aires'
+      });
+
     return (<Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
             <Modal.Title>Publicar servicio</Modal.Title>
@@ -38,14 +44,14 @@ const ModalPublicarServicio = ({ serviceData, setServiceData, handleCloseModal, 
         <Modal.Body>
             <p>Selecciona una fecha de inicio para el servicio:</p>
             <Form.Control
-                type="date"
-                min={new Date().toISOString().split("T")[0]}
-                onChange={(e) => {
-                    const date = new Date(e.target.value);
-                    console.log('Fecha seleccionada:', date); // Log para verificar que es un objeto Date
-                    setSelectedDate(date);
-                }}
-            />
+        type="date"
+        min={todayArgentina}
+        onChange={(e) => {
+          const date = new Date(e.target.value);
+          console.log('Fecha seleccionada:', date);
+          setSelectedDate(date);
+        }}
+      />
         </Modal.Body>
         <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseModal}>

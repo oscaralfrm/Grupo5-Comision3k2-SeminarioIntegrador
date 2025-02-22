@@ -210,27 +210,7 @@ export const getHistorialCuotasDeAlumno = async (idInscripcion, idServicio) => {
     }
 };
 
-// Servicio para obtener el resumen de asistencias de un alumno en un grupo
-export const getResumenAsistencias = async (idAlumno, idGrupo) => {
-    try {
-        const response = await axios.get(`alumnos/${idAlumno}/grupos/${idGrupo}/resumen-asistencias`);
-        return response.data; // Devuelve un objeto AsistenciaResumenDTO
-    } catch (error) {
-        console.error("Error fetching resumen asistencias: ", error.response?.data?.message || error.message);
-        throw new Error(error.response?.data?.message || 'Error al obtener el resumen de asistencias');
-    }
-};
 
-// Servicio para obtener el historial de asistencias de un alumno en un grupo
-export const getHistorialAsistencias = async (idAlumno, idGrupo) => {
-    try {
-        const response = await axios.get(`alumnos/${idAlumno}/grupos/${idGrupo}/historial-asistencias`);
-        return response.data; // Devuelve una lista de asistencias
-    } catch (error) {
-        console.error("Error fetching historial asistencias: ", error.response?.data?.message || error.message);
-        throw new Error(error.response?.data?.message || 'Error al obtener el historial de asistencias');
-    }
-};
 
 // Servicio para agregar un servicio fav a la lista de alumnos
 export const agregarServicioFavoritoAAlumno = async (idAlumno, idServicio) => {

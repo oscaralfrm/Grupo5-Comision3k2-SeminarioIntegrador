@@ -47,9 +47,9 @@ const Dashboard = () => {
   const handleEstadoFilter = (estado) => {
     setSelectedEstado(estado);
     setFilteredServicios(
-      servicios.filter((servicio) => (estado ? (servicio.publico && estado == "Publicado" || !servicio.publico && estado == "No publicado") : true ))
+        servicios.filter((servicio) => !estado || servicio.estado === estado)
     );
-  };
+};
 
   if (servicios == null) return "Cargando...";
 
@@ -91,7 +91,11 @@ const Dashboard = () => {
         >
           <option value="">Todos</option>
           <option value="Publicado">Publicado</option>
-          <option value="No publicado">No publicado</option>
+          <option value="Privado">Privado</option>
+          <option value="Suspendido">Suspendido</option>
+          <option value="Finalizado">Finalizado</option>
+          <option value="Borrador">Borrador</option>
+          <option value="Cancelado">Cancelado</option>
         </select>
       </div>
       </div>

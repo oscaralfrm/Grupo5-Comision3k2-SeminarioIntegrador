@@ -14,7 +14,7 @@ const StudentsCard = () => {
       try {
         //const data = await getAlumnosDeServicio(idServicio);
         //setStudents(data);
-        const inscripciones = await traerInscripcionesDeServicio(idServicio, true, false);
+        const inscripciones = await traerInscripcionesDeServicio(idServicio, true, false, false);
         setInscripciones(inscripciones);
         console.log(inscripciones);
       } catch (error) {

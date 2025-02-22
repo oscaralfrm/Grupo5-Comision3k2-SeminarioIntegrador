@@ -61,11 +61,21 @@ export const editClase = async (idClase, observaciones, noFueDada) => {
 };
 
 // Servicio para marcar una clase como "No Fue Dada"
-export const cambiarClaseANoFueDada = async (idClase) => {
+export const cambiarClaseANoFueDada = async (idClase, descuento) => {
     try {
-        await axios.put(`${API_URL}/clases/${idClase}/no-fue-dada`);
+        await axios.put(`${API_URL}/clases/${idClase}/no-fue-dada`, {descuento: descuento});
     } catch (error) {
         console.error("Error marking clase as 'No Fue Dada': ", error);
+        throw error;
+    }
+};
+
+// SOLO SI LA CLASE ES FUTURA
+export const cambiarClaseAFueDada = async (idClase) => {
+    try {
+        await axios.put(`${API_URL}/clases/${idClase}/fue-dada`);
+    } catch (error) {
+        console.error("Error marking clase as 'Fue Dada': ", error);
         throw error;
     }
 };

@@ -28,31 +28,28 @@ const FiltrosPanel = ({
   // Estilos para el header según si el panel está abierto o cerrado
   const headerStyle = showFilters
     ? {
-        backgroundColor: "#f8f9fa",
-        color: "#495057",
+      
+        color: "#1E1B4B",
         padding: "10px",
-        borderBottom: "1px solid #ccc",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         cursor: "pointer"
       }
     : {
-        backgroundColor: "#ffffff",
         color: "#495057",
         padding: "10px",
-        border: "1px solid #ccc",
+        
         textAlign: "center",
         cursor: "pointer"
       };
 
   return (
-    <Card style={{ height: "100%", overflow: "hidden", borderRadius: 0 }}>
+    <Card style={{ height: "100%", overflow: "hidden" }}>
       <Card.Header onClick={toggleShowFilters} style={headerStyle}>
         {showFilters ? (
           <>
-            <span style={{ fontWeight: "bold" }}>Filtros</span>
-            <FaChevronLeft />
+            <i class="bi bi-sliders fs-3 "></i>
             <Button
               variant="outline-secondary"
               size="sm"
@@ -66,8 +63,8 @@ const FiltrosPanel = ({
           </>
         ) : (
           <>
-            <span style={{ fontWeight: "bold" }}>Filtros</span>
-            <FaChevronRight />
+           <i class="bi bi-sliders fs-3"></i>
+
           </>
         )}
       </Card.Header>
@@ -76,7 +73,7 @@ const FiltrosPanel = ({
           style={{
             padding: "10px",
             overflowY: "auto",
-            height: "calc(100% - 50px)"
+            height: "calc(100% - 50px)",
           }}
         >
           <Form>
