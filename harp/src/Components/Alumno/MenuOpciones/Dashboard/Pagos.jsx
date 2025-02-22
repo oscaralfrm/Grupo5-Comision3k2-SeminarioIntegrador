@@ -191,6 +191,7 @@ const Pagos = (props) => {
         boxShadow: "0px 4px 19px rgba(0, 0, 0, 0.5)",
         maxWidth: "95%",
         margin: "auto",
+        fontFamily:"Roboto"
       }}
       className="responsive-container"
     >

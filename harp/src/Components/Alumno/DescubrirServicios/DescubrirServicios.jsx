@@ -267,7 +267,6 @@ const DescubrirServicios = () => {
     left: 0,
     zIndex: 9999,
     transition: "width 0.3s",
-    backgroundColor: "#f8f9fa"
   };
 
   // En pantallas grandes, el contenido se desplaza; en pequeñas, ocupa el ancho completo.
@@ -398,7 +397,7 @@ const DescubrirServicios = () => {
                                 <strong>Calificación:</strong> {renderStars(servicio.resumen?.calificacion)} ({servicio.resumen?.cantResenias})
                               </p>
                               <p>
-                                <strong>Ubicación:</strong>
+                                <strong>Ubicación: </strong>
                                 <a
                                   href={generarLinkMaps(servicio.ubicacion)}
                                   target="_blank"

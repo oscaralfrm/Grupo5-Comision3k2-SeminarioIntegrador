@@ -47,6 +47,7 @@ const HistorialClasesInstructor = () => {
                 setGrupos(grupos);
 
                 const clasesHoy = await getClaseHoyDeServicio(idServicio);
+                console.log("Clases de hoy: ", clasesHoy)
 
                 const clasesPorGrupoTemp = {};
                 for (const grupo of grupos) {
