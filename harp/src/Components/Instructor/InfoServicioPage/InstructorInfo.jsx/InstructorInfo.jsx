@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Card, Row, Col } from "react-bootstrap";
+import { Card, Row, Col, ListGroup } from "react-bootstrap";
 import { obtenerInstructorDeServicio } from "../../../../services/Instructor";
 import { Link, useParams } from "react-router-dom";
+import { faFacebook, faInstagram, faLinkedin, faTiktok, faTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function calcularEdad(fechaNacimiento) {
 
@@ -20,13 +22,23 @@ function calcularEdad(fechaNacimiento) {
 
 function InstructorInfo({ serviceData }) {
     const [instructor, setInstructor] = useState(null);
-    const { idServicio , idAlumno, idInstructor} = useParams();
+    const { idServicio, idAlumno, idInstructor } = useParams();
+    const [localSocials, setLocalSocials] = useState({});
+
 
     useEffect(() => {
         const fetchInstructor = async () => {
             try {
                 const data = await obtenerInstructorDeServicio(serviceData?.id);
                 setInstructor(data);
+                setLocalSocials({
+                    linkedin: data?.usuario?.redesSociales?.linkedin || "",
+                    twitter: data?.usuario?.redesSociales?.twitter || "",
+                    facebook: data?.usuario?.redesSociales?.facebook || "",
+                    instagram: data?.usuario?.redesSociales?.instagram || "",
+                    youtube: data?.usuario?.redesSociales?.youtube || "",
+                    tiktok: data?.usuario?.redesSociales?.tiktok || "",
+                });
             } catch (error) {
                 console.error("Error al traer el instructor:", error);
             }
@@ -49,7 +61,7 @@ function InstructorInfo({ serviceData }) {
                     margin: "auto",
                     marginTop: "80px",
                     minWidth: "100px"
-                  }}
+                }}
             >
                 {/* Cabecera del Card */}
                 <div
@@ -78,9 +90,9 @@ function InstructorInfo({ serviceData }) {
                         <p style={{ margin: 0 }}>
                             <strong>Instructor:</strong>{" "}
                             <Link
-                                to={ idAlumno ? `/alumno/${idAlumno}/instructores/${instructor?.usuario?.nombreUsuario}`
-                                              : `/instructor/${idInstructor}/instructores/${instructor?.usuario?.nombreUsuario}`}
-                                    
+                                to={idAlumno ? `/alumno/${idAlumno}/instructores/${instructor?.usuario?.nombreUsuario}`
+                                    : `/instructor/${idInstructor}/instructores/${instructor?.usuario?.nombreUsuario}`}
+
                                 className="text-primary text-decoration-none fw-bold"
                             >
                                 {instructor?.usuario.nombre} {instructor?.usuario.apellido}
@@ -96,10 +108,82 @@ function InstructorInfo({ serviceData }) {
                         {instructor?.profesion && (
                             <p className="mb-1"><strong>Profesión:</strong> {instructor.profesion}</p>
                         )}
+                        <ListGroup variant="flush">
+
+                            {
+                                localSocials.linkedin &&
+                                <ListGroup.Item>
+                                    <a href={`https://www.linkedin.com/in/${localSocials.linkedin}`} target="_blank">
+                                        <FontAwesomeIcon icon={faLinkedin} />
+                                    </a>
+                                    <strong> LinkedIn: </strong>
+                                    {localSocials.linkedin}
+                                </ListGroup.Item>
+                            }
+
+
+                            {
+                                localSocials.twitter &&
+                                <ListGroup.Item >
+                                    <a href={`https://www.twitter.com/${localSocials.twitter}`} target="_blank">
+                                        <FontAwesomeIcon icon={faTwitter} />
+                                    </a>
+                                    <strong> Twitter: </strong>
+                                    {localSocials.twitter}
+                                </ListGroup.Item>
+                            }
+
+                            {
+                                localSocials.facebook &&
+                                <ListGroup.Item>
+                                    <a href={`https://www.facebook.com/${localSocials.facebook}`} target="_blank">
+                                        <FontAwesomeIcon icon={faFacebook} />
+                                    </a>
+                                    <strong> Facebook: </strong>
+                                    {localSocials.facebook}
+                                </ListGroup.Item>
+                            }
+
+
+                            {
+                                localSocials.instagram &&
+                                <ListGroup.Item>
+                                    <a href={`https://www.instagram.com/${localSocials.instagram}`} target="_blank">
+                                        <FontAwesomeIcon icon={faInstagram} />
+                                    </a>
+                                    <strong> Instagram: </strong>
+                                    {localSocials.instagram}
+                                </ListGroup.Item>
+                            }
+
+
+                            {
+                                localSocials.youtube &&
+                                <ListGroup.Item>
+                                    <a href={`https://www.youtube.com/@${localSocials.youtube}`} target="_blank">
+                                        <FontAwesomeIcon icon={faYoutube} />
+                                    </a>
+                                    <strong> Youtube: </strong>
+                                    {localSocials.youtube}
+                                </ListGroup.Item>
+                            }
+
+
+                            {
+                                localSocials.tiktok &&
+                                <ListGroup.Item>
+                                    <a href={`https://www.tiktok.com/@${localSocials.tiktok}`} target="_blank">
+                                        <FontAwesomeIcon icon={faTiktok} />
+                                    </a>
+                                    <strong> Tiktok: </strong>
+                                    {localSocials.tiktok}
+                                </ListGroup.Item>
+                            }
+                        </ListGroup>
                     </Col>
                 </Row>
             </Card>
-        </Col>
+        </Col >
     );
 }
 

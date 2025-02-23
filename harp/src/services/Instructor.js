@@ -293,3 +293,26 @@ export const tieneServicioConEsteNombre = async (idInstructor, nombreServicio) =
     throw error;
   }
 };
+
+// Obtener ultimas 10 inscripciones no pendientes de un servicio
+export const traerUltimasInscripcionesNoPendientesDeServiciosDeInstructor = async (idInstructor) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/${idInstructor}/servicios/ultimas-inscripciones`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al traer inscripciones del instructor:", error);
+    throw error;
+  }
+};
+
+
+// Obtener solicitudes inscripcion de un servicio
+export const traerSolicitudesInscripcionDeServiciosDeInstructor = async (idInstructor) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/${idInstructor}/servicios/solicitudes-inscripcion`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al traer solicitudes inscripcion del instructor:", error);
+    throw error;
+  }
+};
