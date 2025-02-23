@@ -42,7 +42,6 @@ export const getMontoProgramadoDeHistorial = (historialMontos) => {
     const fechaActual = new Date();
     const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
 
-    console.log(historialMontos);
     return historialMontos.filter((monto) => monto.fechaInicio > fechaActualLocal);
 };
 
@@ -50,13 +49,11 @@ export const getMontoActualGrupoDeHistorial = (historialMontos) => {
     // Obtener la fecha actual en formato YYYY-MM-DD según la zona horaria local
     const fechaActual = new Date();
     const fechaActualLocal = fechaActual.toLocaleDateString("en-CA"); // 'en-CA' es el formato YYYY-MM-DD
-    console.log("en get monto actual");
 
     if (historialMontos.length == 1) {
         return historialMontos[0];
     }
 
-    console.log(historialMontos);
     return historialMontos.find((monto) => (fechaActualLocal >= monto.fechaInicio || monto.fechaInicio == null) && (monto.fechaFin >= fechaActualLocal || monto.fechaFin == null));
 };
 

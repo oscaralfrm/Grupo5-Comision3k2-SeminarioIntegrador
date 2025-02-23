@@ -9,6 +9,7 @@ import {
 } from "react-bootstrap";
 import { format, parseISO } from "date-fns";
 import {
+  anularCuota,
   obtenerCuotasDeInscripcion,
   rechazarPagoCuotaConTrasnferencia
 } from "../../../../services/Cuota.js";
@@ -25,6 +26,8 @@ import { getHistorialCuotasDeAlumno } from "../../../../services/Alumno.js";
 import Pagos from "./PagosInstructor.jsx";
 import RechazoPagoModal from "./RechazoPagoModal.jsx";
 import DetalleCuota from "./DetalleCuota"; // Componente que muestra el detalle de la cuota
+import ConfirmModal from "../../../CartelDeExito/ModalConfirmacion.jsx";
+import SuccessModal from "../../../CartelDeExito/CartelDeExito.jsx";
 
 const Cobros = ({ id }) => {
   // Estados principales
@@ -49,6 +52,10 @@ const Cobros = ({ id }) => {
   const queryParams = new URLSearchParams(location.search);
   const idInscripcion = queryParams.get("alumno") || null;
   const [idInscripcionUrl, setIdInscripcionUrl] = useState(idInscripcion);
+
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [handleConfirm, setHandleConfirm] = useState(null);
 
   // Hook para detectar tamaño de pantalla
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
@@ -194,6 +201,22 @@ const Cobros = ({ id }) => {
     fetchCuotas();
   };
 
+    // Función para abrir el modal para anular la cuota
+    const handleOpenConfirmAnular = (cuota, e) => {
+      e.stopPropagation();
+      setHandleConfirm(() => async () => {
+        await anularCuota(cuota.idInscripcion, cuota.id);
+        setShowSuccessModal(true);
+        handleCloseConfirmModal(); 
+      });
+      setShowConfirmModal(true);
+    };
+  
+    const handleCloseConfirmModal = () => {
+      setShowConfirmModal(false);
+      fetchCuotas();
+    };
+
   const formatDate = (dateString) => {
     const date = parseISO(dateString);
     return format(date, "dd/MM/yyyy");
@@ -216,7 +239,7 @@ const Cobros = ({ id }) => {
             <th>Forma de Pago</th>
             <th>Fecha de Pago</th>
             {/* <th>Acciones</th>*/}
-           
+
           </tr>
         </thead>
         <tbody>
@@ -236,31 +259,30 @@ const Cobros = ({ id }) => {
                   }}
                 >
                   <td>
-                      <img
-                                    src={student?.usuario?.fotoPerfilURL || ""}
-                                    alt="Profile"
-                                    style={{
-                                      width: "40px",
-                                      height: "40px",
-                                      borderRadius: "50%",
-                                      objectFit: "cover",
-                                      backgroundColor: "gray",
-                                    }}
-                                  />
-                      {" " + student.usuario.nombre} {student.usuario.apellido}
+                    <img
+                      src={student?.usuario?.fotoPerfilURL || ""}
+                      alt="Profile"
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        backgroundColor: "gray",
+                      }}
+                    />
+                    {" " + student.usuario.nombre} {student.usuario.apellido}
                   </td>
                   <td>{student.nombreGrupo}</td>
                   <td>
                     <span
-                      className={`badge bg-${
-                        estado === "Pendiente"
+                      className={`badge bg-${estado === "Pendiente"
                           ? "warning"
                           : estado === "Abonada"
-                          ? "success"
-                          : estado === "Anulada" || estado === "Vencida"
-                          ? "danger"
-                          : "secondary"
-                      }`}
+                            ? "success"
+                            : estado === "Anulada" || estado === "Vencida"
+                              ? "danger"
+                              : "secondary"
+                        }`}
                     >
                       {estado}
                     </span>
@@ -330,7 +352,7 @@ const Cobros = ({ id }) => {
                     )}
                   </td>
                   */}
-                  
+
                 </tr>
               );
             })
@@ -427,6 +449,7 @@ const Cobros = ({ id }) => {
                 onPagar={handleAddPayment}
                 onRechazarTransferencia={handleOpenRechazoModal}
                 onVerHistorial={handleShowPaymentHistory}
+                onAnular={handleOpenConfirmAnular}
               />
             </Col>
           </Row>
@@ -491,6 +514,10 @@ const Cobros = ({ id }) => {
                   onClose={() => setSelectedDetalleCuota(null)}
                   // En layout _stack_ usamos alto automático para evitar espacios excesivos
                   fullHeight={false}
+                  onPagar={handleAddPayment}
+                  onRechazarTransferencia={handleOpenRechazoModal}
+                  onVerHistorial={handleShowPaymentHistory}
+                  onAnular={handleOpenConfirmAnular}
                 />
               </Col>
             </Row>
@@ -568,6 +595,20 @@ const Cobros = ({ id }) => {
         motivoRechazo={motivoRechazo}
         setMotivoRechazo={setMotivoRechazo}
         cuota={selectedCuota}
+      />
+      <ConfirmModal
+        show={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirm}
+        title="Anular cuota"
+        message={"¿Estás seguro de que deseas anular esta cuota?"}
+      />
+      {/* Modal de éxito */}
+      <SuccessModal
+        show={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title={"Se ha completado la accion"}
+        message={""}
       />
     </Container>
   );

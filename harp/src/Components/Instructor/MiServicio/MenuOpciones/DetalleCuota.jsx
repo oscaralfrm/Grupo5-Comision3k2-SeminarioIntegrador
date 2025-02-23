@@ -195,7 +195,7 @@ const DetalleCuota = ({
                         )
                     ) : (
                          estado != "Anulada" &&
-                            <ListGroup.Item action onClick={onAnular}>
+                            <ListGroup.Item action onClick={(e) => onAnular(cuota, e)}>
                             Anular cuota
                         </ListGroup.Item>
                     )}

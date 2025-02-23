@@ -8,19 +8,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faCheck } from "@fortawesome/free-solid-svg-icons"; // Íconos necesario
 import NotificationPanel from "../../../../Notificaciones/NotificacionPanel";
 import { FaExclamationCircle } from "react-icons/fa";
-import { tieneDatosBancariosCompletos } from "../../../../../services/Instructor";
+import { tieneDatosBancariosCompletos, traerSolicitudesInscripcionDeServiciosDeInstructor } from "../../../../../services/Instructor";
 
-export default function NavbarServicio({usuario}) {
+export default function NavbarServicio({ usuario }) {
   const navigate = useNavigate();
   const { idInstructor } = useParams();
   const [notificaciones, setNotificaciones] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [tieneDatosCompletos, setTieneDatosCompletos] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [hasSolicitudesPendientes, setHasSolicitudesPendientes] = useState(false);
 
   const esteInstructorTieneDatosCompletos = async () => {
     const response = await tieneDatosBancariosCompletos(idInstructor);
     return response;
   }
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
 
   const handleClick = () => {
     navigate('/');
@@ -55,19 +61,29 @@ export default function NavbarServicio({usuario}) {
     fetchInstructorData();
   }, [idInstructor]);
 
+  useEffect(() => {
+    const fetchInscripciones = async () => {
+      try {
+        const response = await traerSolicitudesInscripcionDeServiciosDeInstructor(idInstructor); // Espera a que se resuelva la promesa
+        setHasSolicitudesPendientes(response.length > 0); // Guarda el resultado en el estado
+      } catch (error) {
+        console.error("Error al verificar los datos bancarios:", error);
+      }
+    };
+
+    fetchInscripciones();
+  }, [idInstructor]);
+
   return (
     <div style={{ width: "100%", position: "relative" }}>
       <Navbar
         expand="lg"
+        fixed="top"
         style={{
+          fontFamily: "Roboto",
           backgroundColor: "#1E1B4B",
-          padding: "0.5rem 1rem",
-          width: "100%",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1040,
+          color: "white",
+          fontSize: "1.2rem",
         }}
       >
         <Container fluid className="d-flex justify-content-between align-items-center">
@@ -87,6 +103,60 @@ export default function NavbarServicio({usuario}) {
               }}
             />
           </Navbar.Brand>
+
+          <Navbar.Toggle
+            aria-controls="navbarNav"
+            onClick={toggleDropdown}
+            style={{ border: "none" }}
+          />
+
+
+          <Navbar.Collapse id="navbarNav" className={dropdownOpen ? "show" : ""}>
+            <Nav className="mx-auto d-flex justify-content-center w-100">
+              <Nav.Link
+                href={`/instructor/${idInstructor}/servicios`}
+                style={{ color: "white" }}
+              >
+                Mis Servicios
+              </Nav.Link>
+              {usuario?.servicios.length > 0 &&
+               <div style={{ position: "relative" }}>
+                <Nav.Link
+                  href={`/instructor/${idInstructor}/servicios/inscripciones`}
+                  style={{ color: "white" }}
+                >
+                  Inscripciones
+                </Nav.Link>
+                {hasSolicitudesPendientes && (
+                    <Badge
+                      bg="warning"
+                      style={{
+                        position: "absolute",
+                        top: "-5px",
+                        right: "-5px",
+                        borderRadius: "50%",
+                        fontSize: "10px",
+                      }}
+                    >
+                      !
+                    </Badge>
+                  )}
+                </div>
+              }
+              <Nav.Link
+                href={`/instructor/${idInstructor}/descubrir-servicios`}
+                style={{ color: "white" }}
+              >
+                Descubrir
+              </Nav.Link>
+              <Nav.Link
+                href={`/instructor/${idInstructor}/estadisticas`}
+                style={{ color: "white" }}
+              >
+                Estadisticas
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
 
           {/* Campana de notificaciones */}
           <div style={{ position: "relative", marginRight: "20px" }}>
@@ -153,7 +223,7 @@ export default function NavbarServicio({usuario}) {
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Item onClick={() => navigate(`/instructor/${idInstructor}/perfil/ver-perfil`)}>
-                Ver perfil  
+                Ver perfil
               </Dropdown.Item>
               <Dropdown.Item onClick={() => navigate("/")}>
                 Cerrar sesión
