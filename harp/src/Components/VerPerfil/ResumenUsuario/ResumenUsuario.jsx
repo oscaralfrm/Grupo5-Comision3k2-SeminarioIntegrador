@@ -8,10 +8,10 @@ import Biography from "../Biografia.jsx";
 import SocialNetworks from "../RedesSociales.jsx";
 import { getInstructorById, getInstructorByNombreUsuario, getServiciosPublicadosDeInstructor } from "../../../services/Instructor.js";
 import { getAlumnoById, getAlumnoByNombreUsuario, getInscripcionesVigentesDeAlumno } from "../../../services/Alumno.js";
-import { calcularAntiguedadComoTexto } from "../../Instructor/MiServicio/MenuOpciones/Dashboard/Inscripciones.jsx";
 import { getReseniasDeAlumno, getResumenReseniasDeServicio } from "../../../services/Reseñas.js";
 import ReviewCarousel from "../../Instructor/MiServicio/MenuOpciones/Dashboard/Reseñas.jsx";
 import ServiciosCardRow from "./CarruselServicios.jsx";
+import UserData from "../DatosUsuario.jsx";
 
 const ResumenUsuario = () => {
     const { nombreAlumno, nombreInstructor } = useParams();
@@ -129,50 +129,12 @@ const ResumenUsuario = () => {
                             sePuedeEditar={false}
                         />
 
-
-                        {/* Informacion como usuario */}
-                        <div className="card shadow-lg p-4 mb-4">
-                            <h3 style={{ color: "#6a5acd" }}>Usuario</h3>
-                            <ListGroup variant="flush">
-                                <ListGroup.Item
-                                    key={profileData.id}
-                                    style={{
-                                        flex: 1,
-                                        minHeight: 0,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        padding: "0.2rem 0.5rem",
-                                    }}
-                                >
-                                    <strong style={{ width: "40%" }}>Antiguedad en la app: </strong>
-                                    <div style={{ width: "60%" }}>{calcularAntiguedadComoTexto(profileData.usuario.fechaRegistro) || "No especificado"} </div>
-                                </ListGroup.Item>
-                                <ListGroup.Item
-                                    key={profileData.id}
-                                    style={{
-                                        flex: 1,
-                                        minHeight: 0,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        padding: "0.2rem 0.5rem",
-                                    }}
-                                >
-                                    {cantInscripciones != null &&
-                                        <>
-                                            <strong style={{ width: "40%" }}>Inscripto en: </strong>
-                                            <div style={{ width: "60%" }}>{cantInscripciones} servicios</div>
-                                        </>
-                                    }
-                                    {servicios.length > 0 &&
-                                        <>
-                                            <strong style={{ width: "40%" }}>Servicios publicados: </strong>
-                                            <div style={{ width: "60%" }}>{servicios.length} servicios</div>
-                                        </>
-                                    }
-
-                                </ListGroup.Item>
-                            </ListGroup>
-                        </div>
+                        <UserData
+                            profileData={profileData}
+                            cantInscripciones={cantInscripciones}
+                            servicios={servicios}
+                        />  
+                        
 
                         {/* Reseñas realizadas */}
                         {resenias.length > 0 &&

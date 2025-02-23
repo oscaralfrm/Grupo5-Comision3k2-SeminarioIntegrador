@@ -77,27 +77,22 @@ const PhotoProfile = ({ profileData, onSave, sePuedeEditar }) => {
           </Form.Group>
         </div>
       )}
-      <div >
-        {sePuedeEditar &&
-          (!editMode ? (
+
+      {sePuedeEditar && (
+        <div>
+          {!editMode ? (
             <Button
               variant="light"
               className="position-absolute end-0 top-0"
               onClick={() => setEditMode(true)}
-              style={{
-                color: "#1E1B4B",
-
-              }}
+              style={{ color: "#1E1B4B" }}
             >
               <i className="bi bi-pencil-fill"></i>
             </Button>
           ) : (
             <div
-            className="position-absolute bottom-0 end-0 mb-2 gap-1 d-flex gap-3"
-              style={{
-                gap: "px",
-                marginRight:"1vw" // Espacio entre los botones
-              }}
+              className="d-flex justify-content-center gap-2 mt-3"
+              style={{ position: "absolute", bottom: "1rem", left: "50%", transform: "translateX(-50%)" }}
             >
               <Button variant="success" size="sm" onClick={handleSave}>
                 Guardar
@@ -106,8 +101,9 @@ const PhotoProfile = ({ profileData, onSave, sePuedeEditar }) => {
                 Cancelar
               </Button>
             </div>
-          ))}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

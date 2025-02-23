@@ -1,8 +1,6 @@
-// components/Profile/SocialNetworks.js
 import React, { useState } from "react";
 import { ListGroup, Button, Form } from "react-bootstrap";
-import { FaCog, FaExclamationCircle } from "react-icons/fa";
-import { completarRedesSociales } from "../../services/Usuario";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFacebook,
   faInstagram,
@@ -11,7 +9,7 @@ import {
   faTwitter,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { completarRedesSociales } from "../../services/Usuario";
 
 const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
   const [editMode, setEditMode] = useState(false);
@@ -67,190 +65,168 @@ const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
             className="rounded-circle d-flex align-items-center justify-content-center p-2 position-absolute"
             onClick={() => setEditMode(true)}
             style={{
-              background:"white",
+              background: "white",
               border: "none",
               top: "30px",
               right: "20px",
               zIndex: 10,
             }}
           >
-           <i class="bi bi-pencil-fill" style={{color:"#1E1B4B"}}></i>
+            <i className="bi bi-pencil-fill" style={{ color: "#1E1B4B" }}></i>
           </Button>
-        ) : (
-          <div
-            style={{
-              position: "absolute",
-              top: "10px",
-              right: "10px",
-              zIndex: 10,
-            }}
-          >
-            <Button
-              variant="success"
-              size="sm"
-              onClick={handleSave}
-              className="me-2"
-            >
-              Guardar
-            </Button>
-            <Button variant="secondary" size="sm" onClick={handleCancel}>
-              Cancelar
-            </Button>
-          </div>
-        ))}
+        ) : null)}
 
       <h3
         style={{
           color: "#1E1B4B",
           padding: "10px",
-
         }}
       >
         Redes Sociales
       </h3>
       <ListGroup variant="flush">
         {editMode ? (
-          <ListGroup.Item>
-            <strong>LinkedIn: </strong>
-            <Form.Control
-              type="text"
-              value={localSocials.linkedin}
-              onChange={(e) => handleChange("linkedin", e.target.value)}
-            />
-          </ListGroup.Item>
-        ) : (
-          localSocials.linkedin && (
+          <>
             <ListGroup.Item>
-              <a
-                href={`https://www.linkedin.com/in/${localSocials.linkedin}`}
-                target="_blank"
-              >
-                <FontAwesomeIcon icon={faLinkedin} />
-              </a>
-              <strong> LinkedIn: </strong>
-              {localSocials.linkedin}
+              <strong>LinkedIn: </strong>
+              <Form.Control
+                type="text"
+                value={localSocials.linkedin}
+                onChange={(e) => handleChange("linkedin", e.target.value)}
+              />
             </ListGroup.Item>
-          )
-        )}
-
-        {editMode ? (
-          <ListGroup.Item>
-            <strong>Twitter: </strong>
-            <Form.Control
-              type="text"
-              value={localSocials.twitter}
-              onChange={(e) => handleChange("twitter", e.target.value)}
-            />
-          </ListGroup.Item>
-        ) : (
-          localSocials.twitter && (
             <ListGroup.Item>
-              <a
-                href={`https://www.twitter.com/${localSocials.twitter}`}
-                target="_blank"
-              >
-                <FontAwesomeIcon icon={faTwitter} />
-              </a>
-              <strong> Twitter: </strong>
-              {localSocials.twitter}
+              <strong>Twitter: </strong>
+              <Form.Control
+                type="text"
+                value={localSocials.twitter}
+                onChange={(e) => handleChange("twitter", e.target.value)}
+              />
             </ListGroup.Item>
-          )
-        )}
-
-        {editMode ? (
-          <ListGroup.Item>
-            <strong>Facebook: </strong>
-            <Form.Control
-              type="text"
-              value={localSocials.facebook}
-              onChange={(e) => handleChange("facebook", e.target.value)}
-            />
-          </ListGroup.Item>
-        ) : (
-          localSocials.facebook && (
             <ListGroup.Item>
-              <a
-                href={`https://www.facebook.com/${localSocials.facebook}`}
-                target="_blank"
-              >
-                <FontAwesomeIcon icon={faFacebook} />
-              </a>
-              <strong> Facebook: </strong>
-              {localSocials.facebook}
+              <strong>Facebook: </strong>
+              <Form.Control
+                type="text"
+                value={localSocials.facebook}
+                onChange={(e) => handleChange("facebook", e.target.value)}
+              />
             </ListGroup.Item>
-          )
-        )}
-
-        {editMode ? (
-          <ListGroup.Item>
-            <strong>Instagram: </strong>
-            <Form.Control
-              type="text"
-              value={localSocials.instagram}
-              onChange={(e) => handleChange("instagram", e.target.value)}
-            />
-          </ListGroup.Item>
-        ) : (
-          localSocials.instagram && (
             <ListGroup.Item>
-              <a
-                href={`https://www.instagram.com/${localSocials.instagram}`}
-                target="_blank"
-              >
-                <FontAwesomeIcon icon={faInstagram} />
-              </a>
-              <strong> Instagram: </strong>
-              {localSocials.instagram}
+              <strong>Instagram: </strong>
+              <Form.Control
+                type="text"
+                value={localSocials.instagram}
+                onChange={(e) => handleChange("instagram", e.target.value)}
+              />
             </ListGroup.Item>
-          )
-        )}
-
-        {editMode ? (
-          <ListGroup.Item>
-            <strong>Youtube: </strong>
-            <Form.Control
-              type="text"
-              value={localSocials.youtube}
-              onChange={(e) => handleChange("youtube", e.target.value)}
-            />
-          </ListGroup.Item>
-        ) : (
-          localSocials.youtube && (
             <ListGroup.Item>
-              <a
-                href={`https://www.youtube.com/@${localSocials.youtube}`}
-                target="_blank"
-              >
-                <FontAwesomeIcon icon={faYoutube} />
-              </a>
-              <strong> Youtube: </strong>
-              {localSocials.youtube}
+              <strong>Youtube: </strong>
+              <Form.Control
+                type="text"
+                value={localSocials.youtube}
+                onChange={(e) => handleChange("youtube", e.target.value)}
+              />
             </ListGroup.Item>
-          )
-        )}
-
-        {editMode ? (
-          <ListGroup.Item>
-            <strong>Tiktok: </strong>
-            <Form.Control
-              type="text"
-              value={localSocials.tiktok}
-              onChange={(e) => handleChange("tiktok", e.target.value)}
-            />
-          </ListGroup.Item>
-        ) : (
-          localSocials.tiktok && (
             <ListGroup.Item>
-              <a
-                href={`https://www.tiktok.com/@${localSocials.tiktok}`}
-                target="_blank"
-              >
-                <FontAwesomeIcon icon={faTiktok} />
-              </a>
-              <strong> Tiktok: </strong>
-              {localSocials.tiktok}
+              <strong>Tiktok: </strong>
+              <Form.Control
+                type="text"
+                value={localSocials.tiktok}
+                onChange={(e) => handleChange("tiktok", e.target.value)}
+              />
             </ListGroup.Item>
-          )
+            <ListGroup.Item>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "10px",
+                }}
+              >
+                <Button variant="success" size="sm" onClick={handleSave}>
+                  Guardar
+                </Button>
+                <Button variant="secondary" size="sm" onClick={handleCancel}>
+                  Cancelar
+                </Button>
+              </div>
+            </ListGroup.Item>
+          </>
+        ) : (
+          <>
+            {localSocials.linkedin && (
+              <ListGroup.Item>
+                <a
+                  href={`https://www.linkedin.com/in/${localSocials.linkedin}`}
+                  target="_blank"
+                >
+                  <FontAwesomeIcon icon={faLinkedin} />
+                </a>
+                <strong> LinkedIn: </strong>
+                {localSocials.linkedin}
+              </ListGroup.Item>
+            )}
+            {localSocials.twitter && (
+              <ListGroup.Item>
+                <a
+                  href={`https://www.twitter.com/${localSocials.twitter}`}
+                  target="_blank"
+                >
+                  <FontAwesomeIcon icon={faTwitter} />
+                </a>
+                <strong> Twitter: </strong>
+                {localSocials.twitter}
+              </ListGroup.Item>
+            )}
+            {localSocials.facebook && (
+              <ListGroup.Item>
+                <a
+                  href={`https://www.facebook.com/${localSocials.facebook}`}
+                  target="_blank"
+                >
+                  <FontAwesomeIcon icon={faFacebook} />
+                </a>
+                <strong> Facebook: </strong>
+                {localSocials.facebook}
+              </ListGroup.Item>
+            )}
+            {localSocials.instagram && (
+              <ListGroup.Item>
+                <a
+                  href={`https://www.instagram.com/${localSocials.instagram}`}
+                  target="_blank"
+                >
+                  <FontAwesomeIcon icon={faInstagram} />
+                </a>
+                <strong> Instagram: </strong>
+                {localSocials.instagram}
+              </ListGroup.Item>
+            )}
+            {localSocials.youtube && (
+              <ListGroup.Item>
+                <a
+                  href={`https://www.youtube.com/@${localSocials.youtube}`}
+                  target="_blank"
+                >
+                  <FontAwesomeIcon icon={faYoutube} />
+                </a>
+                <strong> Youtube: </strong>
+                {localSocials.youtube}
+              </ListGroup.Item>
+            )}
+            {localSocials.tiktok && (
+              <ListGroup.Item>
+                <a
+                  href={`https://www.tiktok.com/@${localSocials.tiktok}`}
+                  target="_blank"
+                >
+                  <FontAwesomeIcon icon={faTiktok} />
+                </a>
+                <strong> Tiktok: </strong>
+                {localSocials.tiktok}
+              </ListGroup.Item>
+            )}
+          </>
         )}
       </ListGroup>
 
@@ -262,7 +238,7 @@ const SocialNetworks = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
             className="alert alert-warning d-flex align-items-center"
             role="alert"
           >
-            No has completado tu redes.
+            No has completado tus redes.
           </div>
         ) : (
           Object.values(localSocials).some(

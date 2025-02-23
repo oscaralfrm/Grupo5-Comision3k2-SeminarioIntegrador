@@ -24,6 +24,17 @@ export const pagarCuota = async (idServicio, idInscripcion, idCuota, metodoPago)
   }
 };
 
+// Servicio para anular una cuota
+export const anularCuota = async (idInscripcion, idCuota) => {
+  try {
+    const response = await axios.put(`${baseUrl}/inscripciones/${idInscripcion}/cuotas/${idCuota}/anular`);
+    return response.data; // Devuelve la confirmación del pago
+  } catch (error) {
+    console.error("Error al pagar la cuota:", error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || "Error al pagar la cuota");
+  }
+};
+
 
 // Servicio para pagar una cuota
 export const pagarCuotaConTransferenciaPorAlumno = async (idServicio, idInscripcion, idCuota, metodoPago, comprobante) => {

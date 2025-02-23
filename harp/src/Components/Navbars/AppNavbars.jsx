@@ -50,6 +50,7 @@ const AppNavbar = () => {
   const isAlumnoRouteIns = location.pathname === `/alumno/${idAlumno}/inscripciones`;
   const isDescubrirRoute = location.pathname === `/alumno/${idAlumno}/descubrir-servicios`;
   const isDescubirInstructorRoute = location.pathname === `/instructor/${idInstructor}/descubrir-servicios`;
+  const isSolicitudesInscripcion = location.pathname === `/instructor/${idInstructor}/servicios/inscripciones`;
   const isInfoServicioAlumnoRoute = location.pathname === `/alumno/${idAlumno}/servicio/${idServicio}/info-servicio`;
   const isInfoServicioInstructorRoute = location.pathname === `/instructor/${idInstructor}/servicio/${idServicio}/info-servicio`;
   const isEditService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`);
@@ -112,11 +113,12 @@ const AppNavbar = () => {
 
       {/* Muestra NavbarInstructor en la ruta específica del servicio */}
       {isInstructorRoute && <NavbarInstructor />}
-      {isDescubirInstructorRoute && <NavbarMisServicios />}
+      {isDescubirInstructorRoute && <NavbarServicio usuario={usuario} />}
+      {isSolicitudesInscripcion && <NavbarServicio usuario={usuario} /> }
 
 
       {/* Muestra NavbarServicio en la ruta de creación de servicio */}
-      {isCreateServiceRoute && <NavbarServicio />}
+      {isCreateServiceRoute && <NavbarServicio usuario={usuario} />}
       {isEditService && <NavbarSimple usuario={usuario} />}
 
 

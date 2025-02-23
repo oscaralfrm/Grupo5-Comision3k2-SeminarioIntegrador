@@ -1,9 +1,7 @@
-// components/Profile/PersonalData.js
 import React, { useState } from "react";
 import { ListGroup, Button, Form } from "react-bootstrap";
-import { FaCog, FaExclamationCircle } from "react-icons/fa";
+import { FaExclamationCircle } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { editAlumno } from "../../services/Alumno"; // Ajusta la ruta según corresponda
 import { editUsuario } from "../../services/Usuario";
 
 const PersonalData = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
@@ -26,16 +24,20 @@ const PersonalData = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
     try {
       const usuarioDTO = {
         idUsuario: profileData.usuario.id,
-        nombre: localData.nombre, // Usamos nombreUsuario como "nombre"
+        nombre: localData.nombre,
         apellido: localData.apellido,
         dni: localData.dni,
-        nombreUsuario: profileData.usuario.nombreUsuario, // nombreUsuario  permanece igual
-        contrasena: "", // contrasena (no se edita aquí)
-        email: profileData.usuario.email, // email permanece igual
+        nombreUsuario: profileData.usuario.nombreUsuario,
+        contrasena: "",
+        email: profileData.usuario.email,
         telefono: localData.telefono,
         fechaNacimiento: localData.fechaNacimiento,
-        fotoPerfilURL: profileData.usuario.fotoPerfilURL, // fotoPerfil permanece igual
+        fotoPerfilURL: profileData.usuario.fotoPerfilURL,
+        ubicacion: localData.ubicacion, // Asegúrate de incluir este campo
       };
+
+      console.log("Datos a guardar:", usuarioDTO); // Verifica los datos que se envían
+
       await editUsuario(usuarioDTO);
       setEditMode(false);
       if (onSave) onSave(localData);
@@ -46,108 +48,63 @@ const PersonalData = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
 
   const handleCancel = () => {
     setLocalData({
-      nombreUsuario: profileData?.usuario.nombreUsuario || "",
-      apellido: profileData?.usuario.apellido || "",
-      fechaNacimiento: profileData?.usuario.fechaNacimiento || "",
-      dni: profileData?.usuario.dni || "",
-      ubicacion: profileData?.usuario.ubicacion || "",
-      telefono: profileData?.usuario.telefono || "",
+      nombre: profileData?.usuario?.nombre || "",
+      apellido: profileData?.usuario?.apellido || "",
+      fechaNacimiento: profileData?.usuario?.fechaNacimiento || "",
+      dni: profileData?.usuario?.dni || "",
+      ubicacion: profileData?.usuario?.ubicacion || "",
+      telefono: profileData?.usuario?.telefono || "",
     });
     setEditMode(false);
   };
 
   return (
-    <div
-      className="card shadow-lg p-4 mb-4"
-      style={{ position: "relative", height: "100%" }}
-    >
-      {sePuedeEditar &&
-        (!editMode ? (
-          <Button
-            variant="light"
-            className="position-absolute end-1 top-11"
-            onClick={() => setEditMode(true)}
-            style={{
-              backgroundColor: "White",
-              border: "none",
-              top: "30px",
-              right: "30px",
-              zIndex: 10,
-            }}
-          >
-            <i class="bi bi-pencil-fill"></i>
-          </Button>
-        ) : (
-          <div
-            style={{
-              position: "absolute",
-              top: "10px",
-              right: "10px",
-              zIndex: 10,
-            }}
-          >
-            <Button
-              variant="success"
-              size="sm"
-              onClick={handleSave}
-              className="me-2"
-            >
-              Guardar
-            </Button>
-            <Button variant="secondary" size="sm" onClick={handleCancel}>
-              Cancelar
-            </Button>
+    <div className="card shadow-lg p-4 mb-4" style={{ position: "relative", height: "100%" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <h3 style={{ color: "#1E1B4B", margin: "10px 0" }}>Datos Personales</h3>
+        {sePuedeEditar && (
+          <div style={{ display: "flex", gap: "5px" }}>
+            {editMode ? (
+              <>
+                <Button variant="success" size="sm" style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={handleSave}>
+                  ✓
+                </Button>
+                <Button variant="secondary" size="sm" style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={handleCancel}>
+                  ✕
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="light"
+                style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center" }}
+                onClick={() => setEditMode(true)}
+              >
+                <i className="bi bi-pencil-fill"></i>
+              </Button>
+            )}
           </div>
-        ))}
-      <h3
-        style={{
-          color: "#1E1B4B",
-          padding: "10px",
- 
-        }}
-      >
-        Datos Personales
-      </h3>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "calc(100% - 50px)",
-        }}
-      >
+        )}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", height: "calc(100% - 50px)" }}>
         <ListGroup
           variant="flush"
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            margin: 0,
-          }}
+          style={{ flex: 1, display: "flex", flexDirection: "column", margin: 0 }}
         >
           {[
             { label: "Nombre", field: "nombre", type: "text" },
             { label: "Apellido", field: "apellido", type: "text" },
-            {
-              label: "Fecha de Nacimiento",
-              field: "fechaNacimiento",
-              type: "date",
-            },
+            { label: "Fecha de Nacimiento", field: "fechaNacimiento", type: "date" },
             { label: "DNI", field: "dni", type: "text" },
             { label: "Nacionalidad", field: "ubicacion", type: "text" },
             { label: "Teléfono", field: "telefono", type: "text" },
           ].map((item) => (
             <ListGroup.Item
               key={item.field}
-              style={{
-                flex: 1,
-                minHeight: 0,
-                display: "flex",
-                alignItems: "center",
-                padding: "0.2rem 0.5rem",
-              }}
+              className="d-flex align-items-center"
+              style={{ padding: "0.5rem" }}
             >
-              <strong style={{ width: "40%" }}>{item.label}: </strong>
-              <div style={{ width: "60%" }}>
+              <strong style={{ flex: "0 0 40%" }}>{item.label}: </strong>
+              <div style={{ flex: "1" }}>
                 {editMode ? (
                   <Form.Control
                     type={item.type}
@@ -157,11 +114,9 @@ const PersonalData = ({ profileData, isMissing, onSave, sePuedeEditar }) => {
                 ) : (
                   localData[item.field] || "No especificado"
                 )}
-                {isMissing(localData[item.field]) &&
-                  !editMode &&
-                  sePuedeEditar && (
-                    <FaExclamationCircle className="ms-2 text-danger" />
-                  )}
+                {isMissing(localData[item.field]) && !editMode && sePuedeEditar && (
+                  <FaExclamationCircle className="ms-2 text-danger" />
+                )}
               </div>
             </ListGroup.Item>
           ))}
