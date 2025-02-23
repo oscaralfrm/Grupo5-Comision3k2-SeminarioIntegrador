@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaTimesCircle, FaCalendarAlt, FaChartBar, FaEdit } from 'react-icons/fa';
-import { getClasesDeGrupo, editClase, cambiarClaseANoFueDada, getClaseHoyDeServicio } from '../../../../../services/Clase';
-import { getAsistenciasDeClase } from '../../../../../services/Asistencia';
+import { getClasesDeGrupo, editClase, cambiarClaseANoFueDada, cambiarClaseAFueDada, getClaseHoyDeServicio, borrarObservacionesClase  } from '../../../../../services/Clase';import { getAsistenciasDeClase } from '../../../../../services/Asistencia';
 import { getGruposDeServicio, obtenerEstadisticasDeAsistenciasGrupo } from '../../../../../services/Grupo';
 import EstadisticasAsistencia from "./EstadisticasAsistencias"; // Importar el nuevo componente
+import DescuentoPopup from './DescuentoPopup'; // Importar el componente de pop-up
+import Switch from 'react-switch'; // Importar react-switch
 
 const HistorialClasesInstructor = () => {
     const [clasesPorGrupo, setClasesPorGrupo] = useState({});
@@ -17,6 +18,8 @@ const HistorialClasesInstructor = () => {
     const [clasesDeHoy, setClasesDeHoy] = useState([]);
     const [isEditingObservaciones, setIsEditingObservaciones] = useState({});
     const [estadisticasAsistencia, setEstadisticasAsistencia] = useState(null);
+    const [showDescuentoPopup, setShowDescuentoPopup] = useState(false);
+    const [selectedClaseId, setSelectedClaseId] = useState(null);
     const navigate = useNavigate();
 
     // Función para formatear la fecha y hora
@@ -132,20 +135,25 @@ const HistorialClasesInstructor = () => {
     };
 
 
-    const handleMarcarNoFueDada = async (idClase) => {
+   const handleMarcarNoFueDada = (idClase) => {
+        setSelectedClaseId(idClase);
+        setShowDescuentoPopup(true);
+    };
+
+    const handleConfirmDescuento = async (descuento) => {
         try {
-            await cambiarClaseANoFueDada(idClase);
+            await cambiarClaseANoFueDada(selectedClaseId, descuento);
 
             setNoFueDadaEdit((prev) => ({
                 ...prev,
-                [idClase]: true,
+                [selectedClaseId]: true,
             }));
 
             setClasesPorGrupo((prev) => {
                 const updatedClasesPorGrupo = { ...prev };
                 Object.keys(updatedClasesPorGrupo).forEach((grupoId) => {
                     updatedClasesPorGrupo[grupoId].clases = updatedClasesPorGrupo[grupoId].clases.map((clase) => {
-                        if (clase.id === idClase) {
+                        if (clase.id === selectedClaseId) {
                             return { ...clase, noFueDada: true };
                         }
                         return clase;
@@ -158,11 +166,82 @@ const HistorialClasesInstructor = () => {
         } catch (error) {
             console.error("Error al marcar clase como no dada: ", error);
             alert('Error al marcar clase como no dada');
+        } finally {
+            setShowDescuentoPopup(false);
+        }
+    };
+
+    const handleDesmarcarNoFueDada = async (idClase) => {
+        try {
+            await cambiarClaseAFueDada(idClase);
+
+            setNoFueDadaEdit((prev) => ({
+                ...prev,
+                [idClase]: false,
+            }));
+
+            setClasesPorGrupo((prev) => {
+                const updatedClasesPorGrupo = { ...prev };
+                Object.keys(updatedClasesPorGrupo).forEach((grupoId) => {
+                    updatedClasesPorGrupo[grupoId].clases = updatedClasesPorGrupo[grupoId].clases.map((clase) => {
+                        if (clase.id === idClase) {
+                            return { ...clase, noFueDada: false };
+                        }
+                        return clase;
+                    });
+                });
+                return updatedClasesPorGrupo;
+            });
+
+            alert('Clase desmarcada como "No Fue Dada" correctamente');
+        } catch (error) {
+            console.error("Error al desmarcar clase como no dada: ", error);
+            alert('Error al desmarcar clase como no dada');
         }
     };
 
     if (loading) return <div style={styles.loading}>Cargando...</div>;
     if (error) return <div style={styles.error}>Error: {error}</div>;
+
+    const esClaseDeHoy = (clase) => {
+        const hoy = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
+        return clase.fecha === hoy;
+    };
+
+    const handleSwitchChange = async (idClase, checked) => {
+        if (checked) {
+            setSelectedClaseId(idClase);
+            setShowDescuentoPopup(true);
+        } else {
+            await handleDesmarcarNoFueDada(idClase);
+        }
+    };
+
+    // Función para borrar observaciones
+    const handleBorrarObservaciones = async (idClase) => {
+        try {
+            await borrarObservacionesClase(idClase);
+
+            setClasesPorGrupo((prev) => {
+                const updatedClasesPorGrupo = { ...prev };
+                Object.keys(updatedClasesPorGrupo).forEach((grupoId) => {
+                    updatedClasesPorGrupo[grupoId].clases = updatedClasesPorGrupo[grupoId].clases.map((clase) => {
+                        if (clase.id === idClase) {
+                            return { ...clase, observaciones: '' }; // Borrar las observaciones
+                        }
+                        return clase;
+                    });
+                });
+                return updatedClasesPorGrupo;
+            });
+
+            alert('Observaciones borradas correctamente');
+        } catch (error) {
+            console.error("Error al borrar observaciones: ", error);
+            alert(`Error al borrar observaciones: ${error.response?.data?.message || error.message}`);
+        }
+    };
+
 
     return (
         <div style={styles.container}>
@@ -214,15 +293,20 @@ const HistorialClasesInstructor = () => {
                                     <p style={styles.claseGrupo}>
                                         <strong>Grupo:</strong> {clase.grupoNombre}
                                     </p>
-                                    <button
-                                        style={{
-                                            ...styles.botonNoFueDada,
-                                            backgroundColor: clase.noFueDada ? '#FF9800' : '#ccc',
-                                        }}
-                                        onClick={() => handleMarcarNoFueDada(clase.id)}
-                                    >
-                                        {clase.noFueDada ? 'No Fue Dada' : 'Marcar No Fue Dada'}
-                                    </button>
+                                    <div style={styles.switchContainer}>
+                                        <span style={styles.switchLabel}>
+                                            {clase.noFueDada ? "Clase inactiva" : "Clase activa"}
+                                        </span>
+                                        <Switch
+                                            checked={clase.noFueDada}
+                                            onChange={(checked) => handleSwitchChange(clase.id, checked)}
+                                            disabled={esClaseDeHoy(clase) && clase.noFueDada}
+                                            onColor="#FF9800"
+                                            offColor="#ccc"
+                                            height={24}
+                                            width={48}
+                                        />
+                                    </div>
                                 </div>
                                 <p style={styles.claseFecha}>
                                     <strong>Fecha:</strong> {formatClassDateTime(clase)}
@@ -233,27 +317,39 @@ const HistorialClasesInstructor = () => {
                                 <p style={styles.claseAsistencias}>
                                     <strong>Asistencias:</strong> {clase.asistencias?.length || 0}
                                 </p>
-                                <div style={styles.editarContainer}>
-                                    <textarea
-                                        style={styles.textarea}
-                                        placeholder="Observaciones"
-                                        value={observacionesEdit[clase.id] || clase.observaciones || ''}
-                                        onChange={(e) =>
-                                            setObservacionesEdit({
-                                                ...observacionesEdit,
-                                                [clase.id]: e.target.value,
-                                            })
-                                        }
-                                    /> <button
-                                        style={styles.botonEditar}
-                                        onClick={() => handleEditObservaciones(clase.id)}
-                                    >
-                                        <FaEdit />{" "}
-                                        {clase.observaciones && clase.observaciones.trim() !== ""
-                                            ? "Editar Observaciones"
-                                            : "Guardar Observaciones"}
-                                    </button>
-                                </div>
+                                <tr></tr>
+                                <div>
+    <textarea
+        style={styles.textarea}
+        placeholder="Observaciones"
+        value={observacionesEdit[clase.id] || clase.observaciones || ''}
+        onChange={(e) =>
+            setObservacionesEdit({
+                ...observacionesEdit,
+                [clase.id]: e.target.value,
+            })
+        }
+    />
+    <div style={styles.editarContainer}>
+        <button
+            style={styles.botonEditar}
+            onClick={() => handleEditObservaciones(clase.id)}
+        >
+            <FaEdit />{" "}
+            {clase.observaciones && clase.observaciones.trim() !== ""
+                ? "Editar Observaciones"
+                : "Guardar Observaciones"}
+        </button>
+        {clase.observaciones && clase.observaciones.trim() !== "" && (
+            <button
+                style={styles.botonBorrarObservaciones}
+                onClick={() => handleBorrarObservaciones(clase.id)}
+            >
+                <FaTimesCircle /> Borrar Observaciones
+            </button>
+        )}
+    </div>
+</div>
                             </div>
                         ))}
                     </div>
@@ -280,15 +376,20 @@ const HistorialClasesInstructor = () => {
                                     <p style={styles.claseGrupo}>
                                         <strong>Grupo:</strong> {grupoData.nombre}
                                     </p>
-                                    <button
-                                        style={{
-                                            ...styles.botonNoFueDada,
-                                            backgroundColor: clase.noFueDada ? '#FF9800' : '#ccc',
-                                        }}
-                                        onClick={() => handleMarcarNoFueDada(clase.id)}
-                                    >
-                                        {clase.noFueDada ? 'No Fue Dada' : 'Marcar No Fue Dada'}
-                                    </button>
+                                    <div style={styles.switchContainer}>
+                                        <span style={styles.switchLabel}>
+                                            {clase.noFueDada ? "Clase inactiva" : "Clase activa"}
+                                        </span>
+                                        <Switch
+                                            checked={clase.noFueDada}
+                                            onChange={(checked) => handleSwitchChange(clase.id, checked)}
+                                            disabled={esClaseDeHoy(clase) && clase.noFueDada}
+                                            onColor="#FF9800"
+                                            offColor="#ccc"
+                                            height={24}
+                                            width={48}
+                                        />
+                                    </div>
                                 </div>
                                 <p style={styles.claseFecha}>
                                     <strong>Fecha:</strong> {formatClassDateTime(clase)}
@@ -299,33 +400,49 @@ const HistorialClasesInstructor = () => {
                                 <p style={styles.claseAsistencias}>
                                     <strong>Asistencias:</strong> {clase.asistencias?.length || 0}
                                 </p>
-                                <div style={styles.editarContainer}>
-                                    <textarea
-                                        style={styles.textarea}
-                                        placeholder="Observaciones"
-                                        value={observacionesEdit[clase.id] || clase.observaciones || ''}
-                                        onChange={(e) =>
-                                            setObservacionesEdit({
-                                                ...observacionesEdit,
-                                                [clase.id]: e.target.value,
-                                            })
-                                        }
-                                    />
-                                    <button
-                                        style={styles.botonEditar}
-                                        onClick={() => handleEditObservaciones(clase.id)}
-                                    >
-                                        <FaEdit />{" "}
-                                        {clase.observaciones && clase.observaciones.trim() !== ""
-                                            ? "Editar Observaciones"
-                                            : "Guardar Observaciones"}
-                                    </button>
-                                </div>
+                                <tr></tr>
+                                <div>
+    <textarea
+        style={styles.textarea}
+        placeholder="Observaciones"
+        value={observacionesEdit[clase.id] || clase.observaciones || ''}
+        onChange={(e) =>
+            setObservacionesEdit({
+                ...observacionesEdit,
+                [clase.id]: e.target.value,
+            })
+        }
+    />
+    <div style={styles.editarContainer}>
+        <button
+            style={styles.botonEditar}
+            onClick={() => handleEditObservaciones(clase.id)}
+        >
+            <FaEdit />{" "}
+            {clase.observaciones && clase.observaciones.trim() !== ""
+                ? "Editar Observaciones"
+                : "Guardar Observaciones"}
+        </button>
+        {clase.observaciones && clase.observaciones.trim() !== "" && (
+            <button
+                style={styles.botonBorrarObservaciones}
+                onClick={() => handleBorrarObservaciones(clase.id)}
+            >
+                <FaTimesCircle /> Borrar Observaciones
+            </button>
+        )}
+    </div>
+</div>
                             </div>
                         ))}
                     </div>
                 </div>
             ))}
+             <DescuentoPopup
+                isOpen={showDescuentoPopup}
+                onClose={() => setShowDescuentoPopup(false)}
+                onConfirm={handleConfirmDescuento}
+            />
         </div>
     );
 };
@@ -434,7 +551,10 @@ const styles = {
         fontSize: '16px',
     },
     editarContainer: {
-        marginTop: '10px',
+        display: 'flex', // Hace que los elementos se alineen horizontalmente
+        gap: '10px', // Espacio entre los botones
+        alignItems: 'center', // Alinea verticalmente los botones
+        marginTop: '10px', // Espacio superior
     },
     textarea: {
         width: '100%',
@@ -471,6 +591,26 @@ const styles = {
         textAlign: 'center',
         fontSize: '18px',
         color: '#F44336',
+    },
+    switchContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+    },
+    switchLabel: {
+        fontSize: '14px',
+        color: '#333',
+    },
+    botonBorrarObservaciones: {
+        backgroundColor: '#F44336', // Color rojo
+        color: 'white',
+        border: 'none',
+        padding: '10px 15px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '5px',
     },
 };
 

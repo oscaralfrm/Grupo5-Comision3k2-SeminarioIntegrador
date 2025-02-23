@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { getInscripcionesDeAlumno } from '../../../services/Alumno';
 import { FaCheckCircle, FaTimesCircle, FaCalendarAlt, FaChartBar } from 'react-icons/fa'; // Íconos
 import { getHistorialAsistencias, getResumenAsistencias, traerUnaInscripcion } from '../../../services/Inscripcion';
 
@@ -11,19 +9,21 @@ const AsistenciasAlumno = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [inscripcion, setInscripcion] = useState(null);
-    const { idAlumno, idInscripcion } = useParams();
+    const { idInscripcion } = useParams(); // Obtener idInscripcion de la ruta
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                // Obtener la inscripción
                 const inscripcion = await traerUnaInscripcion(idInscripcion);
                 setInscripcion(inscripcion);
-                // Obtener los datos usando el idGrupo
+
+                // Obtener el resumen y el historial de asistencias
                 const resumenData = await getResumenAsistencias(idInscripcion);
                 const historialData = await getHistorialAsistencias(idInscripcion);
 
-                // Ordenar las clases de la más reciente a la más antigua
-                historialData.sort((a, b) => new Date(b.clase.fecha) - new Date(a.clase.fecha));
+                // Ordenar las clases de la más antigua a la más reciente
+                historialData.sort((a, b) => new Date(a.clase.fecha) - new Date(b.clase.fecha));
 
                 setResumen(resumenData);
                 setHistorial(historialData);
@@ -49,7 +49,10 @@ const AsistenciasAlumno = () => {
         <div style={styles.container}>
             {/* Encabezado */}
             <div style={styles.header}>
-                <h2 style={styles.headerTitle}>Historial de Clases</h2>
+                <h2 style={styles.headerTitle}>
+                    <FaChartBar style={{ marginRight: '10px' }} />
+                    Asistencias del Alumno
+                </h2>
             </div>
 
             {/* Resumen de Asistencias */}
@@ -64,7 +67,7 @@ const AsistenciasAlumno = () => {
                         <div
                             style={{
                                 width: `${porcentajeAsistencias}%`,
-                                backgroundColor: '#6A0DAD',
+                                backgroundColor: '#4F46E5', // Color morado
                                 height: '20px',
                                 borderRadius: '4px',
                             }}
@@ -72,7 +75,7 @@ const AsistenciasAlumno = () => {
                         <div
                             style={{
                                 width: `${porcentajeInasistencias}%`,
-                                backgroundColor: '#6495ED',
+                                backgroundColor: '#FF9800', // Color naranja
                                 height: '20px',
                                 borderRadius: '4px',
                             }}
@@ -81,10 +84,10 @@ const AsistenciasAlumno = () => {
                     {/* Leyenda y porcentajes */}
                     <div style={styles.leyenda}>
                         <p style={styles.leyendaItem}>
-                            <span style={{ color: '#6A0DAD', fontWeight: 'bold' }}>Asistencias:</span> {resumen.cantidadAsistencias}
+                            <span style={{ color: '#4F46E5', fontWeight: 'bold' }}>Asistencias:</span> {resumen.cantidadAsistencias}
                         </p>
                         <p style={styles.leyendaItem}>
-                            <span style={{ color: '#6495ED', fontWeight: 'bold' }}>Inasistencias:</span> {resumen.cantidadInasistencias}
+                            <span style={{ color: '#FF9800', fontWeight: 'bold' }}>Inasistencias:</span> {resumen.cantidadInasistencias}
                         </p>
                         <p style={styles.leyendaItem}>
                             <span style={{ fontWeight: 'bold' }}>Porcentaje de Asistencia:</span> {porcentajeAsistencias}%
@@ -123,7 +126,7 @@ const AsistenciasAlumno = () => {
                             </p>
                             {asistencia.clase.noFueDada && (
                                 <p style={styles.claseNoFueDada}>
-                                    <strong>Estado:</strong> <span style={{ color: '#FF9800' }}>Clase no fue dada</span>
+                                    <strong>Estado:</strong> <span style={{ color: '#FF9800' }}>Clase cancelada</span>
                                 </p>
                             )}
                         </div>
@@ -137,7 +140,7 @@ const AsistenciasAlumno = () => {
 // Estilos
 const styles = {
     container: {
-        backgroundColor: 'white', // Fondo blanco para el contenedor principal
+        backgroundColor: 'white',
         padding: '20px',
         borderRadius: '10px',
         width: '100%',
@@ -159,7 +162,7 @@ const styles = {
         fontWeight: 'bold',
     },
     section: {
-        backgroundColor: '#f8f9fa', // Fondo gris claro para las secciones
+        backgroundColor: '#f8f9fa',
         padding: '20px',
         borderRadius: '10px',
         marginBottom: '20px',
@@ -171,7 +174,7 @@ const styles = {
         marginBottom: '20px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center', // Centrar el título
+        justifyContent: 'center',
     },
     resumenContainer: {
         display: 'flex',
@@ -199,7 +202,7 @@ const styles = {
         gap: '15px',
     },
     claseCard: {
-        backgroundColor: '#f0f0f0', // Fondo gris un poco más oscuro para las tarjetas
+        backgroundColor: '#f0f0f0',
         padding: '15px',
         borderRadius: '8px',
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
