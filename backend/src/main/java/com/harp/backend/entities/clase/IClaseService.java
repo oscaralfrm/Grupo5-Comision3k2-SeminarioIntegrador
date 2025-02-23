@@ -25,6 +25,7 @@ public interface IClaseService {
     void crearClasesParaSemanaSiguente(Servicio servicio, LocalDate fechaInicio);
     void crearClasesParaSemanaSiguienteGrupo(Servicio servicio, Grupo grupo, LocalDate fechaInicio);
     void crearClasesParaSemanaSiguienteHorario(Servicio servicio, Grupo grupo, LocalDate fechaInicio, Horario horario);
+    public Clase borrarObservaciones(Long idClase);
 
 
 }

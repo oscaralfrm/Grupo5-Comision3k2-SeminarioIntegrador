@@ -204,4 +204,11 @@ public class ClaseService implements IClaseService {
             this.deleteClase(clase.getId());
         }
     }
+
+    @Override
+    public Clase borrarObservaciones(Long idClase) {
+        Clase clase = this.findClase(idClase);
+        clase.setObservaciones(null); // Borramos las observaciones
+        return claseRepository.save(clase);
+    }
 }

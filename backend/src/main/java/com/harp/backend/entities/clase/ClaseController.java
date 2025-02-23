@@ -53,4 +53,10 @@ public class ClaseController {
         claseService.cambiarClaseAFueDada(idClase);
         return  ResponseEntity.ok("Se registró que la clase fue dada");
     }
+
+    @PutMapping("/grupos/clases/{idClase}/borrar-observaciones")
+    public ResponseEntity<String> borrarObservacionesClase(@PathVariable @Min(1) Long idClase) {
+        claseService.borrarObservaciones(idClase);
+        return ResponseEntity.ok("Se eliminaron las observaciones de la clase correctamente.");
+    }
 }
