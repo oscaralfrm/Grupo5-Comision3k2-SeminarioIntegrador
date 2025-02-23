@@ -45,6 +45,9 @@ public class Inscripcion {
     @Column(name = "fecha_aceptacion")
     private LocalDate fechaAceptacion;
 
+    @Column(name = "fecha_rechazo")
+    private LocalDate fechaRechazo;
+
     @Setter(AccessLevel.NONE) // SOlo se puede modificar con el método aceptar()
     @Column(name = "fecha_inscripcion")
     private LocalDate fechaInicio;
@@ -117,6 +120,9 @@ public class Inscripcion {
     }
 
     public Cuota obtenerUltimaCuota() {
+        if (cuotas == null || cuotas.isEmpty()) {
+            return null; // O lanza una excepción personalizada si lo prefieres
+        }
         // siempre hay una sola cuota que cumple con ser la ultima
         // pero no le podemos preguntar a la cuota si es la ultima porque debemos compararlas entre fechas
         return Collections.max(cuotas, Comparator.comparing(Cuota::getFechaInicioCiclo));
@@ -234,7 +240,7 @@ public class Inscripcion {
         }
         //cambiar el estado a Rechazada
         this.estado = EstadoInscripcion.Rechazada;
-
+        this.fechaRechazo = LocalDate.now();
         // REVISAR si aca deberiamos cambiar la fechaFinInscripcion o no
 
         this.motivoRechazo = motivo;
@@ -334,6 +340,10 @@ public class Inscripcion {
 
     public boolean estaPendiente() {
         return (this.estado == EstadoInscripcion.PendienteAceptacion);
+    }
+
+    public boolean estaRechazada() {
+        return (this.estado == EstadoInscripcion.Rechazada);
     }
 
     public boolean estaFinalizada() {

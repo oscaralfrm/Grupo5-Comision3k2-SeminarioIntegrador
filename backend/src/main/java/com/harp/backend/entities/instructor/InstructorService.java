@@ -1,5 +1,6 @@
 package com.harp.backend.entities.instructor;
 
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.perfil.service.IPerfilService;
 import com.harp.backend.entities.servicio.Servicio;
@@ -71,6 +72,16 @@ public class InstructorService implements IInstructorService {
     public List<Servicio> findServiciosDeInstructor(Long idInstructor) {
         Instructor instructorExistente = this.findInstructor(idInstructor);
         return instructorExistente.getServicios().stream().toList();
+    }
+
+    public List<Inscripcion> findUltimasInscripcionesNoPendientesDeServiciosDeInstructor(Long idInstructor, int cant) {
+        Instructor instructorExistente = this.findInstructor(idInstructor);
+        return instructorExistente.obtenerUltimasInscripcionesNoPendientesDeServicios(cant);
+    }
+
+    public List<Inscripcion> findSolicitudesInscripcionPendientes(Long idInstructor) {
+        Instructor instructorExistente = this.findInstructor(idInstructor);
+        return instructorExistente.obtenerSolicitudesInscripcionPendientes();
     }
 
 

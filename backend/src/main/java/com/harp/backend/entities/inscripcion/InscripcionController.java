@@ -67,6 +67,13 @@ public class InscripcionController {
         return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
     };
 
+    // GET TODAS LAS DE UN SERVICIO
+    @GetMapping("/{idServicio}/inscripciones/ultimas-no-pendientes")
+    public ResponseEntity<List<Inscripcion>> findUltimasInscripcionesNoPendientesDeServicio(@PathVariable @Min(1) Long idServicio) {
+        List<Inscripcion> inscripciones = servicioService.findUltimasInscripcionesNoPendientesDeServicio(idServicio, 10);
+        return ResponseEntity.status(HttpStatus.OK).body(inscripciones);
+    };
+
     // GET INSCRIPCIONES RECIENTEMENTE FINALIZADAS
     @GetMapping("/{idServicio}/inscripciones-finalizadas-recientemente")
     public ResponseEntity<List<Inscripcion>> traerInscripcionesRecientementeFinalizadas(@PathVariable @Min(1) Long idServicio) {
@@ -170,5 +177,12 @@ public class InscripcionController {
         List<Asistencia> asistencias = inscripcionService.obtenerAsistenciasDeInscripcion(idInscripcion);
         return ResponseEntity.status(HttpStatus.OK).body(asistencias);
     };
+
+    // EDITAR
+    @PutMapping("/inscripciones/{idInscripcion}/cuotas/{idCuota}/anular")
+    public ResponseEntity<String> anularCuota(@PathVariable @Min(1) Long idInscripcion, @PathVariable @Min(1) Long idCuota) {
+        inscripcionService.anularCuota(idInscripcion, idCuota);
+        return ResponseEntity.ok("Se anuló la cuota.");
+    }
 
 }

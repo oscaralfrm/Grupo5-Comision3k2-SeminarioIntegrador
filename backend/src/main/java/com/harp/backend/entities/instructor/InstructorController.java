@@ -1,6 +1,7 @@
 package com.harp.backend.entities.instructor;
 
 import com.harp.backend.entities.categoria.Categoria;
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.servicio.FileStorageService;
 import com.harp.backend.entities.servicio.Servicio;
 import jakarta.validation.constraints.Min;
@@ -56,6 +57,20 @@ public class InstructorController {
     @GetMapping("/{idInstructor}/servicios")
     public ResponseEntity<List<Servicio>> traerServiciosDeInstructor(@PathVariable Long idInstructor) {
         List<Servicio> servicios = instructorService.findServiciosDeInstructor(idInstructor);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
+    // GET ULTIMAS INSCRIPCIONES DE SERVICIOS DE UN INSTRUCTOR
+    @GetMapping("/{idInstructor}/servicios/ultimas-inscripciones")
+    public ResponseEntity<List<Inscripcion>> findUltimasInscripcionesNoPendientesDeServiciosDeInstructor(@PathVariable Long idInstructor) {
+        List<Inscripcion> servicios = instructorService.findUltimasInscripcionesNoPendientesDeServiciosDeInstructor(idInstructor, 10);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
+    // GET SOLICITUDES INSCRIPCION DE SERVICIOS DE UN INSTRUCTOR
+    @GetMapping("/{idInstructor}/servicios/solicitudes-inscripcion")
+    public ResponseEntity<List<Inscripcion>> findSolicitudesInscripcionPendientesDeInstructor(@PathVariable Long idInstructor) {
+        List<Inscripcion> servicios = instructorService.findSolicitudesInscripcionPendientes(idInstructor);
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     };
 
