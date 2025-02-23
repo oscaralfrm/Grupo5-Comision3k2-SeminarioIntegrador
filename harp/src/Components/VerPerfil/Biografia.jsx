@@ -1,27 +1,22 @@
-// components/Profile/Biography.js
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
-import { FaCog, FaExclamationCircle } from "react-icons/fa";
-import { editarBiografiaUsuario } from "../../services/Usuario";
-import { agregarCvInstructor } from "../../services/Instructor"; // Importa el servicio
-import Curriculum from "./Curriculum/Curriculum"; // Componente hijo para el CV
 import { useParams } from "react-router-dom";
+import { editarBiografiaUsuario } from "../../services/Usuario";
+import { agregarCvInstructor } from "../../services/Instructor";
+import Curriculum from "./Curriculum/Curriculum";
 
 const Biography = ({ profileData, onSave, sePuedeEditar }) => {
   const [editMode, setEditMode] = useState(false);
   const [biografia, setBiografia] = useState(
     profileData?.usuario?.biografia || ""
   );
-  // Estado para almacenar el nuevo archivo de CV (si se selecciona)
   const [cvFile, setCvFile] = useState(null);
   const { idInstructor } = useParams();
-  const [showFullBiography, setShowFullBiography] = useState(false); // Nuevo estado para controlar la visibilidad
+  const [showFullBiography, setShowFullBiography] = useState(false);
 
   const handleSave = async () => {
     try {
-      // Guardamos la biografía
       await editarBiografiaUsuario(profileData?.usuario?.id, biografia);
-      // Si se ha seleccionado un nuevo archivo para el CV, lo enviamos
       let cvFileURL = profileData?.cvURL;
       if (cvFile) {
         cvFileURL = await agregarCvInstructor(profileData.id, cvFile);
@@ -46,7 +41,7 @@ const Biography = ({ profileData, onSave, sePuedeEditar }) => {
   const biographyToShow =
     showFullBiography || biografia.length <= 400
       ? biografia
-      : biografia.substring(0, 400) + "..."; // Biografía a mostrar
+      : biografia.substring(0, 400) + "...";
 
   return (
     <div className="card shadow-lg p-4 mb-4" style={{ position: "relative" }}>
@@ -64,35 +59,13 @@ const Biography = ({ profileData, onSave, sePuedeEditar }) => {
               zIndex: 10,
             }}
           >
-            <i class="bi bi-pencil-fill" style={{color:"#1E1B4"}}></i>
+            <i className="bi bi-pencil-fill" style={{ color: "#1E1B4B" }}></i>
           </Button>
-        ) : (
-          <div
-            style={{
-              position: "absolute",
-              top: "10px",
-              right: "10px",
-              zIndex: 10,
-            }}
-          >
-            <Button
-              variant="success"
-              size="sm"
-              onClick={handleSave}
-              className="me-2"
-            >
-              Guardar
-            </Button>
-            <Button variant="secondary" size="sm" onClick={handleCancel}>
-              Cancelar
-            </Button>
-          </div>
-        ))}
+        ) : null)}
       <h3
         style={{
           color: "#1E1B4B",
           padding: "10px",
-
         }}
       >
         Biografía
@@ -106,6 +79,21 @@ const Biography = ({ profileData, onSave, sePuedeEditar }) => {
             value={biografia}
             onChange={(e) => setBiografia(e.target.value)}
           />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "10px",
+              gap: "10px",
+            }}
+          >
+            <Button variant="success" size="sm" onClick={handleSave}>
+              Guardar
+            </Button>
+            <Button variant="secondary" size="sm" onClick={handleCancel}>
+              Cancelar
+            </Button>
+          </div>
         </Form.Group>
       ) : profileData?.usuario?.biografia ? (
         <p style={{ display: "inline" }}>
