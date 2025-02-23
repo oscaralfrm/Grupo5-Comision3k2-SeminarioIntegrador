@@ -52,7 +52,10 @@ export const getClasesDeHorario = async (horario) => {
 // Servicio para editar una clase
 export const editClase = async (idClase, observaciones, noFueDada) => {
     try {
-        const response = await axios.put(`${API_URL}/clases/${idClase}`, observaciones, noFueDada);
+        const response = await axios.put(`${API_URL}/clases/${idClase}/editar`, {
+            observaciones: observaciones,
+            noFueDada: noFueDada,
+        });
         return response.data;  // Suponiendo que la respuesta es la clase editada
     } catch (error) {
         console.error("Error editing clase: ", error);
@@ -63,7 +66,7 @@ export const editClase = async (idClase, observaciones, noFueDada) => {
 // Servicio para marcar una clase como "No Fue Dada"
 export const cambiarClaseANoFueDada = async (idClase, descuento) => {
     try {
-        await axios.put(`${API_URL}/clases/${idClase}/no-fue-dada`, {descuento: descuento});
+        await axios.put(`${API_URL}/clases/${idClase}/no-fue-dada`,{ descuento: parseFloat(descuento) });
     } catch (error) {
         console.error("Error marking clase as 'No Fue Dada': ", error);
         throw error;
@@ -97,5 +100,15 @@ export const getClasesDeServicio = async (idServicio) => {
     } catch (error) {
         console.error("Error fetching clases de grupo: ", error);
         throw error;
+    }
+};
+
+export const borrarObservacionesClase = async (idClase) => {
+    try {
+        const response = await axios.put(`${API_URL}/clases/${idClase}/borrar-observaciones`);
+        return response.data; // Devuelve el mensaje de éxito del backend
+    } catch (error) {
+        console.error("Error al borrar observaciones de la clase:", error.response?.data?.message || error.message);
+        throw new Error(error.response?.data?.message || 'Error al borrar observaciones de la clase');
     }
 };

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getGruposDeServicio, getClasesDeGrupo, getGrupoById } from "../../../../../services/Grupo.js";
 import { FaCalendarAlt, FaHandPointer } from "react-icons/fa";
+import { Button } from 'react-bootstrap';
 
 const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
   const [groupedClasses, setGroupedClasses] = useState({}); // Clases agrupadas por grupo
@@ -78,6 +79,12 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
     );
   };
 
+  const handleNavigate = () => {
+    // Navega a la ruta deseada
+    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/historial-clases`);
+};
+
+
   return (
     <div style={{
       position: "relative",
@@ -109,16 +116,21 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
         }}>Clases</h2>
 
         {asistenciasActivas && (
-          <Link to="" style={{
-            backgroundColor: "#4F46E5",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "4px",
-            textDecoration: "none",
-            fontSize: "14px"
-          }}>
-            Historial
-          </Link>
+          <Button
+          onClick={handleNavigate} // Usa onClick en lugar de to
+          style={{
+              backgroundColor: "#4F46E5",
+              color: "white",
+              padding: "10px 20px",
+              borderRadius: "4px",
+              textDecoration: "none",
+              fontSize: "14px",
+              border: "none", // Elimina el borde por defecto de Button
+              cursor: "pointer", // Cambia el cursor a pointer
+          }}
+      >
+          Historial
+      </Button>
         )}
       </div>
 

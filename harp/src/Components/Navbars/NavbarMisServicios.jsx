@@ -3,10 +3,10 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Navbar, Dropdown } from "react-bootstrap";
 import img from "../../assets/LogoHarp420.png"; // Ruta del logo
 import profileImg from "../../assets/profile.png"; // Ruta de la imagen de perfil
-import { FaExclamationCircle } from "react-icons/fa";
+import { FaExclamationCircle, FaArrowLeft } from "react-icons/fa"; // Importar el ícono de flecha
 import { tieneDatosBancariosCompletos } from "../../services/Instructor";
 
-export default function NavbarMisServicios({usuario}) {
+export default function NavbarMisServicios({ usuario }) {
   const navigate = useNavigate();
   const { idInstructor } = useParams();
   const location = useLocation();
@@ -16,7 +16,7 @@ export default function NavbarMisServicios({usuario}) {
   const esteInstructorTieneDatosCompletos = async () => {
     const response = await tieneDatosBancariosCompletos(idInstructor);
     return response;
-  }
+  };
 
   useEffect(() => {
     const fetchInstructorData = async () => {
@@ -31,13 +31,20 @@ export default function NavbarMisServicios({usuario}) {
     fetchInstructorData();
   }, [idInstructor]);
 
-
   const handleLogoClick = () => {
     navigate("/");
   };
 
-  const handleMisServiciosClick = () => {
-    navigate(`/instructor/${idInstructor}/servicios`);
+  // Función para manejar el clic en la flecha
+  const handleBackClick = () => {
+    const previousPath = location.state?.from; // Obtener la ruta anterior desde el estado de la ubicación
+    if (previousPath === `/instructor/${idInstructor}/crear-servicio`) {
+      // Si la ruta anterior es "crear-servicio", navegar a la lista de servicios
+      navigate(`/instructor/${idInstructor}/servicios`);
+    } else {
+      // En cualquier otro caso, volver a la página anterior
+      navigate(-1);
+    }
   };
 
   return (
@@ -63,27 +70,32 @@ export default function NavbarMisServicios({usuario}) {
             width: "100%",
           }}
         >
-          {/* Botón "Mis Servicios" */}
+          {/* Flecha de regreso */}
           <button
             className="btn"
-            onClick={handleMisServiciosClick}
+            onClick={handleBackClick}
             style={{
               border: "none",
               background: "none",
               boxShadow: "none",
               padding: "0",
-              width: "auto",
+              width: "40px",
               height: "40px",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               cursor: "pointer",
-              color: "white",
-              fontSize: "1rem",
             }}
-            aria-label="Mis Servicios"
+            aria-label="Back"
           >
-            Mis Servicios
+            <i
+              className="bi bi-arrow-left"
+              style={{
+                fontSize: "1.5rem",
+                color: "white",
+                pointerEvents: "none",
+              }}
+            ></i>
           </button>
 
           {/* Logo centrado */}
