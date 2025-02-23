@@ -101,6 +101,17 @@ public class NotificacionService implements INotificacionService {
         notificacionRepository.save(notificacion);
     }
 
+    public void notificarCuotaAnulada(Servicio servicio, Alumno alumno, Cuota cuota) {
+        double totalCuota = cuota.calcularTotal();
+        String titulo = "Cuota anulada";
+        String mensaje = "La cuota del servicio " + servicio.getNombre() + " del ciclo " + cuota.getFechaInicioCiclo()
+                + " - " + cuota.getFechaFinCiclo() +  " con un valor de $" + totalCuota
+                + " ha sido anulada el día de la fecha " + LocalDate.now() ;
+
+        Notificacion notificacion = new Notificacion(servicio, alumno, null, titulo, mensaje);
+        notificacionRepository.save(notificacion);
+    }
+
     public void notificarRechazoPagoCuota(Servicio servicio, Instructor instructor, Alumno alumno, Cuota cuota) {
         double totalCuota = cuota.getMontoServicio().getMonto() + cuota.getRecargo();
 
@@ -233,7 +244,7 @@ public class NotificacionService implements INotificacionService {
 
     // NOtiFICAR A ALUMNOS EN PARTICULAR
     public void notificarClaseNoFueDada(Clase clase, double descuento,  List<Inscripcion> inscripciones) {
-        Servicio servicio = inscripciones.get(1).getServicio();
+        Servicio servicio = inscripciones.get(0).getServicio();
 
         String titulo;
 

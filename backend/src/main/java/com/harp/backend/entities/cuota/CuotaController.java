@@ -71,13 +71,6 @@ public class CuotaController {
     };
 
     // EDITAR
-    @PutMapping("/inscripciones/cuotas/{idCuota}/anular")
-    public ResponseEntity<String> anularCuota(@PathVariable @Min(1) Long idCuota) {
-        cuotaService.anularCuota(idCuota);
-        return ResponseEntity.ok("Se anuló la cuota.");
-    }
-
-    // EDITAR
     @PutMapping("/inscripciones/{idInscripcion}/cuotas/{idCuota}/pagar")
     public ResponseEntity<String> pagarCuotaPorInstructor( @PathVariable @Min(1) Long idServicio,
                                                 @PathVariable @Min(1) Long idInscripcion,

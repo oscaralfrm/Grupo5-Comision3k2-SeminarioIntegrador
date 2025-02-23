@@ -328,6 +328,17 @@ public class Servicio {
         return inscripciones.stream().filter(i -> i.estaFinalizada()  && i.esDeEsteGrupo(grupo) ).toList();
     }
 
+    public List<Inscripcion> obtenerInscripcionesOrdenadas() {
+        // Las primeras son las mas nuevas
+        return this.inscripciones.stream().sorted(Comparator.comparing(Inscripcion::getFechaSolicitud).reversed()).toList();
+    }
+
+    public List<Inscripcion> obtenerUltimasInscripcionesNoPendientes(int cant) {
+        return this.obtenerInscripcionesOrdenadas()
+                .stream()
+                .filter(inscripcion -> ! inscripcion.estaPendiente()).limit(cant).toList();
+    }
+
     public List<Inscripcion> obtenerInscripcionesRecientementeFinalizadas() {
         return this.obtenerInscripcionesFinalizadas().stream().filter(inscripcion -> inscripcion.esRecientementeFinalizada()).toList();
     }

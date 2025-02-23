@@ -20,6 +20,6 @@ public interface ICuotaService {
     public Cuota crearPrimerCuotaConEstrategia(Inscripcion inscripcionExistente, Servicio servicio);
     public void registrarPagoCuotaPorInstructor(Long idServicio, Long idInscripcion, Long idCuota, String metodoPago);
     public void registrarPagoCuotaPorAlumno(Long idServicio, Long idInscripcion, Long idCuota, String metodoPago, String comprobanteURL);
-    public void anularCuota(Long idCuota);
+    //public void anularCuota(Long idCuota);
     public void rechazarPagoDeCuota(Long idServicio, Long idInscripcion, Long idCuota, Long idPago, String motivoRechazo);
 }

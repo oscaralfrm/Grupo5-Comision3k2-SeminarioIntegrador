@@ -382,13 +382,6 @@ public class CuotaService implements ICuotaService {
         notificacionService.notificarPagoCuotaAAlumno(servicio, instructor, alumno, cuota);
     }
 
-    public void anularCuota(Long idCuota) {
-        Cuota cuota = this.findCuota(idCuota);
-
-        // CAMBIO DE ESTADO
-        this.cambiarEstadoCuota(EstadoCuota.Anulada, cuota);
-    }
-
     public void cambiarEstadoCuota(EstadoCuota estadoCuota, Cuota cuota) {
         // Buscar cambio de estado actual y finalizarlo
         CambioEstadoCuota cambioEstadoActual = cuota.buscarCambioEstadoActual();

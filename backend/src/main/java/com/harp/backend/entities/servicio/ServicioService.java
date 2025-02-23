@@ -415,6 +415,11 @@ public class ServicioService implements IServicioService {
         return inscripciones;
     }
 
+    public List<Inscripcion> findUltimasInscripcionesNoPendientesDeServicio(Long idServicio, int cant) {
+        Servicio servicio = this.findServicio(idServicio);
+        return servicio.obtenerUltimasInscripcionesNoPendientes(cant);
+    }
+
     public List<Inscripcion> findInscripcionesRecientementeFinalizadasDeServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
         List<Inscripcion> inscripcionesFinalizadasRecientes = servicio.obtenerInscripcionesRecientementeFinalizadas();

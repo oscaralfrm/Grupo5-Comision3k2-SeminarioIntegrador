@@ -51,6 +51,8 @@ public class Notificacion {
     private Instructor instructorDestinatario;
 
     private String titulo;
+
+
     private String mensaje;
     private boolean leido = false;
 

@@ -180,4 +180,8 @@ public class Cuota {
         return (fecha.isAfter(this.fechaInicioCiclo) || fecha.isEqual(this.fechaInicioCiclo) )
                 && ( fecha.isBefore(this.fechaFinCiclo) || fecha.isEqual(this.fechaFinCiclo));
     }
+
+    public double calcularTotal() {
+        return this.getMontoServicio().getMonto() + this.getRecargo() - this.getDescuento();
+    }
 }

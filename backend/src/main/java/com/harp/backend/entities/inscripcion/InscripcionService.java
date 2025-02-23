@@ -9,6 +9,7 @@ import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.clase.ClaseService;
 import com.harp.backend.entities.cuota.Cuota;
 import com.harp.backend.entities.cuota.CuotaService;
+import com.harp.backend.entities.cuota.estadoCuota.EstadoCuota;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.grupo.GrupoService;
 import com.harp.backend.entities.horario.Horario;
@@ -344,10 +345,9 @@ public class InscripcionService implements IInscripcionService {
     public void anularCuotasPendientesDeInscripcion(Long idInscripcion) {
         List<Cuota> cuotasAAnular = this.obtenerCuotasPendientesOVencidasDeInscripcion(idInscripcion);
         for (Cuota cuota : cuotasAAnular) {
-            cuotaService.anularCuota(cuota.getId());
+            this.anularCuota(idInscripcion, cuota.getId());
         }
     }
-
 
     public void agregarCuotaAInscripcion(Inscripcion inscripcion, Cuota cuotaCreada) {
         inscripcion.agregarCuota(cuotaCreada);
@@ -401,6 +401,10 @@ public class InscripcionService implements IInscripcionService {
     public List<Cuota> obtenerUltimaCuotaOVencidasYPendientes(Long idInscripcion) {
         Set<Cuota> cuotas = new HashSet<>();
         Inscripcion inscripcion = this.findInscripcion(idInscripcion);
+
+        if (inscripcion.estaPendiente() || inscripcion.estaRechazada()) {
+            return new ArrayList<>();
+        }
 
         // Devolvemos todas las pendientes o las vencidas si hay
         cuotas.addAll(inscripcion.obtenerCuotasPendientes());
@@ -497,5 +501,15 @@ public class InscripcionService implements IInscripcionService {
                 .toList();
 
         return asistenciasDeEstaInscripcion;
+    }
+
+    public void anularCuota(Long idInscripcion, Long idCuota) {
+        Inscripcion inscripcion = this.findInscripcion(idInscripcion);
+        Cuota cuota = cuotaService.findCuota(idCuota);
+
+        // CAMBIO DE ESTADO
+        cuotaService.cambiarEstadoCuota(EstadoCuota.Anulada, cuota);
+
+        notificacionService.notificarCuotaAnulada(inscripcion.getServicio(), inscripcion.getAlumno(), cuota);
     }
 }

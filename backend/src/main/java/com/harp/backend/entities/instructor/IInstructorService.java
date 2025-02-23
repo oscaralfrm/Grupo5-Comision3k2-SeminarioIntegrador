@@ -1,5 +1,6 @@
 package com.harp.backend.entities.instructor;
 
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.servicio.Servicio;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,4 +23,6 @@ public interface IInstructorService {
     void editarFotoPerfil(Long idInstructor, String fotoPerfilURL);
     String agregarCvInstructor(Long idInstructor, String cvURL);
     boolean esteInstructorTieneServicioConEsteNombre(Long idInstructor, String nombre);
+    List<Inscripcion> findUltimasInscripcionesNoPendientesDeServiciosDeInstructor(Long idInstructor, int cant);
+    List<Inscripcion> findSolicitudesInscripcionPendientes(Long idInstructor);
 }

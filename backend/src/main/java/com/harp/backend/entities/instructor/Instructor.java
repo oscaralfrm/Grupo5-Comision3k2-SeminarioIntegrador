@@ -2,6 +2,7 @@ package com.harp.backend.entities.instructor;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.harp.backend.entities.grupo.Grupo;
+import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.servicio.Servicio;
 //import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.model.Usuario;
@@ -11,10 +12,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -101,5 +100,24 @@ public class Instructor {
 
     public boolean tieneServicioConEsteNombre(String nombreServicio) {
         return this.servicios.stream().anyMatch(servicio -> servicio.getNombre().equals(nombreServicio));
+    }
+
+    public List<Inscripcion> obtenerUltimasInscripcionesNoPendientesDeServicios(int cant) {
+         return this.getServicios()
+                 .stream()
+                 .flatMap(servicio -> servicio.getInscripciones().stream())
+                 //Hacemos reversed para devolver las mas nuevas al principio
+                 .sorted(Comparator.comparing(Inscripcion::getFechaSolicitud).reversed())
+                 .limit(cant)
+                 .collect(Collectors.toList());
+    }
+
+    public List<Inscripcion> obtenerSolicitudesInscripcionPendientes() {
+        return this.getServicios()
+                .stream()
+                .flatMap(servicio -> servicio.obtenerInscripcionesPendientes().stream())
+                //Hacemos reversed para devolver las mas nuevas al principio
+                .sorted(Comparator.comparing(Inscripcion::getFechaSolicitud).reversed())
+                .collect(Collectors.toList());
     }
 }
