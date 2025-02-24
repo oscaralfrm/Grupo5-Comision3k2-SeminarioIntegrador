@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import serviceImg from "../../../assets/imgPlaceholder.png"
+
 
 const InscripcionesCards = ({ inscripciones, idAlumno }) => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -110,7 +112,7 @@ const InscripcionesCards = ({ inscripciones, idAlumno }) => {
                                 >
                                     {inscripcion?.servicio?.logoURL ? (
                                         <img
-                                            src={inscripcion?.servicio.logoURL}
+                                            src={inscripcion?.servicio.logoURL || serviceImg}
                                             alt={inscripcion?.servicio.nombre}
                                             style={{
                                                 width: "50px",

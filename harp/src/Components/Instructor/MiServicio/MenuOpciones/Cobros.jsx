@@ -28,6 +28,7 @@ import RechazoPagoModal from "./RechazoPagoModal.jsx";
 import DetalleCuota from "./DetalleCuota"; // Componente que muestra el detalle de la cuota
 import ConfirmModal from "../../../CartelDeExito/ModalConfirmacion.jsx";
 import SuccessModal from "../../../CartelDeExito/CartelDeExito.jsx";
+import profileImg from "../../../../assets/profile.png"
 
 const Cobros = ({ id }) => {
   // Estados principales
@@ -260,7 +261,7 @@ const Cobros = ({ id }) => {
                 >
                   <td>
                     <img
-                      src={student?.usuario?.fotoPerfilURL || ""}
+                      src={student?.usuario?.fotoPerfilURL || profileImg}
                       alt="Profile"
                       style={{
                         width: "40px",

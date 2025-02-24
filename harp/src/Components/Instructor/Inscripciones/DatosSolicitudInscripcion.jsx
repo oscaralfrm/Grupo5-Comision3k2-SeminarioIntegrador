@@ -12,6 +12,7 @@ import { getMontoActualGrupoDeHistorial } from "../../../services/HistorialMonto
 import { aceptarInscripcion, rechazarInscripcion } from "../../../services/Inscripcion";
 import EnrollmentModal from "../MiServicio/MenuOpciones/Dashboard/ModalAceptarRechazarInscripcion";
 import SuccessModal from "../../CartelDeExito/CartelDeExito";
+import profileImg from "../../../assets/profile.png"
 
 // Función para calcular la diferencia de fechas en formato legible
 const calcularDiferenciaDeFechas = (fechaInicio, fechaFin) => {
@@ -188,7 +189,7 @@ const SolicitudInscripcionData = ({ inscripcionData, fetchSolicitudes }) => {
                         {/* Primera columna: Foto + Nombre + Edad */}
                         <Col xs={6} className="d-flex align-items-center">
                             <Image
-                                src={alumno.usuario.fotoPerfilURL}
+                                src={alumno.usuario.fotoPerfilURL || profileImg}
                                 roundedCircle
                                 style={{
                                     width: "100px",

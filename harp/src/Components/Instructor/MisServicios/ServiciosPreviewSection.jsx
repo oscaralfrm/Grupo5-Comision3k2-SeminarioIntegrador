@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Row, Col } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getAllServiciosPublicos, getServiciosPublicosConLogo } from '../../../services/Servicio';
+import serviceImg from "../../../assets/placeholderForServices.png"
 
 const ServiciosPreviewSection = () => {
   const navigate = useNavigate();
@@ -111,7 +112,7 @@ const ServiciosPreviewSection = () => {
             {/* Imagen de fondo desenfocada */}
             <Card.Img
               variant="top"
-              src={servicio.logoURL || "https://via.placeholder.com/300"}
+              src={servicio.logoURL || serviceImg}
               alt={servicio.nombre}
               style={{
                 filter: "blur(3px)",

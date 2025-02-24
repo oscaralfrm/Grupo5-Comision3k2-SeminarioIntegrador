@@ -10,6 +10,7 @@ import {
 import DetalleInscripcionGrid from "./DetalleSolicitudInscripcion";
 import { formatDistance, isSameDay, parse } from "date-fns";
 import { es } from "date-fns/locale";
+import profileImg from "../../../assets/profile.png"
 
 const calcularDiferenciaDeFechas = (fechaInicio, fechaFin) => {
     if (!fechaInicio || !fechaFin) return "Fecha no disponible";
@@ -146,7 +147,7 @@ const PantallaSolicitudesInscripcion = () => {
                 >
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <img 
-                      src={inscripcion.alumno.usuario?.fotoPerfilURL || "https://via.placeholder.com/40"} 
+                      src={inscripcion.alumno.usuario?.fotoPerfilURL || profileImg} 
                       alt="Foto de perfil" 
                       style={{
                         width: "40px",
@@ -204,7 +205,7 @@ const PantallaSolicitudesInscripcion = () => {
                 >
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <img 
-                      src={inscripcion.alumno.usuario?.fotoPerfilURL || "https://via.placeholder.com/40"} 
+                      src={inscripcion.alumno.usuario?.fotoPerfilURL || profileImg} 
                       alt="Foto de perfil" 
                       style={{
                         width: "40px",
