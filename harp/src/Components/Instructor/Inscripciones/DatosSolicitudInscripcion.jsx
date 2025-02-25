@@ -1,4 +1,3 @@
-// SolicitudInscripcionData.jsx
 import React, { useEffect, useState } from "react";
 import { Row, Col, ListGroup, Button, Image, Card } from "react-bootstrap";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -31,7 +30,6 @@ const calcularCuposLibres = async (grupo, idServicio) => {
             : `${cuposLibres} cupos libres`
         : "Sin cupos libres";
 };
-
 
 // Función para verificar si la fecha es igual a hoy
 const calcularFechasIgualAHoy = (fecha) => {
@@ -99,7 +97,7 @@ const SolicitudInscripcionData = ({ inscripcionData, fetchSolicitudes }) => {
     };
 
     return (
-        <div className="card shadow-lg p-4 mb-4 position-relative">
+        <div className="card shadow-lg p-4 mb-4 position-relative" style={{ marginTop: "2rem" }}>
             {/* Cabecera: Título y Estado */}
             <Row className="align-items-center">
                 <Col xs="auto">
@@ -187,7 +185,7 @@ const SolicitudInscripcionData = ({ inscripcionData, fetchSolicitudes }) => {
                 <Col xs={12}>
                     <Row className="align-items-center">
                         {/* Primera columna: Foto + Nombre + Edad */}
-                        <Col xs={6} className="d-flex align-items-center">
+                        <Col xs={12} md={6} className="d-flex align-items-center">
                             <Image
                                 src={alumno.usuario.fotoPerfilURL || profileImg}
                                 roundedCircle
@@ -211,7 +209,7 @@ const SolicitudInscripcionData = ({ inscripcionData, fetchSolicitudes }) => {
                         </Col>
 
                         {/* Segunda columna: Antigüedad y cantidad de inscripciones */}
-                        <Col xs={6} className="text-start">
+                        <Col xs={12} md={6} className="text-start">
                             <ListGroup variant="flush">
                                 <ListGroup.Item style={{ fontSize: "1rem" }}>
                                     <strong>Antigüedad en la app: </strong>
@@ -233,10 +231,10 @@ const SolicitudInscripcionData = ({ inscripcionData, fetchSolicitudes }) => {
             <Row className="mb-2 align-items-center">
                 <h5 style={{ color: "#6a5acd" }}>Servicio</h5>
                 {/* Columna Izquierda: Logo, Servicio, Grupo y Horarios */}
-                <Col xs={6}>
+                <Col xs={12} md={6}>
                     <div className="d-flex align-items-center mb-2">
                         <Image
-                            src={servicio.logoURL}
+                            src={servicio.logoURL || "/assets/placeholderForServices.png"}
                             roundedCircle
                             style={{
                                 width: "50px",
@@ -262,10 +260,10 @@ const SolicitudInscripcionData = ({ inscripcionData, fetchSolicitudes }) => {
                     {grupo.horarios.map((horario, index) => (
                         <Card key={index} className="mb-1 p-1 shadow-sm">
                             <Row className="align-items-center">
-                                <Col xs={4} className="text-center" style={{ fontSize: "1.0rem", fontWeight: "bold" }}>
+                                <Col xs={12} md={4} className="text-center" style={{ fontSize: "1.0rem", fontWeight: "bold" }}>
                                     {horario.diaSemana.nombre}
                                 </Col>
-                                <Col xs={8} className="d-flex justify-content-around text-center" style={{ fontSize: "1.0rem" }}>
+                                <Col xs={12} md={8} className="d-flex justify-content-around text-center" style={{ fontSize: "1.0rem" }}>
                                     <div>{horario.horaInicio}</div>
                                     <div>{horario.horaFin}</div>
                                 </Col>
@@ -274,7 +272,7 @@ const SolicitudInscripcionData = ({ inscripcionData, fetchSolicitudes }) => {
                     ))}
                 </Col>
                 {/* Columna Derecha: Modalidad, Precio y Cupos */}
-                <Col xs={6}>
+                <Col xs={12} md={6}>
                     <ListGroup variant="flush">
                         <ListGroup.Item style={{ fontSize: "1rem" }}>
                             <strong>Clases: </strong>
@@ -325,7 +323,6 @@ const SolicitudInscripcionData = ({ inscripcionData, fetchSolicitudes }) => {
                     </Col>
                 </Row>
             }
-
 
             {/* Modal para aceptar/rechazar inscripción */}
             <EnrollmentModal
