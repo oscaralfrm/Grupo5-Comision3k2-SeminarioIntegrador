@@ -132,7 +132,7 @@ public class InscripcionService implements IInscripcionService {
 
     // Se puede? Es una transaccion
     @Override
-    public void deleteInscripcion(Long idInscripcion){
+    public void deleteInscripcion(Long idInscripcion) {
         //Se valida que exista
         this.findInscripcion(idInscripcion);
         inscripcionRepository.deleteById(idInscripcion);

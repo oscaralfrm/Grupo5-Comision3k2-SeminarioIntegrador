@@ -24,9 +24,7 @@ import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Stream;
@@ -663,14 +661,25 @@ public class Servicio {
         return this.grupos.stream().anyMatch(grupo -> grupo.tieneHorarioEn(horaInicio, horaFin, nombreDiaSemana));
     }
 
-    public List<Double> calcularTotalPendienteYEsperado() {
-        List<Cuota> cuotasPendientes = this.obtenerCuotasPendientesAlumnosActuales();
-        List<Cuota> ultimasCuotas = this.obtenerUltimasCuotasAlumnosActuales();
-        double totalPendiente = cuotasPendientes.stream()
-                .mapToDouble(cuota -> cuota.getMontoServicio().getMonto()).sum();
-        double totalEsperado = ultimasCuotas.stream()
-                .mapToDouble(cuota -> cuota.getMontoServicio().getMonto()).sum();
-        List<Double> totales = List.of(totalPendiente, totalEsperado);
+    public List<Double> calcularIngresosRecibidoYEsperado(Month month, Year year) {
+        LocalDate fechaVigencia = this.obtenerFechaVigenciaEstadisticas(null, month, year);
+        List<Inscripcion> inscripciones = this.obtenerInscripcionesVigentesEn(fechaVigencia);
+
+        double totalCuotasAbonadas = 0.0;
+        double totalCuotas = 0.0;
+        for (Inscripcion inscripcion : inscripciones) {
+            // Filtramos las cuotas anuladas porque no se van a cobrar
+            List<Cuota> cuotas = inscripcion.obtenerCuotasConCicloEn(month, year)
+                    .stream().filter(cuota -> ! cuota.esAnulada()).toList();
+
+            // Sumamos al total el total de las cuotas incluyendo recargos o descuentos
+            totalCuotasAbonadas += cuotas.stream().filter(Cuota::esAbonada).mapToDouble(Cuota::calcularTotal).sum();
+            totalCuotas += cuotas.stream().mapToDouble(Cuota::calcularTotal).sum();
+        }
+
+//        List<Cuota> cuotasPendientes = this.obtenerCuotasPendientesAlumnosActuales();
+//        List<Cuota> ultimasCuotas = this.obtenerUltimasCuotasAlumnosActuales();
+        List<Double> totales = List.of(totalCuotasAbonadas, totalCuotas);
         return totales;
     }
 
@@ -682,24 +691,21 @@ public class Servicio {
 //        return this.inscripciones.stream().filter(i -> i.estaEntreEstasFechas(fechaInicio, fechaFin)).toList();
 //    }
 
-    public List<Inscripcion> obtenerInscripcionesEsteAnio(int anio) {
-        return this.inscripciones.stream().filter(i -> i.esDeEsteAnio(anio)).toList();
+    public List<Inscripcion> obtenerInscripcionesVigentesEsteAnio(int anio) {
+        return this.obtenerInscripcionesVigentes().stream().filter(i -> i.esDeEsteAnio(anio)).toList();
     }
 
-    public double[] calcularIngresosPorMes() {
-        LocalDate fechaActual = LocalDate.now();
-        int anioActual = fechaActual.getYear();
-
+    public double[] calcularIngresosPorMes(Year year) {
         double[] totalIngresosPorMes = new double[12];
 
-        List<Cuota> cuotas = this.obtenerInscripcionesEsteAnio(anioActual)
-                .stream().flatMap(i -> i.getCuotas().stream()) // Convertimos la lista de cuotas en un stream
+        List<Cuota> cuotas = this.obtenerInscripcionesVigentesEsteAnio(year.getValue())
+                .stream().flatMap(i -> i.obtenerCuotasAbonadas().stream()) // Convertimos la lista de cuotas en un stream
                 .toList();
         // LE sumamos el total del pago de la cuota al mes de la fecha del pago de la cuota
         for (Cuota cuota :cuotas) {
             Pago pago = cuota.getPago();
             int mes = pago.getFechaPago().getMonthValue();
-            totalIngresosPorMes[mes] += cuota.getMontoServicio().getMonto();
+            totalIngresosPorMes[mes] += cuota.calcularTotal();
         }
         return totalIngresosPorMes;
     }
@@ -800,4 +806,293 @@ public class Servicio {
     public boolean tieneLogo() {
         return this.logoURL != null && ! this.logoURL.isEmpty();
     }
+
+    public List<Inscripcion> obtenerInscripcionesVigentesEn(LocalDate fechaVigencia) {
+        return this.inscripciones.stream().filter(inscripcion -> inscripcion.esVigenteEn(fechaVigencia)).toList();
+    }
+
+    public  List<Inscripcion> obtenerInscripcionesSolicitadasEn(Integer day, Month month, Year year) {
+        return this.inscripciones.stream().filter(inscripcion -> inscripcion.esSolicitadaEn(day, month, year)).toList();
+    }
+
+    public  List<Inscripcion> obtenerInscripcionesDeGrupoSolicitadasEn(Grupo grupo, Integer day, Month month, Year year) {
+        return this.inscripciones.stream().filter(inscripcion -> inscripcion.esDeEsteGrupo(grupo) && inscripcion.esSolicitadaEn(day, month, year)).toList();
+    }
+
+    public List<Inscripcion> obtenerInscripcionesDeGrupoVigentesEn(Grupo grupo, LocalDate fechaVigencia) {
+        return inscripciones.stream()
+                .filter(i -> i.esVigenteEn(fechaVigencia) && i.esDeEsteGrupo(grupo))
+                .toList();
+    }
+
+    public int calcularCantidadAlumnos(Month month, Year year) {
+        // Obtenemos las inscripciones vigentes al final del mes de ese año
+
+        LocalDate fechaVigencia;
+        // Obtenemos el numero del ultimo dia de ese mes y año
+        if (month != null && year != null) {
+            fechaVigencia = YearMonth.of(year.getValue(), month).atEndOfMonth();
+        } else if (month == null && year != null) {
+            if (LocalDate.now().getYear() == year.getValue()) {
+                fechaVigencia = LocalDate.now();
+            } else {
+                Month diciembre = Month.DECEMBER;
+                fechaVigencia = YearMonth.of(year.getValue(), diciembre).atEndOfMonth();
+            }
+        } else if (month != null && year == null) {
+            fechaVigencia = YearMonth.of(LocalDate.now().getYear(), month).atEndOfMonth();
+        } else {
+            return 0;
+        }
+
+        List<Inscripcion> inscripciones = this.obtenerInscripcionesVigentesEn(fechaVigencia);
+        return inscripciones.size();
+    }
+
+    public int calcularCantidadAlumnosDeGrupoEn(Grupo grupo, Integer day, Month month, Year year) {
+        LocalDate fechaVigencia;
+        if (day != null && month != null && year != null) {
+            fechaVigencia = LocalDate.of(year.getValue(), month, day);
+        } else {
+            // Si el año y el mes son iguales a los de la fecha actual entonces
+            // Obtenemos las inscripciones vigentes hoy
+            LocalDate fechaActual = LocalDate.now();
+            if (fechaActual.getMonth().equals(month) && fechaActual.getYear() == year.getValue()) {
+                fechaVigencia = fechaActual;
+            } else {
+                // Si el año y mes son anteriores al de la fecha actual entonces
+                // Obtenemos las inscripciones vigentes al final del mes de ese año
+                // Obtenemos el numero del ultimo dia de ese mes y año
+                fechaVigencia = YearMonth.of(year.getValue(), month).atEndOfMonth();
+            }
+        }
+
+        List<Inscripcion> inscripcionesDeGrupo = this.obtenerInscripcionesVigentesEn(fechaVigencia)
+                .stream().filter(inscripcion -> inscripcion.esDeEsteGrupo(grupo)).toList();
+        return inscripcionesDeGrupo.size();
+    }
+
+
+    public double calcularPrecioPromedioDeGrupos(Integer day, Month month, Year year) {
+        if (grupos.isEmpty()) return 0.0;
+
+        LocalDate fecha;
+        if (day != null) {
+            fecha = LocalDate.of(year.getValue(), month, day);
+        } else {
+            // Si el año y el mes son iguales a los de la fecha actual entonces
+            // Obtenemos los precios de hoy
+            LocalDate fechaActual = LocalDate.now();
+            if (fechaActual.getMonth().equals(month) && fechaActual.getYear() == year.getValue()) {
+                fecha = fechaActual;
+            } else {
+                // Si el año y mes son anteriores al de la fecha actual entonces
+                // Obtenemos los precios al final del mes de ese año
+                // Obtenemos el numero del ultimo dia de ese mes y año
+                fecha = YearMonth.of(year.getValue(), month).atEndOfMonth();
+            }
+        }
+
+        double acumPrecios = this.grupos.stream().mapToDouble(grupo -> {
+            MontoServicio monto = grupo.obtenerMontoEn(fecha);
+            return (monto != null) ? monto.getMonto() : 0.0; // Manejo de monto nulo
+        }).sum();
+
+        double promedioPrecios = acumPrecios / (double) grupos.size();
+        return promedioPrecios;
+    }
+
+    public double[] calcularPreciosPromedioDeGruposPorMes(Year year) {
+        double[] preciosPromedioGruposPorMes = new double[12];
+
+        if (grupos.isEmpty()) return preciosPromedioGruposPorMes;
+
+        // Si el año es el actual entonces recorremos hasta el numero del mes actual
+        // Sino recorremos los 12 meses
+        int cantMeses;
+        if (year.getValue() == LocalDate.now().getYear()) {
+            cantMeses = LocalDate.now().getMonthValue();
+        } else {
+            cantMeses = 12;
+        }
+
+        // *Se podria agregar un atributo a los grupos de fechaCreacion y verificar que existían
+
+        // Calculamos el precio promedio por cada mes correspondiente y lo agregamos a la lista
+        for (int i = 1; i <= cantMeses; i++) {
+            // Empezamos a recorrer la lista en 1 para que coincida con el num del mes
+            // Por eso recorremos hasta incluir el ultimo mes de cantMeses
+            // Pasamos el dia en null y la funcion se encarga de ponerle el dia correspondiente
+            preciosPromedioGruposPorMes[i-1] += this.calcularPrecioPromedioDeGrupos(null, Month.of(i), year);
+        }
+        return preciosPromedioGruposPorMes;
+    }
+
+    private LocalDate obtenerFechaVigenciaEstadisticas(Integer day, Month month, Year year) {
+        LocalDate fechaVigencia;
+        if (day != null) {
+            fechaVigencia = LocalDate.of(year.getValue(), month, day);
+        } else {
+            // Si el año y el mes son iguales a los de la fecha actual entonces
+            // Obtenemos las inscripciones vigentes hoy
+            LocalDate fechaActual = LocalDate.now();
+            if (fechaActual.getMonth().equals(month) && fechaActual.getYear() == year.getValue()) {
+                fechaVigencia = fechaActual;
+            } else {
+                // Si el año y mes son anteriores al de la fecha actual entonces
+                // Obtenemos las inscripciones vigentes al final del mes de ese año
+                // Obtenemos el numero del ultimo dia de ese mes y año
+                fechaVigencia = YearMonth.of(year.getValue(), month).atEndOfMonth();
+            }
+        }
+        return fechaVigencia;
+    }
+
+    public double calcularDemoraPromedioDeAlumnosDeGrupoEnAbonar(Grupo grupo, Month month, Year year) {
+        // Obtenemos las inscripciones del grupo vigentes en esa fecha
+        // Calculamos la demora promedio de pagos obteniendo solo las cuotas de ese mes o año
+        // Si es el mes y año actual el dia es el dia de hoy
+        // Si no lo es, es el ultimo dia del mes
+        LocalDate fechaVigencia = this.obtenerFechaVigenciaEstadisticas(null, month, year);
+        List<Inscripcion> inscripcionesDeGrupo = this.obtenerInscripcionesDeGrupoVigentesEn(grupo, fechaVigencia);
+
+        if (inscripcionesDeGrupo.isEmpty()) return 0.0;
+
+        double acumDemoraPromedioAlumnos = 0.0;
+        for (Inscripcion inscripcion : inscripcionesDeGrupo) {
+            // Calculamos la demora promedio de pagos de la inscripcion
+            // obteniendo solo las cuotas que están en ese mes y año
+            double demoraPromedio = inscripcion.calcularDemoraPromedioPagosEn(month, year);
+            acumDemoraPromedioAlumnos += demoraPromedio;
+        }
+
+        double promedioDemoras = acumDemoraPromedioAlumnos / (double) inscripcionesDeGrupo.size();
+        return promedioDemoras;
+    }
+
+    public double calcularDemoraPromedioDeAlumnosEnAbonar(Month month, Year year) {
+        double acumDemoraPromedioAlumnos = 0.0;
+
+        if (grupos.isEmpty()) return 0.0;
+
+        for (Grupo grupo : grupos) {
+            double demoraPromedio = this.calcularDemoraPromedioDeAlumnosDeGrupoEnAbonar(grupo, month, year);
+            acumDemoraPromedioAlumnos += demoraPromedio;
+        }
+
+        double promedioDemoras = acumDemoraPromedioAlumnos / (double) grupos.size();
+        return promedioDemoras;
+    }
+
+    public double calcularPorcentajePromedioDeVencimientosDeGrupo(Grupo grupo, Month month, Year year) {
+        // Obtenemos las inscripciones del grupo vigentes en esa fecha
+        // Calculamos el porcentaje de vencimientos obteniendo solo las cuotas de ese mes o año
+        // Si es el mes y año actual el dia es el dia de hoy
+        // Si no lo es, es el ultimo dia del mes
+        LocalDate fechaVigencia = this.obtenerFechaVigenciaEstadisticas(null, month, year);
+        List<Inscripcion> inscripcionesDeGrupo = this.obtenerInscripcionesDeGrupoVigentesEn(grupo, fechaVigencia);
+
+        if (inscripcionesDeGrupo.isEmpty()) return 0.0;
+
+        double acumPorcentajesVencimientosAlumnos = 0.0;
+        for (Inscripcion inscripcion : inscripcionesDeGrupo) {
+            // Calculamos la demora promedio de pagos de la inscripcion
+            // obteniendo solo las cuotas que están en ese mes y año
+            double porcentajeVencimientos = inscripcion.calcularPorcentajeVencimientosEn(month, year);
+            acumPorcentajesVencimientosAlumnos += porcentajeVencimientos;
+        }
+
+        double promedioVencimientos = acumPorcentajesVencimientosAlumnos / (double) inscripcionesDeGrupo.size();
+        return promedioVencimientos;
+    }
+
+    public double calcularPorcentajePromedioDeVencimientos(Month month, Year year) {
+        double acumPorcentajeVencimientosPormedio = 0.0;
+
+        if (grupos.isEmpty()) return 0.0;
+
+        for (Grupo grupo : grupos) {
+            double porcentajeVencimientosPromedio = this.calcularPorcentajePromedioDeVencimientosDeGrupo(grupo, month, year);
+            acumPorcentajeVencimientosPormedio += porcentajeVencimientosPromedio;
+        }
+
+        double promedioPorcentajesVencimientos = acumPorcentajeVencimientosPormedio / (double) grupos.size();
+        return promedioPorcentajesVencimientos;
+    }
+
+    public int contarSolicitudesInscripcionDeGrupoEn(Grupo grupo, Integer day, Month month, Year year) {
+        List<Inscripcion> solicitudesInscripcion = this.obtenerInscripcionesDeGrupoSolicitadasEn(grupo, day, month, year);
+        return solicitudesInscripcion.size();
+    }
+
+    public int contarSolicitudesInscripcionEn(Integer day, Month month, Year year) {
+        List<Inscripcion> solicitudesInscripcion = this.obtenerInscripcionesSolicitadasEn(day, month, year);
+        return solicitudesInscripcion.size();
+    }
+
+    public double calcularPorcentajeSolicitudesAceptadasDeGrupo(Grupo grupo, Integer day, Month month, Year year) {
+        List<Inscripcion> solicitudesInscripcion = this.obtenerInscripcionesDeGrupoSolicitadasEn(grupo, day, month, year);
+        List<Inscripcion> aceptadas = solicitudesInscripcion.stream().filter(inscripcion -> inscripcion.getFechaAceptacion() != null).toList();
+
+        int cantSolicitudes = solicitudesInscripcion.size(); // 100%
+        int cantAceptadas = aceptadas.size();  // ?%
+
+        if (cantSolicitudes == 0) return 0.0;
+
+        double porcentajeAceptadas = (double) cantAceptadas * 100.0 / cantSolicitudes;
+        return porcentajeAceptadas;
+    }
+
+    public double calcularPorcentajeSolicitudesAceptadas(Integer day, Month month, Year year) {
+        List<Inscripcion> solicitudesInscripcion = this.obtenerInscripcionesSolicitadasEn(day, month, year);
+        List<Inscripcion> aceptadas = solicitudesInscripcion.stream().filter(inscripcion -> inscripcion.getFechaAceptacion() != null).toList();
+
+        int cantSolicitudes = solicitudesInscripcion.size(); // 100%
+        int cantAceptadas = aceptadas.size();  // ?%
+
+        if (cantSolicitudes == 0) return 0.0;
+
+        double porcentajeAceptadas = (double) cantAceptadas * 100.0 / cantSolicitudes;
+        return porcentajeAceptadas;
+    }
+
+    public double calcularTiempoPromedioRespuestaSolicitudesEnDias(Integer day, Month month, Year year) {
+        // Filtramos las pendientes porque no tienen fecha ni de aceptacion ni de rechazo
+        List<Inscripcion> solicitudesInscripcion = this.obtenerInscripcionesSolicitadasEn(day, month, year)
+                .stream()
+                .filter(inscripcion -> ! inscripcion.estaPendiente()).toList();
+
+        int cantSolicitudes = solicitudesInscripcion.size();
+        if (cantSolicitudes == 0) return 0.0;
+
+        double acumDiferenciasEnDias = 0.0;
+        for (Inscripcion solicitud : solicitudesInscripcion) {
+            LocalDate fechaRespuesta = solicitud.getFechaAceptacion() != null ? solicitud.getFechaAceptacion() : solicitud.getFechaRechazo();
+            if (fechaRespuesta != null) {
+                double diferencia = ChronoUnit.DAYS.between(solicitud.getFechaSolicitud(), fechaRespuesta);
+                acumDiferenciasEnDias += diferencia;
+            }
+        }
+
+        double promedioTiempo = acumDiferenciasEnDias / (double) cantSolicitudes;
+        return promedioTiempo;
+    }
+
+//    public MontoServicio encontrarMejorPrecioDeGrupoSegunCantidadInscripcionesSolicitadasYVigentes(Grupo grupo) {
+//        // Por cada uno de sus montos calculamos el mejor
+//        // Y vemos cuantas inscripciones se solicitaron entre las fechas de vigencia del monto
+//
+//        MontoServicio mejorPrecio
+//        for (MontoServicio monto : grupo.getHistorialMontos()) {
+//            LocalDate fechaInicioMonto = monto.getFechaInicio();
+//            LocalDate fechaFinMonto = monto.getFechaFin();
+//
+//
+//            int cantInscripcionesVigentes = this.obtenerInscripcionesDeGrupoVigentesEn(grupo, fechaFinMonto).size();
+//            // le deberiamos sumar la cantidad de solicitudes de inscripcion rechazadas o todavia no aceptadas
+//
+//
+//
+//        }
+//    }
 }

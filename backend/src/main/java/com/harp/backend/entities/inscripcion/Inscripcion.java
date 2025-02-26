@@ -16,6 +16,8 @@ import lombok.*;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -178,6 +180,30 @@ public class Inscripcion {
 
     public List<Cuota> obtenerCuotasAbonadas() {
         return cuotas.stream().filter(Cuota::esAbonada).toList();
+    }
+
+    public List<Cuota> obtenerCuotasAbonadasConCicloEn(LocalDate fecha) {
+        return cuotas.stream().filter(cuota -> cuota.esAbonada() && cuota.incluyeEstaFecha(fecha)).toList();
+    }
+
+    public List<Cuota> obtenerCuotasAbonadasConCicloEn(Month month, Year year) {
+        return cuotas.stream().filter(cuota -> cuota.esAbonada() && cuota.tieneCicloEn(month, year)).toList();
+    }
+
+    public List<Cuota> obtenerCuotasVencidasConCicloEn(LocalDate fecha) {
+        return cuotas.stream().filter(cuota -> cuota.esVencida() && cuota.incluyeEstaFecha(fecha)).toList();
+    }
+
+    public List<Cuota> obtenerCuotasVencidasConCicloEn(Month month, Year year) {
+        return cuotas.stream().filter(cuota -> cuota.esVencida() && cuota.tieneCicloEn(month, year)).toList();
+    }
+
+    public List<Cuota> obtenerCuotasConCicloEn(LocalDate fecha) {
+        return cuotas.stream().filter(cuota -> cuota.incluyeEstaFecha(fecha)).toList();
+    }
+
+    public List<Cuota> obtenerCuotasConCicloEn(Month month, Year year) {
+        return cuotas.stream().filter(cuota -> cuota.tieneCicloEn(month, year)).toList();
     }
 
     public List<Cuota> obtenerCuotasVencidas() {
@@ -391,6 +417,51 @@ public class Inscripcion {
         return promedioDemoraPagos;
     }
 
+    // Calcula la demora promedio de pagos de la inscripcion pero usando las cuotas que tienen su ciclo en esa fecha
+    public double calcularDemoraPromedioPagosEn(LocalDate fecha) {
+        List<Cuota> cuotasAbonadas = this.obtenerCuotasAbonadasConCicloEn(fecha);
+        List<Cuota> totalCuotasEnFecha = this.obtenerCuotasConCicloEn(fecha);
+        int cantTotalCuotas = totalCuotasEnFecha.size();
+        if (cantTotalCuotas == 0) return 0.0;
+
+        long acumDiferenciaFechas = 0;
+
+        for (Cuota cuotaAbonada : cuotasAbonadas) {
+            LocalDate fechaInicioCiclo = cuotaAbonada.getFechaInicioCiclo();
+            LocalDate fechaPago = cuotaAbonada.getPago().getFechaPago();
+
+            if (fechaPago.isAfter(fechaInicioCiclo)) {
+                long diferenciaFechas = ChronoUnit.DAYS.between(fechaInicioCiclo, fechaPago);
+                acumDiferenciaFechas += diferenciaFechas;
+            }
+        }
+
+        double promedioDemoraPagos = (double) acumDiferenciaFechas / cantTotalCuotas;
+        return promedioDemoraPagos;
+    }
+
+    public double calcularDemoraPromedioPagosEn(Month month, Year year) {
+        List<Cuota> cuotasAbonadas = this.obtenerCuotasAbonadasConCicloEn(month, year);
+        List<Cuota> totalCuotasEnFecha = this.obtenerCuotasConCicloEn(month, year);
+        int cantTotalCuotas = totalCuotasEnFecha.size();
+        if (cantTotalCuotas == 0) return 0.0;
+
+        long acumDiferenciaFechas = 0;
+
+        for (Cuota cuotaAbonada : cuotasAbonadas) {
+            LocalDate fechaInicioCiclo = cuotaAbonada.getFechaInicioCiclo();
+            LocalDate fechaPago = cuotaAbonada.getPago().getFechaPago();
+
+            if (fechaPago.isAfter(fechaInicioCiclo)) {
+                long diferenciaFechas = ChronoUnit.DAYS.between(fechaInicioCiclo, fechaPago);
+                acumDiferenciaFechas += diferenciaFechas;
+            }
+        }
+
+        double promedioDemoraPagos = (double) acumDiferenciaFechas / cantTotalCuotas;
+        return promedioDemoraPagos;
+    }
+
     public double calcularPorcentajeVencimientos() {
         int cantCuotas = this.contarCuotas(); // 100%
         int cantVencimientos = this.contarVencimientos(); // ? %
@@ -398,6 +469,33 @@ public class Inscripcion {
         if (cantCuotas == 0) return 0.0; // Evitar división por cero
 
         double procentajeVencimientos = cantVencimientos * (100.0) / cantCuotas;
+        return procentajeVencimientos;
+    }
+
+    // Calculamos el porcentaje de vencimientos solo con las cuotas que tienen su ciclo en esa fecha
+    public double calcularPorcentajeVencimientosEn(LocalDate fecha) {
+        List<Cuota> cuotasVencidas = this.obtenerCuotasVencidasConCicloEn(fecha);
+        List<Cuota> totalCuotasEnFecha = this.obtenerCuotasConCicloEn(fecha);
+
+        int cantTotalCuotas = totalCuotasEnFecha.size(); // 100%
+        int cantVencimientos = cuotasVencidas.size(); // ? %
+
+        if (cantTotalCuotas == 0) return 0.0; // Evitar división por cero
+
+        double procentajeVencimientos = cantVencimientos * (100.0) / cantTotalCuotas;
+        return procentajeVencimientos;
+    }
+
+    public double calcularPorcentajeVencimientosEn(Month month, Year year) {
+        List<Cuota> cuotasVencidas = this.obtenerCuotasVencidasConCicloEn(month, year);
+        List<Cuota> totalCuotasEnFecha = this.obtenerCuotasConCicloEn(month, year);
+
+        int cantTotalCuotas = totalCuotasEnFecha.size(); // 100%
+        int cantVencimientos = cuotasVencidas.size(); // ? %
+
+        if (cantTotalCuotas == 0) return 0.0; // Evitar división por cero
+
+        double procentajeVencimientos = cantVencimientos * (100.0) / cantTotalCuotas;
         return procentajeVencimientos;
     }
 
@@ -425,6 +523,74 @@ public class Inscripcion {
 
         double porcentajePagosCon = cantPagosCon * 100.0 / cantPagos;
         return porcentajePagosCon;
+    }
+
+    public boolean esVigenteEn(LocalDate fechaVigencia) {
+        // Esto me sirve para saber si un alumno es vigente en esa fecha, seria la fechaFinVigencia, la limite
+        // No me sirve para calcular los NUEVOS ALUMNOS en un periodo
+
+        // si tiene fecha inicio en null todavia no fue o es vigente
+        if (this.fechaInicio == null) {
+            return false;
+        }
+        // Es vigente en esa fecha si la fecha inicio es antes o igual a la fecha vigencia
+        // Y la fecha fin o es null, o es mayor a la fecha vigencia
+        if (fechaVigencia.isAfter(this.fechaInicio)) {
+            if (this.fechaFin == null) {
+                return true;
+            } else if (this.fechaFin.isAfter(fechaVigencia)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    // la fechaInicio de la inscripcion es anterior igual o despues de la fechaInicioVigencia (osea no importa?)
+    // pero la fechaInicio de la inscripcion es antes de la fechaFinVigencia
+    // y ademas la fechaFin de la inscripcion es null o despues de la fechaFinVigencia
+    // osea que al fin y al cabo la fechaInicioVigencia no importa?
+
+//    public boolean esNuevaInscripcionVigenteEn(LocalDate fechaInicioVigencia, LocalDate fechaFinVigencia) {
+//        // Esto me sirve para ver las inscripciones que durante esas fechas comenzaron a ser vigentes
+//
+//        // si tiene fecha inicio en null todavia no fue o es vigente
+//        if (this.fechaInicio == null) {
+//            return false;
+//        }
+//        // Es nueva inscricpion vigente en si la fecha inicio esta entre las fechas de vigencia
+//        // Y si la fecha fin termina dentro de esas fechas igual fue una nueva inscripcion vigente en esas fechas
+//
+//        if (this.fechaInicio.isAfter(fechaInicioVigencia) || this.fechaInicio.isEqual(fechaInicioVigencia)) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
+
+    // si digo es vigente en ayer
+    // me da las que son vigentes ayer
+    // si quiero las que fueron vigentes hasta ayer? que deberia comparar?
+    // deberia ver que la fecha inicio sea anterior a ayer, la fecha fin no importa
+    // y si quiero saber las que fueron vigentes durante todo un periodo
+    // le paso un mes y tengo que ver que la fecha inicio sea anterior a la fecha inicio y la fecha fin posteriror a la fecha fin
+
+
+    public boolean esSolicitadaEn(Integer day, Month month, Year year) {
+        if (day != null && month != null && year != null) {
+            LocalDate fechaArmada = LocalDate.of(year.getValue(), month, day);
+            return this.fechaSolicitud.isEqual(fechaArmada);
+        } else if (day == null && month != null && year != null) {
+            return this.fechaSolicitud.getYear() == year.getValue() && this.fechaSolicitud.getMonth().equals(month);
+        } else if (day == null && month == null && year != null) {
+            return this.fechaSolicitud.getYear() == year.getValue();
+        } else if (day == null && month != null && year == null) {
+            return this.fechaSolicitud.getMonth().equals(month) && this.fechaSolicitud.getYear() == LocalDate.now().getYear();
+        } else {
+            return false;
+        }
     }
 
  }

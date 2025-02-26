@@ -21,12 +21,15 @@ import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.notificacion.NotificacionService;
 import com.harp.backend.entities.servicio.IServicioService;
 import com.harp.backend.entities.servicio.Servicio;
+import com.harp.backend.entities.servicio.ServicioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,7 +44,7 @@ public class GrupoService implements IGrupoService {
     private GrupoConverter grupoConverter;
 
     @Autowired
-    private IServicioService servicioService;
+    private ServicioService servicioService;
 
     @Autowired
     private AlumnoService alumnoService;
@@ -441,56 +444,20 @@ public class GrupoService implements IGrupoService {
 
     // ESTADISTICAS DE ASISTENCIAS DE GRUPO
 
-    public List<Clase> obtenerClasesPasadasDeGrupo(Grupo grupo) {
-        List<Clase> clases = claseService.findClasesDeGrupo(grupo.getId());
-        List<Clase> clasesPasadas =  clases.stream().filter(clase -> ! clase.esFutura()).toList();
-        return clasesPasadas;
+    public List<Clase> obtenerClasesPasadasDeGrupo(Grupo grupo, Month month, Year year) {
+        return claseService.obtenerClasesPasadasDeGrupoEn(grupo.getId(), month, year);
     }
 
-    public List<Asistencia> obtenerAllAsistenciasDeGrupo(Grupo grupo) {
-        List<Clase> clasesPasadas = this.obtenerClasesPasadasDeGrupo(grupo);
-        return clasesPasadas
-                .stream()
-                .flatMap(clase -> asistenciaService.findAllAsistenciasDeClase(clase.getId()).stream())
-                .toList();
+    public List<Asistencia> obtenerAllAsistenciasDeGrupo(Grupo grupo, Month month, Year year) {
+        return servicioService.obtenerAllAsistenciasDeGrupo(grupo, month, year);
     }
 
-    public List<Asistencia> obtenerAllInasistenciasDeGrupo(Grupo grupo) {
-        List<Clase> clasesPasadas = this.obtenerClasesPasadasDeGrupo(grupo);
-        return clasesPasadas
-                .stream()
-                .flatMap(clase -> asistenciaService.findInasistenciasDeClase(clase.getId()).stream())
-                .toList();
+    public List<Asistencia> obtenerAllInasistenciasDeGrupo(Grupo grupo, Month month, Year year) {
+        return servicioService.obtenerAllInasistenciasDeGrupo(grupo, month, year);
     }
 
-    public double calcularPorcentajePromedioAsistenciaDeGrupo(Long idGrupo) {
-        // Obtenemos la cantidad de clases pasadas de un grupo
-        List<Clase> clases = claseService.findClasesDeGrupo(idGrupo);
-        List<Clase> clasesPasadas =  clases.stream().filter(clase -> ! clase.esFutura()).toList();
-        int cantClasesPasadas = clasesPasadas.size();
-
-        // Recorremos las clases pasadas
-        // De cada clase obtenemos la cantidad de alumnos y la cantidad que asistieron
-
-        int acumPorcentajeAsistenciasTotalesGrupo = 0;
-        for (Clase clase : clasesPasadas) {
-            List<Asistencia> asistenciasRealesDeClase = asistenciaService.findAllAsistenciasDeClase(clase.getId())
-                    .stream()
-                    .filter(asistencia -> asistencia.getAsistio() != null).toList();
-            int cantAlumnosDeClase = asistenciasRealesDeClase.size();
-            int cantAsistenciasDeClase = asistenciasRealesDeClase.stream().filter(asistencia -> asistencia.getAsistio() == true).toList().size();
-
-            // Calculamos el porcentaje de alumnos que asistieron a esa clase
-            double porcentajeAsistenciasDeClase = cantAsistenciasDeClase * 100.0 / cantAlumnosDeClase;
-
-            // Acumulamos el porcentaje de asistencias
-            acumPorcentajeAsistenciasTotalesGrupo += porcentajeAsistenciasDeClase;
-        }
-
-        // Calculamos un promedio de asistencias de clases de grupo
-        // Dividiendo el porcentaje acumulado, dividido la cantidad de clases pasadas totales
-        double promedioDePorcentajesDeAsistenciasDeGrupoPorClase = (double) acumPorcentajeAsistenciasTotalesGrupo / cantClasesPasadas;
-        return promedioDePorcentajesDeAsistenciasDeGrupoPorClase;
+    public double calcularPorcentajePromedioAsistenciaDeGrupo(Long idGrupo, Month month, Year year) {
+        return servicioService.calcularPorcentajePromedioAsistenciaDeGrupo(idGrupo, month, year);
     }
 
 //    public String calcularMotivoMasFrecuenteDeAusencia(Grupo grupo) {
@@ -504,82 +471,16 @@ public class GrupoService implements IGrupoService {
 //
 //    }
 
-    public List<Alumno> calcularAlumnosConMasFaltas(Grupo grupo) {
-        Map<Alumno, Integer> faltasAlumnos = new HashMap<>();
-        List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo);
-
-        for (Asistencia inasistencia : allInasistencias) {
-            Alumno alumno = inasistencia.getInscripcion().getAlumno();
-            // Si no existe, se inicializa en 0 y luego se suma 1
-            int faltasActuales = faltasAlumnos.getOrDefault(alumno, 0);
-            faltasAlumnos.put(alumno, faltasActuales + 1);
-        }
-
-        // Si no hay inasistencias, devolvemos una lista vacía
-        if (faltasAlumnos.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // Obtenemos el número máximo de inasistencias
-        int maxFaltas = faltasAlumnos.values().stream()
-                .max(Integer::compareTo)
-                .orElse(0);
-
-        // Filtramos y devolvemos los alumnos que tengan ese número máximo
-        List<Alumno> alumnosConMasFaltas = faltasAlumnos.entrySet().stream()
-                .filter(entry -> entry.getValue() == maxFaltas)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-
-        return alumnosConMasFaltas;
+    public List<Alumno> calcularAlumnosConMasFaltas(Grupo grupo, Month month, Year year) {
+        return servicioService.calcularAlumnosConMasFaltas(grupo, month, year);
     }
 
-    public List<Alumno> calcularAlumnosConMenosFaltas(Grupo grupo) {
-        Map<Alumno, Integer> faltasAlumnos = new HashMap<>();
-        List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo);
-
-        for (Asistencia inasistencia : allInasistencias) {
-            Alumno alumno = inasistencia.getInscripcion().getAlumno();
-            // Si no existe, se inicializa en 0 y luego se suma 1
-            int faltasActuales = faltasAlumnos.getOrDefault(alumno, 0);
-            faltasAlumnos.put(alumno, faltasActuales + 1);
-        }
-
-        // Si no hay inasistencias, devolvemos una lista vacía
-        if (faltasAlumnos.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // Obtenemos el número máximo de inasistencias
-        int minFaltas = faltasAlumnos.values().stream()
-                .min(Integer::compareTo)
-                .orElse(0);
-
-        // Filtramos y devolvemos los alumnos que tengan ese número máximo
-        List<Alumno> alumnosConMenosFaltas = faltasAlumnos.entrySet().stream()
-                .filter(entry -> entry.getValue() == minFaltas)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-
-        return alumnosConMenosFaltas;
+    public List<Alumno> calcularAlumnosConMenosFaltas(Grupo grupo, Month month, Year year) {
+        return servicioService.calcularAlumnosConMenosFaltas(grupo, month, year);
     }
 
-    public Set<Alumno> calcularAlumnosConAsistenciaPerfecta(Grupo grupo) {
-        // Son los alumnos que no aparecen en inasistencias y si aparecen en asistencias
-
-        List<Asistencia> allAsistencias = this.obtenerAllAsistenciasDeGrupo(grupo);
-        List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo);
-
-        Set<Alumno> alumnosConInasistencias = allInasistencias.stream()
-                .map(asistencia -> asistencia.getInscripcion().getAlumno())
-                .collect(Collectors.toSet());
-
-        Set<Alumno> alumnosConAsistenciaPerfecta = allAsistencias.stream()
-                .map(asistencia -> asistencia.getInscripcion().getAlumno())
-                .filter(alumno -> !alumnosConInasistencias.contains(alumno))
-                .collect(Collectors.toSet());
-
-        return alumnosConAsistenciaPerfecta;
+    public Set<Alumno> calcularAlumnosConAsistenciaPerfecta(Grupo grupo, Month month, Year year) {
+        return servicioService.calcularAlumnosConAsistenciaPerfecta(grupo, month, year);
     }
 
     public List<Clase> obtenerUltimasClasesDeGrupo(Grupo grupo, int cantClases) {
@@ -619,14 +520,14 @@ public class GrupoService implements IGrupoService {
         return alumnosAusentesUltimasClases;
     }
 
-    public EstadisticasGrupoDTO obtenerEstadisticasGrupo(Long idGrupo) {
+    public EstadisticasGrupoDTO obtenerEstadisticasGrupo(Long idGrupo, Month month, Year year) {
         Grupo grupo = this.findGrupo(idGrupo);
-        double porcentajeAsistenciasGrupo = this.calcularPorcentajePromedioAsistenciaDeGrupo(idGrupo);
+        double porcentajeAsistenciasGrupo = this.calcularPorcentajePromedioAsistenciaDeGrupo(idGrupo, month, year);
 //        String motivoMasFrecuenteAusencia = this.calcularMotivoMasFrecuenteDeAusencia(idGrupo);
 
-        List<Alumno> alumnosConMasFaltas = this.calcularAlumnosConMasFaltas(grupo);
-        List<Alumno> alumnosConMenosFaltas = this.calcularAlumnosConMenosFaltas(grupo);
-        Set<Alumno> alumnosConAsistenciaPerfecta = this.calcularAlumnosConAsistenciaPerfecta(grupo);
+        List<Alumno> alumnosConMasFaltas = this.calcularAlumnosConMasFaltas(grupo, month, year);
+        List<Alumno> alumnosConMenosFaltas = this.calcularAlumnosConMenosFaltas(grupo, month, year);
+        Set<Alumno> alumnosConAsistenciaPerfecta = this.calcularAlumnosConAsistenciaPerfecta(grupo, month, year);
         Set<Alumno> alumnosAusentesUltimasTresClases = this.calcularAlumnosAusentesUltimasClases(grupo,3);
 
 

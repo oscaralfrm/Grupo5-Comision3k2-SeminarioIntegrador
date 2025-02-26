@@ -23,10 +23,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ClaseService implements IClaseService {
@@ -121,6 +124,55 @@ public class ClaseService implements IClaseService {
 
     public List<Clase> findClasesDeGrupo(Long idGrupo) {
         return claseRepository.findClasesDeGrupo(idGrupo);
+    }
+
+//    public List<Clase> obtenerClasesPasadasDeGrupo(Grupo grupo) {
+//        List<Clase> clases = this.findClasesDeGrupo(grupo.getId());
+//        List<Clase> clasesPasadas =  clases.stream().filter(clase -> ! clase.esFutura()).toList();
+//        return clasesPasadas;
+//    }
+
+    public List<Clase> obtenerClasesPasadasDeGrupoEn(Long  idGrupo, Month month, Year year) {
+        List<Clase> clases = this.findClasesDeGrupo(idGrupo);
+
+        Stream<Clase> clasesPasadas = clases.stream();
+        // Devolvemos todas las clases pasadas del grupo
+        if (month == null && year == null) {
+            clasesPasadas = clasesPasadas.filter(clase -> ! clase.esFutura());
+        }
+        // Devolvemos las clases pasadas del mes de este año
+        if (month != null && year == null) {
+            clasesPasadas = clasesPasadas.filter(clase -> ! clase.esFutura() &&
+                    clase.esDeEsteMes(month) && clase.esDeEsteAnio(Year.now()));
+        }
+        //Devolvemos las clases pasadas del año pedido
+        if (month == null && year != null) {
+            clasesPasadas = clasesPasadas.filter(clase -> ! clase.esFutura() && clase.esDeEsteAnio(year));
+        }
+
+        return clasesPasadas.toList();
+    }
+
+    public List<Clase> obtenerClasesNoDadasDeGrupoEn(Grupo grupo, Month month, Year year) {
+        List<Clase> clases = this.findClasesDeGrupo(grupo.getId());
+        Stream<Clase> clasesNoDadas = clases.stream();
+        // Devolvemos todas las clases no dadas del grupo
+        if (month == null && year == null) {
+            clasesNoDadas = clasesNoDadas.filter(Clase::isNoFueDada);
+        }
+        // Devolvemos las clases no dadas del mes de este año
+        if (month != null && year == null) {
+            clasesNoDadas = clasesNoDadas.filter(clase -> clase.isNoFueDada() &&
+                    clase.esDeEsteMes(month) && clase.esDeEsteAnio(Year.now()));
+        }
+        //Devolvemos las clases no dadas del año pedido
+        if (month == null && year != null) {
+            clasesNoDadas = clasesNoDadas.filter(clase -> clase.isNoFueDada() && clase.esDeEsteAnio(year));
+        }
+        if (month != null && year != null) {
+            clasesNoDadas = clasesNoDadas.filter(clase -> clase.isNoFueDada() && clase.esDeEsteMes(month)&& clase.esDeEsteAnio(year));
+        }
+        return clasesNoDadas.toList();
     }
 
     public List<Clase> findUltimasClasesDeGrupo(Long idGrupo, int cantClases) {

@@ -4,6 +4,7 @@ import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.servicio.Servicio;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Year;
 import java.util.List;
 
 public interface IInstructorService {
@@ -16,7 +17,7 @@ public interface IInstructorService {
     Instructor createInstructor(InstructorDTO instructorDTO);
     List<Servicio> findServiciosDeInstructor(Long idInstructor);
     public List<Servicio> findServiciosPublicadosDeInstructor(Long idInstructor);
-    double[] calcularIngresosPorMesDeServiciosDeInstructor(Long idInstructor);
+    double[] calcularIngresosPorMesDeServiciosDeInstructor(Long idInstructor, Year year);
     Long validarInicioSesion(String email, String contrasena);
     void completarDatosBancariosDeInstructor(Long idInstructor, DatosBancarios datosBancarios);
     boolean tieneDatosBancariosCompletos(Long idInstructor);

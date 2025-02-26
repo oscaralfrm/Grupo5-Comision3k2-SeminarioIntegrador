@@ -11,6 +11,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -179,6 +181,18 @@ public class Cuota {
     public boolean incluyeEstaFecha(LocalDate fecha) {
         return (fecha.isAfter(this.fechaInicioCiclo) || fecha.isEqual(this.fechaInicioCiclo) )
                 && ( fecha.isBefore(this.fechaFinCiclo) || fecha.isEqual(this.fechaFinCiclo));
+    }
+
+    public boolean tieneCicloEn(Month month, Year year) {
+        if (month != null && year != null) {
+            return fechaInicioCiclo.getMonth().equals(month) && fechaInicioCiclo.getYear() == year.getValue();
+        } else if (month == null && year != null) {
+            return fechaInicioCiclo.getYear() == year.getValue();
+        } else if (month != null && year == null) {
+            return fechaInicioCiclo.getMonth().equals(month) && fechaInicioCiclo.getYear() == LocalDate.now().getYear();
+        } else {
+            return false;
+        }
     }
 
     public double calcularTotal() {

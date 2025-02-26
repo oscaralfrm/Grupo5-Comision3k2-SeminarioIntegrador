@@ -22,6 +22,8 @@ import java.util.*;
 @Table(name = "horarios")
 public class Horario {
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,6 +49,18 @@ public class Horario {
 
     @Column(name = "cant_max_cupos")
     private Integer cantMaxCupos;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Horario horario = (Horario) o;
+        return Objects.equals(horaInicio, horario.horaInicio) && Objects.equals(horaFin, horario.horaFin) && Objects.equals(diaSemana, horario.diaSemana);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(horaInicio, horaFin, diaSemana);
+    }
 
     public boolean tieneEsteId(Long id) {
         return (Objects.equals(this.id, id));

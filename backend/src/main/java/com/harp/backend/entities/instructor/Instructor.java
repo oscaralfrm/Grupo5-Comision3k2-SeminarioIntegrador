@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,11 +86,11 @@ public class Instructor {
 //        return usuario.getNombre() + usuario.getApellido();
 //    }
 
-    public double[] calcularTotalIngresoServicioPorMes() {
+    public double[] calcularTotalIngresoServicioPorMes(Year year) {
         double[] totalIngresosServiciosPorMes = new double[12];
 
         for (Servicio servicio : servicios) {
-            double[] ingresosPorMesUnServicio = servicio.calcularIngresosPorMes();
+            double[] ingresosPorMesUnServicio = servicio.calcularIngresosPorMes(year);
             for (int i = 0; i < 12; i++) {
                 totalIngresosServiciosPorMes[i] += ingresosPorMesUnServicio[i];
             }

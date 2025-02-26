@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -40,6 +43,18 @@ public class Clase {
         return ( this.fecha.equals(fecha));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Clase clase = (Clase) o;
+        return Objects.equals(fecha, clase.fecha) && Objects.equals(horario, clase.horario);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fecha, horario);
+    }
+
     public void cambiarAFueDada() {
         // Si ya fue cambiada a noFueDada=true, solo se puede volver a noFueDada=false si la clase no es futura
         if (this.noFueDada) {
@@ -51,5 +66,13 @@ public class Clase {
             }
         }
         // Si ya esta en noFueDada = false, entonces no hacemos nada
+    }
+
+    public boolean esDeEsteMes(Month month) {
+        return fecha.getMonth().equals(month);
+    }
+
+    public boolean esDeEsteAnio(Year year) {
+        return year.getValue() == fecha.getYear();
     }
 }

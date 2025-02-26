@@ -13,6 +13,7 @@ import com.harp.backend.entities.diaSemana.DiaSemana;
 import com.harp.backend.entities.frecuenciaPago.TipoCiclo;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPagoService;
+import com.harp.backend.entities.grupo.EstadisticasGrupoDTO;
 import com.harp.backend.entities.grupo.Grupo;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
@@ -28,6 +29,7 @@ import com.harp.backend.entities.modalidad.Modalidad;
 import com.harp.backend.entities.modalidad.ModalidadClases;
 import com.harp.backend.entities.notificacion.NotificacionService;
 import com.harp.backend.entities.resenia.Resenia;
+import com.harp.backend.entities.servicio.estadisticas.*;
 import com.harp.backend.exception.NoSuchElementFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,6 +72,9 @@ public class ServicioService implements IServicioService {
 
     @Autowired
     private ClaseService claseService;
+
+    @Autowired
+    private AsistenciaService asistenciaService;
 
     @Autowired
     private TipoFrecuenciaPagoService tipoFrecuenciaPagoService;
@@ -479,9 +486,9 @@ public class ServicioService implements IServicioService {
         return servicio.calcularDuracionTotalEnDiasDeGrupo(grupo);
     }
 
-    public List<Double> calcularTotalPendienteYEsperado(Long idServicio) {
+    public List<Double> calcularIngresosTotalPendienteYEsperado(Long idServicio, Month month, Year year) {
         Servicio servicio = this.findServicio(idServicio);
-        return servicio.calcularTotalPendienteYEsperado();
+        return servicio.calcularIngresosRecibidoYEsperado(month, year);
     }
 
     public List<Servicio> findServiciosByFilter(boolean clasePrueba,
@@ -720,9 +727,9 @@ public class ServicioService implements IServicioService {
         servicioRepository.save(servicio);
     }
 
-    public double[] calcularIngresosPorMesDeServicio(Long idServicio) {
+    public double[] calcularIngresosPorMesDeServicio(Long idServicio, Year year) {
         Servicio servicio = this.findServicio(idServicio);
-        return servicio.calcularIngresosPorMes();
+        return servicio.calcularIngresosPorMes(year);
     }
 
     public  List<Clase> findClasesFechaDeServicio(Long idServicio, LocalDate fecha) {
@@ -773,6 +780,335 @@ public class ServicioService implements IServicioService {
         Servicio servicio = this.findServicio(idServicio);
         return instructorService.findInstructorDeEsteServicio(servicio);
     }
+
+    // ESTADISTICAS DE ASISTENCIAS DE GRUPO
+
+    public List<Asistencia> obtenerAllAsistenciasDeGrupo(Grupo grupo, Month month, Year year) {
+        List<Clase> clasesPasadas = claseService.obtenerClasesPasadasDeGrupoEn(grupo.getId(), month, year);
+        return clasesPasadas
+                .stream()
+                .flatMap(clase -> asistenciaService.findAllAsistenciasDeClase(clase.getId()).stream())
+                .toList();
+    }
+
+    public List<Asistencia> obtenerAllInasistenciasDeGrupo(Grupo grupo, Month month, Year year) {
+        List<Clase> clasesPasadas = claseService.obtenerClasesPasadasDeGrupoEn(grupo.getId(), month, year);
+        return clasesPasadas
+                .stream()
+                .flatMap(clase -> asistenciaService.findInasistenciasDeClase(clase.getId()).stream())
+                .toList();
+    }
+
+    public double calcularPorcentajePromedioAsistenciaDeGrupo(Long idGrupo, Month month, Year year) {
+        // Obtenemos la cantidad de clases pasadas de un grupo
+        // Si el mes es null entonces obtenemos todas las clases de un año
+        // Si todo es null obtenemos todas las clases
+        // Si el año es null usamos el mes del año actual
+        List<Clase> clasesPasadas = claseService.obtenerClasesPasadasDeGrupoEn(idGrupo, month, year);
+        int cantClasesPasadas = clasesPasadas.size();
+
+        // Recorremos las clases pasadas
+        // De cada clase obtenemos la cantidad de alumnos y la cantidad que asistieron
+
+        int acumPorcentajeAsistenciasTotalesGrupo = 0;
+        for (Clase clase : clasesPasadas) {
+            List<Asistencia> asistenciasRealesDeClase = asistenciaService.findAllAsistenciasDeClase(clase.getId())
+                    .stream()
+                    .filter(asistencia -> asistencia.getAsistio() != null).toList();
+            int cantAlumnosDeClase = asistenciasRealesDeClase.size();
+            int cantAsistenciasDeClase = asistenciasRealesDeClase.stream().filter(asistencia -> asistencia.getAsistio() == true).toList().size();
+
+            // Calculamos el porcentaje de alumnos que asistieron a esa clase
+            double porcentajeAsistenciasDeClase = cantAsistenciasDeClase * 100.0 / cantAlumnosDeClase;
+
+            // Acumulamos el porcentaje de asistencias
+            acumPorcentajeAsistenciasTotalesGrupo += porcentajeAsistenciasDeClase;
+        }
+
+        // Calculamos un promedio de asistencias de clases de grupo
+        // Dividiendo el porcentaje acumulado, dividido la cantidad de clases pasadas totales
+        double promedioDePorcentajesDeAsistenciasDeGrupoPorClase = (double) acumPorcentajeAsistenciasTotalesGrupo / cantClasesPasadas;
+        return promedioDePorcentajesDeAsistenciasDeGrupoPorClase;
+    }
+
+    private Map<Alumno, Integer> obtenerFaltasPorAlumnosDeGrupos(Grupo grupo, Month month, Year year) {
+        Map<Alumno, Integer> faltasAlumnos = new HashMap<>();
+        List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo, month, year);
+
+        for (Asistencia inasistencia : allInasistencias) {
+            Alumno alumno = inasistencia.getInscripcion().getAlumno();
+            // Si no existe, se inicializa en 0 y luego se suma 1
+            int faltasActuales = faltasAlumnos.getOrDefault(alumno, 0);
+            faltasAlumnos.put(alumno, faltasActuales + 1);
+        }
+
+        return faltasAlumnos;
+    }
+
+    public List<Alumno> calcularAlumnosConMasFaltas(Grupo grupo, Month month, Year year) {
+        Map<Alumno, Integer> faltasAlumnos = this.obtenerFaltasPorAlumnosDeGrupos(grupo, month, year);
+
+        // Si no hay inasistencias, devolvemos una lista vacía
+        if (faltasAlumnos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Obtenemos el número máximo de inasistencias
+        int maxFaltas = faltasAlumnos.values().stream()
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        // Filtramos y devolvemos los alumnos que tengan ese número máximo
+        List<Alumno> alumnosConMasFaltas = faltasAlumnos.entrySet().stream()
+                .filter(entry -> entry.getValue() == maxFaltas)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        return alumnosConMasFaltas;
+    }
+
+    public List<Alumno> calcularAlumnosConMenosFaltas(Grupo grupo, Month month, Year year) {
+        Map<Alumno, Integer> faltasAlumnos = this.obtenerFaltasPorAlumnosDeGrupos(grupo, month, year);
+
+        // Si no hay inasistencias, devolvemos una lista vacía
+        if (faltasAlumnos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Obtenemos el número máximo de inasistencias
+        int minFaltas = faltasAlumnos.values().stream()
+                .min(Integer::compareTo)
+                .orElse(0);
+
+        // Filtramos y devolvemos los alumnos que tengan ese número máximo
+        List<Alumno> alumnosConMenosFaltas = faltasAlumnos.entrySet().stream()
+                .filter(entry -> entry.getValue() == minFaltas)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        return alumnosConMenosFaltas;
+    }
+
+    public Set<Alumno> calcularAlumnosConAsistenciaPerfecta(Grupo grupo, Month month, Year year) {
+        // Son los alumnos que no aparecen en inasistencias y si aparecen en asistencias
+
+        List<Asistencia> allAsistencias = this.obtenerAllAsistenciasDeGrupo(grupo, month, year);
+        List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo, month, year);
+
+        Set<Alumno> alumnosConInasistencias = allInasistencias.stream()
+                .map(asistencia -> asistencia.getInscripcion().getAlumno())
+                .collect(Collectors.toSet());
+
+        Set<Alumno> alumnosConAsistenciaPerfecta = allAsistencias.stream()
+                .map(asistencia -> asistencia.getInscripcion().getAlumno())
+                .filter(alumno -> !alumnosConInasistencias.contains(alumno))
+                .collect(Collectors.toSet());
+
+        return alumnosConAsistenciaPerfecta;
+    }
+
+    public int calcularCantidadDeClasesNoDadas(Grupo grupo, Month month, Year year) {
+        return claseService.obtenerClasesNoDadasDeGrupoEn(grupo, month, year).size();
+    }
+
+    public int calcularCantidadAlumnos(Servicio servicio, Grupo grupo, Integer day, Month month, Year year) {
+        return servicio.calcularCantidadAlumnosDeGrupoEn(grupo, day, month, year);
+    }
+
+    // ESTADISTICAS DE SERVICIO
+
+    public double calcularPorcentajePromedioAsistenciaDeServicio(Long idServicio, Month month, Year year) {
+        Servicio servicio = this.findServicio(idServicio);
+        double acumPromProcentajesGrupos = 0;
+
+        if (! servicio.tieneGrupos()) return acumPromProcentajesGrupos;
+
+        for (Grupo grupo : servicio.getGrupos()) {
+            acumPromProcentajesGrupos += this.calcularPorcentajePromedioAsistenciaDeGrupo(grupo.getId(), month, year);
+        }
+
+        int cantGrupos = servicio.getGrupos().size();
+        double promedioDePorcentajesDeAsistenciasDeServicio = (double) acumPromProcentajesGrupos / cantGrupos;
+        return promedioDePorcentajesDeAsistenciasDeServicio;
+    }
+
+    public Set<Alumno> calcularAlumnosConMasFaltas(Servicio servicio, Month month, Year year) {
+        Map<Alumno, Integer> faltas = new HashMap<>();
+
+        // obtener faltas por alumnos de grupo me da un map con el alumno y las faltas
+        // de todos los map de cada grupo tengo que obtener el maximo value
+
+        List<Map<Alumno, Integer>> listMapsFaltas = new ArrayList<>();
+        for (Grupo grupo : servicio.getGrupos()) {
+            listMapsFaltas.add(this.obtenerFaltasPorAlumnosDeGrupos(grupo, month, year));
+        }
+
+        // Obtenemos la mayor cantidad de faltas de cualquier grupo
+        int maxFaltas = listMapsFaltas.stream().flatMap(map -> map.values().stream())
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        // Obtenemos los alumnos con esa cantidad de faltas
+        Set<Alumno> alumnosConMasFaltas = listMapsFaltas.stream()
+                .flatMap(alumnoIntegerMap -> alumnoIntegerMap.entrySet().stream())
+                .filter(entry -> entry.getValue() == maxFaltas)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        return alumnosConMasFaltas;
+    }
+
+    public Set<Alumno> calcularAlumnosConMenosFaltas(Servicio servicio, Month month, Year year) {
+        Map<Alumno, Integer> faltas = new HashMap<>();
+
+        // obtener faltas por alumnos de grupo me da un map con el alumno y las faltas
+        // de todos los map de cada grupo tengo que obtener el minimo value
+
+        List<Map<Alumno, Integer>> listMapsFaltas = new ArrayList<>();
+        for (Grupo grupo : servicio.getGrupos()) {
+            listMapsFaltas.add(this.obtenerFaltasPorAlumnosDeGrupos(grupo, month, year));
+        }
+
+        // Obtenemos la mayor cantidad de faltas de cualquier grupo
+        int minFaltas = listMapsFaltas.stream().flatMap(map -> map.values().stream())
+                .min(Integer::compareTo)
+                .orElse(0);
+
+        // Obtenemos los alumnos con esa cantidad de faltas
+        Set<Alumno> alumnosConMinFaltas = listMapsFaltas.stream()
+                .flatMap(alumnoIntegerMap -> alumnoIntegerMap.entrySet().stream())
+                .filter(entry -> entry.getValue() == minFaltas)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        return alumnosConMinFaltas;
+    }
+
+    public Set<Alumno> calcularAlumnosConAsistenciaPerfecta(Servicio servicio, Month month, Year year) {
+        return servicio.getGrupos()
+                .stream()
+                .flatMap(grupo -> this.calcularAlumnosConAsistenciaPerfecta(grupo, month, year)
+                        .stream())
+                .collect(Collectors.toSet());
+    }
+
+    public int calcularCantidadDeClasesNoDadas(Servicio servicio, Month month, Year year) {
+        return servicio.getGrupos()
+                .stream()
+                .mapToInt(grupo -> this.calcularCantidadDeClasesNoDadas(grupo, month, year))
+                .sum();
+    }
+
+    public int calcularCantidadAlumnos(Servicio servicio, Month month, Year year) {
+        return servicio.calcularCantidadAlumnos(month, year);
+    }
+
+    public EstadisticasAsistenciasServicioDTO obtenerEstadisticasAsistenciasServicio(Long idServicio, Month month, Year year) {
+        Servicio servicio = this.findServicio(idServicio);
+        double porcentajeAsistencias = this.calcularPorcentajePromedioAsistenciaDeServicio(idServicio, month, year);
+
+        Set<Alumno> alumnosConMasFaltas = this.calcularAlumnosConMasFaltas(servicio, month, year);
+        Set<Alumno> alumnosConMenosFaltas = this.calcularAlumnosConMenosFaltas(servicio, month, year);
+        Set<Alumno> alumnosConAsistenciaPerfecta = this.calcularAlumnosConAsistenciaPerfecta(servicio, month, year);
+        int cantClasesNoDadas = this.calcularCantidadDeClasesNoDadas(servicio, month, year);
+        int totalAlumnos = this.calcularCantidadAlumnos(servicio, month, year);
+
+        EstadisticasAsistenciasServicioDTO estadisticas = new EstadisticasAsistenciasServicioDTO();
+        estadisticas.setIdServicio(idServicio);
+        estadisticas.setMonth(month);
+        estadisticas.setYear(year);
+        estadisticas.setTotalAlumnos(totalAlumnos);
+        estadisticas.setAlumnosConMasFaltas(alumnosConMasFaltas);
+        estadisticas.setAlumnosConMenosFaltas(alumnosConMenosFaltas);
+        estadisticas.setPorcentajeAsistenciasPromedio(porcentajeAsistencias);
+        estadisticas.setAlumnosConAsistenciaPerfecta(alumnosConAsistenciaPerfecta);
+        estadisticas.setCantidadClasesNoDadas(cantClasesNoDadas);
+        return estadisticas;
+    }
+
+    // ESTADISTICAS DE SERVICIO DE PRECIOS
+
+    public double calcularPrecioPromedioDeGruposDeServicio(Servicio servicio, Integer day, Month month, Year year) {
+        return servicio.calcularPrecioPromedioDeGrupos(day, month, year);
+    }
+
+    public double[] calcularPreciosPromedioDeGruposDeServicioPorMes(Servicio servicio, Year year) {
+        return servicio.calcularPreciosPromedioDeGruposPorMes(year);
+    }
+
+    public EstadisticasInscripcionesServicioDTO obtenerEstadisticasInscripcionesServicio(Long idServicio, Month month, Year year) {
+        Servicio servicio = this.findServicio(idServicio);
+
+        double tiempoRespuesta = servicio.calcularTiempoPromedioRespuestaSolicitudesEnDias(null, month, year);
+        int cantAlumnos = servicio.calcularCantidadAlumnos(month, year);
+        double porcentajeAceptadas = servicio.calcularPorcentajeSolicitudesAceptadas(null, month, year);
+        int cantidadSolicitudes = servicio.contarSolicitudesInscripcionEn(null, month, year);
+
+
+        EstadisticasInscripcionesServicioDTO estadisticas = new EstadisticasInscripcionesServicioDTO();
+        estadisticas.setIdServicio(idServicio);
+        estadisticas.setMonth(month);
+        estadisticas.setYear(year);
+        estadisticas.setTiempoRespuestaPromedioEnDias(tiempoRespuesta);
+        estadisticas.setCantAlumnos(cantAlumnos);
+        estadisticas.setCantSolicitudes(cantidadSolicitudes);
+        estadisticas.setPorcentajeSolicitudesAceptadas(porcentajeAceptadas);
+        return estadisticas;
+    }
+
+    public EstadisticasPagosServicioDTO obtenerEstadisticasPagosServicio(Long idServicio, Month month, Year year) {
+        Servicio servicio = this.findServicio(idServicio);
+
+        double demoraPromedioPagos = servicio.calcularDemoraPromedioDeAlumnosEnAbonar(month, year);
+        double porcentajePromedioVencimientos = servicio.calcularPorcentajePromedioDeVencimientos(month, year);
+
+
+        EstadisticasPagosServicioDTO estadisticas = new EstadisticasPagosServicioDTO();
+        estadisticas.setIdServicio(idServicio);
+        estadisticas.setMonth(month);
+        estadisticas.setYear(year);
+        estadisticas.setDemoraPromedioPagos(demoraPromedioPagos);
+        estadisticas.setPorcentajePromedioVencimientos(porcentajePromedioVencimientos);
+        return estadisticas;
+    }
+
+    public EstadisticasPreciosServicioDTO obtenerEstadisticasPreciosServicio(Long idServicio, Month month, Year year) {
+        Servicio servicio = this.findServicio(idServicio);
+
+        double precioPromedioGrupos = servicio.calcularPrecioPromedioDeGrupos(null, month, year);
+        double[] preciosPromedioGruposPorMes = servicio.calcularPreciosPromedioDeGruposPorMes(year);
+
+
+        EstadisticasPreciosServicioDTO estadisticas = new EstadisticasPreciosServicioDTO();
+        estadisticas.setIdServicio(idServicio);
+        estadisticas.setMonth(month);
+        estadisticas.setYear(year);
+        estadisticas.setPrecioPromedioGrupos(precioPromedioGrupos);
+        estadisticas.setPreciosPromedioGruposPorMes(preciosPromedioGruposPorMes);
+        // estadisticas.setMejorPrecio(mejorPrecio);
+        // estadisticas.setPeorPrecio(peorPrecio);
+        // estadisticas.setSimilitudPrecios(similitudPrecios);
+        return estadisticas;
+    }
+
+
+    public EstadisticasIngresosServicioDTO obtenerEstadisticasIngresosServicio(Long idServicio, Month month, Year year) {
+        Servicio servicio = this.findServicio(idServicio);
+
+        List<Double> ingresosRecibidosYEsperados = servicio.calcularIngresosRecibidoYEsperado(month, year);
+        double[] ingresosPorMes = servicio.calcularIngresosPorMes(year);
+
+
+        EstadisticasIngresosServicioDTO estadisticas = new EstadisticasIngresosServicioDTO();
+        estadisticas.setIdServicio(idServicio);
+        estadisticas.setMonth(month);
+        estadisticas.setYear(year);
+        estadisticas.setIngresosRecibidos(ingresosRecibidosYEsperados.get(0));
+        estadisticas.setIngresosEsperados(ingresosRecibidosYEsperados.get(1));
+        estadisticas.setIngresosPorMes(ingresosPorMes);
+        return estadisticas;
+    }
+
 
 
 }

@@ -4,6 +4,7 @@ import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.servicio.FileStorageService;
 import com.harp.backend.entities.servicio.Servicio;
+import com.harp.backend.entities.servicio.estadisticas.SolEstadisticasServicioDTO;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -83,8 +84,9 @@ public class InstructorController {
 
     // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
     @GetMapping("/{idInstructor}/servicios/ingresos-por-mes")
-    public ResponseEntity<double[]> calcularIngresosPorMesDeServicios(@PathVariable Long idInstructor) {
-        double[] totalesPorMes = instructorService.calcularIngresosPorMesDeServiciosDeInstructor(idInstructor);
+    public ResponseEntity<double[]> calcularIngresosPorMesDeServicios(@PathVariable Long idInstructor,
+                                                                        @RequestBody SolEstadisticasServicioDTO solicitud)  {
+        double[] totalesPorMes = instructorService.calcularIngresosPorMesDeServiciosDeInstructor(idInstructor, solicitud.getYear());
         return ResponseEntity.status(HttpStatus.OK).body(totalesPorMes);
     };
 

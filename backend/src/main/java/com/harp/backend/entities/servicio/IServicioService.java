@@ -11,12 +11,15 @@ import com.harp.backend.entities.historialMontoCuota.MontoServicioDTO;
 import com.harp.backend.entities.horario.Turno;
 import com.harp.backend.entities.inscripcion.Inscripcion;
 import com.harp.backend.entities.instructor.Instructor;
+import com.harp.backend.entities.servicio.estadisticas.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
@@ -47,10 +50,10 @@ public interface IServicioService {
     Integer obtenerCuposLibresServicio(Long idServicio, Long idGrupo, List<Long> idsHorarios);
     List<Servicio> findServiciosByFilter(boolean clasePrueba, Categoria categoria, boolean yaInicio);
     List<Servicio> findServicioByNombre(String nombre);
-    List<Double> calcularTotalPendienteYEsperado(Long idServicio);
+    List<Double> calcularIngresosTotalPendienteYEsperado(Long idServicio, Month month, Year year);
     void setFechaInicioServicio(Long idServicio, LocalDate fechaInicio);
     void setFechaFinServicio(Long idServicio, LocalDate fechaFin);
-    double[] calcularIngresosPorMesDeServicio(Long idServicio);
+    double[] calcularIngresosPorMesDeServicio(Long idServicio, Year year);
     void activarAsistencias(Long idServicio);
     void desactivarAsistencias(Long idServicio);
     List<Clase> findClasesFechaDeServicio(Long idServicio, LocalDate fecha);
@@ -79,4 +82,9 @@ public interface IServicioService {
                                       Long idAlumno,
                                       Long idInstructor,
                                       int page, int size);
+    EstadisticasAsistenciasServicioDTO obtenerEstadisticasAsistenciasServicio(Long idServicio, Month month, Year year);
+    EstadisticasPagosServicioDTO  obtenerEstadisticasPagosServicio(Long idServicio, Month month, Year year);
+    EstadisticasPreciosServicioDTO  obtenerEstadisticasPreciosServicio(Long idServicio, Month month, Year year);
+    EstadisticasInscripcionesServicioDTO  obtenerEstadisticasInscripcionesServicio(Long idServicio, Month month, Year year);
+    EstadisticasIngresosServicioDTO obtenerEstadisticasIngresosServicio(Long idServicio, Month month, Year year);
 }

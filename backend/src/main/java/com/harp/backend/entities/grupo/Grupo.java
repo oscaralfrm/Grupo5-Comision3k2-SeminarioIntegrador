@@ -15,9 +15,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.cglib.core.Local;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
@@ -91,7 +89,13 @@ public class Grupo {
     }
 
     public void agregarClase(Clase clase) {
-        clases.add(clase);
+        if (! this.tieneEstaClase(clase)) {
+            clases.add(clase);
+        }
+    }
+
+    public boolean tieneEstaClase(Clase otraClase) {
+        return this.clases.stream().anyMatch(clase -> clase.equals(otraClase));
     }
 
     public void agregarMontoAHistorial(MontoServicio monto) {
@@ -123,6 +127,16 @@ public class Grupo {
 
     public MontoServicio obtenerMontoFuturo() {
         return historialMontos.stream().filter(MontoServicio::esMontoProgramadoFuturo).findFirst().orElse(null);
+    }
+
+    public MontoServicio obtenerMontoEn(LocalDate fecha) {
+        // Si el mes y año son el actual el dia es el de hoy
+        // Si el mes y el año son anteriores se usa el ultimo dia del mes
+        // Si el mes no es null se usa esa fecha compelta
+
+        return historialMontos.stream().filter(monto -> monto.esActualEn(fecha))
+                .findFirst()
+                .orElse(null);
     }
 
     public boolean tieneMontoActualConfigurado() {
@@ -305,6 +319,7 @@ public class Grupo {
         // Devuelve true si todos los horarios del grupo cumplen con estar dentro de los turnos de la lista
         return this.horarios.stream().allMatch(horario -> horario.esDeAlgunoDeEstosTurnos(turnos));
     }
+
 
 }
 

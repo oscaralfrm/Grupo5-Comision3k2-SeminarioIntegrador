@@ -19,6 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.util.List;
 import java.util.Set;
 
@@ -157,7 +160,8 @@ public class GrupoController {
 
     @GetMapping("/{idServicio}/grupos/{idGrupo}/estadisticas-asistencias")
     public ResponseEntity<EstadisticasGrupoDTO> obtenerEstadisticasDeAsistenciasGrupo(@PathVariable @Min(1) Long idGrupo) {
-        EstadisticasGrupoDTO estadisticasGrupo = grupoService.obtenerEstadisticasGrupo(idGrupo);
+        // ACA DEBERIAMOS PEDIR EL MONTH Y EL AÑO
+        EstadisticasGrupoDTO estadisticasGrupo = grupoService.obtenerEstadisticasGrupo(idGrupo, LocalDate.now().getMonth(), Year.now());
         return ResponseEntity.status(HttpStatus.OK).body(estadisticasGrupo);
     };
 

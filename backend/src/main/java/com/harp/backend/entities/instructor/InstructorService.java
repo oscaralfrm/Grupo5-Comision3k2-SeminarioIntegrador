@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Year;
 import java.util.List;
 import java.util.Set;
 
@@ -128,9 +129,9 @@ public class InstructorService implements IInstructorService {
         instructorRepository.save(instructor);
     }
 
-    public double[] calcularIngresosPorMesDeServiciosDeInstructor(Long idInstructor) {
+    public double[] calcularIngresosPorMesDeServiciosDeInstructor(Long idInstructor, Year year) {
         Instructor instructor = this.findInstructor(idInstructor);
-        return instructor.calcularTotalIngresoServicioPorMes();
+        return instructor.calcularTotalIngresoServicioPorMes(year);
     }
 
     public Long validarInicioSesion(String email, String contrasena) {

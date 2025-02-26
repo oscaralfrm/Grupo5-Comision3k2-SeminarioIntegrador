@@ -111,4 +111,13 @@ public class MontoServicio {
                return (fechaInicio.isAfter(fechaActual));
           }
      }
+
+     public boolean esActualEn(LocalDate fecha) {
+          if (fecha.isEqual(LocalDate.now())) {
+               return this.esMontoActual();
+          } else {
+               return ( ( this.fechaInicio.isBefore(fecha) || this.fechaInicio.isEqual(fecha) )
+                       && ( this.fechaFin == null || ( this.fechaFin.isAfter(fecha) || this.fechaFin.isEqual(fecha) ) ) );
+          }
+     }
 }
