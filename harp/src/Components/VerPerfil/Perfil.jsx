@@ -1,4 +1,3 @@
-// components/Profile/ProfileInfo.js
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, ListGroup } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
@@ -58,7 +57,7 @@ const ProfileInfo = () => {
         width: "33.33%",
         padding: "30px",
         backgroundColor: "#f8f9fa",
-        // No scroll global
+        overflow: "hidden", // Evitar el desbordamiento
       }
     : { padding: "20px" };
 
@@ -66,18 +65,19 @@ const ProfileInfo = () => {
     ? {
         marginLeft: "33.33%",
         padding: "20px",
+        overflow: "hidden", // Evitar el desbordamiento
       }
     : { padding: "20px" };
 
   return (
-    <Container fluid style={{ marginTop: "12vh", fontFamily: "Roboto" }}>
+    <Container fluid style={{ marginTop: "12vh", fontFamily: "Roboto", overflow: "hidden" }}>
       {error && <p className="text-danger">{error}</p>}
       {!profileData ? (
         <p>Cargando perfil...</p>
       ) : (
-        <Row>
+        <Row style={{ height: "100%" }}>
           {/* Columna Izquierda */}
-          <Col xs={12} lg={4} style={leftColumnStyle}>
+          <Col xs={12} md={6} lg={4} style={leftColumnStyle}>
             <div
               style={{
                 height: "100%",
@@ -103,7 +103,7 @@ const ProfileInfo = () => {
                   }}
                 />
               </div>
-              <div style={{ flex: "1 1 70%" }}>
+              <div style={{ flex: "1 1 70%", overflow: "hidden" }}>
                 <PersonalData
                   profileData={profileData}
                   sePuedeEditar={true}
@@ -123,7 +123,7 @@ const ProfileInfo = () => {
           </Col>
 
           {/* Columna Derecha */}
-          <Col xs={12} lg={8} style={rightColumnStyle}>
+          <Col xs={12} md={6} lg={8} style={rightColumnStyle}>
             <Biography
               profileData={profileData}
               sePuedeEditar={true}
@@ -165,7 +165,7 @@ const ProfileInfo = () => {
 
             {/* Acciones */}
             <div className="card shadow-lg p-4 mb-4">
-              <h3 
+              <h3
                 style={{
                   color: "#1E1B4B",
                   padding: "10px",

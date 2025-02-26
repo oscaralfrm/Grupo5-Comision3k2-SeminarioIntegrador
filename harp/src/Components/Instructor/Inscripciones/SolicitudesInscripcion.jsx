@@ -1,11 +1,10 @@
-// PantallaSolicitudesInscripcion.js
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, ListGroup } from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Pagination } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { getInscripcionesDeServicio } from "../../../services/Inscripcion";
-import { 
-  getServiciosDeInstructor, 
-  traerUltimasInscripcionesNoPendientesDeServiciosDeInstructor 
+import {
+  getServiciosDeInstructor,
+  traerUltimasInscripcionesNoPendientesDeServiciosDeInstructor
 } from "../../../services/Instructor";
 import DetalleInscripcionGrid from "./DetalleSolicitudInscripcion";
 import { formatDistance, isSameDay, parse } from "date-fns";
@@ -28,7 +27,10 @@ const PantallaSolicitudesInscripcion = () => {
   const [inscripcionSeleccionada, setInscripcionSeleccionada] = useState(null);
   const [ultimasInscripciones, setUltimasInscripciones] = useState([]);
   const [error, setError] = useState(null);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPageUltimas, setCurrentPageUltimas] = useState(1);
+  const itemsPerPage = 5; // Cambiado a 5 para paginación
+
   // Estado para definir el orden: "desc" = más recientes primero, "asc" = más antiguas primero.
   const [sortOrder, setSortOrder] = useState("desc");
 
@@ -41,7 +43,7 @@ const PantallaSolicitudesInscripcion = () => {
       const inscripcionesPorServicio = await Promise.all(inscripcionesPromises);
       const todasLasInscripciones = inscripcionesPorServicio.flat();
       setSolicitudes(todasLasInscripciones);
-      
+
       const ultimas = await traerUltimasInscripcionesNoPendientesDeServiciosDeInstructor(idInstructor);
       setUltimasInscripciones(ultimas);
     } catch (err) {
@@ -68,40 +70,29 @@ const PantallaSolicitudesInscripcion = () => {
     return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
   });
 
-  const leftColumnStyle = {
-    position: "fixed",
-    top: "0",
-    bottom: "0",
-    left: "0",
-    width: "30%",
-    padding: "20px",
-    backgroundColor: "#f8f9fa",
-    overflowY: "auto",
-    marginTop: "100px"
-  };
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentSolicitudes = sortedSolicitudes.slice(indexOfFirstItem, indexOfLastItem);
 
-  const rightColumnStyle = {
-    marginLeft: "30%",
-    padding: "20px",
-  };
+  const indexOfLastItemUltimas = currentPageUltimas * itemsPerPage;
+  const indexOfFirstItemUltimas = indexOfLastItemUltimas - itemsPerPage;
+  const currentUltimasInscripciones = ultimasInscripciones.slice(indexOfFirstItemUltimas, indexOfLastItemUltimas);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginateUltimas = (pageNumber) => setCurrentPageUltimas(pageNumber);
 
   return (
     <Container fluid style={{ marginTop: "10vh", fontFamily: "Roboto" }}>
-      <Row>
+      <Row style={{ marginTop: "2rem" }}>
         {/* Columna izquierda: listado de solicitudes y últimas inscripciones */}
-        <Col style={leftColumnStyle}>
+        <Col xs={12} md={4} className="order-2 order-md-1 leftColumnStyle">
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "20px"
-            }}
+            className="d-flex justify-content-between align-items-center mb-3"
           >
-            <h4 style={{ margin: 0 }}>Solicitudes de Inscripción</h4>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <span 
-                onClick={toggleSortOrder} 
+            <h4 className="mb-0">Solicitudes de Inscripción</h4>
+            <div className="d-flex align-items-center">
+              <span
+                onClick={toggleSortOrder}
                 style={{ cursor: "pointer", fontSize: "20px", userSelect: "none" }}
                 title={
                   sortOrder === "desc"
@@ -111,7 +102,7 @@ const PantallaSolicitudesInscripcion = () => {
               >
                 ⇅
               </span>
-              <span 
+              <span
                 style={{ fontSize: "12px", color: "gray", marginLeft: "5px" }}
               >
                 {sortOrder === "desc" ? "Más recientes" : "Más antiguas"}
@@ -119,9 +110,9 @@ const PantallaSolicitudesInscripcion = () => {
             </div>
           </div>
           {error && <p className="text-danger">{error}</p>}
-          {sortedSolicitudes.length == 0 && "No hay nuevas solicitudes."}
+          {currentSolicitudes.length === 0 && "No hay nuevas solicitudes."}
           <ListGroup>
-            {sortedSolicitudes.map((inscripcion) => (
+            {currentSolicitudes.map((inscripcion) => (
               <ListGroup.Item
                 key={inscripcion.id}
                 action
@@ -136,18 +127,18 @@ const PantallaSolicitudesInscripcion = () => {
                   border: "1px solid #ddd"
                 }}
               >
-                <div 
-                  style={{ 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "space-between", 
-                    width: "100%" 
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%"
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    <img 
-                      src={inscripcion.alumno.usuario?.fotoPerfilURL || "https://via.placeholder.com/40"} 
-                      alt="Foto de perfil" 
+                    <img
+                      src={inscripcion.alumno.usuario?.fotoPerfilURL || "/assets/placeholderForServices.png"}
+                      alt="Foto de perfil"
                       style={{
                         width: "40px",
                         height: "40px",
@@ -156,11 +147,11 @@ const PantallaSolicitudesInscripcion = () => {
                         alignSelf: "flex-start"
                       }}
                     />
-                    <div>
-                      <div style={{ fontWeight: "bold", fontSize: "14px" }}>
+                    <div style={{ fontSize: "14px", textAlign: "left" }}>
+                      <div style={{ fontWeight: "bold" }}>
                         {inscripcion.alumno.nombreCompleto}
                       </div>
-                      <div style={{ fontSize: "12px", color: "gray", marginTop: "2px" }}>
+                      <div style={{ color: "gray", marginTop: "2px" }}>
                         {inscripcion.servicio.nombre} - {inscripcion.grupo.nombre}
                       </div>
                     </div>
@@ -175,11 +166,37 @@ const PantallaSolicitudesInscripcion = () => {
             ))}
           </ListGroup>
 
+          {/* Paginación para pantallas medianas o grandes */}
+          <Pagination className="d-flex justify-content-center mt-3 d-none d-md-flex">
+            {Array.from({ length: Math.ceil(sortedSolicitudes.length / itemsPerPage) }, (_, index) => (
+              <Pagination.Item
+                key={index + 1}
+                active={index + 1 === currentPage}
+                onClick={() => paginate(index + 1)}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+          </Pagination>
+
+          {/* Paginación para pantallas pequeñas */}
+          <Pagination className="d-flex justify-content-center mt-3 d-md-none">
+            {Array.from({ length: Math.ceil(sortedSolicitudes.length / itemsPerPage) }, (_, index) => (
+              <Pagination.Item
+                key={index + 1}
+                active={index + 1 === currentPage}
+                onClick={() => paginate(index + 1)}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+          </Pagination>
+
           {/* Sección de Últimas Inscripciones */}
           <hr style={{ marginTop: "30px", marginBottom: "15px" }} />
           <h5 style={{ marginBottom: "10px" }}>Últimas Inscripciones</h5>
           <ListGroup>
-            {ultimasInscripciones.map((inscripcion) => (
+            {currentUltimasInscripciones.map((inscripcion) => (
               <ListGroup.Item
                 key={inscripcion.id}
                 action
@@ -194,18 +211,18 @@ const PantallaSolicitudesInscripcion = () => {
                   border: "1px solid #ddd"
                 }}
               >
-                <div 
-                  style={{ 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "space-between", 
-                    width: "100%" 
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%"
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    <img 
-                      src={inscripcion.alumno.usuario?.fotoPerfilURL || "https://via.placeholder.com/40"} 
-                      alt="Foto de perfil" 
+                    <img
+                      src={inscripcion.alumno.usuario?.fotoPerfilURL || "/assets/placeholderForServices.png"}
+                      alt="Foto de perfil"
                       style={{
                         width: "40px",
                         height: "40px",
@@ -214,11 +231,11 @@ const PantallaSolicitudesInscripcion = () => {
                         alignSelf: "flex-start"
                       }}
                     />
-                    <div>
-                      <div style={{ fontWeight: "bold", fontSize: "14px" }}>
+                    <div style={{ fontSize: "14px", textAlign: "left" }}>
+                      <div style={{ fontWeight: "bold" }}>
                         {inscripcion.alumno.nombreCompleto}
                       </div>
-                      <div style={{ fontSize: "12px", color: "gray", marginTop: "2px" }}>
+                      <div style={{ color: "gray", marginTop: "2px" }}>
                         {inscripcion.servicio.nombre} - {inscripcion.grupo.nombre}
                       </div>
                     </div>
@@ -230,14 +247,40 @@ const PantallaSolicitudesInscripcion = () => {
               </ListGroup.Item>
             ))}
           </ListGroup>
+
+          {/* Paginación para Últimas Inscripciones en pantallas medianas o grandes */}
+          <Pagination className="d-flex justify-content-center mt-3 d-none d-md-flex">
+            {Array.from({ length: Math.ceil(ultimasInscripciones.length / itemsPerPage) }, (_, index) => (
+              <Pagination.Item
+                key={index + 1}
+                active={index + 1 === currentPageUltimas}
+                onClick={() => paginateUltimas(index + 1)}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+          </Pagination>
+
+          {/* Paginación para Últimas Inscripciones en pantallas pequeñas */}
+          <Pagination className="d-flex justify-content-center mt-3 d-md-none">
+            {Array.from({ length: Math.ceil(ultimasInscripciones.length / itemsPerPage) }, (_, index) => (
+              <Pagination.Item
+                key={index + 1}
+                active={index + 1 === currentPageUltimas}
+                onClick={() => paginateUltimas(index + 1)}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+          </Pagination>
         </Col>
 
         {/* Columna derecha: detalle de la inscripción seleccionada */}
-        <Col style={rightColumnStyle}>
+        <Col xs={12} md={8} className="order-1 order-md-2">
           {inscripcionSeleccionada ? (
-            <DetalleInscripcionGrid 
-              inscripcionSeleccionada={inscripcionSeleccionada} 
-              isMissing={isMissing} 
+            <DetalleInscripcionGrid
+              inscripcionSeleccionada={inscripcionSeleccionada}
+              isMissing={isMissing}
               fetchSolicitudes={fetchSolicitudes}
             />
           ) : (

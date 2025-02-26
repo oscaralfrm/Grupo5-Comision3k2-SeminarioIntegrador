@@ -38,18 +38,19 @@ const Asistencias = () => {
         const fetchData = async () => {
             try {
                 const claseData = await getClaseById(idClase);
+                console.log("Datos de la clase:", claseData); // Depuración
                 setClase(claseData);
 
                 const asistenciasData = await getAsistenciasDeClase(idClase);
-                console.log("Asistencias", asistenciasData);
+                console.log("Asistencias obtenidas:", asistenciasData); // Depuración
 
-                // LAs asistencias estan en null si nunca antes fueron cargadas por el instructor,
-                // es por eso que si estan en null las mostramos como true por defecto
-                // pero si ya tienen un valor se muestra ese valor
-
-                setAsistencias(asistenciasData.map(asistencia =>
+                // Si las asistencias son null, se muestran como true por defecto
+                const asistenciasFormateadas = asistenciasData.map(asistencia =>
                     asistencia.asistio == null ? { ...asistencia, asistio: true } : asistencia
-                ));
+                );
+
+                console.log("Asistencias formateadas:", asistenciasFormateadas); // Depuración
+                setAsistencias(asistenciasFormateadas);
                 setAsistenciasIniciales(asistenciasData);
             } catch (error) {
                 console.error("Error al obtener datos:", error);
@@ -66,6 +67,7 @@ const Asistencias = () => {
             const resultados = asistencias.filter((asistencia) => {
                 return asistencia.alumno.usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase());
             });
+            console.log("Resultados filtrados:", resultados); // Depuración
             setAsistenciasFiltradas(resultados);
         }
     }, [searchTerm, asistencias]);
@@ -98,7 +100,7 @@ const Asistencias = () => {
         }));
 
         try {
-            console.log(asistenciasFormateadas);
+            console.log("Asistencias a registrar:", asistenciasFormateadas); // Depuración
             await editAsistenciasClase(idClase, asistenciasFormateadas);
             alert("Asistencias registradas con éxito.");
             navigate(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`);

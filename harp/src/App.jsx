@@ -35,6 +35,8 @@ import DescubrirServicios from "./Components/Alumno/DescubrirServicios/Descubrir
 import ResumenUsuario from "./Components/VerPerfil/ResumenUsuario/ResumenUsuario.jsx";
 import ResumenInscripcion from "./Components/Instructor/ResumenInscripcion/ResumenInscripcion.jsx";
 import ServiciosFavoritos from "./Components/Alumno/ServiciosFavoritos/ServiciosFavoritos.jsx";
+import HistorialClasesInstructor from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/HistorialClases.jsx";
+import EstadisticasAsistencia from "./Components/Instructor/MiServicio/MenuOpciones/Dashboard/EstadisticasAsistencias.jsx";
 import PantallaSolicitudesInscripcion from "./Components/Instructor/Inscripciones/SolicitudesInscripcion.jsx";
 import Estadisticas from "./Components/Instructor/Estadisticas/Estadisticas.jsx";
 import SolicitudInscripcionData from "./Components/Instructor/Inscripciones/DatosSolicitudInscripcion.jsx";
@@ -142,6 +144,16 @@ function App() {
           <Route
             path="instructor/:idInstructor/servicio/:idServicio/info-servicio"
             element={<><AppNavbar /><InfoServicioAlumno /></>}
+          />
+
+          <Route 
+          path = "instructor/:idInstructor/servicio/:idServicio/historial-clases"
+          element={<><AppNavbar/><HistorialClasesInstructor/></>}
+          />
+
+<Route 
+          path = "instructor/:idInstructor/servicio/:idServicio/historial-clases/estadisticas"
+          element={<><AppNavbar/><EstadisticasAsistencia/></>}
           />
 
           {/* Para alumnos... */}

@@ -17,6 +17,7 @@ import NavbarGeneralAlumno from './NavbarGeneralAlumno.jsx';
 import { getAlumnoById, getInscripcionesDeAlumno } from '../../services/Alumno.js';
 import { obtenerUltimasCuotasDeInscripcion } from '../../services/Cuota.js';
 import { getInstructorById } from '../../services/Instructor.js';
+import NavbarInstructorAtras from '../Instructor/MiServicio/NavbarInstructor/NavbarAtrasInstructor.jsx';
 
 
 const AppNavbar = () => {
@@ -55,6 +56,8 @@ const AppNavbar = () => {
   const isEditService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/editar-servicio`);
   const isAlumnoResenia = location.pathname === `/alumno/${idAlumno}/inscripciones/${idInscripcion}/resenias` ;
   const isServiciosFavoritos = location.pathname === `/alumno/${idAlumno}/servicios-favoritos` 
+  const isHistorialClases = location.pathname == `/instructor/${idInstructor}/servicio/${idServicio}/historial-clases`;
+  const isEstadisticasAsistencias = location.pathname == `/instructor/${idInstructor}/servicio/${idServicio}/historial-clases/estadisticas`
 
 
   useEffect(() => {
@@ -133,6 +136,10 @@ const AppNavbar = () => {
       {isRegisterRoute && <NavbarRegisterChooser />}
       {isInstructorService && <NavbarServicio usuario={usuario} />}
       {isLogin && <NavbarRegisterChooser />}
+
+      {isHistorialClases && <NavbarInstructorAtras usuario={usuario}/>}
+
+      {isEstadisticasAsistencias && <NavbarInstructorAtras usuario={usuario}/>}
 
        {/* Para ver servicios favoritos por el alumno*/}
        {isServiciosFavoritos && <NavbarGeneralAlumno  usuario={usuario} />}
