@@ -316,3 +316,5 @@ export const traerSolicitudesInscripcionDeServiciosDeInstructor = async (idInstr
     throw error;
   }
 };
+
+

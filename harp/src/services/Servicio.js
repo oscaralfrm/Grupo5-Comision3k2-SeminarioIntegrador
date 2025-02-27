@@ -449,26 +449,6 @@ export const getCuposLibresDeServicio = async (idServicio, idGrupo, idsHorarios)
 };
 
 
-export const calcularIngresosPendienteYEsperado = async (idServicio) => {
-    try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/ingreso-pendiente-esperado`);
-        return response.data;
-    } catch (error) {
-        console.error('Error al calcular duración total del servicio', error);
-        throw error;
-    }
-};
-
-export const calcularIngresosDeServicioEnCadaMesDelAñoActual = async (idServicio) => {
-    try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/ingresos-por-mes`);
-        return response.data;
-    } catch (error) {
-        console.error('Error al calcular duración total del servicio', error);
-        throw error;
-    }
-};
-
 // Función para obtener un servicio por su ID con toda la información relevante
 export const getDetallesDeServicio = async (idServicio) => {
     try {
@@ -575,3 +555,54 @@ export const generarLinkMaps = (ubicacion) => {
       throw error;
     }
   };
+
+  export const obtenerEstadisticasIngresosDeServicio = async (idServicio, month, year) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-ingresos`, {month, year});
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener las estadisticas', error);
+        throw error;
+    }
+};
+
+export const obtenerEstadisticasAsistenciasDeServicio = async (idServicio, month, year) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-asistencias`, {month, year});
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener las estadisticas', error);
+        throw error;
+    }
+};
+
+export const obtenerEstadisticasPreciosDeServicio = async (idServicio, month, year) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-precios`, {month, year});
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener las estadisticas', error);
+        throw error;
+    }
+};
+
+export const obtenerEstadisticasPagosDeServicio = async (idServicio, month, year) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-pagos`, {month, year});
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener las estadisticas', error);
+        throw error;
+    }
+};
+
+
+export const obtenerEstadisticasInscripcionesDeServicio = async (idServicio, month, year) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-inscripciones`, {month, year});
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener las estadisticas', error);
+        throw error;
+    }
+};

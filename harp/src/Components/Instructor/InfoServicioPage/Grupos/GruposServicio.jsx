@@ -130,7 +130,7 @@ function GruposServicio({ frecuenciaCobro, fetchServicio, grupos, sePuedeEditar,
 
   const getPrecioYFrecuencia = (historialMontos) => {
     if (!historialMontos || historialMontos.length === 0) return "No disponible";
-    const montoActual = getMontoActualGrupoDeHistorial(historialMontos).monto;
+    const montoActual = getMontoActualGrupoDeHistorial(historialMontos)?.monto;
     if (!frecuenciaCobro || !frecuenciaCobro.unidadCiclo) return "No disponible";
     return armarStringPrecioYFrecuenciaCobro(montoActual, frecuenciaCobro?.cantCiclo, frecuenciaCobro?.unidadCiclo);
   };
