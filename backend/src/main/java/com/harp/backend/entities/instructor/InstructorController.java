@@ -2,9 +2,10 @@ package com.harp.backend.entities.instructor;
 
 import com.harp.backend.entities.categoria.Categoria;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.instructor.estadisticas.*;
 import com.harp.backend.entities.servicio.FileStorageService;
 import com.harp.backend.entities.servicio.Servicio;
-import com.harp.backend.entities.servicio.estadisticas.SolEstadisticasServicioDTO;
+import com.harp.backend.entities.servicio.estadisticas.*;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -193,5 +194,41 @@ public class InstructorController {
         boolean response = instructorService.tieneDatosBancariosCompletos(idInstructor);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    // ESTADISTICAS
+    @GetMapping("/{idInstructor}/estadisticas-asistencias")
+    public ResponseEntity<EstadisticasAsistenciasInstructorDTO> obtenerEstadisticasAsistenciasServicio(@PathVariable Long idInstructor,
+                                                                                                     @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
+        EstadisticasAsistenciasInstructorDTO estadisticas = instructorService.obtenerEstadisticasAsistenciasInstructor(idInstructor, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+        return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
+    };
+
+    @GetMapping("/{idInstructor}/estadisticas-pagos")
+    public ResponseEntity<EstadisticasPagosInstructorDTO> obtenerEstadisticasPagosServicio(@PathVariable Long idInstructor,
+                                                                                         @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
+        EstadisticasPagosInstructorDTO estadisticas = instructorService.obtenerEstadisticasPagosInstructor(idInstructor, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+        return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
+    };
+
+    @GetMapping("/{idInstructor}/estadisticas-inscripciones")
+    public ResponseEntity<EstadisticasInscripcionesInstructorDTO> obtenerEstadisticasInscripcionesServicio(@PathVariable Long idInstructor,
+                                                                                                         @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
+        EstadisticasInscripcionesInstructorDTO estadisticas = instructorService.obtenerEstadisticasInscripcionesInstructor(idInstructor, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+        return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
+    };
+
+    @GetMapping("/{idInstructor}/estadisticas-precios")
+    public ResponseEntity<EstadisticasPreciosInstructorDTO> obtenerEstadisticasPreciosServicio(@PathVariable Long idInstructor,
+                                                                                             @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
+        EstadisticasPreciosInstructorDTO estadisticas = instructorService.obtenerEstadisticasPreciosInstructor(idInstructor, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+        return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
+    };
+
+    @GetMapping("/{idInstructor}/estadisticas-ingresos")
+    public ResponseEntity<EstadisticasIngresosInstructorDTO> obtenerEstadisticasIngresosServicio(@PathVariable Long idInstructor,
+                                                                                               @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
+        EstadisticasIngresosInstructorDTO estadisticas = instructorService.obtenerEstadisticasIngresosInstructor(idInstructor, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+        return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
+    };
 
 }

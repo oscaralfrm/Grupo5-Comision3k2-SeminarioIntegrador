@@ -16,4 +16,7 @@ public class EstadisticasPreciosServicioDTO {
     private Year year;
     private double precioPromedioGrupos;
     private double[] preciosPromedioGruposPorMes;
+    private double similitudConPreciosCategoria;
+    private double promedioPrecioPorHora;
+    private double promedioPrecioPorHoraDeCategoria;
 }

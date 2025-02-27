@@ -1,9 +1,12 @@
 package com.harp.backend.entities.instructor;
 
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.instructor.estadisticas.*;
 import com.harp.backend.entities.servicio.Servicio;
+import com.harp.backend.entities.servicio.estadisticas.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Month;
 import java.time.Year;
 import java.util.List;
 
@@ -26,4 +29,9 @@ public interface IInstructorService {
     boolean esteInstructorTieneServicioConEsteNombre(Long idInstructor, String nombre);
     List<Inscripcion> findUltimasInscripcionesNoPendientesDeServiciosDeInstructor(Long idInstructor, int cant);
     List<Inscripcion> findSolicitudesInscripcionPendientes(Long idInstructor);
+    EstadisticasAsistenciasInstructorDTO obtenerEstadisticasAsistenciasInstructor(Long idInstructor, Month month, Year year);
+    EstadisticasPagosInstructorDTO obtenerEstadisticasPagosInstructor(Long idInstructor, Month month, Year year);
+    EstadisticasPreciosInstructorDTO obtenerEstadisticasPreciosInstructor(Long idInstructor, Month month, Year year);
+    EstadisticasInscripcionesInstructorDTO obtenerEstadisticasInscripcionesInstructor(Long idInstructor, Month month, Year year);
+    EstadisticasIngresosInstructorDTO obtenerEstadisticasIngresosInstructor(Long idInstructor, Month month, Year year);
 }

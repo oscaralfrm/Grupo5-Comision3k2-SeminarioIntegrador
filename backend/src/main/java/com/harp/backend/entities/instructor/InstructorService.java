@@ -1,10 +1,13 @@
 package com.harp.backend.entities.instructor;
 
+import com.harp.backend.entities.alumno.model.Alumno;
 import com.harp.backend.entities.inscripcion.Inscripcion;
+import com.harp.backend.entities.instructor.estadisticas.*;
 import com.harp.backend.entities.perfil.model.Perfil;
 import com.harp.backend.entities.perfil.service.IPerfilService;
 import com.harp.backend.entities.servicio.Servicio;
 import com.harp.backend.entities.servicio.ServicioService;
+import com.harp.backend.entities.servicio.estadisticas.*;
 import com.harp.backend.entities.usuario.model.Usuario;
 import com.harp.backend.entities.usuario.service.IUsuarioService;
 import com.harp.backend.exception.NoSuchElementFoundException;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Month;
 import java.time.Year;
 import java.util.List;
 import java.util.Set;
@@ -131,7 +135,7 @@ public class InstructorService implements IInstructorService {
 
     public double[] calcularIngresosPorMesDeServiciosDeInstructor(Long idInstructor, Year year) {
         Instructor instructor = this.findInstructor(idInstructor);
-        return instructor.calcularTotalIngresoServicioPorMes(year);
+        return instructor.calcularTotalIngresosServiciosPorMes(year);
     }
 
     public Long validarInicioSesion(String email, String contrasena) {
@@ -174,6 +178,83 @@ public class InstructorService implements IInstructorService {
     public boolean esteInstructorTieneServicioConEsteNombre(Long idInstructor, String nombre) {
         Instructor instructor = this.findInstructor(idInstructor);
         return instructor.tieneServicioConEsteNombre(nombre);
+    }
+
+    public EstadisticasInscripcionesInstructorDTO obtenerEstadisticasInscripcionesInstructor(Long idInstructor, Month month, Year year) {
+        Instructor instructor = this.findInstructor(idInstructor);
+
+        double tiempoRespuesta = instructor.calcularTiempoPromedioRespuestaSolicitudesEnDias(null, month, year);
+        int cantAlumnos = instructor.calcularCantidadAlumnos(month, year);
+        double porcentajeAceptadas = instructor.calcularPorcentajeSolicitudesAceptadas(null, month, year);
+        int cantidadSolicitudes = instructor.contarSolicitudesInscripcionEn(null, month, year);
+
+
+        EstadisticasInscripcionesInstructorDTO estadisticas = new EstadisticasInscripcionesInstructorDTO();
+        estadisticas.setIdInstructor(idInstructor);
+        estadisticas.setMonth(month);
+        estadisticas.setYear(year);
+        estadisticas.setTiempoRespuestaPromedioEnDias(tiempoRespuesta);
+        estadisticas.setCantAlumnos(cantAlumnos);
+        estadisticas.setCantSolicitudes(cantidadSolicitudes);
+        estadisticas.setPorcentajeSolicitudesAceptadas(porcentajeAceptadas);
+        return estadisticas;
+    }
+
+    public EstadisticasPagosInstructorDTO obtenerEstadisticasPagosInstructor(Long idInstructor, Month month, Year year) {
+        Instructor instructor = this.findInstructor(idInstructor);
+
+        double demoraPromedioPagos = instructor.calcularDemoraPromedioDeAlumnosEnAbonar(month, year);
+        double porcentajePromedioVencimientos = instructor.calcularPorcentajePromedioDeVencimientos(month, year);
+
+
+        EstadisticasPagosInstructorDTO estadisticas = new EstadisticasPagosInstructorDTO();
+        estadisticas.setIdInstructor(idInstructor);
+        estadisticas.setMonth(month);
+        estadisticas.setYear(year);
+        estadisticas.setDemoraPromedioPagosEnDias(demoraPromedioPagos);
+        estadisticas.setPorcentajePromedioVencimientos(porcentajePromedioVencimientos);
+        return estadisticas;
+    }
+
+    // COMPLETAR
+    public EstadisticasPreciosInstructorDTO obtenerEstadisticasPreciosInstructor(Long idInstructor, Month month, Year year) {
+        Instructor instructor = this.findInstructor(idInstructor);
+
+
+        EstadisticasPreciosInstructorDTO estadisticas = new EstadisticasPreciosInstructorDTO();
+        estadisticas.setIdInstructor(idInstructor);
+        estadisticas.setMonth(month);
+        estadisticas.setYear(year);
+        return estadisticas;
+    }
+
+
+    public EstadisticasIngresosInstructorDTO obtenerEstadisticasIngresosInstructor(Long idInstructor, Month month, Year year) {
+        Instructor instructor = this.findInstructor(idInstructor);
+
+        List<Double> ingresosRecibidosYEsperados = instructor.calcularIngresosRecibidosYEsperados(month, year);
+        double[] ingresosPorMes = instructor.calcularTotalIngresosServiciosPorMes(year);
+
+
+        EstadisticasIngresosInstructorDTO estadisticas = new EstadisticasIngresosInstructorDTO();
+        estadisticas.setIdInstructor(idInstructor);
+        estadisticas.setMonth(month);
+        estadisticas.setYear(year);
+        estadisticas.setIngresosRecibidos(ingresosRecibidosYEsperados.get(0));
+        estadisticas.setIngresosEsperados(ingresosRecibidosYEsperados.get(1));
+        estadisticas.setIngresosPorMes(ingresosPorMes);
+        return estadisticas;
+    }
+
+    // COMPLETAR
+    public EstadisticasAsistenciasInstructorDTO obtenerEstadisticasAsistenciasInstructor(Long idInstructor, Month month, Year year) {
+        Instructor instructor = this.findInstructor(idInstructor);
+
+        EstadisticasAsistenciasInstructorDTO estadisticas = new EstadisticasAsistenciasInstructorDTO();
+        estadisticas.setIdInstructor(idInstructor);
+        estadisticas.setMonth(month);
+        estadisticas.setYear(year);
+        return estadisticas;
     }
 
 }

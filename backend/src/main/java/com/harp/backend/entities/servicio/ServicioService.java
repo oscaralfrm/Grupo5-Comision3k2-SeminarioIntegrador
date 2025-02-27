@@ -1067,7 +1067,7 @@ public class ServicioService implements IServicioService {
         estadisticas.setIdServicio(idServicio);
         estadisticas.setMonth(month);
         estadisticas.setYear(year);
-        estadisticas.setDemoraPromedioPagos(demoraPromedioPagos);
+        estadisticas.setDemoraPromedioPagosEnDias(demoraPromedioPagos);
         estadisticas.setPorcentajePromedioVencimientos(porcentajePromedioVencimientos);
         return estadisticas;
     }
@@ -1077,7 +1077,9 @@ public class ServicioService implements IServicioService {
 
         double precioPromedioGrupos = servicio.calcularPrecioPromedioDeGrupos(null, month, year);
         double[] preciosPromedioGruposPorMes = servicio.calcularPreciosPromedioDeGruposPorMes(year);
-
+        double similitudConCategoria = this.calcularDiferenciaDePrecioServicioConRestoCategoria(servicio, servicio.obtenerFechaVigenciaEstadisticas(null, month, year));
+        double promedioPrecioPorHora = servicio.calcularPrecioPromedioPorHora(servicio.obtenerFechaVigenciaEstadisticas(null, month, year));
+        double promedioPrecioPorHoraDeCategoria = this.calcularPrecioPromedioPorHoraServiciosConCategoria(servicio.getCategoria().getNombre(), servicio.obtenerFechaVigenciaEstadisticas(null, month, year));
 
         EstadisticasPreciosServicioDTO estadisticas = new EstadisticasPreciosServicioDTO();
         estadisticas.setIdServicio(idServicio);
@@ -1085,6 +1087,9 @@ public class ServicioService implements IServicioService {
         estadisticas.setYear(year);
         estadisticas.setPrecioPromedioGrupos(precioPromedioGrupos);
         estadisticas.setPreciosPromedioGruposPorMes(preciosPromedioGruposPorMes);
+        estadisticas.setSimilitudConPreciosCategoria(similitudConCategoria);
+        estadisticas.setPromedioPrecioPorHora(promedioPrecioPorHora);
+        estadisticas.setPromedioPrecioPorHoraDeCategoria(promedioPrecioPorHoraDeCategoria);
         // estadisticas.setMejorPrecio(mejorPrecio);
         // estadisticas.setPeorPrecio(peorPrecio);
         // estadisticas.setSimilitudPrecios(similitudPrecios);
@@ -1109,6 +1114,40 @@ public class ServicioService implements IServicioService {
         return estadisticas;
     }
 
+    // CALCULO DE PRECIOS PROM POR CATEGORIA
+    public List<Servicio> findServiciosConEstaCategoria(String nombreCategoria) {
+        return servicioRepository.findByCategoriaNombre(nombreCategoria).stream().filter(servicio -> servicio.isPublico()).toList();
+    }
 
+    public double calcularPrecioPromedioPorHoraServiciosConCategoria(String nombreCategoria, LocalDate fecha) {
+        List<Servicio> serviciosCategoria = this.findServiciosConEstaCategoria(nombreCategoria);
+        double precioPromedioServiciosConCategoria = serviciosCategoria
+                .stream()
+                .mapToDouble(servicio -> servicio.calcularPrecioPromedioPorHora(fecha)).average().orElse(0.0);
+        return precioPromedioServiciosConCategoria;
+    }
+
+    public double calcularDesviacionEstandarServiciosConCategoria(String nombreCategoria, LocalDate fecha) {
+        double sumatoria = 0.0;
+        double promedio = this.calcularPrecioPromedioPorHoraServiciosConCategoria(nombreCategoria, fecha);
+        List<Servicio> serviciosCategoria = this.findServiciosConEstaCategoria(nombreCategoria);
+        int cantServicios = serviciosCategoria.size();
+
+        for (Servicio servicio : serviciosCategoria) {
+            double precioServicio = servicio.calcularPrecioPromedioPorHora(fecha);
+            double diferencia = ( precioServicio - promedio );
+            sumatoria += Math.pow(diferencia, 2);
+        }
+        double dentroRaiz = sumatoria / (double) cantServicios;
+        return Math.sqrt(dentroRaiz);
+    }
+
+    public double calcularDiferenciaDePrecioServicioConRestoCategoria(Servicio servicio, LocalDate fecha) {
+        double promedio = this.calcularPrecioPromedioPorHoraServiciosConCategoria(servicio.getCategoria().getNombre(), fecha);
+        double desviacion = this.calcularDesviacionEstandarServiciosConCategoria(servicio.getCategoria().getNombre(), fecha);
+        double z = (servicio.calcularPrecioPromedioPorHora(fecha) -  promedio ) / desviacion;
+        double similitud = 100 - (Math.abs(z) * 50.0);
+        return similitud;
+    }
 
 }

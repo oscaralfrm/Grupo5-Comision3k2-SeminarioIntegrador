@@ -5,6 +5,7 @@ import com.harp.backend.entities.alumno.model.Alumno;
 //import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.clase.Clase;
 import com.harp.backend.entities.diaSemana.DiaSemana;
+import com.harp.backend.entities.frecuenciaPago.TipoFrecuenciaPago;
 import com.harp.backend.entities.historialMontoCuota.MontoServicio;
 import com.harp.backend.entities.horario.Horario;
 import com.harp.backend.entities.horario.Turno;
@@ -320,6 +321,34 @@ public class Grupo {
         return this.horarios.stream().allMatch(horario -> horario.esDeAlgunoDeEstosTurnos(turnos));
     }
 
+    public double calcularCantidadHorasEnFrecuencia(TipoFrecuenciaPago frecuenciaPago) {
+        if (frecuenciaPago.getUnidadCiclo().equals(ChronoUnit.MONTHS)) {
+            return 4 * frecuenciaPago.getCantCiclo() * this.calcularHorasSemanales();
+        } else if (frecuenciaPago.getUnidadCiclo().equals(ChronoUnit.WEEKS)) {
+            return frecuenciaPago.getCantCiclo() * this.calcularHorasSemanales();
+        } else if (frecuenciaPago.getUnidadCiclo().equals(ChronoUnit.DAYS)) {
+            return (frecuenciaPago.getCantCiclo() / 7 ) * this.calcularHorasSemanales();
+        } else {
+            return 0.0;
+        }
+    }
+
+    public double calcularPrecioPorHora(LocalDate fecha, TipoFrecuenciaPago frecuenciaPago) {
+        // TEnemos que dividir el precio del grupo por la cantidad de horas semanales en la frecuencia de pago
+        // Si tengo que se paga cada 1 semana, y es 2 hs a la semana entonces el precio es dividido 2
+        // Si tengo que se paga cada 1 mes y es 2 veces a la semana entonces el precio es dividido 2hs * 4 sem = 8 hs (hs mensuales)
+        MontoServicio montoServicio = this.obtenerMontoEn(fecha);
+        if (montoServicio == null) {
+            return 0.0;
+        }
+        double montoEnFecha = montoServicio.getMonto();
+        double cantHorasSemanalesEnFrecuencia = this.calcularCantidadHorasEnFrecuencia(frecuenciaPago);
+        if (cantHorasSemanalesEnFrecuencia != 0.0) {
+            return montoEnFecha / cantHorasSemanalesEnFrecuencia;
+        } else {
+            return 0.0;
+        }
+    }
 
 }
 

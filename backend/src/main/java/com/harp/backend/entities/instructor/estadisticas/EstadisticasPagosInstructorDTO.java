@@ -1,4 +1,4 @@
-package com.harp.backend.entities.servicio.estadisticas;
+package com.harp.backend.entities.instructor.estadisticas;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,8 +10,8 @@ import java.time.Year;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EstadisticasPagosServicioDTO {
-    private Long idServicio;
+public class EstadisticasPagosInstructorDTO {
+    private Long idInstructor;
     private Month month;
     private Year year;
     private double demoraPromedioPagosEnDias;

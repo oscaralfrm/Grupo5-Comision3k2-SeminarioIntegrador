@@ -13,6 +13,7 @@ import java.util.List;
 public interface IServicioRepository extends JpaRepository<Servicio, Long>, JpaSpecificationExecutor<Servicio> {
     //public List<Servicio> findByInstructorId(Long idServicio);
     public List<Servicio> findByNombre(String nombre);
+    public List<Servicio> findByCategoriaNombre(String categoriaNombre);
     public Page<Servicio> findByInscripcionesAbiertasTrue(Pageable pageable);
     public List<Servicio> findByInscripcionesAbiertasTrue();
     List<Servicio> findByFechaFinNotNull();

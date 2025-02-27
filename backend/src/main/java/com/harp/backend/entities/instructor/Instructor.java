@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.Year;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -86,19 +87,6 @@ public class Instructor {
 //        return usuario.getNombre() + usuario.getApellido();
 //    }
 
-    public double[] calcularTotalIngresoServicioPorMes(Year year) {
-        double[] totalIngresosServiciosPorMes = new double[12];
-
-        for (Servicio servicio : servicios) {
-            double[] ingresosPorMesUnServicio = servicio.calcularIngresosPorMes(year);
-            for (int i = 0; i < 12; i++) {
-                totalIngresosServiciosPorMes[i] += ingresosPorMesUnServicio[i];
-            }
-        }
-
-        return totalIngresosServiciosPorMes;
-    }
-
     public boolean tieneServicioConEsteNombre(String nombreServicio) {
         return this.servicios.stream().anyMatch(servicio -> servicio.getNombre().equals(nombreServicio));
     }
@@ -120,5 +108,75 @@ public class Instructor {
                 //Hacemos reversed para devolver las mas nuevas al principio
                 .sorted(Comparator.comparing(Inscripcion::getFechaSolicitud).reversed())
                 .collect(Collectors.toList());
+    }
+
+    public List<Servicio> obtenerServiciosConInscripciones() {
+        return this.servicios.stream().filter(Servicio::tieneAlumnosConInscripcionesActivas).toList();
+    }
+
+    public double calcularTiempoPromedioRespuestaSolicitudesEnDias(Integer day, Month month, Year year) {
+        return this.obtenerServiciosConInscripciones()
+                .stream()
+                .mapToDouble(servicio -> servicio.calcularTiempoPromedioRespuestaSolicitudesEnDias(day, month, year) )
+                .sum();
+    }
+
+    public int calcularCantidadAlumnos(Month month, Year year) {
+        return this.obtenerServiciosConInscripciones()
+                .stream()
+                .mapToInt(servicio -> servicio.calcularCantidadAlumnos(month, year) )
+                .sum();
+    }
+
+    public double calcularPorcentajeSolicitudesAceptadas(Integer day, Month month, Year year) {
+        return this.obtenerServiciosConInscripciones()
+                .stream()
+                .mapToDouble(servicio -> servicio.calcularPorcentajeSolicitudesAceptadas(day, month, year) )
+                .sum();
+    }
+
+    public int contarSolicitudesInscripcionEn(Integer day, Month month, Year year) {
+        return this.obtenerServiciosConInscripciones()
+                .stream()
+                .mapToInt(servicio -> servicio.contarSolicitudesInscripcionEn(day, month, year) )
+                .sum();
+    }
+
+    public double calcularDemoraPromedioDeAlumnosEnAbonar(Month month, Year year) {
+        return this.obtenerServiciosConInscripciones()
+                .stream()
+                .mapToDouble(servicio -> servicio.calcularDemoraPromedioDeAlumnosEnAbonar(month, year))
+                .sum();
+    }
+
+    public double calcularPorcentajePromedioDeVencimientos(Month month, Year year) {
+        return this.obtenerServiciosConInscripciones()
+                .stream()
+                .mapToDouble(servicio -> servicio.calcularPorcentajePromedioDeVencimientos(month, year))
+                .sum();
+    }
+
+    public double[] calcularTotalIngresosServiciosPorMes(Year year) {
+        double[] totalIngresosServiciosPorMes = new double[12];
+
+        for (Servicio servicio : servicios) {
+            double[] ingresosPorMesUnServicio = servicio.calcularIngresosPorMes(year);
+            for (int i = 0; i < 12; i++) {
+                totalIngresosServiciosPorMes[i] += ingresosPorMesUnServicio[i];
+            }
+        }
+
+        return totalIngresosServiciosPorMes;
+    }
+
+    public List<Double> calcularIngresosRecibidosYEsperados(Month month, Year year) {
+        double totalRecibidos = 0.0;
+        double totalEsperados = 0.0;
+        for (Servicio servicio : servicios) {
+            List<Double> ingresosServicio = servicio.calcularIngresosRecibidoYEsperado(month, year);
+            totalRecibidos += ingresosServicio.get(0);
+            totalEsperados += ingresosServicio.get(1);
+        }
+        return List.of(totalRecibidos, totalEsperados);
     }
 }

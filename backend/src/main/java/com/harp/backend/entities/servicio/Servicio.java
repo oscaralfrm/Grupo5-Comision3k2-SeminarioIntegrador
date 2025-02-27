@@ -705,7 +705,7 @@ public class Servicio {
         for (Cuota cuota :cuotas) {
             Pago pago = cuota.getPago();
             int mes = pago.getFechaPago().getMonthValue();
-            totalIngresosPorMes[mes] += cuota.calcularTotal();
+            totalIngresosPorMes[mes-1] += cuota.calcularTotal();
         }
         return totalIngresosPorMes;
     }
@@ -928,7 +928,7 @@ public class Servicio {
         return preciosPromedioGruposPorMes;
     }
 
-    private LocalDate obtenerFechaVigenciaEstadisticas(Integer day, Month month, Year year) {
+    public LocalDate obtenerFechaVigenciaEstadisticas(Integer day, Month month, Year year) {
         LocalDate fechaVigencia;
         if (day != null) {
             fechaVigencia = LocalDate.of(year.getValue(), month, day);
@@ -1095,4 +1095,8 @@ public class Servicio {
 //
 //        }
 //    }
+
+    public double calcularPrecioPromedioPorHora(LocalDate fecha) {
+        return this.grupos.stream().mapToDouble(grupo -> grupo.calcularPrecioPorHora(fecha, this.tipoFrecuenciaPago)).average().orElse(0.0);
+    }
 }
