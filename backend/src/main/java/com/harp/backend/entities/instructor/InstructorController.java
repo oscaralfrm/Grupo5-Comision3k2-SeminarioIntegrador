@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.time.Month;
+import java.time.Year;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +88,8 @@ public class InstructorController {
     // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
     @GetMapping("/{idInstructor}/servicios/ingresos-por-mes")
     public ResponseEntity<double[]> calcularIngresosPorMesDeServicios(@PathVariable Long idInstructor,
-                                                                        @RequestBody SolEstadisticasServicioDTO solicitud)  {
-        double[] totalesPorMes = instructorService.calcularIngresosPorMesDeServiciosDeInstructor(idInstructor, solicitud.getYear());
+                                                                        @RequestParam Year year)  {
+        double[] totalesPorMes = instructorService.calcularIngresosPorMesDeServiciosDeInstructor(idInstructor,year);
         return ResponseEntity.status(HttpStatus.OK).body(totalesPorMes);
     };
 
@@ -198,36 +200,41 @@ public class InstructorController {
     // ESTADISTICAS
     @GetMapping("/{idInstructor}/estadisticas-asistencias")
     public ResponseEntity<EstadisticasAsistenciasInstructorDTO> obtenerEstadisticasAsistenciasServicio(@PathVariable Long idInstructor,
-                                                                                                     @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
-        EstadisticasAsistenciasInstructorDTO estadisticas = instructorService.obtenerEstadisticasAsistenciasInstructor(idInstructor, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+                                                                                                       @RequestParam Month month,
+                                                                                                       @RequestParam Year year) {
+        EstadisticasAsistenciasInstructorDTO estadisticas = instructorService.obtenerEstadisticasAsistenciasInstructor(idInstructor, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
     };
 
     @GetMapping("/{idInstructor}/estadisticas-pagos")
     public ResponseEntity<EstadisticasPagosInstructorDTO> obtenerEstadisticasPagosServicio(@PathVariable Long idInstructor,
-                                                                                         @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
-        EstadisticasPagosInstructorDTO estadisticas = instructorService.obtenerEstadisticasPagosInstructor(idInstructor, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+                                                                                           @RequestParam Month month,
+                                                                                           @RequestParam Year year) {
+        EstadisticasPagosInstructorDTO estadisticas = instructorService.obtenerEstadisticasPagosInstructor(idInstructor, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
     };
 
     @GetMapping("/{idInstructor}/estadisticas-inscripciones")
     public ResponseEntity<EstadisticasInscripcionesInstructorDTO> obtenerEstadisticasInscripcionesServicio(@PathVariable Long idInstructor,
-                                                                                                         @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
-        EstadisticasInscripcionesInstructorDTO estadisticas = instructorService.obtenerEstadisticasInscripcionesInstructor(idInstructor, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+                                                                                                           @RequestParam Month month,
+                                                                                                           @RequestParam Year year) {
+        EstadisticasInscripcionesInstructorDTO estadisticas = instructorService.obtenerEstadisticasInscripcionesInstructor(idInstructor, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
     };
 
     @GetMapping("/{idInstructor}/estadisticas-precios")
     public ResponseEntity<EstadisticasPreciosInstructorDTO> obtenerEstadisticasPreciosServicio(@PathVariable Long idInstructor,
-                                                                                             @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
-        EstadisticasPreciosInstructorDTO estadisticas = instructorService.obtenerEstadisticasPreciosInstructor(idInstructor, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+                                                                                               @RequestParam Month month,
+                                                                                               @RequestParam Year year) {
+        EstadisticasPreciosInstructorDTO estadisticas = instructorService.obtenerEstadisticasPreciosInstructor(idInstructor, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
     };
 
     @GetMapping("/{idInstructor}/estadisticas-ingresos")
     public ResponseEntity<EstadisticasIngresosInstructorDTO> obtenerEstadisticasIngresosServicio(@PathVariable Long idInstructor,
-                                                                                               @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
-        EstadisticasIngresosInstructorDTO estadisticas = instructorService.obtenerEstadisticasIngresosInstructor(idInstructor, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+                                                                                                 @RequestParam Month month,
+                                                                                                 @RequestParam Year year) {
+        EstadisticasIngresosInstructorDTO estadisticas = instructorService.obtenerEstadisticasIngresosInstructor(idInstructor, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
     };
 

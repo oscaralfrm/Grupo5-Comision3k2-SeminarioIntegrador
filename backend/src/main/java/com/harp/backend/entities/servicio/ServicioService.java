@@ -831,6 +831,38 @@ public class ServicioService implements IServicioService {
         return promedioDePorcentajesDeAsistenciasDeGrupoPorClase;
     }
 
+    public double calcularPorcentajePromedioInasistenciaDeGrupo(Long idGrupo, Month month, Year year) {
+        // Obtenemos la cantidad de clases pasadas de un grupo
+        // Si el mes es null entonces obtenemos todas las clases de un año
+        // Si todo es null obtenemos todas las clases
+        // Si el año es null usamos el mes del año actual
+        List<Clase> clasesPasadas = claseService.obtenerClasesPasadasDeGrupoEn(idGrupo, month, year);
+        int cantClasesPasadas = clasesPasadas.size();
+
+        // Recorremos las clases pasadas
+        // De cada clase obtenemos la cantidad de alumnos y la cantidad que asistieron
+
+        int acumPorcentajeInasistenciasTotalesGrupo = 0;
+        for (Clase clase : clasesPasadas) {
+            List<Asistencia> asistenciasRealesDeClase = asistenciaService.findAllAsistenciasDeClase(clase.getId())
+                    .stream()
+                    .filter(asistencia -> asistencia.getAsistio() != null).toList();
+            int cantAlumnosDeClase = asistenciasRealesDeClase.size();
+            int cantInasistenciasDeClase = asistenciasRealesDeClase.stream().filter(asistencia -> asistencia.getAsistio() == false).toList().size();
+
+            // Calculamos el porcentaje de alumnos que asistieron a esa clase
+            double porcentajeAsistenciasDeClase = cantInasistenciasDeClase * 100.0 / cantAlumnosDeClase;
+
+            // Acumulamos el porcentaje de asistencias
+            acumPorcentajeInasistenciasTotalesGrupo += porcentajeAsistenciasDeClase;
+        }
+
+        // Calculamos un promedio de asistencias de clases de grupo
+        // Dividiendo el porcentaje acumulado, dividido la cantidad de clases pasadas totales
+        double promedioDePorcentajesDeInasistenciasDeGrupoPorClase = (double) acumPorcentajeInasistenciasTotalesGrupo / cantClasesPasadas;
+        return promedioDePorcentajesDeInasistenciasDeGrupoPorClase;
+    }
+
     private Map<Alumno, Integer> obtenerFaltasPorAlumnosDeGrupos(Grupo grupo, Month month, Year year) {
         Map<Alumno, Integer> faltasAlumnos = new HashMap<>();
         List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo, month, year);
@@ -892,7 +924,8 @@ public class ServicioService implements IServicioService {
     public Set<Alumno> calcularAlumnosConAsistenciaPerfecta(Grupo grupo, Month month, Year year) {
         // Son los alumnos que no aparecen en inasistencias y si aparecen en asistencias
 
-        List<Asistencia> allAsistencias = this.obtenerAllAsistenciasDeGrupo(grupo, month, year);
+        List<Asistencia> allAsistencias = this.obtenerAllAsistenciasDeGrupo(grupo, month, year)
+                .stream().filter(asistencia -> asistencia.getAsistio() != null).toList();
         List<Asistencia> allInasistencias = this.obtenerAllInasistenciasDeGrupo(grupo, month, year);
 
         Set<Alumno> alumnosConInasistencias = allInasistencias.stream()
@@ -930,6 +963,21 @@ public class ServicioService implements IServicioService {
         int cantGrupos = servicio.getGrupos().size();
         double promedioDePorcentajesDeAsistenciasDeServicio = (double) acumPromProcentajesGrupos / cantGrupos;
         return promedioDePorcentajesDeAsistenciasDeServicio;
+    }
+
+    public double calcularPorcentajePromedioInasistenciaDeServicio(Long idServicio, Month month, Year year) {
+        Servicio servicio = this.findServicio(idServicio);
+        double acumPromProcentajesGrupos = 0;
+
+        if (! servicio.tieneGrupos()) return acumPromProcentajesGrupos;
+
+        for (Grupo grupo : servicio.getGrupos()) {
+            acumPromProcentajesGrupos += this.calcularPorcentajePromedioInasistenciaDeGrupo(grupo.getId(), month, year);
+        }
+
+        int cantGrupos = servicio.getGrupos().size();
+        double promedioDePorcentajesDeInasistenciasDeServicio = (double) acumPromProcentajesGrupos / cantGrupos;
+        return promedioDePorcentajesDeInasistenciasDeServicio;
     }
 
     public Set<Alumno> calcularAlumnosConMasFaltas(Servicio servicio, Month month, Year year) {
@@ -1006,7 +1054,7 @@ public class ServicioService implements IServicioService {
     public EstadisticasAsistenciasServicioDTO obtenerEstadisticasAsistenciasServicio(Long idServicio, Month month, Year year) {
         Servicio servicio = this.findServicio(idServicio);
         double porcentajeAsistencias = this.calcularPorcentajePromedioAsistenciaDeServicio(idServicio, month, year);
-
+        double porcentajeInasistencias = this.calcularPorcentajePromedioInasistenciaDeServicio(idServicio, month, year);
         Set<Alumno> alumnosConMasFaltas = this.calcularAlumnosConMasFaltas(servicio, month, year);
         Set<Alumno> alumnosConMenosFaltas = this.calcularAlumnosConMenosFaltas(servicio, month, year);
         Set<Alumno> alumnosConAsistenciaPerfecta = this.calcularAlumnosConAsistenciaPerfecta(servicio, month, year);
@@ -1021,6 +1069,7 @@ public class ServicioService implements IServicioService {
         estadisticas.setAlumnosConMasFaltas(alumnosConMasFaltas);
         estadisticas.setAlumnosConMenosFaltas(alumnosConMenosFaltas);
         estadisticas.setPorcentajeAsistenciasPromedio(porcentajeAsistencias);
+        estadisticas.setPorcentajeInasistenciasPromedio(porcentajeInasistencias);
         estadisticas.setAlumnosConAsistenciaPerfecta(alumnosConAsistenciaPerfecta);
         estadisticas.setCantidadClasesNoDadas(cantClasesNoDadas);
         return estadisticas;

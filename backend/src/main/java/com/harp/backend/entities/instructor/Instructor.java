@@ -118,7 +118,7 @@ public class Instructor {
         return this.obtenerServiciosConInscripciones()
                 .stream()
                 .mapToDouble(servicio -> servicio.calcularTiempoPromedioRespuestaSolicitudesEnDias(day, month, year) )
-                .sum();
+                .average().orElse(0.0);
     }
 
     public int calcularCantidadAlumnos(Month month, Year year) {
@@ -132,7 +132,7 @@ public class Instructor {
         return this.obtenerServiciosConInscripciones()
                 .stream()
                 .mapToDouble(servicio -> servicio.calcularPorcentajeSolicitudesAceptadas(day, month, year) )
-                .sum();
+                .average().orElse(0.0);
     }
 
     public int contarSolicitudesInscripcionEn(Integer day, Month month, Year year) {
@@ -146,14 +146,14 @@ public class Instructor {
         return this.obtenerServiciosConInscripciones()
                 .stream()
                 .mapToDouble(servicio -> servicio.calcularDemoraPromedioDeAlumnosEnAbonar(month, year))
-                .sum();
+                .average().orElse(0.0);
     }
 
     public double calcularPorcentajePromedioDeVencimientos(Month month, Year year) {
         return this.obtenerServiciosConInscripciones()
                 .stream()
                 .mapToDouble(servicio -> servicio.calcularPorcentajePromedioDeVencimientos(month, year))
-                .sum();
+                .average().orElse(0.0);
     }
 
     public double[] calcularTotalIngresosServiciosPorMes(Year year) {

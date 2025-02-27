@@ -31,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
@@ -420,51 +422,57 @@ public class ServicioController {
     // ESTADISTICAS
     @GetMapping("/{idServicio}/estadisticas-asistencias")
     public ResponseEntity<EstadisticasAsistenciasServicioDTO> obtenerEstadisticasAsistenciasServicio(@PathVariable Long idServicio,
-                                                                             @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
-        EstadisticasAsistenciasServicioDTO estadisticas = servicioService.obtenerEstadisticasAsistenciasServicio(idServicio, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+                                                                                                     @RequestParam Month month,
+                                                                                                     @RequestParam Year year) {
+        EstadisticasAsistenciasServicioDTO estadisticas = servicioService.obtenerEstadisticasAsistenciasServicio(idServicio, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
     };
 
     @GetMapping("/{idServicio}/estadisticas-pagos")
     public ResponseEntity<EstadisticasPagosServicioDTO> obtenerEstadisticasPagosServicio(@PathVariable Long idServicio,
-                                                                                               @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
-        EstadisticasPagosServicioDTO estadisticas = servicioService.obtenerEstadisticasPagosServicio(idServicio, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+                                                                                         @RequestParam Month month,
+                                                                                         @RequestParam Year year) {
+        EstadisticasPagosServicioDTO estadisticas = servicioService.obtenerEstadisticasPagosServicio(idServicio, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
     };
 
     @GetMapping("/{idServicio}/estadisticas-inscripciones")
     public ResponseEntity<EstadisticasInscripcionesServicioDTO> obtenerEstadisticasInscripcionesServicio(@PathVariable Long idServicio,
-                                                                                                       @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
-        EstadisticasInscripcionesServicioDTO estadisticas = servicioService.obtenerEstadisticasInscripcionesServicio(idServicio, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+                                                                                                         @RequestParam Month month,
+                                                                                                         @RequestParam Year year) {
+        EstadisticasInscripcionesServicioDTO estadisticas = servicioService.obtenerEstadisticasInscripcionesServicio(idServicio, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
     };
 
     @GetMapping("/{idServicio}/estadisticas-precios")
     public ResponseEntity<EstadisticasPreciosServicioDTO> obtenerEstadisticasPreciosServicio(@PathVariable Long idServicio,
-                                                                                                 @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
-        EstadisticasPreciosServicioDTO estadisticas = servicioService.obtenerEstadisticasPreciosServicio(idServicio, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+                                                                                             @RequestParam Month month,
+                                                                                             @RequestParam Year year) {
+        EstadisticasPreciosServicioDTO estadisticas = servicioService.obtenerEstadisticasPreciosServicio(idServicio, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
     };
 
     @GetMapping("/{idServicio}/estadisticas-ingresos")
     public ResponseEntity<EstadisticasIngresosServicioDTO> obtenerEstadisticasIngresosServicio(@PathVariable Long idServicio,
-                                                                                             @RequestBody SolEstadisticasServicioDTO solEstadisticasDTO) {
-        EstadisticasIngresosServicioDTO estadisticas = servicioService.obtenerEstadisticasIngresosServicio(idServicio, solEstadisticasDTO.getMonth(), solEstadisticasDTO.getYear());
+                                                                                               @RequestParam Month month,
+                                                                                               @RequestParam Year year) {
+        EstadisticasIngresosServicioDTO estadisticas = servicioService.obtenerEstadisticasIngresosServicio(idServicio, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(estadisticas);
     };
 
     @GetMapping("/{idServicio}/ingresos-recibidos-esperados")
-    public ResponseEntity<List<Double>> calcularIngresoPendienteYEsperado(@PathVariable @Min(1) Long idServicio,
-                                                                          @RequestBody SolEstadisticasServicioDTO solicitud) {
-        List<Double> totales = servicioService.calcularIngresosTotalPendienteYEsperado(idServicio, solicitud.getMonth(), solicitud.getYear());
+    public ResponseEntity<List<Double>> calcularIngresoPendienteYEsperado(@PathVariable Long idServicio,
+                                                                          @RequestParam Month month,
+                                                                          @RequestParam Year year) {
+        List<Double> totales = servicioService.calcularIngresosTotalPendienteYEsperado(idServicio, month, year);
         return ResponseEntity.status(HttpStatus.OK).body(totales);
     };
 
     // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
     @GetMapping("/{idServicio}/ingresos-por-mes")
     public ResponseEntity<double[]> calcularIngresosPorMesDeServicios(@PathVariable Long idServicio,
-                                                                      @RequestBody SolEstadisticasServicioDTO solicitud) {
-        double[] totalesPorMes = servicioService.calcularIngresosPorMesDeServicio(idServicio, solicitud.getYear());
+                                                                      @RequestParam Year year) {
+        double[] totalesPorMes = servicioService.calcularIngresosPorMesDeServicio(idServicio, year);
         return ResponseEntity.status(HttpStatus.OK).body(totalesPorMes);
     };
 }

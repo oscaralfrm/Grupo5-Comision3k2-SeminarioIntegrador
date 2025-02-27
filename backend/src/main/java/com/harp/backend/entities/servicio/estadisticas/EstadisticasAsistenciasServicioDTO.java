@@ -19,6 +19,7 @@ public class EstadisticasAsistenciasServicioDTO {
     private Year year;
     private int totalAlumnos;
     private double porcentajeAsistenciasPromedio;
+    private double porcentajeInasistenciasPromedio;
     private Set<Alumno> alumnosConMasFaltas;
     private Set<Alumno> alumnosConMenosFaltas;
     private Set<Alumno> alumnosConAsistenciaPerfecta;
