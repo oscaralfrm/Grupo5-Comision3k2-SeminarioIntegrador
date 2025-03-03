@@ -12,7 +12,7 @@ import { getGruposDeServicio } from "../../../services/Grupo";
 import ConfirmModal from "../../CartelDeExito/ModalConfirmacion";
 import SuccessModal from "../../CartelDeExito/CartelDeExito";
 import ModalFinalizarServicio from "./ModalFinalizarServicio";
-import { habilitarInscripcionesDeServicio } from "../../../services/Inscripcion";
+import { deshabilitarInscripcionesDeServicio, habilitarInscripcionesDeServicio } from "../../../services/Inscripcion";
 
 const InfoServicioPage = () => {
   const { idServicio, idInstructor } = useParams();
@@ -330,8 +330,8 @@ const InfoServicioPage = () => {
               <Button
                 variant="primary"
                 onClick={() =>
-                  handleOpenConfirmModal("Publicar", async () => {
-                    await habilitarInscripcionesDeServicio(idServicio);
+                  handleOpenConfirmModal("Ocultar", async () => {
+                    await deshabilitarInscripcionesDeServicio(idServicio);
                     setShowSuccessModal(true);
                     handleCloseConfirmModal();
                   })
@@ -339,7 +339,7 @@ const InfoServicioPage = () => {
                 style={buttonResponsiveStyle}
                 className="fw-bold"
               >
-                Ocultar {/*Como un habilitar inscripciones */}
+                Ocultar {/*Como un deshabilitar inscripciones */}
               </Button>
             </div>
           )}

@@ -59,7 +59,7 @@ export const getAllServiciosPublicosSinAlumnoOInstructor = async ({
     idInstructor,
     page = 0,
     size = 20,
-  }) => {
+}) => {
     console.log({
         nombre,
         categoriaNombre,
@@ -77,63 +77,63 @@ export const getAllServiciosPublicosSinAlumnoOInstructor = async ({
         idInstructor,
         page,
         size,
-      });
+    });
     try {
-      const data = await descubrirServicios({
-        nombre,
-        categoriaNombre,
-        modalidadClasesNombre,
-        calificacionMinima,
-        ubicacion,
-        conClaseGratis,
-        frecuenciaSemanalClases,
-        precioMinimo,
-        cantCiclo,
-        unidadCiclo,
-        diasSemanales,
-        turnos,
-        idAlumno,
-        idInstructor,
-        page,
-        size,
-      });
-      console.log("Servicios obtenidos", data);
-  
-      const serviciosArray = Array.isArray(data.content) ? data.content : [];
-  
-      // Se procesan cada uno de los servicios (agregando datos del instructor, resumen, etc.)
-      const servicios = await Promise.all(
-        serviciosArray.map(async (servicio) => {
-          const instructor = await obtenerInstructorDeServicio(servicio.id);
-          const resumen = await getResumenReseniasDeServicio(servicio.id);
-          const grupos = await getGruposDeServicio(servicio.id);
-  
-          // Obtener montos de los grupos
-          const montos = grupos.map(
-            (grupo) => getMontoActualGrupoDeHistorial(grupo.historialMontos)?.monto ?? 0
-          );
-  
-          // Calcular monto mínimo
-          const montoMinimo = montos.length > 0 ? Math.min(...montos) : "Sin definir";
-  
-          return {
-            ...servicio,
-            instructorId: instructor.id,
-            instructorNombre: instructor.usuario.nombre + " " + instructor.usuario.apellido,
-            resumen,
-            montoMinimo,
-          };
-        })
-      );
-  
-      return { content: servicios, totalPages: data.totalPages };
-    } catch (error) {
-      console.error("Error al obtener los servicios", error);
-      throw error;
-    }
-  };
+        const data = await descubrirServicios({
+            nombre,
+            categoriaNombre,
+            modalidadClasesNombre,
+            calificacionMinima,
+            ubicacion,
+            conClaseGratis,
+            frecuenciaSemanalClases,
+            precioMinimo,
+            cantCiclo,
+            unidadCiclo,
+            diasSemanales,
+            turnos,
+            idAlumno,
+            idInstructor,
+            page,
+            size,
+        });
+        console.log("Servicios obtenidos", data);
 
-export const descubrirServicios = async ({ 
+        const serviciosArray = Array.isArray(data.content) ? data.content : [];
+
+        // Se procesan cada uno de los servicios (agregando datos del instructor, resumen, etc.)
+        const servicios = await Promise.all(
+            serviciosArray.map(async (servicio) => {
+                const instructor = await obtenerInstructorDeServicio(servicio.id);
+                const resumen = await getResumenReseniasDeServicio(servicio.id);
+                const grupos = await getGruposDeServicio(servicio.id);
+
+                // Obtener montos de los grupos
+                const montos = grupos.map(
+                    (grupo) => getMontoActualGrupoDeHistorial(grupo.historialMontos)?.monto ?? 0
+                );
+
+                // Calcular monto mínimo
+                const montoMinimo = montos.length > 0 ? Math.min(...montos) : "Sin definir";
+
+                return {
+                    ...servicio,
+                    instructorId: instructor.id,
+                    instructorNombre: instructor.usuario.nombre + " " + instructor.usuario.apellido,
+                    resumen,
+                    montoMinimo,
+                };
+            })
+        );
+
+        return { content: servicios, totalPages: data.totalPages };
+    } catch (error) {
+        console.error("Error al obtener los servicios", error);
+        throw error;
+    }
+};
+
+export const descubrirServicios = async ({
     nombre,
     categoriaNombre,
     modalidadClasesNombre,
@@ -150,36 +150,36 @@ export const descubrirServicios = async ({
     idInstructor,
     page = 0,
     size = 20,
-  }) => {
+}) => {
     try {
-      const response = await axios.get(`${API_URL}servicios/descubrir-servicios`, {
-        params: {
-          nombre,
-          categoriaNombre,
-          modalidadClasesNombre,
-          calificacionMinima,
-          ubicacion,
-          conClaseGratis,
-          frecuenciaSemanalClases,
-          precioMinimo,
-          cantCiclo,
-          unidadCiclo,
-          diasSemanales, // se enviará como arreglo
-          turnos,       // se enviará como arreglo
-          idAlumno,
-          idInstructor,
-          page,
-          size,
-        },
-        // Aquí configuramos la serialización de arrays para que se envíen sin corchetes
-      paramsSerializer: params => qs.stringify(params, { arrayFormat: "repeat" }),
-      });
-      return response.data;
+        const response = await axios.get(`${API_URL}servicios/descubrir-servicios`, {
+            params: {
+                nombre,
+                categoriaNombre,
+                modalidadClasesNombre,
+                calificacionMinima,
+                ubicacion,
+                conClaseGratis,
+                frecuenciaSemanalClases,
+                precioMinimo,
+                cantCiclo,
+                unidadCiclo,
+                diasSemanales, // se enviará como arreglo
+                turnos,       // se enviará como arreglo
+                idAlumno,
+                idInstructor,
+                page,
+                size,
+            },
+            // Aquí configuramos la serialización de arrays para que se envíen sin corchetes
+            paramsSerializer: params => qs.stringify(params, { arrayFormat: "repeat" }),
+        });
+        return response.data;
     } catch (error) {
-      console.error("Error al obtener descubrir servicios:", error);
-      throw error;
+        console.error("Error al obtener descubrir servicios:", error);
+        throw error;
     }
-  };
+};
 
 
 export const getServicioByNombre = async (nombre) => {
@@ -288,7 +288,7 @@ export const updateServicio = async (idServicio, servicioDTO) => {
 // Función para editar la descripcion de un servicio
 export const editarDescripcionDeServicio = async (idServicio, nuevaDescripcion) => {
     try {
-        const response = await axios.put(`${API_URL}servicios/${idServicio}/editar-descripcion`, {descripcion: nuevaDescripcion});
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/editar-descripcion`, { descripcion: nuevaDescripcion });
         console.log(response);
         return response.data;
     } catch (error) {
@@ -439,8 +439,8 @@ export const calcularDuracionTotalDiasServicio = async (idServicio) => {
 // Calcula si el servicio tiene cupos libres segun si las incripcioens son al servicio, a grupos o horarios
 export const getCuposLibresDeServicio = async (idServicio, idGrupo, idsHorarios) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/cupos-libres`, 
-            {idGrupo, idsHorarios});
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/cupos-libres`,
+            { idGrupo, idsHorarios });
         return response.data;
     } catch (error) {
         console.error('Error al calcular duración total del servicio', error);
@@ -487,7 +487,7 @@ export const getDetallesDeServicio = async (idServicio) => {
             diasDeAntelacionPago: servicio.diasDeAntelacionPago,
             montoInscripcion: servicio.montoInscripcion
         };
-        
+
     } catch (error) {
         console.error("Error al obtener detalles del servicio", error);
         throw error;
@@ -521,7 +521,7 @@ export const getAllServiciosConPaginacionPrueba = async (page = 1, size = 10) =>
 
 export const addMontoInscripcionToServicio = async (idServicio, monto, pagoAnticipado) => {
     try {
-        const response = await axios.put(`${API_URL}servicios/${idServicio}/monto-inscripcion`, {monto, pagoAnticipado});
+        const response = await axios.put(`${API_URL}servicios/${idServicio}/monto-inscripcion`, { monto, pagoAnticipado });
         // Acceder a response.data.content para obtener los servicios
         return response.data;
     } catch (error) {
@@ -543,66 +543,71 @@ export const yaInicio = (fechaInicio) => {
 export const generarLinkMaps = (ubicacion) => {
     if (!ubicacion) return "#";
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicacion)}`;
-  };
+};
 
-  export const tieneGrupoConEsteNombre = async (idServicio, nombreGrupo) => {
+export const tieneGrupoConEsteNombre = async (idServicio, nombreGrupo) => {
     try {
-      const response = await axios.get(`${API_URL}servicios/${idServicio}/by-nombre-grupo?nombreGrupo=${nombreGrupo}`);
-      console.log("nombre usado", response);
-      return response.data;
-    } catch (error) {
-      console.error(`Error buscando nombre grupo usado por servicio`, error);
-      throw error;
-    }
-  };
-
-  export const obtenerEstadisticasIngresosDeServicio = async (idServicio, month, year) => {
-    try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-ingresos`, {month, year});
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/by-nombre-grupo?nombreGrupo=${nombreGrupo}`);
+        console.log("nombre usado", response);
         return response.data;
     } catch (error) {
-        console.error('Error al obtener las estadisticas', error);
+        console.error(`Error buscando nombre grupo usado por servicio`, error);
         throw error;
+    }
+};
+
+export const obtenerEstadisticasIngresosDeServicio = async (idServicio, month, year) => {
+    try {
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-ingresos`, { params: { month, year } });
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener las estadisticas', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
 export const obtenerEstadisticasAsistenciasDeServicio = async (idServicio, month, year) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-asistencias`, {month, year});
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-asistencias`, { params: { month, year } });
         return response.data;
     } catch (error) {
-        console.error('Error al obtener las estadisticas', error);
-        throw error;
+        console.error('Error al obtener las estadisticas', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
 export const obtenerEstadisticasPreciosDeServicio = async (idServicio, month, year) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-precios`, {month, year});
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-precios`, { params: { month, year } });
         return response.data;
     } catch (error) {
-        console.error('Error al obtener las estadisticas', error);
-        throw error;
+        console.error('Error al obtener las estadisticas', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
 export const obtenerEstadisticasPagosDeServicio = async (idServicio, month, year) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-pagos`, {month, year});
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-pagos`, { params: { month, year } });
         return response.data;
     } catch (error) {
-        console.error('Error al obtener las estadisticas', error);
-        throw error;
+        console.error('Error al obtener las estadisticas', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };
 
 
 export const obtenerEstadisticasInscripcionesDeServicio = async (idServicio, month, year) => {
     try {
-        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-inscripciones`, {month, year});
+        const response = await axios.get(`${API_URL}servicios/${idServicio}/estadisticas-inscripciones`, { params: { month, year } });
         return response.data;
     } catch (error) {
-        console.error('Error al obtener las estadisticas', error);
-        throw error;
+        console.error('Error al obtener las estadisticas', error.response.data.message);
+        const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+        throw new Error(errorMessage); // Pasa el mensaje al componente
     }
 };

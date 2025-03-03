@@ -36,6 +36,8 @@ const AppNavbar = () => {
                             ||  location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/mi-servicio`) ;
   const isConfigService = location.pathname.startsWith(`/instructor/${idInstructor}/servicio/${idServicio}/configurar`);
   const isInstructorService = location.pathname === `/instructor/${idInstructor}/servicios`;
+  const isInstructorEstadisticas = location.pathname === `/instructor/${idInstructor}/estadisticas`;
+  const isInstructorHorarios = location.pathname === `/instructor/${idInstructor}/horarios`;
   const isInstructorResumenAlumnos = location.pathname === `/instructor/${idInstructor}/alumnos/${nombreAlumno}`;
   const isResumenInstructor = location.pathname === `/alumno/${idAlumno}/instructores/${nombreInstructor}` || location.pathname === `/instructor/${idInstructor}/instructores/${nombreInstructor}`;
   const isResumenInscripcion = location.pathname === `/instructor/${idInstructor}/servicio/${idServicio}/inscripciones/${idInscripcion}`;
@@ -135,6 +137,8 @@ const AppNavbar = () => {
       {/* Muestra NavbarRegisterChooser en rutas de registro */}
       {isRegisterRoute && <NavbarRegisterChooser />}
       {isInstructorService && <NavbarServicio usuario={usuario} />}
+      {isInstructorEstadisticas && <NavbarServicio usuario={usuario} />}
+      {isInstructorHorarios && <NavbarServicio usuario={usuario} />}
       {isLogin && <NavbarRegisterChooser />}
 
       {isHistorialClases && <NavbarInstructorAtras usuario={usuario}/>}

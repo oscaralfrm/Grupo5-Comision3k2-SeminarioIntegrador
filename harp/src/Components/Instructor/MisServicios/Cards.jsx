@@ -58,7 +58,7 @@ const CourseCards = ({ servicios, Instructorid }) => {
                 backgroundColor:
                   highlightedCourseId === servicio.id
                     ? "#A5B4FC"
-                    : servicio.inscripcionesAbiertas === false
+                    : servicio.activo === false
                       ? "#E0E0E0" // Color gris si el servicio no es público
                       : "#fff",
                 borderRadius: "20px",
@@ -73,9 +73,9 @@ const CourseCards = ({ servicios, Instructorid }) => {
               <div
                 style={{
                   opacity:
-                    servicio.inscripcionesAbiertas === false ? "0.6" : "1", // Contenido más opaco si no está publicado
+                  servicio.activo === false ? "0.6" : "1", // Contenido más opaco si no está publicado
                   pointerEvents:
-                    servicio.inscripcionesAbiertas === false ? "none" : "auto", // Deshabilitar interacción solo con el contenido
+                  servicio.activo === false ? "none" : "auto", // Deshabilitar interacción solo con el contenido
                 }}
               >
                 <div

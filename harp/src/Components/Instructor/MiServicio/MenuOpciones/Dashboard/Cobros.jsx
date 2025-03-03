@@ -37,7 +37,7 @@ const Cobros = () => {
         // USamos este servicio que trae las ultimas cuotas de cada alumno de ese servicio
         const cuotasData = await traerUltimasCuotasDeServicio(idServicio);
         setCuotas(cuotasData);
-        console.log("Cuotas", cuotas);
+        console.log("Cuotas", cuotasData);
       } catch (error) {
         console.error("Error al traer las cuotas:", error);
       }
@@ -75,13 +75,13 @@ const Cobros = () => {
     .filter(([_, cuotas]) => cuotas.length > 0);
 
   // Navegar a la página de pagos
-  const handleGoToPayments = (idAlumno) => {
-    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/cobros?alumno=${idAlumno}`);
+  const handleGoToPayments = (idInscrip) => {
+    navigate(`/instructor/${idInstructor}/servicio/${idServicio}/cobros?alumno=${idInscrip}`);
   };
 
   // Navegar a la página del alumno
-  const handleGoToStudent = (idAlumno) => {
-    navigate(`/alumnos/${idAlumno}`);
+  const handleGoToStudent = (idInscrip) => {
+    navigate(`/inscripciones/${idInscrip}`);
   };
 
   // Alternar visibilidad de cuotas pendientes
@@ -177,11 +177,11 @@ const Cobros = () => {
         <ul style={{ listStyle: "none", padding: 0 }}>
           {cuotasPendientes
             .slice(0, showAllPending ? cuotasPendientes.length : 3)
-            .map(([alumno, cuotas]) => (
-              <li key={alumno.id} style={{ marginBottom: "10px" }}>
-                <span>{alumno.usuario.nombre}</span>
+            .map(([inscrip, cuotas]) => (
+              <li key={inscrip.id} style={{ marginBottom: "10px" }}>
+                <span>{inscrip.alumno.usuario.nombre}</span>
                 <button
-                  onClick={() => handleGoToPayments(alumno.id)}
+                  onClick={() => handleGoToPayments(inscrip.id)}
                   style={{
                     backgroundColor: "#4F46E5",
                     color: "white",
@@ -226,10 +226,10 @@ const Cobros = () => {
           </button>
           {showLatePayments && (
             <ul style={{ listStyle: "none", padding: 0 }}>
-              {cuotasVencidas.map(([alumno]) => (
-                <li key={alumno.id} style={{ marginBottom: "10px" }}>
+              {cuotasVencidas.map(([inscrip]) => (
+                <li key={inscrip.id} style={{ marginBottom: "10px" }}>
                   <button
-                    onClick={() => handleGoToStudent(alumno.id)}
+                    onClick={() => handleGoToStudent(inscrip.id)}
                     style={{
                       backgroundColor: "#ffcccc",
                       color: "#dc3545",
@@ -240,7 +240,7 @@ const Cobros = () => {
                       width: "100%",
                     }}
                   >
-                    {alumno.usuario.nombre}
+                    {inscrip.alumno.usuario.nombre}
                   </button>
                 </li>
               ))}
