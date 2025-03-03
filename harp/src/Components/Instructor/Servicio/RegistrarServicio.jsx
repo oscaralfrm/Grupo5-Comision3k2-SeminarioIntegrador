@@ -8,13 +8,12 @@ import Cobros from "./Tabs/Cobros";
 import Modalidad from "./Tabs/Modalidad";
 import ResumenServicio from "./Tabs/InfoCard";
 import { Tab, Tabs, Button } from "react-bootstrap";
-import SuccessModal from "../../CartelDeExito/CartelDeExito";
+import SuccessCard from "../../CartelDeExito/SuccessCard";
 
 export default function ServicioForm() {
   const [activeTab, setActiveTab] = useState("general");
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccessCard, setShowSuccessCard] = useState(false);
   const [categorias, setCategorias] = useState([]);
-  // Agrega estado para la vista previa del logo
   const [logoPreview, setLogoPreview] = useState("");
   const { idInstructor } = useParams();
   const navigate = useNavigate();
@@ -39,7 +38,6 @@ export default function ServicioForm() {
       montoInscripcion: 0,
       modalidadClases: "",
       modalidadInscripcion: ""
-      // Puedes inicializar "logo" si lo requieres
     },
   });
 
@@ -77,15 +75,12 @@ export default function ServicioForm() {
   }
 
   const onSubmit = async (data) => {
-    console.log("isValid:", isValid); // Agregar esta línea
-    console.log("errors:", errors); // Agregar esta línea
     if (!isValid) {
       const errorMessages = Object.values(errors).map((error) => error.message);
       alert(`El formulario no es válido:\n${errorMessages.join("\n")}`);
       return;
     }
-    console.log(data.logo);
-    console.log(data.logo[0]);
+
     const ciclo = obtenerValoresCiclo(data.frecuenciaCuotas, data.duracionCuotasPersonalizada);
     const servicioDTO = {
       nombre: data.nombreServicio,
@@ -93,20 +88,15 @@ export default function ServicioForm() {
       descripcion: data.descripcion,
       ubicacion: data.ubicacion,
       categoria: data.categoria,
-      tipoCiclo:
-        data.ciclos === "En fechas fijas"
-          ? "SegunCalendario"
-          : "SegunInscripcion",
+      tipoCiclo: data.ciclos === "En fechas fijas" ? "SegunCalendario" : "SegunInscripcion",
       diaLimitePago: data.fechaLimitePago > 0 ? data.fechaLimitePago : 0,
       cantCiclo: ciclo.cantidad,
       unidadCiclo: ciclo.unidad,
-      modalidadInscripcion:
-        data.divideEnGrupos === "Sin clases" ? "AServicio" : "AGrupo",
+      modalidadInscripcion: data.divideEnGrupos === "Sin clases" ? "AServicio" : "AGrupo",
       claseDePrueba: data.clasePrueba === "sí" ? true : false,
       asistenciasActivas: data.asistencias === "sí" ? true : false,
       montoInscripcion: data.montoInscripcion || 0,
-      pagoAnticipadoDeMontoInscripcion:
-        data.pagoInscripcion === "De forma Anticipada",
+      pagoAnticipadoDeMontoInscripcion: data.pagoInscripcion === "De forma Anticipada",
       logo: data.logo[0],
       modalidadClases: data.modalidadClases.includes("virtual") && data.modalidadClases.includes("presencial")
         ? "Hibrida"
@@ -115,17 +105,17 @@ export default function ServicioForm() {
           : "Presencial"
     };
 
-    console.log("ServicioDTO", servicioDTO);
-
     try {
       const response = await createServicio(servicioDTO);
-      //alert("Servicio creado con éxito");
-      setShowSuccessModal(true);
+      setShowSuccessCard(true);
 
-      navigate(
-        `/instructor/${idInstructor}/servicio/${response.id}/configurar`,
-        { state: { from: window.location.pathname } }
-      );
+      setTimeout(() => {
+        setShowSuccessCard(false);
+        navigate(
+          `/instructor/${idInstructor}/servicio/${response.id}/configurar`,
+          { state: { from: window.location.pathname } }
+        );
+      }, 5000);
     } catch (error) {
       console.error("Error al crear el servicio:", error);
       alert("Hubo un problema al crear el servicio.");
@@ -148,20 +138,19 @@ export default function ServicioForm() {
 
   return (
     <div
-    style={{
-      display: "flex",
-      flexDirection: "row",
-      flexWrap: "wrap",
-      justifyContent: "center",
-      gap: "10px",
-      marginTop: "15vh",
-      fontFamily: "Roboto",
-      overflowX: "hidden", // Evita la barra de desplazamiento horizontal
-      width: "100vw" // Asegura que el contenido no sobrepase el ancho de la pantalla
-    }}
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        gap: "10px",
+        marginTop: "15vh",
+        fontFamily: "Roboto",
+        overflowX: "hidden",
+        width: "100vw"
+      }}
       className="d-flex flex-column flex-md-row align-item-center"
     >
-      {/* Columna Izquierda (Formulario) */}
       <div
         style={{
           flex: 1,
@@ -183,7 +172,6 @@ export default function ServicioForm() {
               className="mb-3"
             >
               <Tab eventKey="general" title="General">
-                {/* Se pasan también logoPreview y setLogoPreview */}
                 <General
                   register={register}
                   errors={errors}
@@ -230,29 +218,26 @@ export default function ServicioForm() {
                 Registrar
               </Button>
             </div>
-
           </form>
         </div>
       </div>
 
-      {/* Columna Derecha (ResumenServicio) */}
       <div
         style={{
           flex: 1,
-          maxWidth: "80vh", // Ancho máximo de la card
+          maxWidth: "80vh",
         }}
         className="col-11 col-md-6 col-lg-11 mt-4 mt-md-0 mb-3 p-3"
       >
         <ResumenServicio formData={formData} />
       </div>
 
-      {/* Success Modal reutilizable */}
-      <SuccessModal
-        show={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        title={"Servicio creado con éxito"}
-        message={""}
-      />
+      {showSuccessCard && (
+        <SuccessCard
+          nombreServicio={formData.nombreServicio}
+          onClose={() => setShowSuccessCard(false)}
+        />
+      )}
     </div>
   );
 }
