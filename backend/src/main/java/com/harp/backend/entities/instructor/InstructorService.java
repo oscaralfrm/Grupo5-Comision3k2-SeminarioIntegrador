@@ -96,6 +96,18 @@ public class InstructorService implements IInstructorService {
                 .toList();
     }
 
+    public List<Servicio> findServiciosVigentesDeInstructor(Long idInstructor) {
+        return this.findServiciosDeInstructor(idInstructor)
+                .stream().filter(Servicio::esVigente)
+                .toList();
+    }
+
+    public List<Servicio> findServiciosActivosDeInstructor(Long idInstructor) {
+        return this.findServiciosDeInstructor(idInstructor)
+                .stream().filter(Servicio::isActivo)
+                .toList();
+    }
+
 
     @Override
     public Instructor editInstructor(Long idInstructor, InstructorDTO instructorDTO) {

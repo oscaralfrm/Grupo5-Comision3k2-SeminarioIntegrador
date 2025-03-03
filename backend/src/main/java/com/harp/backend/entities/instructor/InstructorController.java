@@ -85,6 +85,12 @@ public class InstructorController {
         return ResponseEntity.status(HttpStatus.OK).body(servicios);
     };
 
+    @GetMapping("/{idInstructor}/servicios-vigentes")
+    public ResponseEntity<List<Servicio>> traerServiciosVigentesDeInstructor(@PathVariable Long idInstructor) {
+        List<Servicio> servicios = instructorService.findServiciosVigentesDeInstructor(idInstructor);
+        return ResponseEntity.status(HttpStatus.OK).body(servicios);
+    };
+
     // GET TODOS LOS SERVICIOS DE UN INSTRUCTOR
     @GetMapping("/{idInstructor}/servicios/ingresos-por-mes")
     public ResponseEntity<double[]> calcularIngresosPorMesDeServicios(@PathVariable Long idInstructor,

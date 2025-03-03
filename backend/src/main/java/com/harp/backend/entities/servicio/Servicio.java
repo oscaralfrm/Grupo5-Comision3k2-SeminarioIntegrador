@@ -383,6 +383,12 @@ public class Servicio {
         return (! this.publico);
     }
 
+    public boolean esVigente() {
+        // es borrador si publico es false
+        return (this.publico && this.activo);
+    }
+
+
     public boolean yaFinalizo() {
         if (this.fechaFin == null) {
             return false;
@@ -718,14 +724,14 @@ public class Servicio {
         return this.grupos.stream().flatMap(g -> g.getClases().stream()).toList();
     }
 
-    public List<List<Object>> findAlumnosConSusUltimasCuotas() {
+    public List<List<Object>> findInscripcionesConSusUltimasCuotas() {
         // tengo que en la primera lista agregar una lista que tenga Alumno cuota
         List<List<Object>> alumnosConSusCuotas = new ArrayList<>();
-        List<Alumno> alumnosActuales =  this.obtenerAlumnosActuales();
-        for (Alumno unAlumno : alumnosActuales) {
-            List<Cuota> susCuotas = unAlumno.obtenerCuotasPendientesDeEsteServicio(this);
-            List<Object> unAlumnoConSusCuotas = List.of(unAlumno, susCuotas);
-            alumnosConSusCuotas.add(unAlumnoConSusCuotas);
+        List<Inscripcion> inscripcionesActuales =  this.obtenerInscripcionesVigentes();
+        for (Inscripcion unaInscrip : inscripcionesActuales) {
+            List<Cuota> susCuotas = unaInscrip.obtenerCuotasPendientes();
+            List<Object> unaInscripcionConSusCuotas = List.of(unaInscrip, susCuotas);
+            alumnosConSusCuotas.add(unaInscripcionConSusCuotas);
         }
         return alumnosConSusCuotas;
     }

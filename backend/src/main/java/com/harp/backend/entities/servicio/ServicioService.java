@@ -744,7 +744,7 @@ public class ServicioService implements IServicioService {
 
     public  List<List<Object>> findAlumnosConSusUltimasCuotasDeServicio(Long idServicio) {
         Servicio servicio = this.findServicio(idServicio);
-        return servicio.findAlumnosConSusUltimasCuotas();
+        return servicio.findInscripcionesConSusUltimasCuotas();
     }
 
     public List<MontoServicio> obtenerMontosProgramadosFuturosGruposDeServicio(Long idServicio) {
