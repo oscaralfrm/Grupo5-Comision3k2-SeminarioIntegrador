@@ -115,7 +115,7 @@ export default function ServicioForm() {
           `/instructor/${idInstructor}/servicio/${response.id}/configurar`,
           { state: { from: window.location.pathname } }
         );
-      }, 5000);
+      }, 3000);
     } catch (error) {
       console.error("Error al crear el servicio:", error);
       alert("Hubo un problema al crear el servicio.");

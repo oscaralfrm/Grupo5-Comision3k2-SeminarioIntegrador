@@ -15,9 +15,9 @@ const SuccessCard = ({ nombreServicio, onClose }) => {
     >
       <Card style={{ width: "20rem", textAlign: "center", padding: "20px" }}>
         <div style={{ position: "absolute", right: "10px", top: "10px" }}>
-          <Button variant="link" onClick={onClose} aria-label="Cerrar">
+          {/* <Button variant="link" onClick={onClose} aria-label="Cerrar">
             ×
-          </Button>
+          </Button> */}
         </div>
         <Card.Body>
           <div style={{ fontSize: "2rem", color: "#6a5acd" }}>
