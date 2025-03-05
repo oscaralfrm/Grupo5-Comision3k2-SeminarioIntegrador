@@ -53,6 +53,16 @@ export const getServiciosPublicadosDeInstructor = async (idInstructor) => {
   }
 };
 
+export const getServiciosVigentesDeInstructor = async (idInstructor) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/${idInstructor}/servicios-vigentes`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching servicios for instructor with ID ${idInstructor}:`, error);
+    throw error;
+  }
+};
+
 
 export const calcularIngresosPorMesDeServicios = async (idInstructor) => {
   try {
@@ -317,4 +327,55 @@ export const traerSolicitudesInscripcionDeServiciosDeInstructor = async (idInstr
   }
 };
 
+export const obtenerEstadisticasIngresosDeInstructor = async (idInstructor, month, year) => {
+  try {
+      const response = await axios.get(`${BASE_URL}/${idInstructor}/estadisticas-ingresos`, {params: {month, year}});
+      return response.data;
+  } catch (error) {
+    console.error('Error al obtener las estadisticas', error.response.data.message);
+    const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado';
+    throw new Error(errorMessage); // Pasa el mensaje al componente
+  }
+};
+
+export const obtenerEstadisticasAsistenciasDeInstructor = async (idInstructor, month, year) => {
+  try {
+      const response = await axios.get(`${BASE_URL}/${idInstructor}/estadisticas-asistencias`, {params: {month, year}});
+      return response.data;
+  } catch (error) {
+      console.error('Error al obtener las estadisticas', error);
+      throw error;
+  }
+};
+
+export const obtenerEstadisticasPreciosDeInstructor = async (idInstructor, month, year) => {
+  try {
+      const response = await axios.get(`${BASE_URL}/${idInstructor}/estadisticas-precios`, {params: {month, year}});
+      return response.data;
+  } catch (error) {
+      console.error('Error al obtener las estadisticas', error);
+      throw error;
+  }
+};
+
+export const obtenerEstadisticasPagosDeInstructor = async (idInstructor, month, year) => {
+  try {
+      const response = await axios.get(`${BASE_URL}/${idInstructor}/estadisticas-pagos`,{params: {month, year}});
+      return response.data;
+  } catch (error) {
+      console.error('Error al obtener las estadisticas', error);
+      throw error;
+  }
+};
+
+
+export const obtenerEstadisticasInscripcionesDeInstructor = async (idInstructor, month, year) => {
+  try {
+      const response = await axios.get(`${BASE_URL}/${idInstructor}/estadisticas-inscripciones`, {params: {month, year}});
+      return response.data;
+  } catch (error) {
+      console.error('Error al obtener las estadisticas', error);
+      throw error;
+  }
+};
 

@@ -40,6 +40,7 @@ import EstadisticasAsistencia from "./Components/Instructor/MiServicio/MenuOpcio
 import PantallaSolicitudesInscripcion from "./Components/Instructor/Inscripciones/SolicitudesInscripcion.jsx";
 import Estadisticas from "./Components/Instructor/Estadisticas/Estadisticas.jsx";
 import SolicitudInscripcionData from "./Components/Instructor/Inscripciones/DatosSolicitudInscripcion.jsx";
+import Horario from "./Components/Instructor/HorarioSemanal/Horario.jsx";
 
 //import MisCursos from "./Components/Alumno/Cursos/MisCursos.jsx";
 
@@ -91,6 +92,10 @@ function App() {
           <Route
             path="instructor/:idInstructor/estadisticas"
             element={<><AppNavbar /><Estadisticas /></>}
+          />
+          <Route
+            path="instructor/:idInstructor/horarios"
+            element={<><AppNavbar /><Horario /></>}
           />
                     
           <Route

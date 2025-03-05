@@ -172,7 +172,7 @@ const Pagos = (props) => {
 
   const handleGoToPayments = () => {
     console.log("Navigating to payments...");
-    navigate(`/alumno/inscripciones/${idInscripcion}/pagos`);
+    navigate(`/alumno/${idAlumno}/inscripciones/pagos`);
   };
 
   const tileClassName = ({ date, view }) => {

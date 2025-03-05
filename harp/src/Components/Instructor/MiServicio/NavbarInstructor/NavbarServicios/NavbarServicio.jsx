@@ -1,14 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import img from "../../../../../assets/LogoHarp420.png"; // Ruta del logo
-import profileImg from "../../../../../assets/profile.png"; // Ruta de la imagen de perfil
-import { obtenerTodasLasNotificacionesDeInstructor } from "../../../../../services/Notificacion";
-import { Navbar, Dropdown, Container, Badge, ListGroup, Button, Card, Tab, Nav } from "react-bootstrap";
+import { useNavigate, useParams, NavLink } from "react-router-dom";
+import {
+  Navbar,
+  Container,
+  Badge,
+  Nav,
+  OverlayTrigger,
+  Tooltip,
+  Dropdown,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faCheck } from "@fortawesome/free-solid-svg-icons"; // Íconos necesario
-import NotificationPanel from "../../../../Notificaciones/NotificacionPanel";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
 import { FaExclamationCircle } from "react-icons/fa";
-import { tieneDatosBancariosCompletos, traerSolicitudesInscripcionDeServiciosDeInstructor } from "../../../../../services/Instructor";
+import img from "../../../../../assets/LogoHarp420.png";
+import profileImg from "../../../../../assets/profile.png";
+import NotificationPanel from "../../../../Notificaciones/NotificacionPanel";
+import {
+  tieneDatosBancariosCompletos,
+  traerSolicitudesInscripcionDeServiciosDeInstructor,
+} from "../../../../../services/Instructor";
+import { obtenerTodasLasNotificacionesDeInstructor } from "../../../../../services/Notificacion";
 
 export default function NavbarServicio({ usuario }) {
   const navigate = useNavigate();
@@ -22,57 +33,80 @@ export default function NavbarServicio({ usuario }) {
   const esteInstructorTieneDatosCompletos = async () => {
     const response = await tieneDatosBancariosCompletos(idInstructor);
     return response;
-  }
+  };
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
   const handleClick = () => {
-    navigate('/');
+    navigate("/");
   };
 
   useEffect(() => {
     const fetchNotificaciones = async () => {
       try {
-        const notificaciones = await obtenerTodasLasNotificacionesDeInstructor(idInstructor);
-        setNotificaciones(notificaciones);
-        console.log(notificaciones);
+        const notifs = await obtenerTodasLasNotificacionesDeInstructor(idInstructor);
+        setNotificaciones(notifs);
       } catch (error) {
         console.error("Error al obtener las notificaciones:", error);
       }
     };
-
     fetchNotificaciones();
   }, [idInstructor]);
 
-  const hasUnreadNotifications = notificaciones.some(notif => !notif.leido);
+  const hasUnreadNotifications = notificaciones.some((notif) => !notif.leido);
 
   useEffect(() => {
     const fetchInstructorData = async () => {
       try {
-        const response = await esteInstructorTieneDatosCompletos(); // Espera a que se resuelva la promesa
-        setTieneDatosCompletos(response); // Guarda el resultado en el estado
+        const response = await esteInstructorTieneDatosCompletos();
+        setTieneDatosCompletos(response);
       } catch (error) {
         console.error("Error al verificar los datos bancarios:", error);
       }
     };
-
     fetchInstructorData();
   }, [idInstructor]);
 
   useEffect(() => {
     const fetchInscripciones = async () => {
       try {
-        const response = await traerSolicitudesInscripcionDeServiciosDeInstructor(idInstructor); // Espera a que se resuelva la promesa
-        setHasSolicitudesPendientes(response.length > 0); // Guarda el resultado en el estado
+        const response = await traerSolicitudesInscripcionDeServiciosDeInstructor(idInstructor);
+        setHasSolicitudesPendientes(response.length > 0);
       } catch (error) {
-        console.error("Error al verificar los datos bancarios:", error);
+        console.error("Error al verificar inscripciones:", error);
       }
     };
-
     fetchInscripciones();
   }, [idInstructor]);
+
+  // Estilos base para cada casillero de ícono
+  const baseIconContainerStyle = {
+    flex: 1,
+    padding: "8px",
+    textAlign: "center",
+    color: "white",
+    textDecoration: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  };
+
+  // Estilo para el ícono activo (dentro de su casillero)
+  const activeIconContainerStyle = {
+    backgroundColor: "#4e2a7f", // Fondo distinto para el ícono activo
+  };
+
+  // Contenedor completo de la sección de íconos con ancho reducido
+  const iconSectionContainerStyle = {
+    display: "flex",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    width: "600px",
+    margin: "0 auto",
+  };
+  
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
@@ -84,56 +118,64 @@ export default function NavbarServicio({ usuario }) {
           backgroundColor: "#1E1B4B",
           color: "white",
           fontSize: "1.2rem",
+          padding: "0.2rem 0", // Reduce el padding vertical de la navbar
         }}
       >
         <Container fluid className="d-flex justify-content-between align-items-center">
-          {/* Logo de Harp */}
+          {/* Logo */}
           <Navbar.Brand
             className="d-flex align-items-center"
             style={{ marginRight: "auto", cursor: "pointer" }}
             onClick={handleClick}
           >
-            <img
-              src={img}
-              alt="App Logo"
-              width="130"
-              style={{
-                height: "auto",
-                maxWidth: "100%",
-              }}
-            />
+            <img src={img} alt="App Logo" width="130" style={{ height: "auto", maxWidth: "100%" }} />
           </Navbar.Brand>
 
-          <Navbar.Toggle
-            aria-controls="navbarNav"
-            onClick={toggleDropdown}
-            style={{ border: "none" }}
-          />
-
+          <Navbar.Toggle onClick={toggleDropdown} style={{ border: "none" }} />
 
           <Navbar.Collapse id="navbarNav" className={dropdownOpen ? "show" : ""}>
-            <Nav className="mx-auto d-flex justify-content-center w-100">
-              <Nav.Link
-                href={`/instructor/${idInstructor}/servicios`}
-                style={{ color: "white" }}
-              >
-                Mis Servicios
-              </Nav.Link>
-              {usuario?.servicios.length > 0 &&
-               <div style={{ position: "relative" }}>
-                <Nav.Link
-                  href={`/instructor/${idInstructor}/servicios/inscripciones`}
-                  style={{ color: "white" }}
+            {/* Sección completa de íconos con fondo violeta */}
+            <div style={iconSectionContainerStyle}>
+              {/* Ícono Mis servicios */}
+              <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-servicios">Mis servicios</Tooltip>}>
+                <NavLink
+                  to={`/instructor/${idInstructor}/servicios`}
+                  title="Mis servicios"
+                  end
+                  style={({ isActive }) => ({
+                    ...baseIconContainerStyle,
+                    ...(isActive ? activeIconContainerStyle : {}),
+          
+                  })}
                 >
-                  Inscripciones
-                </Nav.Link>
-                {hasSolicitudesPendientes && (
+                  <i className="bi bi-house-door"></i>
+                </NavLink>
+              </OverlayTrigger>
+
+              {/* Ícono Inscripciones */}
+              {usuario?.servicios.length > 0 && (
+                <div style={{ position: "relative", flex: 1 }}>
+                  <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-inscripciones">Inscripciones</Tooltip>}>
+                    <NavLink
+                      to={`/instructor/${idInstructor}/servicios/inscripciones`}
+                      title="Inscripciones"
+                      end
+                      style={({ isActive }) => ({
+                        ...baseIconContainerStyle,
+                        ...(isActive ? activeIconContainerStyle : {}),
+                       
+                      })}
+                    >
+                      <i className="bi bi-person-plus"></i>
+                    </NavLink>
+                  </OverlayTrigger>
+                  {hasSolicitudesPendientes && (
                     <Badge
                       bg="warning"
                       style={{
                         position: "absolute",
-                        top: "-5px",
-                        right: "-5px",
+                        top: "0",
+                        right: "10%",
                         borderRadius: "50%",
                         fontSize: "10px",
                       }}
@@ -142,27 +184,66 @@ export default function NavbarServicio({ usuario }) {
                     </Badge>
                   )}
                 </div>
-              }
-              <Nav.Link
-                href={`/instructor/${idInstructor}/descubrir-servicios`}
-                style={{ color: "white" }}
-              >
-                Descubrir
-              </Nav.Link>
-              <Nav.Link
-                href={`/instructor/${idInstructor}/estadisticas`}
-                style={{ color: "white" }}
-              >
-                Estadisticas
-              </Nav.Link>
-            </Nav>
+              )}
+
+              {/* Ícono Descubrir */}
+              <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-descubrir">Descubrir</Tooltip>}>
+                <NavLink
+                  to={`/instructor/${idInstructor}/descubrir-servicios`}
+                  title="Descubrir"
+                  end
+                  style={({ isActive }) => ({
+                    ...baseIconContainerStyle,
+                    ...(isActive ? activeIconContainerStyle : {}),
+                  
+                  })}
+                >
+                  <i className="bi bi-compass"></i>
+                </NavLink>
+              </OverlayTrigger>
+
+              {/* Ícono Estadísticas */}
+              <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-estadisticas">Estadísticas</Tooltip>}>
+                <NavLink
+                  to={`/instructor/${idInstructor}/estadisticas`}
+                  title="Estadísticas"
+                  end
+                  style={({ isActive }) => ({
+                    ...baseIconContainerStyle,
+                    ...(isActive ? activeIconContainerStyle : {}),
+                    
+                  })}
+                >
+                  <i className="bi bi-graph-up"></i>
+                </NavLink>
+              </OverlayTrigger>
+
+              {/* Ícono Horarios (último, sin borde derecho) */}
+              <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-horarios">Horarios</Tooltip>}>
+                <NavLink
+                  to={`/instructor/${idInstructor}/horarios`}
+                  title="Horarios"
+                  end
+                  style={({ isActive }) => ({
+                    ...baseIconContainerStyle,
+                    ...(isActive ? activeIconContainerStyle : {}),
+                  })}
+                >
+                  <i className="bi bi-calendar-week"></i>
+                </NavLink>
+              </OverlayTrigger>
+            </div>
           </Navbar.Collapse>
 
           {/* Campana de notificaciones */}
           <div style={{ position: "relative", marginRight: "20px" }}>
             <FontAwesomeIcon
               icon={faBell}
-              style={{ color: hasUnreadNotifications ? "yellow" : "white", cursor: "pointer", fontSize: "24px" }}
+              style={{
+                color: hasUnreadNotifications ? "yellow" : "white",
+                cursor: "pointer",
+                fontSize: "24px",
+              }}
               onClick={() => setShowNotifications(!showNotifications)}
             />
             {hasUnreadNotifications && (
@@ -181,7 +262,7 @@ export default function NavbarServicio({ usuario }) {
             )}
           </div>
 
-          {/* Menú de perfil a la derecha */}
+          {/* Menú de perfil */}
           <Dropdown align="end">
             <Dropdown.Toggle
               id="dropdown-profile"
@@ -192,7 +273,7 @@ export default function NavbarServicio({ usuario }) {
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: "5px", // Espacio entre la imagen y el icono
+                gap: "5px",
                 position: "relative",
               }}
             >
@@ -215,7 +296,7 @@ export default function NavbarServicio({ usuario }) {
                       fontSize: "18px",
                       position: "absolute",
                       top: "-5px",
-                      right: "-5px", // Ajustar posición del ícono de advertencia
+                      right: "-5px",
                     }}
                   />
                 )}
@@ -225,20 +306,14 @@ export default function NavbarServicio({ usuario }) {
               <Dropdown.Item onClick={() => navigate(`/instructor/${idInstructor}/perfil/ver-perfil`)}>
                 Ver perfil
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => navigate("/")}>
-                Cerrar sesión
-              </Dropdown.Item>
+              <Dropdown.Item onClick={() => navigate("/")}>Cerrar sesión</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </Container>
       </Navbar>
 
       {/* Panel de notificaciones */}
-      {showNotifications && (
-        <NotificationPanel
-          notifications={notificaciones}
-        />
-      )}
+      {showNotifications && <NotificationPanel notifications={notificaciones} />}
     </div>
   );
 }

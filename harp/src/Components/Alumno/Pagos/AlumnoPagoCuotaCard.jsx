@@ -78,86 +78,147 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas, isPanelCollapsed }) => {
   }
 
   return (
-    <Card
-      className="mb-3"
-      style={{
-        borderRadius: '20px',
-        border: 'none',
-        minHeight: '200px',
-        position: 'relative',
-        width: isPanelCollapsed ? '80vw' : 'auto',
-        boxShadow: '0px 4px 19px rgba(0, 0, 0, 0.5)',
-      }}
-    >
-      <Card.Header
+    <>
+      <Card
+        className="shadow mb-3"
         style={{
-          backgroundColor: '#1E1B4B',
-          color: 'white',
-          textAlign: 'center',
-          fontWeight: 'bold',
-          fontSize: '1.5rem',
-          borderTopLeftRadius: '20px',
-          borderTopRightRadius: '20px',
-          padding: '15px',
+          width: "100%",
+          maxWidth: "600px",
+          margin: "0 auto",
+          borderRadius: "18px",
+          background: "linear-gradient(135deg, #1E1B4B, rgb(27, 59, 106))",
+          color: "#EAEAEA",
+          fontFamily: "'Roboto', sans-serif",
+          padding: "12px",
+          height: isPanelCollapsed ? "auto" : "auto", // Ajusta la altura aquí
+          overflow: "hidden", // Evita que el contenido se desborde
         }}
       >
-        {servicio.nombre}
-      </Card.Header>
-      <Card.Body>
-        <Row className="g-0 align-items-center">
-          <Col xs={12} md={4} className="text-center mb-3 mb-md-0">
-            <img
-              src={servicio.logoURL || placeholderImage}
-              alt={servicio.nombre}
-              style={{
-                width: '100%',
-                maxWidth: '120px',
-                height: '120px',
-                objectFit: 'cover',
-                borderRadius: '10px',
-              }}
-            />
-          </Col>
-          <Col xs={12} md={8}>
-            <div style={{ padding: '20px 15px' }}>
-              <p>
-                <strong>Estado:</strong> <Badge bg={badgeVariant}>{estadoLabel}</Badge>
-              </p>
-              <p>
-                <strong>Nombre del Instructor:</strong> {cuota.instructor}  {/* Ahora sí se muestra */}
-              </p>
-              <p>
-                <strong>Inicio:</strong> {cuota.fechaInicioCiclo}
-              </p>
-              <p>
-                <strong>Fin:</strong> {cuota.fechaFinCiclo}
-              </p>
-              <p>
-                <strong>Límite de Pago:</strong> {fechaLimitePago}
-              </p>
-              {fechaPago && (
-                <p>
-                  <strong>Fecha de Pago:</strong> {fechaPago}
-                </p>
-              )}
-            </div>
-            <div className="d-flex justify-content-between align-items-center">
-              <p className="mb-0" style={{ marginLeft: '15px' }}>
-                <strong>Cantidad a Abonar:</strong> <strong style={{ fontSize: '1.5rem' }}>${totalMonto}</strong>
-              </p>
-              {mostrarBotonPagar && (
-                <Button
-                  size="sm"
-                  style={{ backgroundColor: '#4F46E5', borderColor: '#4F46E5' }}
-                  onClick={handlePago}
+        <Card.Body>
+          <Row className="mb-3 align-items-center">
+            <Col xs={12} className="d-flex align-items-center">
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  background: "#fff",
+                  marginRight: "8px",
+                }}
+              >
+                <img
+                  src={placeholderImage}
+                  alt="Instructor"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+              <span
+                style={{ fontSize: "16px", fontWeight: "500" }}
+              >
+                {cuota.instructor}
+              </span>
+            </Col>
+          </Row>
+
+          <Row className="align-items-stretch" style={{ height: "auto", overflow: "hidden" }}>
+            <Col xs={12} md={4} className="d-flex">
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
+                  overflow: "hidden",
+                  borderRadius: "6px",
+                  backgroundColor: "#2E2B5B",
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  Pagar
-                </Button>
-              )}
-            </div>
-          </Col>
-        </Row>
-      </Card.Body>
+                  <img
+                    src={servicio.logoURL || placeholderImage}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      position: "absolute",
+                      filter: "blur(1px) brightness(0.9)",
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "relative",
+                      zIndex: 1,
+                      color: "#fff",
+                      fontSize: "18px",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      textShadow: "0 0 5px rgba(0,0,0,0.5)",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    {servicio.nombre}
+                  </div>
+                </div>
+              </div>
+            </Col>
+
+            <Col xs={12} md={8} className="d-flex flex-column h-100">
+              <div style={{ flex: 1 }}>
+                <div style={{ flex: 1 }}>
+                  <Card.Text style={{ fontSize: "14px", color: "#C0C8E0" }}>
+                    <strong>Estado:</strong> <Badge bg={badgeVariant}>{estadoLabel}</Badge>
+                  </Card.Text>
+                  <Card.Text style={{ fontSize: "14px", color: "#C0C8E0" }}>
+                    <strong>Ciclo:</strong> {cuota.fechaInicioCiclo} - {cuota.fechaFinCiclo}
+                  </Card.Text>
+                  <Card.Text style={{ fontSize: "14px", color: "#C0C8E0" }}>
+                    <strong>Límite de Pago:</strong> {fechaLimitePago}
+                  </Card.Text>
+                  {fechaPago && (
+                    <Card.Text style={{ fontSize: "14px", color: "#C0C8E0" }}>
+                      <strong>Fecha de Pago:</strong> {fechaPago}
+                    </Card.Text>
+                  )}
+                </div>
+                <Row className="mt-auto">
+                  <Col xs={6}>
+                    <h2 className="fw-bold m-0">${totalMonto.toLocaleString()}</h2>
+                  </Col>
+                  <Col xs={6} className="text-end">
+                    <Button
+                      style={{
+                        borderRadius: "24px",
+                        fontSize: "16px",
+                        fontWeight: "700",
+                        background: "#FFFFFF",
+                        color: "rgb(28, 36, 61)",
+                        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                        padding: "8px 16px",
+                        width: "100%",
+                        maxWidth: "140px",
+                      }}
+                      onClick={handlePago}
+                      disabled={!mostrarBotonPagar}
+                    >
+                      {mostrarBotonPagar ? "Pagar" : "Abonada"}
+                    </Button>
+                  </Col>
+                </Row>
+              </div>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
+
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Subir Comprobante</Modal.Title>
@@ -170,7 +231,7 @@ const AlumnoPagoCuotaCard = ({ cuota, fetchCuotas, isPanelCollapsed }) => {
           <Button variant="primary" onClick={handleConfirmarPago}>Confirmar Pago</Button>
         </Modal.Footer>
       </Modal>
-    </Card>
+    </>
   );
 };
 
