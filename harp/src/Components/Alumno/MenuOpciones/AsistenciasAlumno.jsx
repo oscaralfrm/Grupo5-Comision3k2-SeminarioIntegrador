@@ -112,7 +112,11 @@ const AsistenciasAlumno = () => {
                             }}
                         >
                             <p style={styles.claseFecha}>
-                                <strong>Fecha:</strong> {new Date(asistencia.clase.fecha).toLocaleDateString()}
+                                <strong>Fecha:</strong> {new Date(asistencia.clase.fecha).toLocaleDateString('es-AR', {
+                                     day: "numeric",
+                                     month: "long",
+                                     timeZone: "UTC"
+                                })}
                             </p>
                             <p style={styles.claseAsistio}>
                                 <strong>Asistió:</strong> {asistencia.asistio ? (

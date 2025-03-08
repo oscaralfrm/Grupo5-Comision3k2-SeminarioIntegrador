@@ -179,7 +179,7 @@ const Cobros = () => {
             .slice(0, showAllPending ? cuotasPendientes.length : 3)
             .map(([inscrip, cuotas]) => (
               <li key={inscrip.id} style={{ marginBottom: "10px" }}>
-                <span>{inscrip.alumno.usuario.nombre}</span>
+                <span>{inscrip.alumno.usuario.nombre} {inscrip.alumno.usuario.apellido}</span>
                 <button
                   onClick={() => handleGoToPayments(inscrip.id)}
                   style={{

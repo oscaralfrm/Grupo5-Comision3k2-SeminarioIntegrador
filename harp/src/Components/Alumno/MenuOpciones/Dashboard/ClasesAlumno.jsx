@@ -33,21 +33,22 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
       const futurasClases = await getClasesFuturasDeGrupo(grupoId);
       clasesFuturas.push(...futurasClases);
 
+      // Filtrar clases futuras que no estén marcadas como "noFueDada"
+      const clasesFuturasFiltradas = clasesFuturas.filter(cls => !cls.noFueDada);
+
       // Calcular clases completadas
-      //const hoy = new Date();
-      //const completadas = clasesTotales.filter(cls => new Date(cls.fecha) < hoy).length;
       const resumen = await getResumenAsistencias(idInscripcion);
       setClasesCompletadas(resumen.cantAsistencias || 0);
 
       // Ordenar clases futuras de más cercana a más lejana
-      const clasesFuturasOrdenadas = clasesFuturas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+      const clasesFuturasOrdenadas = clasesFuturasFiltradas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
       setClasesFuturas(clasesFuturasOrdenadas);
 
       // Actualizar estados
       setClasses(clasesTotales);
 
-      // Encontrar la clase del día actual
-      const claseDeHoy = clasesTotales.find(cls => isToday(cls));
+      // Encontrar la clase del día actual (excluyendo las marcadas como "noFueDada")
+      const claseDeHoy = clasesTotales.find(cls => isToday(cls) && !cls.noFueDada);
       setClaseHoy(claseDeHoy);
 
     } catch (error) {
@@ -69,10 +70,7 @@ const ClassesCardAlumno = ({ asistenciasActivas, servicio, grupoId }) => {
 
   // Función para formatear la fecha y hora de las clases
   const formatearClase = (clase) => {
-    // Crear un objeto de fecha en la zona horaria local
     const fecha = new Date(clase.fecha + "T00:00:00"); // Añadir la hora para evitar desfases
-
-    // Formatear la fecha en la zona horaria local
     const fechaFormateada = fecha.toLocaleDateString("es-ES", {
       day: "numeric",
       month: "long",

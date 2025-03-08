@@ -6,6 +6,7 @@ import "react-calendar/dist/Calendar.css";
 import { obtenerCuotasDeInscripcion, obtenerUltimasCuotasDeInscripcion } from "../../../../services/Cuota";
 import { getHistorialMontosGrupo, getMontoActualGrupoDeHistorial } from "../../../../services/HistorialMontoCuota";
 import { getMontoProgramadoDeHistorial } from "../../../../services/HistorialMontoCuota";
+import { getServicioById } from "../../../../services/Servicio";
 import ModalPagarCuotaConComprobante from "../../ModalPagarCuotaConComprobante";
 import CuotaCard from "../../ResumenCuota";
 
@@ -35,6 +36,18 @@ const Pagos = (props) => {
     const [day, month, year] = dateString.split('/');
     return new Date(`${year}-${month}-${day}`);
   };
+
+  useEffect(() => {
+    const fetchServicio = async () => {
+      try {
+        const data = await getServicioById(idServicio);
+        setServicio(data);
+      } catch (error) {
+        console.error("Error al traer el servicio:", error);
+      }
+    };
+    fetchServicio();
+  }, [idServicio]);
 
 
   useEffect(() => {
@@ -175,9 +188,11 @@ const Pagos = (props) => {
     navigate(`/alumno/${idAlumno}/inscripciones/pagos`);
   };
 
+  
+
   const tileClassName = ({ date, view }) => {
     if (view === "month" && servicio?.diaLimitePago && date.getDate() === servicio.diaLimitePago) {
-      return "highlight-day";
+      return "highlight";
     }
     return null;
   };
@@ -308,22 +323,23 @@ const Pagos = (props) => {
         </div>
       )}
 
-      <div className="section">
+      {/* Estilos para el día límite de pago */}
+      <style>
+        {`
+          .highlight {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border-radius: 50%;
+          }
+        `}
+      </style>
+
+<div className="section">
         <hr />
         <h3 style={{ color: "#1E1B4B", fontSize: "1.4rem" }}>Calendario de Pagos</h3>
         <Calendar tileClassName={tileClassName} />
       </div>
 
-      {/* Estilos para el día límite de pago */}
-      <style>
-        {`
-          .highlight-day {
-            background-color: #ffcccc;
-            border-radius: 50%;
-            color: #dc3545;
-          }
-        `}
-      </style>
 
       <ModalPagarCuotaConComprobante
         showAddPayment={showAddPayment}

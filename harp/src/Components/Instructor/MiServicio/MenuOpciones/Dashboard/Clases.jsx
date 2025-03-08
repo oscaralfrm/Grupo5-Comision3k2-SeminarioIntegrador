@@ -24,8 +24,11 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
         for (const grupo of grupos) {
           const clases = await getClasesDeGrupo(grupo.id);
 
+          // Filtrar las clases que no estén marcadas como "noFueDada"
+          const clasesFiltradas = clases.filter(cls => !cls.noFueDada);
+
           // Ordenar las clases por fecha (de más reciente a más lejana)
-          const sortedClases = clases.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+          const sortedClases = clasesFiltradas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 
           // Obtener el nombre del grupo
           const grupoInfo = await getGrupoById(grupo.id);
@@ -82,8 +85,7 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
   const handleNavigate = () => {
     // Navega a la ruta deseada
     navigate(`/instructor/${idInstructor}/servicio/${idServicio}/historial-clases`);
-};
-
+  };
 
   return (
     <div style={{
@@ -117,8 +119,8 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
 
         {asistenciasActivas && (
           <Button
-          onClick={handleNavigate} // Usa onClick en lugar de to
-          style={{
+            onClick={handleNavigate} // Usa onClick en lugar de to
+            style={{
               backgroundColor: "#4F46E5",
               color: "white",
               padding: "10px 20px",
@@ -127,10 +129,10 @@ const ClassesCard = ({ asistenciasActivas, fetchServicio }) => {
               fontSize: "14px",
               border: "none", // Elimina el borde por defecto de Button
               cursor: "pointer", // Cambia el cursor a pointer
-          }}
-      >
-          Historial
-      </Button>
+            }}
+          >
+            Historial
+          </Button>
         )}
       </div>
 
