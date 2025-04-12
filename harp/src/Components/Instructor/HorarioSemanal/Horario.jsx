@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getServiciosVigentesDeInstructor } from '../../../services/Instructor';
 import { getGruposDeServicio } from '../../../services/Grupo';
 
 const Horario = () => {
   const { idInstructor } = useParams();
+  const navigate = useNavigate();
   const [servicios, setServicios] = useState([]);
   
-  // Días de la semana en español (orden típico)
   const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-  
-  const hourHeight = 50; // 50px por cada hora
-  
-  // Colores predefinidos para los eventos (se asignan de forma cíclica)
+  const hourHeight = 50;
   const colors = [
     "#FFCDD2", "#F8BBD0", "#E1BEE7", "#D1C4E9",
     "#C5CAE9", "#BBDEFB", "#B3E5FC", "#B2EBF2",
@@ -22,7 +19,6 @@ const Horario = () => {
     "#F5F5F5", "#CFD8DC"
   ];
   
-  // Obtener los servicios vigentes y para cada servicio obtener sus grupos
   useEffect(() => {
     const fetchServicios = async () => {
       try {
@@ -41,21 +37,18 @@ const Horario = () => {
     fetchServicios();
   }, [idInstructor]);
   
-  // Función para convertir "HH:mm" a número decimal (ej: "08:30" → 8.5)
   const parseTime = (timeStr) => {
     const [hour, minute] = timeStr.split(":").map(Number);
     return hour + minute / 60;
   };
 
-  // Extraer eventos a partir de los grupos y sus horarios
-  // Cada evento: servicioNombre, grupoNombre, dayIndex, start, end y color.
   const rawEvents = [];
   servicios.forEach((servicio, sIndex) => {
     if (servicio.grupos && Array.isArray(servicio.grupos)) {
       servicio.grupos.forEach((grupo, gIndex) => {
         if (grupo.horarios && Array.isArray(grupo.horarios)) {
           grupo.horarios.forEach((horario) => {
-            const dayName = horario.diaSemana.nombre; // se espera "Lunes", etc.
+            const dayName = horario.diaSemana.nombre;
             const dayIndex = days.indexOf(dayName);
             if (dayIndex !== -1) {
               const start = parseTime(horario.horaInicio);
@@ -64,6 +57,7 @@ const Horario = () => {
               rawEvents.push({
                 servicioNombre: servicio.nombre,
                 grupoNombre: grupo.nombre,
+                servicioId: servicio.id, // Agregamos el ID del servicio
                 dayIndex,
                 start,
                 end,
@@ -76,14 +70,12 @@ const Horario = () => {
     }
   });
   
-  // Determinar el rango horario dinámico según los eventos
   const allStartTimes = rawEvents.map(event => event.start);
   const allEndTimes = rawEvents.map(event => event.end);
   const gridStartHour = allStartTimes.length > 0 ? Math.floor(Math.min(...allStartTimes)) : 6;
   const gridEndHour = allEndTimes.length > 0 ? Math.ceil(Math.max(...allEndTimes)) : 22;
   const gridHeight = (gridEndHour - gridStartHour) * hourHeight;
   
-  // Agrupar eventos por día y calcular superposiciones (clusters)
   let layoutEvents = [];
   for (let day = 0; day < 7; day++) {
     const dayEvents = rawEvents.filter(ev => ev.dayIndex === day);
@@ -127,21 +119,18 @@ const Horario = () => {
     });
   }
   
-  // Calcular posición vertical y altura para cada evento
   const events = layoutEvents.map(event => ({
     ...event,
     top: (event.start - gridStartHour) * hourHeight,
     height: (event.end - event.start) * hourHeight
   }));
   
-  // Estilos generales
   const containerStyle = {
     width: "100%",
     overflowX: "auto",
     fontFamily: "Roboto, sans-serif"
   };
   
-  // Contenedor del grid (reserva margen izquierdo para horas)
   const scheduleContainerStyle = {
     position: "relative",
     border: "1px solid #ccc",
@@ -152,7 +141,6 @@ const Horario = () => {
     boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
   };
   
-  // Columna de horas
   const timeColumnStyle = {
     position: "absolute",
     left: 0,
@@ -171,7 +159,6 @@ const Horario = () => {
     fontSize: "12px"
   };
   
-  // Encabezado de días
   const dayHeaderContainerStyle = {
     display: "flex",
     marginLeft: 60,
@@ -186,7 +173,6 @@ const Horario = () => {
     borderRight: "1px solid #ccc"
   };
   
-  // Líneas verticales punteadas para separar los días
   const verticalLines = [];
   for (let i = 1; i < 7; i++) {
     verticalLines.push(
@@ -204,7 +190,6 @@ const Horario = () => {
     );
   }
   
-  // Cada evento se organiza en subcolumnas. Se centra el contenido y se fija un tamaño de fuente de 12px.
   const eventStyle = (event) => {
     const dayWidthPercent = 100 / 7;
     const leftPercent = (event.dayIndex) * dayWidthPercent + (event.col * (dayWidthPercent / event.totalCols));
@@ -230,7 +215,6 @@ const Horario = () => {
     };
   };
   
-  // Generar etiquetas de hora y líneas horizontales punteadas
   const timeLabels = [];
   const hourLines = [];
   for (let h = gridStartHour; h <= gridEndHour; h++) {
@@ -251,9 +235,8 @@ const Horario = () => {
     );
   }
   
-  // Función para manejar el click en un evento
   const handleEventClick = (event) => {
-    alert(`Servicio: ${event.servicioNombre}\nGrupo: ${event.grupoNombre}`);
+    navigate(`/instructor/${idInstructor}/servicio/${event.servicioId}/mi-servicio`);
   };
 
   return (
@@ -263,7 +246,6 @@ const Horario = () => {
       </h2>
       
       <div style={containerStyle}>
-        {/* Encabezado con días de la semana */}
         <div style={dayHeaderContainerStyle}>
           {days.map((day, index) => (
             <div
@@ -279,12 +261,10 @@ const Horario = () => {
         </div>
         
         <div style={{ position: "relative" }}>
-          {/* Columna de horas */}
           <div style={timeColumnStyle}>
             {timeLabels}
           </div>
           
-          {/* Grid de horarios con líneas horizontales y verticales */}
           <div style={scheduleContainerStyle}>
             {hourLines}
             {verticalLines}

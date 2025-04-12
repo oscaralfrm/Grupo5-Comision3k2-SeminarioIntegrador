@@ -61,7 +61,7 @@ const ServiciosFavoritos = () => {
                     <h1
                         style={{
                             fontSize: "2.5rem", // tamaño ajustado para pantallas pequeñas
-                            color: "rgb(53, 41, 218)",
+                            color: "#1E1B4B",
                             margin: 0,
                         }}
                     >
@@ -88,7 +88,7 @@ const ServiciosFavoritos = () => {
                     <h1
                         style={{
                             fontSize: "4rem",
-                            color: "rgb(17, 14, 103)",
+                            color: "#1E1B4B",
                             textAlign: "left",
                             margin: 0,
                             fontWeight: "600"

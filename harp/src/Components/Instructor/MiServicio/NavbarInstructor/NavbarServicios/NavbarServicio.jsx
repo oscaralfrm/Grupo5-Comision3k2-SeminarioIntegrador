@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, NavLink } from "react-router-dom";
 import {
   Navbar,
   Container,
   Badge,
   Nav,
-  OverlayTrigger,
-  Tooltip,
   Dropdown,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faBars } from "@fortawesome/free-solid-svg-icons";
 import { FaExclamationCircle } from "react-icons/fa";
 import img from "../../../../../assets/LogoHarp420.png";
 import profileImg from "../../../../../assets/profile.png";
@@ -29,6 +27,8 @@ export default function NavbarServicio({ usuario }) {
   const [tieneDatosCompletos, setTieneDatosCompletos] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [hasSolicitudesPendientes, setHasSolicitudesPendientes] = useState(false);
+  const notificationPanelRef = useRef(null);
+  const bellIconRef = useRef(null);
 
   const esteInstructorTieneDatosCompletos = async () => {
     const response = await tieneDatosBancariosCompletos(idInstructor);
@@ -42,6 +42,24 @@ export default function NavbarServicio({ usuario }) {
   const handleClick = () => {
     navigate("/");
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showNotifications &&
+        notificationPanelRef.current &&
+        !notificationPanelRef.current.contains(event.target) &&
+        !(bellIconRef.current && bellIconRef.current.contains(event.target))
+      ) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotifications]);
 
   useEffect(() => {
     const fetchNotificaciones = async () => {
@@ -81,32 +99,43 @@ export default function NavbarServicio({ usuario }) {
     fetchInscripciones();
   }, [idInstructor]);
 
-  // Estilos base para cada casillero de ícono
-  const baseIconContainerStyle = {
-    flex: 1,
-    padding: "8px",
+  // Estilos con mejor espaciado
+  const baseTextContainerStyle = {
+    padding: "8px 15px",
     textAlign: "center",
     color: "white",
     textDecoration: "none",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    fontFamily: "Roboto, sans-serif",
+    fontSize: "0.95rem",
+    fontWeight: "500",
+    borderRadius: "4px",
+    margin: "0 5px",
+    transition: "all 0.2s ease",
+    whiteSpace: "nowrap",
+    flexShrink: 0,
+    backgroundColor: "transparent", // Fondo transparente por defecto
+    '&:hover': {
+      backgroundColor: "rgba(255, 255, 255, 0.1)", // Ligero hover
+    }
   };
 
-  // Estilo para el ícono activo (dentro de su casillero)
-  const activeIconContainerStyle = {
-    backgroundColor: "#4e2a7f", // Fondo distinto para el ícono activo
+  const activeTextContainerStyle = {
+    backgroundColor: "#4e2a7f",
+    fontWeight: "600",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
   };
 
-  // Contenedor completo de la sección de íconos con ancho reducido
-  const iconSectionContainerStyle = {
+  const navSectionContainerStyle = {
     display: "flex",
-    justifyContent: "space-evenly",
+    justifyContent: "center",
     alignItems: "center",
-    width: "600px",
+    width: "750px",
     margin: "0 auto",
+    gap: "10px",
   };
-  
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
@@ -118,7 +147,7 @@ export default function NavbarServicio({ usuario }) {
           backgroundColor: "#1E1B4B",
           color: "white",
           fontSize: "1.2rem",
-          padding: "0.2rem 0", // Reduce el padding vertical de la navbar
+          padding: "0.5rem 0",
         }}
       >
         <Container fluid className="d-flex justify-content-between align-items-center">
@@ -128,56 +157,64 @@ export default function NavbarServicio({ usuario }) {
             style={{ marginRight: "auto", cursor: "pointer" }}
             onClick={handleClick}
           >
-            <img src={img} alt="App Logo" width="130" style={{ height: "auto", maxWidth: "100%" }} />
+            <img
+              src={img}
+              alt="App Logo"
+              width="130"
+              style={{
+                height: "auto",
+                maxWidth: "100%",
+                marginRight: "20px"
+              }}
+            />
           </Navbar.Brand>
 
-          <Navbar.Toggle onClick={toggleDropdown} style={{ border: "none" }} />
+          {/* Botón hamburguesa para móvil */}
+          <Navbar.Toggle
+            aria-controls="navbarNav"
+            onClick={toggleDropdown}
+            style={{ border: "none", color: "white", marginLeft: "15px" }}
+          >
+            <FontAwesomeIcon icon={faBars} />
+          </Navbar.Toggle>
 
           <Navbar.Collapse id="navbarNav" className={dropdownOpen ? "show" : ""}>
-            {/* Sección completa de íconos con fondo violeta */}
-            <div style={iconSectionContainerStyle}>
-              {/* Ícono Mis servicios */}
-              <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-servicios">Mis servicios</Tooltip>}>
-                <NavLink
-                  to={`/instructor/${idInstructor}/servicios`}
-                  title="Mis servicios"
-                  end
-                  style={({ isActive }) => ({
-                    ...baseIconContainerStyle,
-                    ...(isActive ? activeIconContainerStyle : {}),
-          
-                  })}
-                >
-                  <i className="bi bi-house-door"></i>
-                </NavLink>
-              </OverlayTrigger>
+            <div style={navSectionContainerStyle}>
+              {/* Mis servicios */}
+              <NavLink
+                to={`/instructor/${idInstructor}/servicios`}
+                end  // <-- Esto es crucial
+                style={({ isActive }) => ({
+                  ...baseTextContainerStyle,
+                  ...(isActive ? activeTextContainerStyle : {}),
+                })}
+              >
+                Mis servicios
+              </NavLink>
 
-              {/* Ícono Inscripciones */}
+              {/* Inscripciones */}
               {usuario?.servicios.length > 0 && (
-                <div style={{ position: "relative", flex: 1 }}>
-                  <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-inscripciones">Inscripciones</Tooltip>}>
-                    <NavLink
-                      to={`/instructor/${idInstructor}/servicios/inscripciones`}
-                      title="Inscripciones"
-                      end
-                      style={({ isActive }) => ({
-                        ...baseIconContainerStyle,
-                        ...(isActive ? activeIconContainerStyle : {}),
-                       
-                      })}
-                    >
-                      <i className="bi bi-person-plus"></i>
-                    </NavLink>
-                  </OverlayTrigger>
+                <div style={{ position: "relative" }}>
+                  <NavLink
+                    to={`/instructor/${idInstructor}/servicios/inscripciones`}
+                    end  // <-- Esto es crucial
+                    style={({ isActive }) => ({
+                      ...baseTextContainerStyle,
+                      ...(isActive ? activeTextContainerStyle : {}),
+                    })}
+                  >
+                    Inscripciones
+                  </NavLink>
                   {hasSolicitudesPendientes && (
                     <Badge
                       bg="warning"
                       style={{
                         position: "absolute",
                         top: "0",
-                        right: "10%",
+                        right: "5px",
                         borderRadius: "50%",
                         fontSize: "10px",
+                        padding: "4px 6px",
                       }}
                     >
                       !
@@ -186,65 +223,60 @@ export default function NavbarServicio({ usuario }) {
                 </div>
               )}
 
-              {/* Ícono Descubrir */}
-              <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-descubrir">Descubrir</Tooltip>}>
-                <NavLink
-                  to={`/instructor/${idInstructor}/descubrir-servicios`}
-                  title="Descubrir"
-                  end
-                  style={({ isActive }) => ({
-                    ...baseIconContainerStyle,
-                    ...(isActive ? activeIconContainerStyle : {}),
-                  
-                  })}
-                >
-                  <i className="bi bi-compass"></i>
-                </NavLink>
-              </OverlayTrigger>
+              {/* Descubrir */}
+              <NavLink
+                to={`/instructor/${idInstructor}/descubrir-servicios`}
+                style={({ isActive }) => ({
+                  ...baseTextContainerStyle,
+                  ...(isActive ? activeTextContainerStyle : {}),
+                })}
+              >
+                Descubrir
+              </NavLink>
 
-              {/* Ícono Estadísticas */}
-              <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-estadisticas">Estadísticas</Tooltip>}>
-                <NavLink
-                  to={`/instructor/${idInstructor}/estadisticas`}
-                  title="Estadísticas"
-                  end
-                  style={({ isActive }) => ({
-                    ...baseIconContainerStyle,
-                    ...(isActive ? activeIconContainerStyle : {}),
-                    
-                  })}
-                >
-                  <i className="bi bi-graph-up"></i>
-                </NavLink>
-              </OverlayTrigger>
+              {/* Estadísticas */}
+              <NavLink
+                to={`/instructor/${idInstructor}/estadisticas`}
+                style={({ isActive }) => ({
+                  ...baseTextContainerStyle,
+                  ...(isActive ? activeTextContainerStyle : {}),
+                })}
+              >
+                Estadísticas
+              </NavLink>
 
-              {/* Ícono Horarios (último, sin borde derecho) */}
-              <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-horarios">Horarios</Tooltip>}>
-                <NavLink
-                  to={`/instructor/${idInstructor}/horarios`}
-                  title="Horarios"
-                  end
-                  style={({ isActive }) => ({
-                    ...baseIconContainerStyle,
-                    ...(isActive ? activeIconContainerStyle : {}),
-                  })}
-                >
-                  <i className="bi bi-calendar-week"></i>
-                </NavLink>
-              </OverlayTrigger>
+              {/* Horarios */}
+              <NavLink
+                to={`/instructor/${idInstructor}/horarios`}
+                style={({ isActive }) => ({
+                  ...baseTextContainerStyle,
+                  ...(isActive ? activeTextContainerStyle : {}),
+                })}
+              >
+                Horarios
+              </NavLink>
             </div>
           </Navbar.Collapse>
 
           {/* Campana de notificaciones */}
-          <div style={{ position: "relative", marginRight: "20px" }}>
+          <div
+            ref={bellIconRef}
+            style={{
+              position: "relative",
+              margin: "0 20px",
+              cursor: "pointer"
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowNotifications(!showNotifications);
+            }}
+          >
             <FontAwesomeIcon
               icon={faBell}
               style={{
                 color: hasUnreadNotifications ? "yellow" : "white",
-                cursor: "pointer",
                 fontSize: "24px",
               }}
-              onClick={() => setShowNotifications(!showNotifications)}
             />
             {hasUnreadNotifications && (
               <Badge
@@ -313,7 +345,65 @@ export default function NavbarServicio({ usuario }) {
       </Navbar>
 
       {/* Panel de notificaciones */}
-      {showNotifications && <NotificationPanel notifications={notificaciones} />}
+      {showNotifications && (
+        <div ref={notificationPanelRef}>
+          <NotificationPanel notifications={notificaciones} />
+        </div>
+      )}
+
+      <style>
+        {`
+          .navbar-toggler {
+            border: none;
+          }
+
+          .navbar-toggler:focus {
+            outline: none;
+            box-shadow: none;
+          }
+
+          @media (max-width: 992px) {
+            .navbar-collapse {
+              background-color: #1E1B4B;
+              padding: 15px;
+              margin-top: 10px;
+              border-radius: 5px;
+              width: 100%;
+            }
+            
+            .nav-link {
+              padding: 12px 15px;
+              margin: 5px 0;
+              border-radius: 4px;
+              width: 100%;
+              justify-content: flex-start;
+            }
+
+            .nav-section-container {
+              flex-direction: column;
+              width: 100%;
+              gap: 5px;
+            }
+          }
+
+          @media (min-width: 993px) and (max-width: 1200px) {
+            .nav-section-container {
+              width: 680px;
+            }
+            
+            .nav-item {
+              padding: 8px 12px;
+              font-size: 0.9rem;
+              margin: 0 3px;
+            }
+          }
+
+          /* Estilo para hover suave */
+          .nav-link:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+        `}
+      </style>
     </div>
   );
 }

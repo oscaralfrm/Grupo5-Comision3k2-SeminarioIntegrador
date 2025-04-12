@@ -1,5 +1,6 @@
 import React from "react";
 import { FaUser, FaIdCard, FaBirthdayCake, FaPhone, FaEnvelope, FaUserCircle } from "react-icons/fa";
+import img from "../../../../assets/profile.png"
 
 const formatDate = (dateString) => {
   if (!dateString) return ""; // Si no hay fecha, retornar un string vacío
@@ -45,7 +46,7 @@ export default function InfoCard({ formData }) {
               style={{ width: "80px", height: "80px", border: "3px solid #FFFFFF" }}
             >
               <img
-                src={formData.fotoPerfil || "https://via.placeholder.com/80"}
+                src={formData.fotoPerfil || img}
                 alt="Foto de perfil"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
