@@ -20,16 +20,26 @@ const MisCuotas = () => {
   const [fechaFinFilter, setFechaFinFilter] = useState("");
   const [instructorFilter, setInstructorFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 3;
 
+  // Estado para controlar si el modal de pago está abierto
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+  // Detectar el ancho de la ventana para aplicar lógica responsive
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const isSmallScreen = windowWidth < 768;
+
+  useEffect(() => {
+    fetchCuotas();
+  }, [idAlumno]);
 
   const fetchCuotas = async () => {
     setLoading(true);
@@ -50,7 +60,7 @@ const MisCuotas = () => {
           todasLasCuotas.push({
             ...cuota,
             inscripcion,
-            instructor: instructor.usuario.nombre + " " + instructor.usuario.apellido,
+            instructor: `${instructor.usuario.nombre} ${instructor.usuario.apellido || ""}`,
           });
         }
       }
@@ -63,10 +73,6 @@ const MisCuotas = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchCuotas();
-  }, [idAlumno]);
 
   useEffect(() => {
     let filtered = [...cuotas];
@@ -112,99 +118,129 @@ const MisCuotas = () => {
   const indexOfLastCard = currentPage * cardsPerPage;
   const indexOfFirstCard = indexOfLastCard - cardsPerPage;
   const currentCards = filteredCuotas.slice(indexOfFirstCard, indexOfLastCard);
+  const totalPages = Math.ceil(filteredCuotas.length / cardsPerPage);
 
-  const paginate = (direction) => {
-    setCurrentPage(prevPage => Math.max(1, Math.min(prevPage + direction, Math.ceil(filteredCuotas.length / cardsPerPage))));
-  };
-
-  const isSmallScreen = windowWidth < 768;
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <Container fluid style={{ padding: 0, display: "flex", flexDirection: "column", height: "100vh" }}>
-      <div style={{ flex: 1, overflowY: "auto", padding: "20px", display: "flex", flexDirection: "column" }}>
-        <h2 style={{ textAlign: "center", color: "#1E1B4B", marginTop: "100px" }}>
-          Mis Pagos
-        </h2>
-        {loading ? (
-          <div className="d-flex flex-column align-items-center my-5">
-            <Spinner
-              animation="border"
-              role="status"
-              style={{ width: "4rem", height: "4rem", color: "#4F46E5" }}
-            />
-            <p className="mt-3" style={{ color: "#4F46E5", fontWeight: "bold" }}>
-              Cargando cuotas, por favor espere...
-            </p>
-          </div>
-        ) : (
-          <>
-            <Row className="justify-content-center" style={{ flex: 1, position: "relative" }}>
-              <Col xs={12} md={10} lg={8} style={{ display: "flex", flexWrap: showFilters ? "nowrap" : "wrap", gap: "20px", overflowX: "auto", height: "100%" }}>
-                {currentCards.map(cuota => (
-                  <AlumnoPagoCuotaCard
-                    key={cuota.id}
-                    cuota={cuota}
-                    fetchCuotas={fetchCuotas}
-                    isPanelCollapsed={!showFilters}
-                    style={{ width: showFilters ? "30%" : "100%", height: "auto" }} // Ensure the card content is visible
-                  />
-                ))}
-              </Col>
-              {showFilters && (
-                <>
-                  <Col xs="auto" className="d-flex align-items-center" style={{ position: "absolute", top: "50%", left: "10px", transform: "translateY(-50%)" }}>
-                    <Button 
-                      onClick={() => paginate(-1)} 
-                      disabled={currentPage === 1} 
-                      style={{ 
-                        height: showFilters ? "30px" : "40px", 
-                        borderRadius: 0, 
-                        fontSize: showFilters ? "10px" : "12px" 
-                      }}
-                    >
-                      &lt;&lt;
-                    </Button>
-                  </Col>
-                  <Col xs="auto" className="d-flex align-items-center" style={{ position: "absolute", top: "50%", right: "10px", transform: "translateY(-50%)" }}>
-                    <Button 
-                      onClick={() => paginate(1)} 
-                      disabled={indexOfLastCard >= filteredCuotas.length} 
-                      style={{ 
-                        height: showFilters ? "30px" : "40px", 
-                        borderRadius: 0, 
-                        fontSize: showFilters ? "10px" : "12px" 
-                      }}
-                    >
-                      &gt;&gt;
-                    </Button>
-                  </Col>
-                </>
-              )}
-            </Row>
-          </>
+    <Container fluid style={{ padding: 0, display: "flex", height: "100vh" }}>
+      {/* Panel de Filtros */}
+      <div
+        style={{
+          width: showFilters ? "450px" : "80px",
+          height: "calc(100vh - 76px)",
+          position: "fixed",
+          top: "76px",
+          left: 0,
+          zIndex: isSmallScreen ? 999 : 9999, // Ajuste dinámico del z-index
+          backgroundColor: "#f8f9fa",
+          borderTopRightRadius: "16px",
+          borderBottomRightRadius: "16px",
+          borderRight: "1px solid #ddd",
+          overflowY: "auto",
+          transition: "width 0.3s",
+          opacity: isPaymentModalOpen ? 0.5 : 1, // Sombreado cuando el modal está abierto
+          pointerEvents: isPaymentModalOpen ? "none" : "auto", // Deshabilitar interacción
+        }}
+      >
+        {/* Botón para Expandir Filtros (Visible cuando colapsado) */}
+        {!showFilters && (
+          <Button
+            variant="light"
+            style={{
+              width: "100%",
+              height: "50px",
+              borderRadius: "0",
+              border: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "#f8f9fa", // Mismo color gris que el panel
+              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+              cursor: "pointer",
+            }}
+            onClick={() => setShowFilters(true)}
+          >
+            {/* Ícono de Bootstrap */}
+            <i className="bi bi-sliders" style={{ color: "#000000", fontSize: "24px" }}></i>
+          </Button>
+        )}
+
+        {/* Contenido del Panel de Filtros */}
+        {showFilters && (
+          <FiltrosPagos
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            estadoCuotaFilter={estadoCuotaFilter}
+            setEstadoCuotaFilter={setEstadoCuotaFilter}
+            fechaLimitePagoFilter={fechaLimitePagoFilter}
+            setFechaLimitePagoFilter={setFechaLimitePagoFilter}
+            montoABonarFilter={montoABonarFilter}
+            setMontoABonarFilter={setMontoABonarFilter}
+            fechaInicioFilter={fechaInicioFilter}
+            setFechaInicioFilter={setFechaInicioFilter}
+            fechaFinFilter={fechaFinFilter}
+            setFechaFinFilter={setFechaFinFilter}
+            instructorFilter={instructorFilter}
+            setInstructorFilter={setInstructorFilter}
+            showFilters={showFilters}
+            setShowFilters={setShowFilters}
+          />
         )}
       </div>
 
-      <div style={{ borderTop: "1px solid #ddd", padding: "10px", backgroundColor: "#f8f9fa", height: showFilters ? "50vh" : "auto", overflowY: "auto" }}>
-        <FiltrosPagos
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          estadoCuotaFilter={estadoCuotaFilter}
-          setEstadoCuotaFilter={setEstadoCuotaFilter}
-          fechaLimitePagoFilter={fechaLimitePagoFilter}
-          setFechaLimitePagoFilter={setFechaLimitePagoFilter}
-          montoABonarFilter={montoABonarFilter}
-          setMontoABonarFilter={setMontoABonarFilter}
-          fechaInicioFilter={fechaInicioFilter}
-          setFechaInicioFilter={setFechaInicioFilter}
-          fechaFinFilter={fechaFinFilter}
-          setFechaFinFilter={setFechaFinFilter}
-          instructorFilter={instructorFilter}
-          setInstructorFilter={setInstructorFilter}
-          showFilters={showFilters}
-          setShowFilters={setShowFilters}
-          isSmallScreen={isSmallScreen}
-        />
+      {/* Contenido Principal */}
+      <div
+        style={{
+          marginLeft: showFilters ? "450px" : "80px",
+          flex: 1,
+          overflowY: "auto",
+          padding: "20px",
+          transition: "margin-left 0.3s",
+        }}
+      >
+        {/* Título de los Cobros */}
+        <h2 style={{ textAlign: "center", color: "#1E1B4B", marginTop: "20vh" }}>Mis Pagos</h2>
+
+        {/* Cards */}
+        {loading ? (
+          <div className="d-flex flex-column align-items-center my-5">
+            <Spinner animation="border" role="status" style={{ width: "4rem", height: "4rem", color: "#4F46E5" }} />
+            <p className="mt-3" style={{ color: "#4F46E5", fontWeight: "bold" }}>Cargando cuotas, por favor espere...</p>
+          </div>
+        ) : (
+          <Row className="justify-content-center mt-3">
+            {currentCards.map((cuota) => (
+              <Col key={cuota.id} xs={12} style={{ marginBottom: "20px" }}>
+                <AlumnoPagoCuotaCard
+                  cuota={cuota}
+                  fetchCuotas={fetchCuotas}
+                  isPanelCollapsed={!showFilters}
+                  setIsPaymentModalOpen={setIsPaymentModalOpen} // Pasar función para controlar el modal
+                  style={{ width: "100%", height: "auto" }}
+                />
+              </Col>
+            ))}
+          </Row>
+        )}
+
+        {/* Pagination */}
+        <Row className="justify-content-center mt-3">
+          <Col xs={12} md={8} lg={6}>
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <Button
+                  key={i + 1}
+                  onClick={() => paginate(i + 1)}
+                  variant={currentPage === i + 1 ? "primary" : "outline-primary"}
+                  size="sm"
+                >
+                  {i + 1}
+                </Button>
+              ))}
+            </div>
+          </Col>
+        </Row>
       </div>
     </Container>
   );
